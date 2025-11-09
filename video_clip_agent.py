@@ -8,6 +8,7 @@ from typing import Dict, List, Any, Optional, TypedDict, Annotated, Literal, Tup
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+import contextlib
 try:
     from langchain_openai import ChatOpenAI
     HAS_OPENAI = True
@@ -222,30 +223,87 @@ Return your analysis as JSON with:
             semantic_query = plan.get("semantic_query", query)  # Use original query if not specified
             
             if query_type == "semantic":
-                # Use semantic similarity search
+                # Use semantic similarity search with higher threshold for better quality
                 if verbose:
                     print(f"  [SEARCH] Semantic search for: '{semantic_query}'")
+                # Start with a higher threshold for better quality matches
+                # If no results, lower it progressively
+                threshold = 0.45
                 results = segment_tree.semantic_search(
                     semantic_query,
                     top_k=10,
-                    threshold=0.3,
+                    threshold=threshold,
                     search_transcriptions=True,
                     search_unified=True,
                     verbose=verbose
                 )
+                
+                # If no results with higher threshold, try lower threshold
+                if not results:
+                    if verbose:
+                        print(f"  [SEARCH] No results with threshold {threshold}, trying lower threshold 0.35...")
+                    threshold = 0.35
+                    results = segment_tree.semantic_search(
+                        semantic_query,
+                        top_k=10,
+                        threshold=threshold,
+                        search_transcriptions=True,
+                        search_unified=True,
+                        verbose=False  # Less verbose on retry
+                    )
+                
+                # If still no results, try minimum threshold
+                if not results:
+                    if verbose:
+                        print(f"  [SEARCH] No results with threshold {threshold}, trying minimum threshold 0.3...")
+                    threshold = 0.3
+                    results = segment_tree.semantic_search(
+                        semantic_query,
+                        top_k=10,
+                        threshold=threshold,
+                        search_transcriptions=True,
+                        search_unified=True,
+                        verbose=False
+                    )
+                
                 search_results = results
                 if verbose:
-                    print(f"    Found {len(results)} semantic matches")
+                    print(f"    Found {len(results)} semantic matches (threshold: {threshold})")
+                
                 # Extract time ranges from semantic search results
+                # Only include results with reasonable scores
+                # Also validate results contain relevant keywords
+                query_lower = semantic_query.lower()
+                query_keywords = set(query_lower.split())
+                # Remove common stop words
+                stop_words = {"find", "moment", "when", "they", "the", "a", "an", "is", "are", "was", "were", "to", "of", "in", "on", "at", "for", "with"}
+                query_keywords = {w for w in query_keywords if w not in stop_words and len(w) > 2}
+                
                 for result in results:
+                    score = result.get("score", 0)
                     tr = result.get("time_range", [])
                     if tr and len(tr) >= 2:
-                        time_ranges.append((tr[0], tr[1]))
+                        # Check if result text contains relevant keywords (for better validation)
+                        result_text = result.get("text", "").lower()
+                        keyword_matches = sum(1 for kw in query_keywords if kw in result_text)
+                        
+                        # Only add if:
+                        # 1. Score is good (>= 0.35), OR
+                        # 2. It's in top 3 results, OR  
+                        # 3. It has keyword matches (even with lower score)
+                        should_include = (
+                            score >= 0.35 or 
+                            len(time_ranges) < 3 or
+                            (keyword_matches > 0 and score >= 0.3)
+                        )
+                        
+                        if should_include:
+                            time_ranges.append((tr[0], tr[1]))
                         if verbose:
-                            score = result.get("score", 0)
                             result_type = result.get("type", "unknown")
-                            text_snippet = result.get("text", "")[:60]
-                            print(f"      [{result_type}] Score: {score:.3f} | Time: {tr[0]:.1f}s - {tr[1]:.1f}s")
+                            text_snippet = result.get("text", "")[:100]  # Show more text
+                            keyword_info = f" (keywords: {keyword_matches}/{len(query_keywords)})" if query_keywords else ""
+                            print(f"      [{result_type}] Score: {score:.3f}{keyword_info} | Time: {tr[0]:.1f}s - {tr[1]:.1f}s")
                             print(f"        Text: {text_snippet}...")
             
             elif query_type == "visual":
@@ -348,7 +406,25 @@ Return your analysis as JSON with:
                         if tr and len(tr) >= 2:
                             time_ranges.append((tr[0], tr[1]))
             
-            # Assess confidence based on results
+            # Assess confidence based on results and match quality
+            if query_type == "semantic" and search_results:
+                # Check average score of results
+                avg_score = sum(r.get("score", 0) for r in search_results) / len(search_results)
+                max_score = max((r.get("score", 0) for r in search_results), default=0)
+                
+                # Adjust confidence based on match quality
+                if max_score >= 0.5:
+                    confidence = min(0.9, confidence + 0.1)  # High quality matches
+                elif max_score >= 0.4:
+                    confidence = min(0.8, confidence)  # Good matches
+                elif max_score < 0.35:
+                    confidence = max(0.4, confidence - 0.2)  # Low quality matches
+                    if verbose:
+                        print(f"  [WARNING] Low match quality (max score: {max_score:.3f}) - results may not be accurate")
+                
+                if verbose:
+                    print(f"  [QUALITY] Average score: {avg_score:.3f}, Max score: {max_score:.3f}")
+            
             if verbose:
                 print(f"\n[RESULTS] Search completed:")
                 print(f"  Total search results: {len(search_results)}")
@@ -513,7 +589,12 @@ def create_execution_agent():
                 # Extract clip (moviepy 2.x uses subclipped instead of subclip)
                 if verbose:
                     print(f"  [PROCESSING] Extracting subclip...")
-                clip = video.subclipped(start_time, end_time)
+                
+                # Suppress MoviePy warnings/messages during processing
+                with open(os.devnull, 'w') as devnull:
+                    with contextlib.redirect_stderr(devnull):
+                        with contextlib.redirect_stdout(devnull):
+                            clip = video.subclipped(start_time, end_time)
                 
                 # Generate filename
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -524,14 +605,18 @@ def create_execution_agent():
                     print(f"  [SAVING] Writing to: {filename}")
                 
                 # Write clip (moviepy 2.x uses logger instead of verbose)
-                clip.write_videofile(
-                    output_path,
-                    codec='libx264',
-                    audio_codec='aac',
-                    temp_audiofile='temp-audio.m4a',
-                    remove_temp=True,
-                    logger=None  # None suppresses output
-                )
+                # Suppress MoviePy output during writing
+                with open(os.devnull, 'w') as devnull:
+                    with contextlib.redirect_stderr(devnull):
+                        with contextlib.redirect_stdout(devnull):
+                            clip.write_videofile(
+                                output_path,
+                                codec='libx264',
+                                audio_codec='aac',
+                                temp_audiofile='temp-audio.m4a',
+                                remove_temp=True,
+                                logger=None  # None suppresses output
+                            )
                 
                 clip.close()
                 saved_clips.append(output_path)
