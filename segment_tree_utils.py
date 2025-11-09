@@ -6,6 +6,15 @@ Provides efficient querying capabilities for AI agents.
 import json
 from typing import Dict, List, Any, Optional, Tuple, Set
 from collections import defaultdict
+import numpy as np
+import os
+from pathlib import Path
+
+try:
+    from sentence_transformers import SentenceTransformer
+    HAS_SENTENCE_TRANSFORMERS = True
+except ImportError:
+    HAS_SENTENCE_TRANSFORMERS = False
 
 
 class SegmentTreeQuery:
@@ -13,6 +22,7 @@ class SegmentTreeQuery:
     
     def __init__(self, json_path: str):
         """Load and initialize the segment tree from JSON file."""
+        self.json_path = json_path
         with open(json_path, 'r') as f:
             self.data = json.load(f)
         self.video = self.data.get("video", "")
@@ -22,6 +32,16 @@ class SegmentTreeQuery:
         self.transcriptions = self.data.get("transcriptions", [])
         # Create a mapping from transcription_id to transcription for quick lookup
         self._transcription_map = {t.get("id"): t for t in self.transcriptions}
+        
+        # Semantic search attributes (lazy loaded)
+        self._embedding_model = None
+        self._transcription_embeddings = None
+        self._unified_description_embeddings = None
+        self._embedding_metadata = None
+        
+        # Cache file path for embeddings
+        json_path_obj = Path(json_path)
+        self._cache_path = json_path_obj.parent / f"{json_path_obj.stem}_embeddings.npz"
         
     def get_video_info(self) -> Dict[str, Any]:
         """Get basic video information."""
@@ -954,6 +974,228 @@ class SegmentTreeQuery:
             "total_count": len(all_matches),
             "summary": summary
         }
+    
+    def _get_embedding_model(self):
+        """Lazy load the embedding model."""
+        if not HAS_SENTENCE_TRANSFORMERS:
+            raise ImportError(
+                "sentence-transformers is required for semantic search. "
+                "Install it with: pip install sentence-transformers"
+            )
+        
+        if self._embedding_model is None:
+            # Use a fast, lightweight model
+            self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+        
+        return self._embedding_model
+    
+    def _load_embeddings_from_cache(self) -> bool:
+        """Try to load embeddings from cache file. Returns True if successful."""
+        if not self._cache_path.exists():
+            return False
+        
+        try:
+            # Check if cache is newer than JSON file
+            json_mtime = os.path.getmtime(self.json_path)
+            cache_mtime = os.path.getmtime(self._cache_path)
+            
+            if cache_mtime < json_mtime:
+                # JSON file was modified after cache, cache is stale
+                print("Cache file is older than JSON file, will recompute embeddings.")
+                return False
+            
+            # Load from cache
+            print(f"Loading embeddings from cache: {self._cache_path}")
+            cache_data = np.load(self._cache_path, allow_pickle=True)
+            
+            self._transcription_embeddings = cache_data.get("transcription_embeddings")
+            self._unified_description_embeddings = cache_data.get("unified_description_embeddings")
+            self._embedding_metadata = cache_data["embedding_metadata"].item()
+            
+            print("Embeddings loaded from cache successfully.")
+            return True
+        except Exception as e:
+            print(f"Error loading cache: {e}. Will recompute embeddings.")
+            return False
+    
+    def _save_embeddings_to_cache(self):
+        """Save computed embeddings to cache file."""
+        try:
+            print(f"Saving embeddings to cache: {self._cache_path}")
+            np.savez(
+                self._cache_path,
+                transcription_embeddings=self._transcription_embeddings,
+                unified_description_embeddings=self._unified_description_embeddings,
+                embedding_metadata=self._embedding_metadata
+            )
+            print("Embeddings saved to cache successfully.")
+        except Exception as e:
+            print(f"Warning: Could not save embeddings to cache: {e}")
+    
+    def _compute_embeddings(self):
+        """Compute embeddings for all transcriptions and unified descriptions."""
+        if self._transcription_embeddings is not None:
+            return  # Already computed
+        
+        # Try to load from cache first
+        if self._load_embeddings_from_cache():
+            return
+        
+        model = self._get_embedding_model()
+        
+        # Collect all texts to embed
+        transcription_texts = []
+        transcription_metadata = []
+        unified_texts = []
+        unified_metadata = []
+        
+        # Process transcriptions
+        for transcription in self.transcriptions:
+            text = transcription.get("transcription", "").strip()
+            if text:
+                transcription_texts.append(text)
+                transcription_metadata.append({
+                    "id": transcription.get("id"),
+                    "time_range": transcription.get("time_range", []),
+                    "type": "transcription"
+                })
+        
+        # Process unified descriptions
+        for second_data in self.seconds:
+            unified_desc = second_data.get("unified_description", "")
+            if unified_desc and unified_desc.lower() != "0":
+                unified_texts.append(unified_desc.strip())
+                unified_metadata.append({
+                    "second": second_data.get("second", 0),
+                    "time_range": second_data.get("time_range", []),
+                    "type": "unified"
+                })
+        
+        # Compute embeddings in batches
+        print(f"Computing embeddings for {len(transcription_texts)} transcriptions and {len(unified_texts)} unified descriptions...")
+        
+        if transcription_texts:
+            self._transcription_embeddings = model.encode(
+                transcription_texts,
+                show_progress_bar=True,
+                batch_size=32,
+                convert_to_numpy=True
+            )
+        
+        if unified_texts:
+            self._unified_description_embeddings = model.encode(
+                unified_texts,
+                show_progress_bar=True,
+                batch_size=32,
+                convert_to_numpy=True
+            )
+        
+        # Store metadata
+        self._embedding_metadata = {
+            "transcriptions": transcription_metadata,
+            "unified": unified_metadata
+        }
+        
+        print("Embeddings computed successfully.")
+        
+        # Save to cache
+        self._save_embeddings_to_cache()
+    
+    def semantic_search(self, query: str, top_k: int = 5, 
+                       threshold: float = 0.3,
+                       search_transcriptions: bool = True,
+                       search_unified: bool = True) -> List[Dict[str, Any]]:
+        """
+        Perform semantic similarity search across transcriptions and unified descriptions.
+        
+        Args:
+            query: User query string to search for
+            top_k: Maximum number of results to return
+            threshold: Minimum similarity score (0-1) to include results
+            search_transcriptions: Whether to search in transcriptions
+            search_unified: Whether to search in unified descriptions
+            
+        Returns:
+            List of dictionaries with:
+            - time_range: [start, end] in seconds
+            - score: Similarity score (0-1)
+            - type: "transcription" or "unified"
+            - text: The matched text snippet
+            - metadata: Additional metadata (id for transcriptions, second for unified)
+        """
+        if not HAS_SENTENCE_TRANSFORMERS:
+            raise ImportError(
+                "sentence-transformers is required for semantic search. "
+                "Install it with: pip install sentence-transformers"
+            )
+        
+        # Compute embeddings if not already done
+        self._compute_embeddings()
+        
+        model = self._get_embedding_model()
+        
+        # Embed the query
+        query_embedding = model.encode([query], convert_to_numpy=True)[0]
+        
+        results = []
+        
+        # Search transcriptions
+        if search_transcriptions and self._transcription_embeddings is not None:
+            # Compute cosine similarity
+            similarities = np.dot(
+                self._transcription_embeddings,
+                query_embedding
+            ) / (
+                np.linalg.norm(self._transcription_embeddings, axis=1) *
+                np.linalg.norm(query_embedding)
+            )
+            
+            # Get top matches
+            for idx, similarity in enumerate(similarities):
+                if similarity >= threshold:
+                    metadata = self._embedding_metadata["transcriptions"][idx]
+                    transcription = self._transcription_map.get(metadata["id"])
+                    if transcription:
+                        results.append({
+                            "time_range": metadata["time_range"],
+                            "score": float(similarity),
+                            "type": "transcription",
+                            "text": transcription.get("transcription", ""),
+                            "metadata": {
+                                "id": metadata["id"],
+                                "transcription_id": metadata["id"]
+                            }
+                        })
+        
+        # Search unified descriptions
+        if search_unified and self._unified_description_embeddings is not None:
+            # Compute cosine similarity
+            similarities = np.dot(
+                self._unified_description_embeddings,
+                query_embedding
+            ) / (
+                np.linalg.norm(self._unified_description_embeddings, axis=1) *
+                np.linalg.norm(query_embedding)
+            )
+            
+            # Get top matches
+            for idx, similarity in enumerate(similarities):
+                if similarity >= threshold:
+                    metadata = self._embedding_metadata["unified"][idx]
+                    results.append({
+                        "time_range": metadata["time_range"],
+                        "score": float(similarity),
+                        "type": "unified",
+                        "text": self.seconds[metadata["second"]].get("unified_description", ""),
+                        "metadata": {
+                            "second": metadata["second"]
+                        }
+                    })
+        
+        # Sort by score (descending) and return top_k
+        results.sort(key=lambda x: x["score"], reverse=True)
+        
+        return results[:top_k]
     
     def get_transcription_statistics(self) -> Dict[str, Any]:
         """
