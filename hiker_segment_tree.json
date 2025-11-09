@@ -1,0 +1,2815 @@
+{
+  "video": "hiker.mp4",
+  "fps": 30,
+  "tracker": "bytetrack",
+  "seconds": [
+    {
+      "second": 0,
+      "time_range": [
+        0,
+        0.999
+      ],
+      "frame_range": [
+        1,
+        30
+      ],
+      "unified_description": "2D+3D+4D+5D+6D+7D+8D+9D+10D+11D+12D+13D+14D+15D+16D+17D+18D+19D+20D+21D+22D+23D+24D+25D+26D+27D+28D+29D+2B",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:18",
+        "processing_time": 3.4
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 1,
+          "frame_range": [
+            1,
+            5
+          ],
+          "description": "a man holding a camera in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.5
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 11,
+          "frame_range": [
+            11,
+            15
+          ],
+          "description": "a man holding a camera in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.49
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 26,
+          "frame_range": [
+            26,
+            30
+          ],
+          "description": "a man holding a camera in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.44
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            1,
+            5
+          ],
+          "representative_frame": 1,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9249498844146729,
+              "bbox": [
+                2.291980266571045,
+                105.52224731445312,
+                283.4578857421875,
+                639.1336059570312
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            6,
+            10
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9102320075035095,
+              "bbox": [
+                0.18895959854125977,
+                103.4350357055664,
+                282.5587463378906,
+                638.8624877929688
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            11,
+            15
+          ],
+          "representative_frame": 11,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8905879259109497,
+              "bbox": [
+                2.3161585330963135,
+                97.3498764038086,
+                289.1592712402344,
+                639.101318359375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            16,
+            20
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9034753441810608,
+              "bbox": [
+                3.0274698734283447,
+                96.86914825439453,
+                291.33807373046875,
+                638.7123413085938
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            21,
+            25
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8986401557922363,
+              "bbox": [
+                0.9850152730941772,
+                93.19771575927734,
+                292.8627014160156,
+                639.2649536132812
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            26,
+            30
+          ],
+          "representative_frame": 26,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8911808729171753,
+              "bbox": [
+                0.4321308434009552,
+                90.48169708251953,
+                296.0774841308594,
+                639.4397583007812
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 1,
+      "time_range": [
+        1,
+        1.999
+      ],
+      "frame_range": [
+        31,
+        60
+      ],
+      "unified_description": "1-second scene featuring a man holding a camera in the woods. The scene consists of multiple object detections, including several tracked objects and groups of objects.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:19",
+        "processing_time": 4.19
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 31,
+          "frame_range": [
+            31,
+            35
+          ],
+          "description": "a man holding a camera in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.51
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 41,
+          "frame_range": [
+            41,
+            45
+          ],
+          "description": "a man in a forest holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.46
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 56,
+          "frame_range": [
+            56,
+            60
+          ],
+          "description": "a man in the woods with a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.44
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            31,
+            35
+          ],
+          "representative_frame": 31,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8963266015052795,
+              "bbox": [
+                0.0,
+                90.48538208007812,
+                294.4610900878906,
+                639.1458129882812
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            36,
+            40
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8789305686950684,
+              "bbox": [
+                0.0,
+                97.29631805419922,
+                269.57611083984375,
+                639.2440185546875
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            41,
+            45
+          ],
+          "representative_frame": 41,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8428213596343994,
+              "bbox": [
+                0.0,
+                103.61298370361328,
+                240.74485778808594,
+                639.0620727539062
+              ]
+            },
+            {
+              "track_id": 3,
+              "class_id": 10,
+              "class_name": "fire hydrant",
+              "confidence": 0.3636111319065094,
+              "bbox": [
+                173.72076416015625,
+                285.88916015625,
+                308.9977722167969,
+                503.04986572265625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            3
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            46,
+            50
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9371044635772705,
+              "bbox": [
+                8.803208351135254,
+                108.77649688720703,
+                282.63397216796875,
+                639.2277221679688
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            51,
+            55
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9386046528816223,
+              "bbox": [
+                1.4629336595535278,
+                111.49808502197266,
+                276.29620361328125,
+                639.1394653320312
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            56,
+            60
+          ],
+          "representative_frame": 56,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9369683265686035,
+              "bbox": [
+                0.0,
+                113.10791015625,
+                272.8390808105469,
+                638.5685424804688
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 2,
+      "time_range": [
+        2,
+        2.999
+      ],
+      "frame_range": [
+        61,
+        90
+      ],
+      "unified_description": "1-second scene featuring a man wearing a gray jacket, holding a camera and standing next to a backpack with a gun in it. The scene takes place in a forest setting.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:20",
+        "processing_time": 4.95
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 61,
+          "frame_range": [
+            61,
+            65
+          ],
+          "description": "a man in the woods with a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.49
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 71,
+          "frame_range": [
+            71,
+            75
+          ],
+          "description": "a man in a gray jacket is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.57
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 86,
+          "frame_range": [
+            86,
+            90
+          ],
+          "description": "a backpack with a gun in it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.96
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            61,
+            65
+          ],
+          "representative_frame": 61,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.949941873550415,
+              "bbox": [
+                0.0,
+                111.93354797363281,
+                271.3526916503906,
+                639.0111083984375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            66,
+            70
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9534021615982056,
+              "bbox": [
+                0.2341465801000595,
+                109.95507049560547,
+                273.739013671875,
+                638.859130859375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            71,
+            75
+          ],
+          "representative_frame": 71,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9493654370307922,
+              "bbox": [
+                21.736923217773438,
+                105.0333251953125,
+                305.49102783203125,
+                638.6632080078125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            76,
+            80
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9582164287567139,
+              "bbox": [
+                29.473909378051758,
+                103.03836822509766,
+                321.3425598144531,
+                638.5523681640625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            81,
+            85
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9562341570854187,
+              "bbox": [
+                19.475765228271484,
+                99.11935424804688,
+                343.3177185058594,
+                638.5106201171875
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            86,
+            90
+          ],
+          "representative_frame": 86,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.3447587788105011,
+              "bbox": [
+                111.94771575927734,
+                253.83261108398438,
+                254.9408416748047,
+                340.72607421875
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 3,
+      "time_range": [
+        3,
+        3.999
+      ],
+      "frame_range": [
+        91,
+        120
+      ],
+      "unified_description": "0",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:25",
+        "processing_time": 2.1
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 91,
+          "frame_range": [
+            91,
+            95
+          ],
+          "description": "a backpack with a camera attached to it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.15
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 101,
+          "frame_range": [
+            101,
+            105
+          ],
+          "description": "a backpack with a camera attached to it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.28
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 116,
+          "frame_range": [
+            116,
+            120
+          ],
+          "description": "a backpack with a gun in it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 3.62
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            91,
+            95
+          ],
+          "representative_frame": 91,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.10671532154083252,
+              "bbox": [
+                111.06373596191406,
+                254.59902954101562,
+                255.66786193847656,
+                342.5423583984375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            96,
+            100
+          ],
+          "representative_frame": null,
+          "detections": [],
+          "unique_tracks": [],
+          "total_detections": 0
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            101,
+            105
+          ],
+          "representative_frame": 101,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.2774288058280945,
+              "bbox": [
+                107.06434631347656,
+                252.47052001953125,
+                257.69873046875,
+                344.3876953125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            106,
+            110
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.57819002866745,
+              "bbox": [
+                105.29585266113281,
+                250.6480255126953,
+                258.9631652832031,
+                344.9014892578125
+              ]
+            },
+            {
+              "track_id": 1,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.3462681472301483,
+              "bbox": [
+                0.0,
+                6.425265312194824,
+                360.0,
+                633.194580078125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7,
+            1
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            111,
+            115
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.5931803584098816,
+              "bbox": [
+                105.2423324584961,
+                248.91705322265625,
+                262.025146484375,
+                345.9274597167969
+              ]
+            },
+            {
+              "track_id": 1,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.25059959292411804,
+              "bbox": [
+                0.0,
+                3.594831943511963,
+                360.0,
+                635.3668823242188
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7,
+            1
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            116,
+            120
+          ],
+          "representative_frame": 116,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.5197288990020752,
+              "bbox": [
+                105.8484115600586,
+                248.98208618164062,
+                262.3320617675781,
+                345.8265075683594
+              ]
+            },
+            {
+              "track_id": 1,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.18353788554668427,
+              "bbox": [
+                0.0,
+                3.6123650074005127,
+                360.0,
+                635.26220703125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7,
+            1
+          ],
+          "total_detections": 2
+        }
+      ]
+    },
+    {
+      "second": 4,
+      "time_range": [
+        4,
+        4.999
+      ],
+      "frame_range": [
+        121,
+        150
+      ],
+      "unified_description": "\n\nIn this second, there's a man in a backpack with a gun in it walking along a path. Another person is also present in the scene, closer to the center of the image. A dog is standing on a bed located near the left side of the image. The man with the gun appears to be the main subject of the image, as he is positioned more prominently and is the only one with a backpack containing a firearm.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:27",
+        "processing_time": 3.65
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 121,
+          "frame_range": [
+            121,
+            125
+          ],
+          "description": "a backpack with a gun in it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.25
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 131,
+          "frame_range": [
+            131,
+            135
+          ],
+          "description": "a man in a backpack with a gun",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.55
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 146,
+          "frame_range": [
+            146,
+            150
+          ],
+          "description": "a dog is standing on a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.31
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            121,
+            125
+          ],
+          "representative_frame": 121,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.4824103116989136,
+              "bbox": [
+                103.691162109375,
+                247.53208923339844,
+                264.57763671875,
+                347.5749816894531
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            126,
+            130
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.44956326484680176,
+              "bbox": [
+                103.74456024169922,
+                247.32435607910156,
+                264.4951477050781,
+                347.62445068359375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            131,
+            135
+          ],
+          "representative_frame": 131,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.378543883562088,
+              "bbox": [
+                102.67273712158203,
+                246.521484375,
+                263.32763671875,
+                347.2639465332031
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            136,
+            140
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 7,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.4287203550338745,
+              "bbox": [
+                100.5301284790039,
+                246.16041564941406,
+                262.0962829589844,
+                347.3548889160156
+              ]
+            },
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9273808002471924,
+              "bbox": [
+                31.84996795654297,
+                174.08218383789062,
+                331.2118225097656,
+                638.2153930664062
+              ]
+            },
+            {
+              "track_id": 9,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.6025488376617432,
+              "bbox": [
+                0.5981382131576538,
+                198.33071899414062,
+                141.86827087402344,
+                483.8789978027344
+              ]
+            }
+          ],
+          "unique_tracks": [
+            7,
+            1,
+            9
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            141,
+            145
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 9,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.7876837849617004,
+              "bbox": [
+                3.906404495239258,
+                198.6033935546875,
+                137.0944061279297,
+                467.31207275390625
+              ]
+            },
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.914075493812561,
+              "bbox": [
+                25.0981388092041,
+                176.62440490722656,
+                338.20745849609375,
+                637.0317993164062
+              ]
+            }
+          ],
+          "unique_tracks": [
+            9,
+            1
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            146,
+            150
+          ],
+          "representative_frame": 146,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.6228886246681213,
+              "bbox": [
+                0.13419519364833832,
+                156.0778350830078,
+                319.13690185546875,
+                638.8486328125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 5,
+      "time_range": [
+        5,
+        5.999
+      ],
+      "frame_range": [
+        151,
+        180
+      ],
+      "unified_description": "1-second scene where a person is likely sitting at a desk with various items around them.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:28",
+        "processing_time": 3.96
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 151,
+          "frame_range": [
+            151,
+            155
+          ],
+          "description": "a backpack is sitting on the floor",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 3.79
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 161,
+          "frame_range": [
+            161,
+            165
+          ],
+          "description": "a backpack sitting on top of a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 3.86
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 176,
+          "frame_range": [
+            176,
+            180
+          ],
+          "description": "a backpack and a laptop on a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 3.83
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            151,
+            155
+          ],
+          "representative_frame": 151,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.878553569316864,
+              "bbox": [
+                25.626623153686523,
+                200.9966583251953,
+                332.7231140136719,
+                634.8067626953125
+              ]
+            },
+            {
+              "track_id": 17,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.667151927947998,
+              "bbox": [
+                0.0,
+                231.18582153320312,
+                128.01356506347656,
+                529.0109252929688
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.609514594078064,
+              "bbox": [
+                32.501197814941406,
+                261.1209411621094,
+                304.0447082519531,
+                608.8717041015625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            17,
+            18
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            156,
+            160
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.7606548070907593,
+              "bbox": [
+                16.417524337768555,
+                202.4256591796875,
+                343.5675048828125,
+                633.7127075195312
+              ]
+            },
+            {
+              "track_id": 17,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.36367955803871155,
+              "bbox": [
+                0.0,
+                238.26254272460938,
+                132.5509033203125,
+                562.6892700195312
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.4752093255519867,
+              "bbox": [
+                37.35578918457031,
+                233.3191375732422,
+                295.1755065917969,
+                559.6919555664062
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            17,
+            18
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            161,
+            165
+          ],
+          "representative_frame": 161,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.6961473822593689,
+              "bbox": [
+                13.339447975158691,
+                202.73301696777344,
+                346.8432922363281,
+                635.0293579101562
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.4094310700893402,
+              "bbox": [
+                27.124101638793945,
+                202.35011291503906,
+                330.5064392089844,
+                578.5418090820312
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            166,
+            170
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9109706878662109,
+              "bbox": [
+                0.0,
+                172.181396484375,
+                360.0,
+                632.50244140625
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.8233614563941956,
+              "bbox": [
+                26.43797492980957,
+                217.86569213867188,
+                335.2244567871094,
+                584.5696411132812
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            171,
+            175
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9124385714530945,
+              "bbox": [
+                0.0,
+                160.6423797607422,
+                360.0,
+                635.5708618164062
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.921855628490448,
+              "bbox": [
+                32.57322311401367,
+                198.37899780273438,
+                319.1361999511719,
+                521.7080078125
+              ]
+            },
+            {
+              "track_id": 21,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.5298044085502625,
+              "bbox": [
+                57.577693939208984,
+                194.1656036376953,
+                315.5753173828125,
+                513.5416259765625
+              ]
+            },
+            {
+              "track_id": 22,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.424856573343277,
+              "bbox": [
+                1.2821576595306396,
+                196.04261779785156,
+                88.01408386230469,
+                487.8837890625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18,
+            21,
+            22
+          ],
+          "total_detections": 4
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            176,
+            180
+          ],
+          "representative_frame": 176,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9247203469276428,
+              "bbox": [
+                0.0,
+                165.5138702392578,
+                360.0,
+                634.9619140625
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.8721343874931335,
+              "bbox": [
+                25.430572509765625,
+                210.71505737304688,
+                329.0235900878906,
+                542.7529907226562
+              ]
+            },
+            {
+              "track_id": 22,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.5344641804695129,
+              "bbox": [
+                6.731181621551514,
+                209.49148559570312,
+                92.73413848876953,
+                493.4751892089844
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18,
+            22
+          ],
+          "total_detections": 3
+        }
+      ]
+    },
+    {
+      "second": 6,
+      "time_range": [
+        6,
+        6.999
+      ],
+      "frame_range": [
+        181,
+        210
+      ],
+      "unified_description": "1 second ago, there was a person sitting on a chair, holding a cell phone in their hand and wearing a backpack. They were likely using the cell phone while taking a break or engaged in some activity with the backpack nearby.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:30",
+        "processing_time": 3.09
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 181,
+          "frame_range": [
+            181,
+            185
+          ],
+          "description": "a backpack and a cell phone on a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.98
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 191,
+          "frame_range": [
+            191,
+            195
+          ],
+          "description": "a backpack and a book on a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.83
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 206,
+          "frame_range": [
+            206,
+            210
+          ],
+          "description": "a person holding a cell phone in their hand",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.98
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            181,
+            185
+          ],
+          "representative_frame": 181,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9307768940925598,
+              "bbox": [
+                0.0,
+                170.06443786621094,
+                360.0,
+                636.0218505859375
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.9253024458885193,
+              "bbox": [
+                27.52834701538086,
+                212.39744567871094,
+                337.8653259277344,
+                544.52294921875
+              ]
+            },
+            {
+              "track_id": 22,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.5916317105293274,
+              "bbox": [
+                0.0,
+                212.56968688964844,
+                88.57003021240234,
+                512.5459594726562
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18,
+            22
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            186,
+            190
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.927962064743042,
+              "bbox": [
+                0.0,
+                169.56439208984375,
+                360.0,
+                635.8629760742188
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.9260543584823608,
+              "bbox": [
+                30.01325225830078,
+                211.56622314453125,
+                343.4501953125,
+                543.8145141601562
+              ]
+            },
+            {
+              "track_id": 22,
+              "class_id": 24,
+              "class_name": "backpack",
+              "confidence": 0.49240005016326904,
+              "bbox": [
+                0.6849604249000549,
+                209.15823364257812,
+                92.14933776855469,
+                516.5015258789062
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18,
+            22
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            191,
+            195
+          ],
+          "representative_frame": 191,
+          "detections": [
+            {
+              "track_id": 1,
+              "class_id": 59,
+              "class_name": "bed",
+              "confidence": 0.9129658937454224,
+              "bbox": [
+                0.0,
+                168.7266082763672,
+                360.0,
+                639.2601928710938
+              ]
+            },
+            {
+              "track_id": 18,
+              "class_id": 28,
+              "class_name": "suitcase",
+              "confidence": 0.9314875602722168,
+              "bbox": [
+                30.595001220703125,
+                211.16891479492188,
+                345.6386413574219,
+                544.2276000976562
+              ]
+            },
+            {
+              "track_id": 22,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9029985070228577,
+              "bbox": [
+                27.350221633911133,
+                204.762451171875,
+                123.12489318847656,
+                484.4932861328125
+              ]
+            },
+            {
+              "track_id": 23,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.4861554801464081,
+              "bbox": [
+                107.7223892211914,
+                296.40899658203125,
+                255.28677368164062,
+                365.0361022949219
+              ]
+            }
+          ],
+          "unique_tracks": [
+            1,
+            18,
+            22,
+            23
+          ],
+          "total_detections": 4
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            196,
+            200
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 22,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.901694655418396,
+              "bbox": [
+                25.813434600830078,
+                211.57449340820312,
+                150.7140655517578,
+                468.18841552734375
+              ]
+            },
+            {
+              "track_id": 23,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.45236724615097046,
+              "bbox": [
+                110.04869842529297,
+                295.0306091308594,
+                259.1255187988281,
+                364.4557800292969
+              ]
+            }
+          ],
+          "unique_tracks": [
+            22,
+            23
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            201,
+            205
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 22,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.898924708366394,
+              "bbox": [
+                11.092059135437012,
+                189.3572998046875,
+                156.9806671142578,
+                462.806884765625
+              ]
+            },
+            {
+              "track_id": 23,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.5593732595443726,
+              "bbox": [
+                87.66918182373047,
+                262.0428466796875,
+                270.3032531738281,
+                349.5799255371094
+              ]
+            }
+          ],
+          "unique_tracks": [
+            22,
+            23
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            206,
+            210
+          ],
+          "representative_frame": 206,
+          "detections": [
+            {
+              "track_id": 22,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8289691209793091,
+              "bbox": [
+                0.0,
+                174.2662353515625,
+                146.0543212890625,
+                467.7143859863281
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 65,
+              "class_name": "remote",
+              "confidence": 0.42374515533447266,
+              "bbox": [
+                81.24271392822266,
+                247.05413818359375,
+                318.8082580566406,
+                396.1070556640625
+              ]
+            },
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.4792138636112213,
+              "bbox": [
+                0.0,
+                306.86956787109375,
+                89.81414031982422,
+                508.79620361328125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            22,
+            25,
+            27
+          ],
+          "total_detections": 3
+        }
+      ]
+    },
+    {
+      "second": 7,
+      "time_range": [
+        7,
+        7.999
+      ],
+      "frame_range": [
+        211,
+        240
+      ],
+      "unified_description": "\n\nThe image captures a man's right hand in the process of holding several objects. The man appears to be multitasking as he simultaneously holds a camera, a small piece of paper, and a white mouse. It seems like he is preparing for some creative or technical task that requires him to have these objects at hand.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:36",
+        "processing_time": 2.98
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 211,
+          "frame_range": [
+            211,
+            215
+          ],
+          "description": "a person holding a white mouse in their hand",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.56
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 221,
+          "frame_range": [
+            221,
+            225
+          ],
+          "description": "a person holding a small piece of paper",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.65
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 236,
+          "frame_range": [
+            236,
+            240
+          ],
+          "description": "a person holding a camera in their hand",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.54
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            211,
+            215
+          ],
+          "representative_frame": 211,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.36087125539779663,
+              "bbox": [
+                0.0,
+                295.25335693359375,
+                99.45613098144531,
+                514.6932983398438
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 63,
+              "class_name": "laptop",
+              "confidence": 0.4691665470600128,
+              "bbox": [
+                0.0,
+                173.60186767578125,
+                341.9467468261719,
+                396.57843017578125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            25
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            216,
+            220
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.7389751672744751,
+              "bbox": [
+                25.054941177368164,
+                354.520751953125,
+                103.28795623779297,
+                491.3380432128906
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 63,
+              "class_name": "laptop",
+              "confidence": 0.10291527956724167,
+              "bbox": [
+                0.0,
+                184.19503784179688,
+                334.5197448730469,
+                398.0403747558594
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            25
+          ],
+          "total_detections": 2
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            221,
+            225
+          ],
+          "representative_frame": 221,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.7014858722686768,
+              "bbox": [
+                19.08559799194336,
+                362.3710021972656,
+                109.28773498535156,
+                507.21484375
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 73,
+              "class_name": "book",
+              "confidence": 0.5328989624977112,
+              "bbox": [
+                23.331104278564453,
+                220.40956115722656,
+                308.2483215332031,
+                390.9089660644531
+              ]
+            },
+            {
+              "track_id": 33,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.7585717439651489,
+              "bbox": [
+                128.04856872558594,
+                261.3720397949219,
+                274.04229736328125,
+                336.69970703125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            25,
+            33
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            226,
+            230
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.727432906627655,
+              "bbox": [
+                0.0,
+                370.1600036621094,
+                136.17906188964844,
+                601.3430786132812
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 73,
+              "class_name": "book",
+              "confidence": 0.2685186266899109,
+              "bbox": [
+                18.87898063659668,
+                219.46031188964844,
+                315.2071838378906,
+                389.2641296386719
+              ]
+            },
+            {
+              "track_id": 33,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.601641058921814,
+              "bbox": [
+                130.8048858642578,
+                262.3903503417969,
+                274.2256164550781,
+                336.32879638671875
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            25,
+            33
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            231,
+            235
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.7508493661880493,
+              "bbox": [
+                0.0,
+                367.8925476074219,
+                132.2307891845703,
+                596.8541259765625
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 73,
+              "class_name": "book",
+              "confidence": 0.15150101482868195,
+              "bbox": [
+                10.660086631774902,
+                217.60305786132812,
+                328.644775390625,
+                391.0841979980469
+              ]
+            },
+            {
+              "track_id": 33,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.6279115080833435,
+              "bbox": [
+                134.8812255859375,
+                265.070556640625,
+                280.9849853515625,
+                339.7181396484375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            25,
+            33
+          ],
+          "total_detections": 3
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            236,
+            240
+          ],
+          "representative_frame": 236,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.7232934236526489,
+              "bbox": [
+                0.0,
+                367.20794677734375,
+                129.30552673339844,
+                590.2732543945312
+              ]
+            },
+            {
+              "track_id": 33,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.6462195515632629,
+              "bbox": [
+                131.4451446533203,
+                264.68304443359375,
+                279.57598876953125,
+                339.19415283203125
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            33
+          ],
+          "total_detections": 2
+        }
+      ]
+    },
+    {
+      "second": 8,
+      "time_range": [
+        8,
+        8.999
+      ],
+      "frame_range": [
+        241,
+        270
+      ],
+      "unified_description": "\nIn this image, we see a man wearing a grey jacket holding a camera above his head. The scene also includes another person standing nearby and another one further in the background. All three people seem to be either preparing for a photo shoot or just enjoying their time together.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:37",
+        "processing_time": 3.86
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 241,
+          "frame_range": [
+            241,
+            245
+          ],
+          "description": "a person holding a book with a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.91
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 251,
+          "frame_range": [
+            251,
+            255
+          ],
+          "description": "a man in a gray jacket holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.24
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 266,
+          "frame_range": [
+            266,
+            270
+          ],
+          "description": "a man in a gray jacket is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.46
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            241,
+            245
+          ],
+          "representative_frame": 241,
+          "detections": [
+            {
+              "track_id": 27,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.4749455451965332,
+              "bbox": [
+                1.8273524045944214,
+                366.38275146484375,
+                122.91283416748047,
+                569.7299194335938
+              ]
+            },
+            {
+              "track_id": 33,
+              "class_id": 67,
+              "class_name": "cell phone",
+              "confidence": 0.6791988015174866,
+              "bbox": [
+                131.4052734375,
+                265.19915771484375,
+                279.4386291503906,
+                339.51849365234375
+              ]
+            },
+            {
+              "track_id": 35,
+              "class_id": 64,
+              "class_name": "mouse",
+              "confidence": 0.3790685534477234,
+              "bbox": [
+                129.91030883789062,
+                265.407470703125,
+                280.94696044921875,
+                339.3133239746094
+              ]
+            },
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.8965536952018738,
+              "bbox": [
+                0.0,
+                98.12480163574219,
+                360.0,
+                640.0
+              ]
+            }
+          ],
+          "unique_tracks": [
+            27,
+            33,
+            35,
+            25
+          ],
+          "total_detections": 4
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            246,
+            250
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.913857638835907,
+              "bbox": [
+                0.0,
+                100.75341033935547,
+                360.0,
+                640.0
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            251,
+            255
+          ],
+          "representative_frame": 251,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9434130191802979,
+              "bbox": [
+                0.0,
+                112.85050201416016,
+                348.58465576171875,
+                640.0
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            256,
+            260
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.949001133441925,
+              "bbox": [
+                0.0,
+                118.05248260498047,
+                323.4885559082031,
+                640.0
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            261,
+            265
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9428977966308594,
+              "bbox": [
+                0.0,
+                117.40776062011719,
+                293.6990661621094,
+                640.0
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            266,
+            270
+          ],
+          "representative_frame": 266,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9458516836166382,
+              "bbox": [
+                0.0,
+                116.00804901123047,
+                284.43438720703125,
+                639.9821166992188
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 9,
+      "time_range": [
+        9,
+        9.999
+      ],
+      "frame_range": [
+        271,
+        300
+      ],
+      "unified_description": "\nIn this image, there is a man wearing a grey jacket holding a camera in his hands. He appears to be standing in the woods with multiple other tracks nearby. The surrounding area features various tracks, adding up to a total of 6 other tracks. This creates a scene of a man capturing a moment in nature with several other elements present in the background.",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:38",
+        "processing_time": 4.06
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 271,
+          "frame_range": [
+            271,
+            275
+          ],
+          "description": "a man in a gray jacket is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.35
+          }
+        },
+        {
+          "group_index": 2,
+          "frame_number": 281,
+          "frame_range": [
+            281,
+            285
+          ],
+          "description": "a man in a gray jacket is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.37
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 296,
+          "frame_range": [
+            296,
+            300
+          ],
+          "description": "a man in a gray jacket is standing in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.43
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            271,
+            275
+          ],
+          "representative_frame": 271,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.947997510433197,
+              "bbox": [
+                0.0,
+                113.15579986572266,
+                280.3791198730469,
+                639.8414306640625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            276,
+            280
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9465658068656921,
+              "bbox": [
+                0.0,
+                110.45487976074219,
+                276.2220458984375,
+                638.9359130859375
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            281,
+            285
+          ],
+          "representative_frame": 281,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9534726142883301,
+              "bbox": [
+                0.0,
+                108.54088592529297,
+                274.53515625,
+                638.5026245117188
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            286,
+            290
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9535794854164124,
+              "bbox": [
+                0.0,
+                108.24358367919922,
+                274.16302490234375,
+                638.2213745117188
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            291,
+            295
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9233644604682922,
+              "bbox": [
+                0.0,
+                105.20140075683594,
+                263.3039245605469,
+                638.6832275390625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            296,
+            300
+          ],
+          "representative_frame": 296,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9501885175704956,
+              "bbox": [
+                0.0,
+                105.70791625976562,
+                260.75677490234375,
+                638.9830932617188
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        }
+      ]
+    },
+    {
+      "second": 10,
+      "time_range": [
+        10,
+        10.999
+      ],
+      "frame_range": [
+        301,
+        307
+      ],
+      "unified_description": "0",
+      "llava_metadata": {
+        "model": "bakllava",
+        "timestamp": "2025-11-09T14:07:40",
+        "processing_time": 2.07
+      },
+      "blip_descriptions": [
+        {
+          "group_index": 0,
+          "frame_number": 301,
+          "frame_range": [
+            301,
+            305
+          ],
+          "description": "a man in a gray jacket and black pants is standing in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.72
+          }
+        }
+      ],
+      "detection_groups": [
+        {
+          "group_index": 0,
+          "frame_range": [
+            301,
+            305
+          ],
+          "representative_frame": 301,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9496757984161377,
+              "bbox": [
+                0.0,
+                106.8370590209961,
+                256.8995056152344,
+                638.888916015625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 1,
+          "frame_range": [
+            306,
+            307
+          ],
+          "representative_frame": null,
+          "detections": [
+            {
+              "track_id": 25,
+              "class_id": 0,
+              "class_name": "person",
+              "confidence": 0.9032949805259705,
+              "bbox": [
+                0.0,
+                107.63365173339844,
+                257.53619384765625,
+                639.29931640625
+              ]
+            }
+          ],
+          "unique_tracks": [
+            25
+          ],
+          "total_detections": 1
+        },
+        {
+          "group_index": 2,
+          "frame_range": [
+            311,
+            307
+          ],
+          "representative_frame": 311,
+          "detections": [],
+          "unique_tracks": [],
+          "total_detections": 0
+        },
+        {
+          "group_index": 3,
+          "frame_range": [
+            316,
+            307
+          ],
+          "representative_frame": null,
+          "detections": [],
+          "unique_tracks": [],
+          "total_detections": 0
+        },
+        {
+          "group_index": 4,
+          "frame_range": [
+            321,
+            307
+          ],
+          "representative_frame": null,
+          "detections": [],
+          "unique_tracks": [],
+          "total_detections": 0
+        },
+        {
+          "group_index": 5,
+          "frame_range": [
+            326,
+            307
+          ],
+          "representative_frame": 326,
+          "detections": [],
+          "unique_tracks": [],
+          "total_detections": 0
+        }
+      ]
+    }
+  ]
+}
