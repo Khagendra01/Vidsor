@@ -3,6 +3,7 @@ import cv2
 import time
 import threading
 import io
+import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from transformers import BlipProcessor, BlipForConditionalGeneration, BitsAndBytesConfig
 from PIL import Image
@@ -13,6 +14,8 @@ from typing import Dict, List, Any
 import os
 from ultralytics import YOLO
 from prompt import get_llava_prompt
+import whisper
+from moviepy.editor import VideoFileClip
 
 # Configuration
 FPS = 30
@@ -23,6 +26,7 @@ TRACKER = "bytetrack"  # or "deepsort" - configurable
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "bakllava"
 BLIP_MODEL = "Salesforce/blip-image-captioning-base"
+WHISPER_MODEL = "base"  # Fast and accurate balance
 MAX_WORKERS = 3
 
 
@@ -39,6 +43,8 @@ class SegmentTreeGenerator:
         self.cap_lock = threading.Lock()  # Lock for thread-safe VideoCapture access
         self.blip_processor = None
         self.blip_model = None
+        self.whisper_model = None
+        self.video_clip = None  # For audio extraction
         
     def load_models(self):
         """Load BLIP model once (shared across threads)"""
@@ -57,6 +63,23 @@ class SegmentTreeGenerator:
             use_safetensors=True       # use safetensors to avoid torch.load vulnerability
         )
         print(f"BLIP model loaded in {time.time() - start:.2f}s")
+        
+        # Load Whisper model
+        print("Loading Whisper model...")
+        start = time.time()
+        self.whisper_model = whisper.load_model(WHISPER_MODEL)
+        print(f"Whisper model loaded in {time.time() - start:.2f}s")
+        
+        # Load video clip for audio extraction (once)
+        print("Loading video for audio extraction...")
+        try:
+            self.video_clip = VideoFileClip(self.video_path)
+            if self.video_clip.audio is None:
+                print("Warning: Video has no audio track. Transcription will be skipped.")
+                self.video_clip = None
+        except Exception as e:
+            print(f"Warning: Could not load video for audio extraction: {e}. Transcription will be skipped.")
+            self.video_clip = None
         
     def generate_tracking_data(self) -> None:
         """Generate tracking JSON if it doesn't exist"""
@@ -263,6 +286,66 @@ class SegmentTreeGenerator:
                 }
             }
     
+    def transcribe_audio_segment(self, second_idx: int) -> Dict:
+        """Transcribe audio for a specific second of video"""
+        if self.video_clip is None or self.whisper_model is None:
+            return {
+                "transcription": "",
+                "transcription_metadata": {
+                    "model": WHISPER_MODEL,
+                    "language": "en",
+                    "processing_time": 0,
+                    "error": "Audio extraction or Whisper model not initialized"
+                }
+            }
+        
+        start_time = time.time()
+        try:
+            # Extract 1-second audio segment
+            start_sec = second_idx
+            end_sec = min(second_idx + 1, self.video_clip.duration)
+            
+            # Extract audio segment
+            audio_segment = self.video_clip.subclip(start_sec, end_sec).audio
+            
+            # Save to temporary file for Whisper
+            with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
+                temp_audio_path = tmp_file.name
+                audio_segment.write_audiofile(temp_audio_path, verbose=False, logger=None)
+                audio_segment.close()
+            
+            # Transcribe with Whisper
+            result = self.whisper_model.transcribe(temp_audio_path, language="en", task="transcribe")
+            transcription_text = result["text"].strip()
+            
+            # Clean up temporary file
+            try:
+                os.unlink(temp_audio_path)
+            except:
+                pass
+            
+            processing_time = time.time() - start_time
+            
+            return {
+                "transcription": transcription_text,
+                "transcription_metadata": {
+                    "model": WHISPER_MODEL,
+                    "language": result.get("language", "en"),
+                    "processing_time": round(processing_time, 2)
+                }
+            }
+        except Exception as e:
+            processing_time = time.time() - start_time
+            return {
+                "transcription": "",
+                "transcription_metadata": {
+                    "model": WHISPER_MODEL,
+                    "language": "en",
+                    "processing_time": round(processing_time, 2),
+                    "error": str(e)
+                }
+            }
+    
     def group_detections(self, frames_data: List[Dict], start_frame: int, end_frame: int) -> List[Dict]:
         """Group 5 frames of detections together, deduplicate by track_id"""
         groups = []
@@ -440,6 +523,9 @@ class SegmentTreeGenerator:
                 "note": "LLaVA processing disabled, using BLIP descriptions only"
             }
         
+        # Transcribe audio for this second
+        transcription_result = self.transcribe_audio_segment(second_idx)
+        
         # Build second data
         second_data = {
             "second": second_idx,
@@ -448,7 +534,9 @@ class SegmentTreeGenerator:
             "unified_description": unified_description,
             "llava_metadata": llava_metadata,
             "blip_descriptions": blip_descriptions,
-            "detection_groups": detection_groups
+            "detection_groups": detection_groups,
+            "transcription": transcription_result["transcription"],
+            "transcription_metadata": transcription_result["transcription_metadata"]
         }
         
         return second_data
@@ -506,8 +594,11 @@ class SegmentTreeGenerator:
         print(f"\nSegment tree generated in {total_time:.2f}s")
         print(f"Output saved to {output_path}")
         
+        # Clean up resources
         if self.cap:
             self.cap.release()
+        if self.video_clip:
+            self.video_clip.close()
 
 
 def main():
