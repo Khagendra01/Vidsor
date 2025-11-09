@@ -19,6 +19,9 @@ class SegmentTreeQuery:
         self.fps = self.data.get("fps", 30)
         self.tracker = self.data.get("tracker", "")
         self.seconds = self.data.get("seconds", [])
+        self.transcriptions = self.data.get("transcriptions", [])
+        # Create a mapping from transcription_id to transcription for quick lookup
+        self._transcription_map = {t.get("id"): t for t in self.transcriptions}
         
     def get_video_info(self) -> Dict[str, Any]:
         """Get basic video information."""
@@ -569,6 +572,460 @@ class SegmentTreeQuery:
             "fish_holding_count": result["evidence_count"],
             "summary": result["summary"]
         }
+    
+    def get_transcription_by_id(self, transcription_id: int) -> Optional[Dict]:
+        """
+        Get a transcription by its ID.
+        
+        Args:
+            transcription_id: The transcription ID
+            
+        Returns:
+            Transcription dictionary or None if not found
+        """
+        return self._transcription_map.get(transcription_id)
+    
+    def get_transcription_for_second(self, second_idx: int) -> Optional[Dict]:
+        """
+        Get the transcription associated with a specific second.
+        
+        Args:
+            second_idx: The second index
+            
+        Returns:
+            Transcription dictionary or None if not found
+        """
+        second_data = self.get_second_by_index(second_idx)
+        if not second_data:
+            return None
+        
+        transcription_id = second_data.get("transcription_id")
+        if transcription_id is None:
+            return None
+        
+        return self.get_transcription_by_id(transcription_id)
+    
+    def get_transcriptions_for_time_range(self, time_start: float, 
+                                         time_end: float) -> List[Dict]:
+        """
+        Get all transcriptions that overlap with a time range.
+        
+        Args:
+            time_start: Start time in seconds
+            time_end: End time in seconds
+            
+        Returns:
+            List of transcriptions that overlap with the time range
+        """
+        results = []
+        
+        for transcription in self.transcriptions:
+            tr_time_range = transcription.get("time_range", [])
+            if not tr_time_range or len(tr_time_range) < 2:
+                continue
+            
+            # Check if transcription overlaps with the requested range
+            tr_start, tr_end = tr_time_range[0], tr_time_range[1]
+            if tr_end >= time_start and tr_start <= time_end:
+                results.append(transcription)
+        
+        return sorted(results, key=lambda x: x.get("time_range", [0])[0])
+    
+    def search_transcriptions(self, keyword: str,
+                             time_start: Optional[float] = None,
+                             time_end: Optional[float] = None) -> List[Dict]:
+        """
+        Search for keywords in transcriptions.
+        
+        Args:
+            keyword: Keyword to search for
+            time_start: Optional start time in seconds
+            time_end: Optional end time in seconds
+            
+        Returns:
+            List of matching transcriptions with context
+        """
+        keyword_lower = keyword.lower()
+        results = []
+        
+        for transcription in self.transcriptions:
+            tr_time_range = transcription.get("time_range", [])
+            if not tr_time_range or len(tr_time_range) < 2:
+                continue
+            
+            # Filter by time range if specified
+            if time_start is not None and tr_time_range[1] < time_start:
+                continue
+            if time_end is not None and tr_time_range[0] > time_end:
+                continue
+            
+            transcription_text = transcription.get("transcription", "")
+            if keyword_lower in transcription_text.lower():
+                results.append({
+                    "transcription": transcription,
+                    "time_range": tr_time_range,
+                    "id": transcription.get("id"),
+                    "metadata": transcription.get("metadata", {})
+                })
+        
+        return sorted(results, key=lambda x: x["time_range"][0])
+    
+    def get_combined_narrative(self, start_second: int, end_second: int,
+                             include_timestamps: bool = False,
+                             include_audio: bool = True,
+                             separator: str = " ") -> Dict[str, Any]:
+        """
+        Get a combined narrative that includes both visual descriptions and audio transcriptions.
+        
+        Args:
+            start_second: Start second (inclusive)
+            end_second: End second (inclusive)
+            include_timestamps: Whether to include timestamps in the narrative
+            include_audio: Whether to include audio transcriptions
+            separator: String to use between descriptions (default: space)
+            
+        Returns:
+            Dictionary with:
+            - narrative: Combined narrative string
+            - visual_descriptions: List of visual descriptions
+            - audio_transcriptions: List of audio transcriptions
+            - time_range: [start_second, end_second]
+            - seconds_covered: Number of seconds in range
+        """
+        visual_descriptions = []
+        audio_transcriptions = []
+        
+        # Get time range
+        start_time = start_second
+        end_time = end_second + 0.999
+        
+        # Collect visual descriptions
+        for second_data in self.seconds:
+            second_idx = second_data.get("second", 0)
+            
+            if second_idx < start_second or second_idx > end_second:
+                continue
+            
+            time_range = second_data.get("time_range", [])
+            
+            # Add unified description if valid
+            unified_desc = second_data.get("unified_description", "")
+            if unified_desc and unified_desc.lower() != "0":
+                visual_descriptions.append({
+                    "type": "unified",
+                    "second": second_idx,
+                    "time_range": time_range,
+                    "text": unified_desc.strip(),
+                    "source": "visual"
+                })
+            
+            # Add BLIP descriptions
+            for blip_desc in second_data.get("blip_descriptions", []):
+                desc_text = blip_desc.get("description", "").strip()
+                if desc_text:
+                    visual_descriptions.append({
+                        "type": "blip",
+                        "second": second_idx,
+                        "time_range": time_range,
+                        "frame_number": blip_desc.get("frame_number"),
+                        "frame_range": blip_desc.get("frame_range"),
+                        "text": desc_text,
+                        "source": "visual"
+                    })
+        
+        # Collect audio transcriptions if requested
+        if include_audio:
+            transcriptions = self.get_transcriptions_for_time_range(start_time, end_time)
+            for transcription in transcriptions:
+                tr_text = transcription.get("transcription", "").strip()
+                if tr_text:
+                    tr_time_range = transcription.get("time_range", [])
+                    audio_transcriptions.append({
+                        "type": "audio",
+                        "time_range": tr_time_range,
+                        "id": transcription.get("id"),
+                        "text": tr_text,
+                        "source": "audio",
+                        "metadata": transcription.get("metadata", {})
+                    })
+        
+        # Combine and sort all descriptions by time
+        all_descriptions = visual_descriptions + audio_transcriptions
+        all_descriptions.sort(key=lambda x: (
+            x.get("time_range", [0])[0] if x.get("time_range") else 0,
+            x.get("second", 0),
+            x.get("frame_number", 0) if x.get("frame_number") is not None else 0
+        ))
+        
+        # Build narrative string
+        narrative_parts = []
+        for desc in all_descriptions:
+            text = desc["text"]
+            source_tag = f"[{desc['source']}]" if include_timestamps else ""
+            
+            if include_timestamps:
+                if desc.get("second") is not None:
+                    time_str = f"[{desc['second']}s{source_tag}] "
+                elif desc.get("time_range"):
+                    time_str = f"[{desc['time_range'][0]:.1f}s{source_tag}] "
+                else:
+                    time_str = f"[{source_tag}] "
+                text = time_str + text
+            
+            narrative_parts.append(text)
+        
+        narrative = separator.join(narrative_parts)
+        
+        return {
+            "narrative": narrative,
+            "visual_descriptions": visual_descriptions,
+            "audio_transcriptions": audio_transcriptions,
+            "all_descriptions": all_descriptions,
+            "time_range": [start_second, end_second],
+            "seconds_covered": end_second - start_second + 1,
+            "visual_count": len(visual_descriptions),
+            "audio_count": len(audio_transcriptions),
+            "total_count": len(all_descriptions)
+        }
+    
+    def find_audio_mentions(self, keywords: List[str],
+                           object_classes: Optional[List[str]] = None,
+                           time_start: Optional[float] = None,
+                           time_end: Optional[float] = None) -> Dict[str, Any]:
+        """
+        Find moments where audio mentions specific keywords or objects.
+        Can also cross-reference with detected objects.
+        
+        Args:
+            keywords: List of keywords to search for in audio
+            object_classes: Optional list of object class names to cross-reference
+            time_start: Optional start time in seconds
+            time_end: Optional end time in seconds
+            
+        Returns:
+            Dictionary with:
+            - mentions: List of transcriptions containing keywords
+            - cross_references: List of moments where audio mentions objects that were detected
+            - summary: Summary of findings
+        """
+        mentions = []
+        cross_references = []
+        
+        # Search transcriptions
+        for transcription in self.transcriptions:
+            tr_time_range = transcription.get("time_range", [])
+            if not tr_time_range or len(tr_time_range) < 2:
+                continue
+            
+            # Filter by time range if specified
+            if time_start is not None and tr_time_range[1] < time_start:
+                continue
+            if time_end is not None and tr_time_range[0] > time_end:
+                continue
+            
+            transcription_text = transcription.get("transcription", "").lower()
+            if not transcription_text:
+                continue
+            
+            # Check for keyword matches
+            matched_keywords = []
+            for keyword in keywords:
+                if keyword.lower() in transcription_text:
+                    matched_keywords.append(keyword)
+            
+            if matched_keywords:
+                mentions.append({
+                    "transcription": transcription,
+                    "time_range": tr_time_range,
+                    "id": transcription.get("id"),
+                    "matched_keywords": matched_keywords,
+                    "text": transcription.get("transcription", "")
+                })
+        
+        # Cross-reference with detected objects if requested
+        if object_classes:
+            for mention in mentions:
+                tr_time_range = mention["time_range"]
+                tr_start, tr_end = tr_time_range[0], tr_time_range[1]
+                
+                # Find objects detected in this time range
+                detected_objects = self.find_objects_in_time_range(tr_start, tr_end)
+                
+                # Check if any mentioned objects were actually detected
+                mentioned_objects = []
+                for obj_class in object_classes:
+                    if obj_class.lower() in mention["text"].lower():
+                        if obj_class in detected_objects.get("objects", {}):
+                            mentioned_objects.append({
+                                "class": obj_class,
+                                "detections": detected_objects["objects"][obj_class],
+                                "count": len(detected_objects["objects"][obj_class])
+                            })
+                
+                if mentioned_objects:
+                    cross_references.append({
+                        "transcription": mention["transcription"],
+                        "time_range": tr_time_range,
+                        "mentioned_objects": mentioned_objects,
+                        "text": mention["text"]
+                    })
+        
+        # Build summary
+        summary = f"Found {len(mentions)} audio mention(s) of keywords: {', '.join(keywords)}"
+        if object_classes:
+            summary += f"\nCross-referenced with {len(cross_references)} object detection(s)"
+        
+        return {
+            "mentions": mentions,
+            "cross_references": cross_references,
+            "keyword_count": len(mentions),
+            "cross_reference_count": len(cross_references),
+            "summary": summary
+        }
+    
+    def search_all_modalities(self, keyword: str,
+                             time_start: Optional[float] = None,
+                             time_end: Optional[float] = None) -> Dict[str, Any]:
+        """
+        Search across all modalities: visual descriptions (BLIP/unified) and audio transcriptions.
+        
+        Args:
+            keyword: Keyword to search for
+            time_start: Optional start time in seconds
+            time_end: Optional end time in seconds
+            
+        Returns:
+            Dictionary with results from all modalities:
+            - visual_matches: Matches in visual descriptions
+            - audio_matches: Matches in audio transcriptions
+            - all_matches: Combined and sorted matches
+            - summary: Summary of findings
+        """
+        # Search visual descriptions
+        visual_matches = self.search_descriptions(
+            keyword, 
+            search_type="any",
+            time_start=time_start,
+            time_end=time_end
+        )
+        
+        # Search audio transcriptions
+        audio_matches = self.search_transcriptions(
+            keyword,
+            time_start=time_start,
+            time_end=time_end
+        )
+        
+        # Combine and sort all matches
+        all_matches = []
+        
+        for match in visual_matches:
+            all_matches.append({
+                "type": "visual",
+                "second": match.get("second", 0),
+                "time_range": match.get("time_range", []),
+                "matches": match.get("matches", []),
+                "source": "visual"
+            })
+        
+        for match in audio_matches:
+            all_matches.append({
+                "type": "audio",
+                "time_range": match.get("time_range", []),
+                "transcription": match.get("transcription", {}),
+                "text": match.get("transcription", {}).get("transcription", ""),
+                "source": "audio"
+            })
+        
+        # Sort by time
+        all_matches.sort(key=lambda x: (
+            x.get("time_range", [0])[0] if x.get("time_range") else 0,
+            x.get("second", 0)
+        ))
+        
+        summary = f"Found '{keyword}' in {len(visual_matches)} visual scene(s) and {len(audio_matches)} audio segment(s)"
+        
+        return {
+            "visual_matches": visual_matches,
+            "audio_matches": audio_matches,
+            "all_matches": all_matches,
+            "visual_count": len(visual_matches),
+            "audio_count": len(audio_matches),
+            "total_count": len(all_matches),
+            "summary": summary
+        }
+    
+    def get_transcription_statistics(self) -> Dict[str, Any]:
+        """
+        Get statistics about the audio transcriptions.
+        
+        Returns:
+            Dictionary with:
+            - total_transcriptions: Total number of transcriptions
+            - total_words: Total word count
+            - total_characters: Total character count
+            - speaking_time: Total time with non-empty transcriptions (seconds)
+            - average_words_per_transcription: Average words per transcription
+            - transcription_coverage: Percentage of video with transcriptions
+            - language: Detected language (if available)
+        """
+        if not self.transcriptions:
+            return {
+                "total_transcriptions": 0,
+                "total_words": 0,
+                "total_characters": 0,
+                "speaking_time": 0.0,
+                "average_words_per_transcription": 0.0,
+                "transcription_coverage": 0.0,
+                "language": None
+            }
+        
+        total_words = 0
+        total_characters = 0
+        speaking_time = 0.0
+        languages = set()
+        
+        for transcription in self.transcriptions:
+            text = transcription.get("transcription", "").strip()
+            if text:
+                words = text.split()
+                total_words += len(words)
+                total_characters += len(text)
+                
+                # Calculate speaking time from time_range
+                tr_time_range = transcription.get("time_range", [])
+                if tr_time_range and len(tr_time_range) >= 2:
+                    duration = tr_time_range[1] - tr_time_range[0]
+                    speaking_time += duration
+            
+            # Collect language info
+            metadata = transcription.get("metadata", {})
+            lang = metadata.get("language")
+            if lang:
+                languages.add(lang)
+        
+        # Get video duration
+        video_info = self.get_video_info()
+        video_duration = video_info.get("duration_seconds", 0)
+        
+        # Calculate coverage
+        transcription_coverage = (speaking_time / video_duration * 100) if video_duration > 0 else 0.0
+        
+        # Calculate average
+        non_empty_count = sum(1 for t in self.transcriptions if t.get("transcription", "").strip())
+        average_words = total_words / non_empty_count if non_empty_count > 0 else 0.0
+        
+        return {
+            "total_transcriptions": len(self.transcriptions),
+            "total_words": total_words,
+            "total_characters": total_characters,
+            "speaking_time": round(speaking_time, 2),
+            "average_words_per_transcription": round(average_words, 2),
+            "transcription_coverage": round(transcription_coverage, 2),
+            "language": list(languages) if languages else None,
+            "non_empty_transcriptions": non_empty_count,
+            "video_duration": video_duration
+        }
 
 
 def load_segment_tree(json_path: str) -> SegmentTreeQuery:
@@ -640,6 +1097,47 @@ def main():
         type=float,
         metavar=("START", "END"),
         help="Get scene summary for a time range (seconds)"
+    )
+    parser.add_argument(
+        "--search-audio",
+        metavar="KEYWORD",
+        help="Search for keyword in audio transcriptions"
+    )
+    parser.add_argument(
+        "--combined-narrative",
+        nargs=2,
+        type=int,
+        metavar=("START", "END"),
+        help="Get combined narrative with visual and audio (seconds)"
+    )
+    parser.add_argument(
+        "--search-all",
+        metavar="KEYWORD",
+        help="Search across all modalities (visual and audio)"
+    )
+    parser.add_argument(
+        "--audio-mentions",
+        nargs="+",
+        metavar="KEYWORD",
+        help="Find audio mentions of keywords (e.g., --audio-mentions boat water)"
+    )
+    parser.add_argument(
+        "--cross-reference",
+        nargs="+",
+        metavar="CLASS",
+        help="Cross-reference audio mentions with object classes (use with --audio-mentions)"
+    )
+    parser.add_argument(
+        "--transcription-stats",
+        action="store_true",
+        help="Get statistics about audio transcriptions"
+    )
+    parser.add_argument(
+        "--transcriptions",
+        nargs=2,
+        type=float,
+        metavar=("START", "END"),
+        help="Get transcriptions for a time range (seconds)"
     )
     
     args = parser.parse_args()
@@ -753,6 +1251,107 @@ def main():
             print(f"\nDescriptions ({len(result['descriptions'])}):")
             for desc in result['descriptions'][:5]:
                 print(f"  [{desc['type']}] Second {desc['second']}: {desc['text'][:70]}...")
+    
+    elif args.search_audio:
+        results = query.search_transcriptions(args.search_audio)
+        print("\n" + "=" * 60)
+        print(f"AUDIO SEARCH RESULTS: '{args.search_audio}'")
+        print("=" * 60)
+        print(f"\nFound in {len(results)} transcription(s)")
+        for i, result in enumerate(results[:10], 1):
+            tr = result['transcription']
+            print(f"\n  {i}. Time {result['time_range']} (ID: {result['id']}):")
+            print(f"     {tr.get('transcription', '')[:100]}...")
+    
+    elif args.combined_narrative:
+        start, end = args.combined_narrative
+        result = query.get_combined_narrative(start, end, include_timestamps=True)
+        print("\n" + "=" * 60)
+        print(f"COMBINED NARRATIVE (Seconds {start}-{end})")
+        print("=" * 60)
+        print(f"\nVisual descriptions: {result['visual_count']}")
+        print(f"Audio transcriptions: {result['audio_count']}")
+        print(f"Total: {result['total_count']}")
+        print(f"\nNarrative:\n{result['narrative']}")
+    
+    elif args.search_all:
+        result = query.search_all_modalities(args.search_all)
+        print("\n" + "=" * 60)
+        print(f"MULTI-MODAL SEARCH: '{args.search_all}'")
+        print("=" * 60)
+        print(f"\n{result['summary']}")
+        print(f"\nVisual matches: {result['visual_count']}")
+        print(f"Audio matches: {result['audio_count']}")
+        print(f"Total matches: {result['total_count']}")
+        
+        if result['all_matches']:
+            print(f"\nFirst 10 matches:")
+            for i, match in enumerate(result['all_matches'][:10], 1):
+                time_str = f"Second {match.get('second', 'N/A')}" if match.get('second') is not None else f"Time {match.get('time_range', [])}"
+                source = match.get('source', 'unknown')
+                text = match.get('text', match.get('transcription', {}).get('transcription', 'N/A'))
+                print(f"  {i}. [{source}] {time_str}: {text[:80]}...")
+    
+    elif args.audio_mentions:
+        result = query.find_audio_mentions(
+            keywords=args.audio_mentions,
+            object_classes=args.cross_reference
+        )
+        print("\n" + "=" * 60)
+        print(f"AUDIO MENTIONS: {', '.join(args.audio_mentions)}")
+        print("=" * 60)
+        print(f"\n{result['summary']}")
+        print(f"\nMentions found: {result['keyword_count']}")
+        if args.cross_reference:
+            print(f"Cross-references: {result['cross_reference_count']}")
+        
+        if result['mentions']:
+            print(f"\nMentions ({len(result['mentions'])}):")
+            for i, mention in enumerate(result['mentions'][:10], 1):
+                print(f"  {i}. Time {mention['time_range']} (Keywords: {', '.join(mention['matched_keywords'])}):")
+                print(f"     {mention['text'][:100]}...")
+        
+        if result['cross_references']:
+            print(f"\nCross-references ({len(result['cross_references'])}):")
+            for i, ref in enumerate(result['cross_references'][:5], 1):
+                print(f"  {i}. Time {ref['time_range']}:")
+                print(f"     Audio: {ref['text'][:80]}...")
+                for obj in ref['mentioned_objects']:
+                    print(f"     Detected: {obj['class']} ({obj['count']} detection(s))")
+    
+    elif args.transcription_stats:
+        stats = query.get_transcription_statistics()
+        print("\n" + "=" * 60)
+        print("TRANSCRIPTION STATISTICS")
+        print("=" * 60)
+        print(f"\nTotal transcriptions: {stats['total_transcriptions']}")
+        print(f"Non-empty transcriptions: {stats['non_empty_transcriptions']}")
+        print(f"Total words: {stats['total_words']}")
+        print(f"Total characters: {stats['total_characters']}")
+        print(f"Speaking time: {stats['speaking_time']} seconds")
+        print(f"Video duration: {stats['video_duration']} seconds")
+        print(f"Transcription coverage: {stats['transcription_coverage']}%")
+        print(f"Average words per transcription: {stats['average_words_per_transcription']}")
+        if stats['language']:
+            print(f"Language(s): {', '.join(stats['language'])}")
+    
+    elif args.transcriptions:
+        start, end = args.transcriptions
+        transcriptions = query.get_transcriptions_for_time_range(start, end)
+        print("\n" + "=" * 60)
+        print(f"TRANSCRIPTIONS (Seconds {start}-{end})")
+        print("=" * 60)
+        print(f"\nFound {len(transcriptions)} transcription(s)")
+        for i, tr in enumerate(transcriptions, 1):
+            print(f"\n  {i}. Time {tr.get('time_range', [])} (ID: {tr.get('id', 'N/A')}):")
+            text = tr.get('transcription', '').strip()
+            if text:
+                print(f"     {text}")
+            else:
+                print(f"     (empty)")
+            metadata = tr.get('metadata', {})
+            if metadata:
+                print(f"     Model: {metadata.get('model', 'N/A')}, Language: {metadata.get('language', 'N/A')}")
     
     else:
         # Default: show video info
