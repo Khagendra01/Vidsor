@@ -27,12 +27,14 @@ MAX_WORKERS = 3
 
 
 class SegmentTreeGenerator:
-    def __init__(self, video_path: str, tracking_json_path: str, tracker: str = "bytetrack", use_llava: bool = True, use_images: bool = False):
+    def __init__(self, video_path: str, tracking_json_path: str, tracker: str = "bytetrack", use_llava: bool = True, use_images: bool = False, yolo_stride: int = 10, blip_split: int = 1):
         self.video_path = video_path
         self.tracking_json_path = tracking_json_path
         self.tracker = tracker
         self.use_llava = use_llava
         self.use_images = use_images
+        self.yolo_stride = yolo_stride
+        self.blip_split = blip_split
         self.cap = None
         self.cap_lock = threading.Lock()  # Lock for thread-safe VideoCapture access
         self.blip_processor = None
@@ -69,7 +71,7 @@ class SegmentTreeGenerator:
         
         # Load YOLO model
         print("Loading YOLO model...")
-        model = YOLO("yolo11m.pt")
+        model = YOLO("yolo11s.pt")
         
         # Determine tracker config
         if self.tracker == "bytetrack":
@@ -82,16 +84,20 @@ class SegmentTreeGenerator:
             tracker_config = "bytetrack.yaml"
             tracker_name = "ByteTrack"
         
-        print(f"Running YOLO with {tracker_name} tracking...")
+        print(f"Running YOLO with {tracker_name} tracking (processing every {self.yolo_stride}th frame)...")
         start_time = time.time()
         
-        # Run tracking
+        # Run tracking with optimizations - process every Nth frame
         results = model.track(
             source=self.video_path,
             tracker=tracker_config,
             show=False,
             device=0,  # GPU 0, use 'cpu' for CPU mode
-            persist=True
+            persist=True,
+            stream=True,  # Process frames as generator to avoid memory accumulation
+            imgsz=640,  # Fixed input size for faster processing
+            verbose=False,  # Reduce console output overhead
+            vid_stride=self.yolo_stride  # Process every Nth frame
         )
         
         time_taken = time.time() - start_time
@@ -104,10 +110,12 @@ class SegmentTreeGenerator:
             "frames": []
         }
         
-        # Process results
-        frame_number = 0
+        # Process results - map sequential result index to actual frame numbers
+        result_index = 0
         for result in results:
-            frame_number += 1
+            result_index += 1
+            # Calculate actual frame number: frames 1, 11, 21, 31, ... (every Nth frame)
+            frame_number = (result_index - 1) * self.yolo_stride + 1
             boxes = result.boxes
             
             frame_detections = []
@@ -138,8 +146,8 @@ class SegmentTreeGenerator:
                 "detections": frame_detections
             })
             
-            if frame_number % 100 == 0:
-                print(f"Processed {frame_number} frames...")
+            if result_index % 25 == 0:  # Print every 25 processed frames
+                print(f"Processed {result_index} frames (video frames up to {frame_number})...")
         
         # Save JSON
         with open(self.tracking_json_path, 'w') as f:
@@ -299,27 +307,44 @@ class SegmentTreeGenerator:
         # Group detections
         detection_groups = self.group_detections(frames_data, start_frame, end_frame)
         
-        # Get BLIP frames (1st frame of groups 1, 3, 6 - which are groups 0, 2, 5 in 0-indexed)
-        # Group 0: frames 1-5 -> frame 1
-        # Group 2: frames 11-15 -> frame 11  
-        # Group 5: frames 26-30 -> frame 26
-        # Also include the last frame of the second
-        blip_group_indices = [0, 2, 5]
+        # Get BLIP frames based on blip_split configuration
+        # 1: middle frame only
+        # 2: first and last frames
+        # 3: first, middle, and last frames
         blip_frame_numbers = []
-        blip_group_mapping = {}  # Map frame_num -> group_idx
+        middle_frame = start_frame + (end_frame - start_frame) // 2
         
-        for group_idx in blip_group_indices:
-            frame_num = start_frame + (group_idx * FRAMES_PER_GROUP)
-            if frame_num <= end_frame and group_idx < len(detection_groups):
-                blip_frame_numbers.append(frame_num)
-                blip_group_mapping[frame_num] = group_idx
+        if self.blip_split == 1:
+            # Middle frame only
+            blip_frame_numbers = [middle_frame]
+        elif self.blip_split == 2:
+            # First and last frames
+            blip_frame_numbers = [start_frame, end_frame]
+        elif self.blip_split == 3:
+            # First, middle, and last frames
+            blip_frame_numbers = [start_frame, middle_frame, end_frame]
+        else:
+            # Default to middle if invalid value
+            blip_frame_numbers = [middle_frame]
         
-        # Add the last frame of the second (if not already included)
-        if end_frame not in blip_frame_numbers:
-            blip_frame_numbers.append(end_frame)
-            # Map last frame to the last group index (or -1 to indicate it's the last frame)
-            last_group_idx = len(detection_groups) - 1 if detection_groups else -1
-            blip_group_mapping[end_frame] = last_group_idx
+        # Map frames to group indices (for compatibility with existing code)
+        blip_group_mapping = {}
+        for frame_num in blip_frame_numbers:
+            # Find which group this frame belongs to
+            group_idx = -1
+            for i, group in enumerate(detection_groups):
+                frame_range = group["frame_range"]
+                if frame_range[0] <= frame_num <= frame_range[1]:
+                    group_idx = i
+                    break
+            # If not found in any group, use -1 for last frame or assign to closest group
+            if group_idx == -1:
+                if frame_num == end_frame:
+                    group_idx = len(detection_groups) - 1 if detection_groups else -1
+                else:
+                    # Assign to closest group
+                    group_idx = min(len(detection_groups) - 1, max(0, (frame_num - start_frame) // FRAMES_PER_GROUP))
+            blip_group_mapping[frame_num] = group_idx
         
         # Process BLIP in parallel
         blip_results = []
@@ -489,14 +514,18 @@ def main():
     import argparse
     
     parser = argparse.ArgumentParser(description="Generate segment tree from YOLO tracking data")
-    parser.add_argument("--video", default="hiker.mp4", help="Video file path")
-    parser.add_argument("--tracking", default="hiker_yolo_bytetrack.json", help="Tracking JSON file")
+    parser.add_argument("--video", default="camp.mp4", help="Video file path")
+    parser.add_argument("--tracking", default="camp_yolo_bytetrack.json", help="Tracking JSON file")
     parser.add_argument("--tracker", default="bytetrack", choices=["bytetrack", "deepsort"], help="Tracker name")
-    parser.add_argument("--output", default="hiker_segment_tree.json", help="Output JSON file")
+    parser.add_argument("--output", default="camp_segment_tree.json", help="Output JSON file")
     parser.add_argument("--no-llava", action="store_true", default=False,
                        help="Disable LLaVA processing (default: LLaVA enabled, uses enhanced prompts with technical details)")
     parser.add_argument("--use-images", action="store_true", default=False,
                        help="Send actual frame images to LLaVA for vision analysis (default: False, text-only)")
+    parser.add_argument("--yolo-stride", type=int, default=10,
+                       help="Process every Nth frame with YOLO (default: 10)")
+    parser.add_argument("--blip-split", type=int, default=1, choices=[1, 2, 3],
+                       help="Number of frames per second for BLIP: 1=middle, 2=first+last, 3=first+middle+last (default: 1)")
     
     args = parser.parse_args()
     
@@ -504,7 +533,7 @@ def main():
     use_llava = not args.no_llava
     use_images = args.use_images
     
-    generator = SegmentTreeGenerator(args.video, args.tracking, args.tracker, use_llava=use_llava, use_images=use_images)
+    generator = SegmentTreeGenerator(args.video, args.tracking, args.tracker, use_llava=use_llava, use_images=use_images, yolo_stride=args.yolo_stride, blip_split=args.blip_split)
     
     if use_llava:
         if use_images:
