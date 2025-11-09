@@ -1,1 +1,3 @@
 python generate_segment_tree_llava.py --video hiker.mp4 --use-images
+
+future can be duckdb in python
