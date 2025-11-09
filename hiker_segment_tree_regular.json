@@ -13,11 +13,12 @@
         1,
         30
       ],
-      "unified_description": "2D+3D+4D+5D+6D+7D+8D+9D+10D+11D+12D+13D+14D+15D+16D+17D+18D+19D+20D+21D+22D+23D+24D+25D+26D+27D+28D+29D+2B",
+      "unified_description": "1-second scene of a person standing with a camera in their hand. The image has an overhead view and shows the person's body from the waist up. The camera appears to be mounted on a tripod, providing a stable view. The surrounding area is mostly empty, with no other objects or people visible in the frame.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:18",
-        "processing_time": 3.4
+        "timestamp": "2025-11-09T14:42:57",
+        "processing_time": 11.39,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -30,7 +31,7 @@
           "description": "a man holding a camera in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.5
+            "processing_time": 5.86
           }
         },
         {
@@ -43,7 +44,7 @@
           "description": "a man holding a camera in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.49
+            "processing_time": 5.89
           }
         },
         {
@@ -56,7 +57,20 @@
           "description": "a man holding a camera in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.44
+            "processing_time": 5.78
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 30,
+          "frame_range": [
+            26,
+            30
+          ],
+          "description": "a man holding a camera in the woods",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.92
           }
         }
       ],
@@ -229,11 +243,12 @@
         31,
         60
       ],
-      "unified_description": "1-second scene featuring a man holding a camera in the woods. The scene consists of multiple object detections, including several tracked objects and groups of objects.",
+      "unified_description": "3rd person perspective showing a man holding a camera in a forest setting. This video also features a few other people in various locations within the scene. The image has a wide-angle perspective and includes objects like backpacks, handbags, and bicycles. The lighting suggests that it may have been taken during daylight hours.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:19",
-        "processing_time": 4.19
+        "timestamp": "2025-11-09T14:42:59",
+        "processing_time": 13.09,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -246,7 +261,7 @@
           "description": "a man holding a camera in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.51
+            "processing_time": 5.9
           }
         },
         {
@@ -259,7 +274,7 @@
           "description": "a man in a forest holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.46
+            "processing_time": 5.83
           }
         },
         {
@@ -272,7 +287,20 @@
           "description": "a man in the woods with a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.44
+            "processing_time": 5.8
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 60,
+          "frame_range": [
+            56,
+            60
+          ],
+          "description": "a man in a forest with a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.9
           }
         }
       ],
@@ -458,11 +486,12 @@
         61,
         90
       ],
-      "unified_description": "1-second scene featuring a man wearing a gray jacket, holding a camera and standing next to a backpack with a gun in it. The scene takes place in a forest setting.",
+      "unified_description": "\nA man wearing a gray jacket is holding a camera. He appears to be walking through the woods. There are two people in the scene. One person has a gun strapped to their back, while the other person is recording the event with a camera. They both seem to be preparing for some sort of adventure or hunting expedition.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:20",
-        "processing_time": 4.95
+        "timestamp": "2025-11-09T14:42:56",
+        "processing_time": 9.81,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -475,7 +504,7 @@
           "description": "a man in the woods with a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.49
+            "processing_time": 5.86
           }
         },
         {
@@ -488,7 +517,7 @@
           "description": "a man in a gray jacket is holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.57
+            "processing_time": 6.33
           }
         },
         {
@@ -501,7 +530,20 @@
           "description": "a backpack with a gun in it",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.96
+            "processing_time": 5.15
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 90,
+          "frame_range": [
+            86,
+            90
+          ],
+          "description": "a backpack with a camera attached to it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 2.38
           }
         }
       ],
@@ -674,11 +716,12 @@
         91,
         120
       ],
-      "unified_description": "0",
+      "unified_description": "1-second scene with a first-person perspective showing a backpack with a camera mounted on top. No guns or other dangerous objects are visible in this image description.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:25",
-        "processing_time": 2.1
+        "timestamp": "2025-11-09T14:43:05",
+        "processing_time": 2.59,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -691,7 +734,7 @@
           "description": "a backpack with a camera attached to it",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.15
+            "processing_time": 3.08
           }
         },
         {
@@ -704,7 +747,7 @@
           "description": "a backpack with a camera attached to it",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.28
+            "processing_time": 3.12
           }
         },
         {
@@ -717,7 +760,20 @@
           "description": "a backpack with a gun in it",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 3.62
+            "processing_time": 2.9
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 120,
+          "frame_range": [
+            116,
+            120
+          ],
+          "description": "a backpack with a gun in it",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 4.2
           }
         }
       ],
@@ -914,11 +970,12 @@
         121,
         150
       ],
-      "unified_description": "\n\nIn this second, there's a man in a backpack with a gun in it walking along a path. Another person is also present in the scene, closer to the center of the image. A dog is standing on a bed located near the left side of the image. The man with the gun appears to be the main subject of the image, as he is positioned more prominently and is the only one with a backpack containing a firearm.",
+      "unified_description": "\nAn outdoor scene captured with a shaky camera that shows a dog sitting on a bed and looking at something. The camera is positioned in such a way that it records the whole scene, which includes a man with a backpack, another person standing behind him, and a gun. This suggests that the video may be part of a narrative or documentary.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:27",
-        "processing_time": 3.65
+        "timestamp": "2025-11-09T14:43:08",
+        "processing_time": 3.76,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -931,7 +988,7 @@
           "description": "a backpack with a gun in it",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.25
+            "processing_time": 4.01
           }
         },
         {
@@ -944,7 +1001,7 @@
           "description": "a man in a backpack with a gun",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.55
+            "processing_time": 4.39
           }
         },
         {
@@ -957,7 +1014,20 @@
           "description": "a dog is standing on a bed",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.31
+            "processing_time": 3.89
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 150,
+          "frame_range": [
+            146,
+            150
+          ],
+          "description": "a dog is sitting on a bed and looking at something",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 2.45
           }
         }
       ],
@@ -1169,11 +1239,12 @@
         151,
         180
       ],
-      "unified_description": "1-second scene where a person is likely sitting at a desk with various items around them.",
+      "unified_description": "\nAs the scene takes place over one second, it shows a backpack in various locations including on top of a bed and sitting on the floor. The presence of a laptop adds context to these scenarios, suggesting that someone is packing or unpacking their belongings.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:28",
-        "processing_time": 3.96
+        "timestamp": "2025-11-09T14:43:09",
+        "processing_time": 5.02,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -1186,7 +1257,7 @@
           "description": "a backpack is sitting on the floor",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 3.79
+            "processing_time": 3.55
           }
         },
         {
@@ -1199,7 +1270,7 @@
           "description": "a backpack sitting on top of a bed",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 3.86
+            "processing_time": 3.75
           }
         },
         {
@@ -1212,7 +1283,20 @@
           "description": "a backpack and a laptop on a bed",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 3.83
+            "processing_time": 3.71
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 180,
+          "frame_range": [
+            176,
+            180
+          ],
+          "description": "a backpack sitting on top of a bed",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.2
           }
         }
       ],
@@ -1528,11 +1612,12 @@
         181,
         210
       ],
-      "unified_description": "1 second ago, there was a person sitting on a chair, holding a cell phone in their hand and wearing a backpack. They were likely using the cell phone while taking a break or engaged in some activity with the backpack nearby.",
+      "unified_description": "5-second video capturing someones' hands holding various objects",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:30",
-        "processing_time": 3.09
+        "timestamp": "2025-11-09T14:43:16",
+        "processing_time": 2.32,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -1545,7 +1630,7 @@
           "description": "a backpack and a cell phone on a bed",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.98
+            "processing_time": 2.88
           }
         },
         {
@@ -1558,7 +1643,7 @@
           "description": "a backpack and a book on a bed",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.83
+            "processing_time": 2.83
           }
         },
         {
@@ -1571,7 +1656,20 @@
           "description": "a person holding a cell phone in their hand",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.98
+            "processing_time": 3.23
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 210,
+          "frame_range": [
+            206,
+            210
+          ],
+          "description": "a person holding a white mouse in their hand",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 5.09
           }
         }
       ],
@@ -1887,11 +1985,12 @@
         211,
         240
       ],
-      "unified_description": "\n\nThe image captures a man's right hand in the process of holding several objects. The man appears to be multitasking as he simultaneously holds a camera, a small piece of paper, and a white mouse. It seems like he is preparing for some creative or technical task that requires him to have these objects at hand.",
+      "unified_description": "1-second scene with a person holding a white mouse in their hand",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:36",
-        "processing_time": 2.98
+        "timestamp": "2025-11-09T14:43:17",
+        "processing_time": 2.43,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -1904,7 +2003,7 @@
           "description": "a person holding a white mouse in their hand",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.56
+            "processing_time": 5.06
           }
         },
         {
@@ -1917,7 +2016,7 @@
           "description": "a person holding a small piece of paper",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.65
+            "processing_time": 4.62
           }
         },
         {
@@ -1930,7 +2029,20 @@
           "description": "a person holding a camera in their hand",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.54
+            "processing_time": 4.62
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 240,
+          "frame_range": [
+            236,
+            240
+          ],
+          "description": "a person holding a book with a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 2.39
           }
         }
       ],
@@ -2220,11 +2332,12 @@
         241,
         270
       ],
-      "unified_description": "\nIn this image, we see a man wearing a grey jacket holding a camera above his head. The scene also includes another person standing nearby and another one further in the background. All three people seem to be either preparing for a photo shoot or just enjoying their time together.",
+      "unified_description": "1-second scene including a man in a gray jacket holding a camera",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:37",
-        "processing_time": 3.86
+        "timestamp": "2025-11-09T14:43:17",
+        "processing_time": 2.54,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -2237,7 +2350,7 @@
           "description": "a person holding a book with a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.91
+            "processing_time": 4.56
           }
         },
         {
@@ -2250,7 +2363,7 @@
           "description": "a man in a gray jacket holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.24
+            "processing_time": 4.84
           }
         },
         {
@@ -2263,7 +2376,20 @@
           "description": "a man in a gray jacket is holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 5.46
+            "processing_time": 4.99
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 270,
+          "frame_range": [
+            266,
+            270
+          ],
+          "description": "a man in a gray jacket is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.44
           }
         }
       ],
@@ -2475,11 +2601,12 @@
         271,
         300
       ],
-      "unified_description": "\nIn this image, there is a man wearing a grey jacket holding a camera in his hands. He appears to be standing in the woods with multiple other tracks nearby. The surrounding area features various tracks, adding up to a total of 6 other tracks. This creates a scene of a man capturing a moment in nature with several other elements present in the background.",
+      "unified_description": "0",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:38",
-        "processing_time": 4.06
+        "timestamp": "2025-11-09T14:43:23",
+        "processing_time": 2.39,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -2492,7 +2619,7 @@
           "description": "a man in a gray jacket is holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.35
+            "processing_time": 3.77
           }
         },
         {
@@ -2505,7 +2632,7 @@
           "description": "a man in a gray jacket is holding a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.37
+            "processing_time": 3.17
           }
         },
         {
@@ -2518,7 +2645,20 @@
           "description": "a man in a gray jacket is standing in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 4.43
+            "processing_time": 3.45
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 300,
+          "frame_range": [
+            296,
+            300
+          ],
+          "description": "a man in a gray jacket and black pants is holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 1.93
           }
         }
       ],
@@ -2691,11 +2831,12 @@
         301,
         307
       ],
-      "unified_description": "0",
+      "unified_description": "1-second scene featuring a man wearing a gray jacket and black pants standing in the woods. The camera capturing the scene appears to be mounted on a tripod.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T14:07:40",
-        "processing_time": 2.07
+        "timestamp": "2025-11-09T14:43:23",
+        "processing_time": 2.58,
+        "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
         {
@@ -2708,7 +2849,20 @@
           "description": "a man in a gray jacket and black pants is standing in the woods",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.72
+            "processing_time": 3.55
+          }
+        },
+        {
+          "group_index": 5,
+          "frame_number": 307,
+          "frame_range": [
+            326,
+            307
+          ],
+          "description": "a man in a gray jacket holding a camera",
+          "blip_metadata": {
+            "model": "Salesforce/blip-image-captioning-base",
+            "processing_time": 2.99
           }
         }
       ],
