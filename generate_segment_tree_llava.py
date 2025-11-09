@@ -4,6 +4,7 @@ import time
 import threading
 import io
 import tempfile
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from transformers import BlipProcessor, BlipForConditionalGeneration, BitsAndBytesConfig
 from PIL import Image
@@ -15,7 +16,6 @@ import os
 from ultralytics import YOLO
 from prompt import get_llava_prompt
 import whisper
-from moviepy.editor import VideoFileClip
 
 # Configuration
 FPS = 30
@@ -44,7 +44,7 @@ class SegmentTreeGenerator:
         self.blip_processor = None
         self.blip_model = None
         self.whisper_model = None
-        self.video_clip = None  # For audio extraction
+        self.video_duration = None  # Video duration in seconds
         
     def load_models(self):
         """Load BLIP model once (shared across threads)"""
@@ -70,16 +70,20 @@ class SegmentTreeGenerator:
         self.whisper_model = whisper.load_model(WHISPER_MODEL)
         print(f"Whisper model loaded in {time.time() - start:.2f}s")
         
-        # Load video clip for audio extraction (once)
-        print("Loading video for audio extraction...")
+        # Get video duration using ffprobe (lightweight, no dependencies)
+        print("Getting video duration for audio extraction...")
         try:
-            self.video_clip = VideoFileClip(self.video_path)
-            if self.video_clip.audio is None:
-                print("Warning: Video has no audio track. Transcription will be skipped.")
-                self.video_clip = None
-        except Exception as e:
-            print(f"Warning: Could not load video for audio extraction: {e}. Transcription will be skipped.")
-            self.video_clip = None
+            result = subprocess.run(
+                ['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'default=noprint_wrappers=1:nokey=1', self.video_path],
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            self.video_duration = float(result.stdout.strip())
+            print(f"Video duration: {self.video_duration:.2f} seconds")
+        except (subprocess.CalledProcessError, FileNotFoundError, ValueError) as e:
+            print(f"Warning: Could not get video duration: {e}. Transcription may be limited.")
+            self.video_duration = None
         
     def generate_tracking_data(self) -> None:
         """Generate tracking JSON if it doesn't exist"""
@@ -287,32 +291,49 @@ class SegmentTreeGenerator:
             }
     
     def transcribe_audio_segment(self, second_idx: int) -> Dict:
-        """Transcribe audio for a specific second of video"""
-        if self.video_clip is None or self.whisper_model is None:
+        """Transcribe audio for a specific second of video using ffmpeg"""
+        if self.whisper_model is None:
             return {
                 "transcription": "",
                 "transcription_metadata": {
                     "model": WHISPER_MODEL,
                     "language": "en",
                     "processing_time": 0,
-                    "error": "Audio extraction or Whisper model not initialized"
+                    "error": "Whisper model not initialized"
                 }
             }
         
         start_time = time.time()
+        temp_audio_path = None
         try:
-            # Extract 1-second audio segment
+            # Extract 1-second audio segment using ffmpeg
             start_sec = second_idx
-            end_sec = min(second_idx + 1, self.video_clip.duration)
+            end_sec = min(second_idx + 1, self.video_duration) if self.video_duration else second_idx + 1
             
-            # Extract audio segment
-            audio_segment = self.video_clip.subclip(start_sec, end_sec).audio
-            
-            # Save to temporary file for Whisper
+            # Create temporary file for audio segment
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
                 temp_audio_path = tmp_file.name
-                audio_segment.write_audiofile(temp_audio_path, verbose=False, logger=None)
-                audio_segment.close()
+            
+            # Use ffmpeg to extract audio segment
+            ffmpeg_cmd = [
+                'ffmpeg',
+                '-i', self.video_path,
+                '-ss', str(start_sec),
+                '-t', str(end_sec - start_sec),
+                '-acodec', 'pcm_s16le',
+                '-ar', '16000',  # Whisper works well with 16kHz
+                '-ac', '1',  # Mono
+                '-y',  # Overwrite output file
+                temp_audio_path
+            ]
+            
+            # Run ffmpeg (suppress output)
+            subprocess.run(
+                ffmpeg_cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                check=True
+            )
             
             # Transcribe with Whisper
             result = self.whisper_model.transcribe(temp_audio_path, language="en", task="transcribe")
@@ -320,7 +341,8 @@ class SegmentTreeGenerator:
             
             # Clean up temporary file
             try:
-                os.unlink(temp_audio_path)
+                if temp_audio_path and os.path.exists(temp_audio_path):
+                    os.unlink(temp_audio_path)
             except:
                 pass
             
@@ -334,8 +356,42 @@ class SegmentTreeGenerator:
                     "processing_time": round(processing_time, 2)
                 }
             }
+        except subprocess.CalledProcessError as e:
+            processing_time = time.time() - start_time
+            # Clean up on error
+            try:
+                if temp_audio_path and os.path.exists(temp_audio_path):
+                    os.unlink(temp_audio_path)
+            except:
+                pass
+            return {
+                "transcription": "",
+                "transcription_metadata": {
+                    "model": WHISPER_MODEL,
+                    "language": "en",
+                    "processing_time": round(processing_time, 2),
+                    "error": f"FFmpeg error: {str(e)}"
+                }
+            }
+        except FileNotFoundError:
+            processing_time = time.time() - start_time
+            return {
+                "transcription": "",
+                "transcription_metadata": {
+                    "model": WHISPER_MODEL,
+                    "language": "en",
+                    "processing_time": round(processing_time, 2),
+                    "error": "FFmpeg not found. Please install FFmpeg."
+                }
+            }
         except Exception as e:
             processing_time = time.time() - start_time
+            # Clean up on error
+            try:
+                if temp_audio_path and os.path.exists(temp_audio_path):
+                    os.unlink(temp_audio_path)
+            except:
+                pass
             return {
                 "transcription": "",
                 "transcription_metadata": {
@@ -597,8 +653,6 @@ class SegmentTreeGenerator:
         # Clean up resources
         if self.cap:
             self.cap.release()
-        if self.video_clip:
-            self.video_clip.close()
 
 
 def main():
