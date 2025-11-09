@@ -13,11 +13,11 @@
         1,
         30
       ],
-      "unified_description": "2 people are walking around a park with trees in the background",
+      "unified_description": "3rd person camera perspective, POV, camera positioned on body, stable, wide-angle distortion visible, action camera (GoPro) style, outdoor setting, natural lighting.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:09:50",
-        "processing_time": 8.72,
+        "timestamp": "2025-11-09T16:27:23",
+        "processing_time": 8.97,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -31,7 +31,7 @@
           "description": "a man in a green shirt and sunglasses is standing on a mountain",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 2.92
+            "processing_time": 3.0
           }
         }
       ],
@@ -388,12 +388,7 @@
           "total_detections": 6
         }
       ],
-      "transcription": "and welcome.",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 9.93
-      }
+      "transcription_id": 0
     },
     {
       "second": 1,
@@ -405,11 +400,11 @@
         31,
         60
       ],
-      "unified_description": "1-second scene with 14 unique tracks and 6 groups",
+      "unified_description": "3D Camera (Ricoh Theta)",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:09:50",
-        "processing_time": 8.52,
+        "timestamp": "2025-11-09T16:27:23",
+        "processing_time": 9.27,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -423,7 +418,7 @@
           "description": "a man in a green shirt and hat is pointing at the camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 2.89
+            "processing_time": 2.98
           }
         }
       ],
@@ -806,13 +801,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 7.56,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 0
     },
     {
       "second": 2,
@@ -824,11 +813,11 @@
         61,
         90
       ],
-      "unified_description": "11-second scene with an overhead view showing a green-shirted man with a hat pointing at the camera, and other objects and people in the background.",
+      "unified_description": "1-second scene featuring a man in a green shirt and hat pointing at the camera",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:09:50",
-        "processing_time": 8.38,
+        "timestamp": "2025-11-09T16:27:22",
+        "processing_time": 8.18,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -842,7 +831,7 @@
           "description": "a man in a green shirt and hat pointing at the camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 2.77
+            "processing_time": 2.84
           }
         }
       ],
@@ -1173,12 +1162,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "and welcome.",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 11.68
-      }
+      "transcription_id": 0
     },
     {
       "second": 3,
@@ -1190,11 +1174,11 @@
         91,
         120
       ],
-      "unified_description": "\nA helicopter shot of a person on a mountain with a 50mm lens used to capture the scene.",
+      "unified_description": "1-second scene featuring a man riding a skateboard down a busy street with multiple other people and objects visible.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:01",
-        "processing_time": 2.66,
+        "timestamp": "2025-11-09T16:27:25",
+        "processing_time": 2.43,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -1208,7 +1192,7 @@
           "description": "a man in a helicopter flying over a mountain",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.69
+            "processing_time": 1.18
           }
         }
       ],
@@ -1448,12 +1432,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 36.49
-      }
+      "transcription_id": 0
     },
     {
       "second": 4,
@@ -1465,11 +1444,11 @@
         121,
         150
       ],
-      "unified_description": "30-second videos can be quite monotonous. Providing interesting descriptions will make it more engaging to watch.",
+      "unified_description": "\nThese are the image descriptions for the first second of a video. If you have any questions or need clarification on any part of the image descriptions, please let me know.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:04",
-        "processing_time": 2.42,
+        "timestamp": "2025-11-09T16:27:27",
+        "processing_time": 2.6,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -1483,7 +1462,7 @@
           "description": "a small plane is sitting on the water",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.86
+            "processing_time": 1.34
           }
         }
       ],
@@ -1801,12 +1780,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.56
-      }
+      "transcription_id": 1
     },
     {
       "second": 5,
@@ -1818,11 +1792,11 @@
         151,
         180
       ],
-      "unified_description": "2014",
+      "unified_description": "3D Wide Angle Shot of Man by Tent on Beach",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:05",
-        "processing_time": 2.11,
+        "timestamp": "2025-11-09T16:27:27",
+        "processing_time": 2.81,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -1836,7 +1810,7 @@
           "description": "a man is standing near a tent by the water",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.8
+            "processing_time": 1.24
           }
         }
       ],
@@ -2076,12 +2050,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 4.48
-      }
+      "transcription_id": 1
     },
     {
       "second": 6,
@@ -2093,11 +2062,11 @@
         181,
         210
       ],
-      "unified_description": "360-degree video that features a man standing next to a tree",
+      "unified_description": "3rd person perspective showing a man standing near a tree in an outdoor setting with natural lighting. The camera is mounted on a tripod for stable footage.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:09",
-        "processing_time": 2.37,
+        "timestamp": "2025-11-09T16:27:29",
+        "processing_time": 2.53,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -2111,7 +2080,7 @@
           "description": "a man is standing next to a tree",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.67
+            "processing_time": 0.61
           }
         }
       ],
@@ -2494,12 +2463,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.2
-      }
+      "transcription_id": 1
     },
     {
       "second": 7,
@@ -2511,11 +2475,11 @@
         211,
         240
       ],
-      "unified_description": "2 men having lunch outside in bright sunlight",
+      "unified_description": "\n\nIn the image, two men are sitting on the ground while eating food. The camera is stable, capturing the scene with a wide-angle lens that shows their position relative to each other and the surrounding area.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:12",
-        "processing_time": 2.28,
+        "timestamp": "2025-11-09T16:27:31",
+        "processing_time": 2.73,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -2529,7 +2493,7 @@
           "description": "two people sitting on the ground eating food",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.77
+            "processing_time": 1.18
           }
         }
       ],
@@ -2860,12 +2824,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "camp here for",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 5.78
-      }
+      "transcription_id": 1
     },
     {
       "second": 8,
@@ -2877,11 +2836,11 @@
         241,
         270
       ],
-      "unified_description": "4 people are fishing in a boat on a lake while another boat is nearby. The image includes natural outdoor lighting which creates shaded areas and highlights the main subjects.",
+      "unified_description": "30 second long video with a man fishing in a lake with two boats around him.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:15",
-        "processing_time": 2.56,
+        "timestamp": "2025-11-09T16:27:31",
+        "processing_time": 2.91,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -2895,7 +2854,7 @@
           "description": "a man fishing on a lake with two boats",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.82
+            "processing_time": 1.06
           }
         }
       ],
@@ -3094,13 +3053,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.1,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 2
     },
     {
       "second": 9,
@@ -3112,11 +3065,11 @@
         271,
         300
       ],
-      "unified_description": "\nA man is standing outside holding a fish in his right hand near the center of the image.",
+      "unified_description": "4k Wide-angle Shot of a Man with a Fish in His Hand, Panning Camera",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:20",
-        "processing_time": 2.34,
+        "timestamp": "2025-11-09T16:27:32",
+        "processing_time": 2.57,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -3130,7 +3083,7 @@
           "description": "a man holding a fish in his hand",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.63
+            "processing_time": 0.61
           }
         }
       ],
@@ -3422,13 +3375,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 1.13,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 2
     },
     {
       "second": 10,
@@ -3440,11 +3387,11 @@
         301,
         330
       ],
-      "unified_description": "1-second scene featuring a young boy holding a fish on a rock. The camera is positioned overhead, capturing an action-packed moment with a stable, clear image.",
+      "unified_description": "1-second scene showing a young boy holding a fish on a rock. The camera was mounted on a backpack.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:21",
-        "processing_time": 2.65,
+        "timestamp": "2025-11-09T16:27:35",
+        "processing_time": 2.41,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -3458,7 +3405,7 @@
           "description": "a young boy holding a fish on a rock",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.69
+            "processing_time": 1.55
           }
         }
       ],
@@ -3841,13 +3788,7 @@
           "total_detections": 4
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 1.81,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 2
     },
     {
       "second": 11,
@@ -3859,11 +3800,11 @@
         331,
         360
       ],
-      "unified_description": "4 frames per second for 1 second",
+      "unified_description": "43 seconds ago",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:24",
-        "processing_time": 2.23,
+        "timestamp": "2025-11-09T16:27:35",
+        "processing_time": 2.17,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -3877,7 +3818,7 @@
           "description": "a man holding a fish in his hands",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.81
+            "processing_time": 1.55
           }
         }
       ],
@@ -4195,12 +4136,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 6.58
-      }
+      "transcription_id": 2
     },
     {
       "second": 12,
@@ -4212,11 +4148,11 @@
         361,
         390
       ],
-      "unified_description": "\nThe image shows two people standing on top of a hill in an outdoor setting. They seem to be walking up the hill together. The camera perspective suggests that it's either a first-person or third-person view, providing a clear view of both individuals as they traverse the hillside. No technical artifacts are visible within the provided image descriptions.",
+      "unified_description": "\nA camera mounted on a backpack capturing two people walking up a hill with a lake in the background.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:27",
-        "processing_time": 3.14,
+        "timestamp": "2025-11-09T16:27:36",
+        "processing_time": 2.61,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -4230,7 +4166,7 @@
           "description": "two people walking up a hill with a lake in the background",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.95
+            "processing_time": 1.51
           }
         }
       ],
@@ -4561,12 +4497,7 @@
           "total_detections": 5
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 7.9
-      }
+      "transcription_id": 3
     },
     {
       "second": 13,
@@ -4578,11 +4509,11 @@
         391,
         420
       ],
-      "unified_description": "1-second scene including a man in a boat on a lake with 6 other people and objects around him",
+      "unified_description": "3rd person camera mounted on a helmet capturing a scene with a man in a boat on a lake.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:34",
-        "processing_time": 2.37,
+        "timestamp": "2025-11-09T16:27:38",
+        "processing_time": 2.41,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -4596,7 +4527,7 @@
           "description": "a man in a boat on a lake",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.68
+            "processing_time": 1.34
           }
         }
       ],
@@ -4836,13 +4767,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 3.57,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 3
     },
     {
       "second": 14,
@@ -4854,11 +4779,11 @@
         421,
         450
       ],
-      "unified_description": "\n\nIn this scene, there are several objects and people present. The primary focus is on the man in the hat who is sitting inside a barrel. Other notable elements include a motorcycle, a backpack, multiple handbags, and two additional people who seem to be involved in some kind of activity.\n\nThe camera perspective appears to be first-person, providing an immersive view of the scene. The field of view includes various objects and people, making the image quite busy. Technical details such as motion blur, lens flare, or compression artifacts could indicate that this video was captured with a low-quality camera or during post-processing.",
+      "unified_description": "3D object tracking and summary for a video.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:40",
-        "processing_time": 4.27,
+        "timestamp": "2025-11-09T16:27:39",
+        "processing_time": 2.32,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -4872,7 +4797,7 @@
           "description": "a man in a hat is sitting in a barrel",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.83
+            "processing_time": 1.58
           }
         }
       ],
@@ -5086,12 +5011,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "exploring the original Bush",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 12.78
-      }
+      "transcription_id": 3
     },
     {
       "second": 15,
@@ -5103,11 +5023,11 @@
         451,
         480
       ],
-      "unified_description": "360 video of a wooden cabin with a person in front of it, the sky above and possibly some distant objects.",
+      "unified_description": "1-second scene that includes a person standing in front of a wooden cabin",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:41",
-        "processing_time": 2.43,
+        "timestamp": "2025-11-09T16:27:39",
+        "processing_time": 2.45,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -5121,7 +5041,7 @@
           "description": "a man standing in front of a wooden cabin",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.38
+            "processing_time": 0.88
           }
         }
       ],
@@ -5374,12 +5294,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 1.55
-      }
+      "transcription_id": 3
     },
     {
       "second": 16,
@@ -5391,11 +5306,11 @@
         481,
         510
       ],
-      "unified_description": "1-second scene that includes a man sitting in a chair outside with a field of view showing many objects simultaneously",
+      "unified_description": "0",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:42",
-        "processing_time": 2.57,
+        "timestamp": "2025-11-09T16:27:42",
+        "processing_time": 2.1,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -5409,7 +5324,7 @@
           "description": "a man is sitting in a chair outside",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.31
+            "processing_time": 1.4
           }
         }
       ],
@@ -5662,12 +5577,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "The original Bush",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 18.09
-      }
+      "transcription_id": 4
     },
     {
       "second": 17,
@@ -5682,8 +5592,8 @@
       "unified_description": "0",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:46",
-        "processing_time": 2.09,
+        "timestamp": "2025-11-09T16:27:43",
+        "processing_time": 2.1,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -5697,7 +5607,7 @@
           "description": "a man sitting on a chair in front of a building",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.9
+            "processing_time": 1.9
           }
         }
       ],
@@ -6002,13 +5912,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 6.73,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 4
     },
     {
       "second": 18,
@@ -6020,11 +5924,11 @@
         541,
         570
       ],
-      "unified_description": "3-second scene from a first-person perspective camera mounted on a backpack.",
+      "unified_description": "3rd person camera, wide-angle lens, stable camera positioning, POV perspective",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:56",
-        "processing_time": 2.33,
+        "timestamp": "2025-11-09T16:27:43",
+        "processing_time": 2.54,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -6038,7 +5942,7 @@
           "description": "a large axe is stuck into a tree stump",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.19
+            "processing_time": 1.39
           }
         }
       ],
@@ -6252,12 +6156,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.13
-      }
+      "transcription_id": 4
     },
     {
       "second": 19,
@@ -6269,11 +6168,11 @@
         571,
         600
       ],
-      "unified_description": "2 men in a small wooded area with large rocks on the ground.",
+      "unified_description": "\nThe image features an action camera perspective, focusing on a wooded area with a tree stump where a axe is stuck into it. There are multiple objects and people in the scene. The camera positioning is shaky, which may cause some motion blur or other technical artifacts.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:10:56",
-        "processing_time": 2.3,
+        "timestamp": "2025-11-09T16:27:45",
+        "processing_time": 2.9,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -6287,7 +6186,7 @@
           "description": "a axe is stuck into a tree stump",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.94
+            "processing_time": 0.63
           }
         }
       ],
@@ -6527,12 +6426,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.66
-      }
+      "transcription_id": 4
     },
     {
       "second": 20,
@@ -6544,11 +6438,11 @@
         601,
         630
       ],
-      "unified_description": "\n\nIn this scene there's a knife on top of a tree stump. The camera is positioned in such a way that it captures this interesting detail along with the surrounding area. The image has some technical artifacts present, such as motion blur and lens flare, which indicates that the camera may have been moved or shaky during the capture.",
+      "unified_description": "\nBased on the image descriptions and object detections, this is an outdoor scene with various elements, such as trees and people. The camera perspective suggests that it might be a first-person or third-person view. There is a noticeable fisheye effect in the image, indicating that the camera has a wide-angle lens, which captures a broader field of view.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:02",
-        "processing_time": 3.08,
+        "timestamp": "2025-11-09T16:27:47",
+        "processing_time": 3.16,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -6562,7 +6456,7 @@
           "description": "a knife is on top of a tree stump",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.74
+            "processing_time": 1.49
           }
         }
       ],
@@ -6763,12 +6657,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 6.46
-      }
+      "transcription_id": 5
     },
     {
       "second": 21,
@@ -6780,11 +6669,11 @@
         631,
         660
       ],
-      "unified_description": "3D Camera Perspective and Technical Details",
+      "unified_description": "50%",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:02",
-        "processing_time": 2.62,
+        "timestamp": "2025-11-09T16:27:48",
+        "processing_time": 3.12,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -6798,7 +6687,7 @@
           "description": "the logo for the new logo",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.57
+            "processing_time": 1.16
           }
         }
       ],
@@ -7038,12 +6927,7 @@
           "total_detections": 4
         }
       ],
-      "transcription": "you.",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 14.58
-      }
+      "transcription_id": 5
     },
     {
       "second": 22,
@@ -7055,11 +6939,11 @@
         661,
         690
       ],
-      "unified_description": "1 second video with a sky background",
+      "unified_description": "\nThe image features an action-packed scene with multiple objects and people, including a skateboarder performing tricks on a ramp. The camera is positioned to capture the action from various perspectives, such as overhead or mounted on a nearby object. The video production style emphasizes the excitement and motion of the subjects, utilizing wide-angle lenses to capture the entire scene in a single shot.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:02",
-        "processing_time": 2.17,
+        "timestamp": "2025-11-09T16:27:49",
+        "processing_time": 3.56,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -7073,7 +6957,7 @@
           "description": "the logo for the new logo",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.54
+            "processing_time": 0.52
           }
         }
       ],
@@ -7742,13 +7626,7 @@
           "total_detections": 8
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 5.13,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 5
     },
     {
       "second": 23,
@@ -7760,11 +7638,11 @@
         691,
         720
       ],
-      "unified_description": "\nTo help with descriptions, provide context about the scene: Where is the car driving on the road, are there any notable landmarks or objects, what time of day, weather conditions, etc.",
+      "unified_description": "3rd person perspective, stable camera positioning, wide-angle lens, action camera mounting, etc.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:11",
-        "processing_time": 2.63,
+        "timestamp": "2025-11-09T16:27:51",
+        "processing_time": 2.38,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -7778,7 +7656,7 @@
           "description": "a man driving a car on a road",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.65
+            "processing_time": 1.42
           }
         }
       ],
@@ -8395,12 +8273,7 @@
           "total_detections": 7
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 5.58
-      }
+      "transcription_id": 5
     },
     {
       "second": 24,
@@ -8412,11 +8285,11 @@
         721,
         750
       ],
-      "unified_description": "1-second scene where a man is driving a car with a child inside. Video taken from dashboard camera, showing the front seat area, including the driver and passenger seats. The camera was mounted on the vehicle's dashboard, capturing the scene without obstructing the driver's view.",
+      "unified_description": "\n\nIn the image, there is a man driving a car with a child sitting inside. The car appears to be in motion as it moves through the scene. A backpack can also be seen within the vehicle. This outdoor scene captures the essence of daily life, showcasing a family moment during a drive.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:12",
-        "processing_time": 2.92,
+        "timestamp": "2025-11-09T16:27:53",
+        "processing_time": 3.56,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -8430,7 +8303,7 @@
           "description": "a man in a car with a child inside",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.68
+            "processing_time": 1.41
           }
         }
       ],
@@ -9190,13 +9063,7 @@
           "total_detections": 10
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 7.23,
-        "error": "cannot reshape tensor of 0 elements into shape [1, 0, 8, -1] because the unspecified dimension size -1 can be any value and is ambiguous"
-      }
+      "transcription_id": 6
     },
     {
       "second": 25,
@@ -9208,11 +9075,11 @@
         751,
         780
       ],
-      "unified_description": "\nThere is no man with a black jacket and hat sitting in a car in this image.",
+      "unified_description": "\nFirst-person perspective showing a man in a black jacket and hat sitting in a car. The camera is mounted on the person's shoulder. The image has a wide field of view, capturing the surroundings as well.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:20",
-        "processing_time": 2.36,
+        "timestamp": "2025-11-09T16:27:54",
+        "processing_time": 3.23,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -9226,7 +9093,7 @@
           "description": "a man in a black jacket and hat is sitting in a car",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.67
+            "processing_time": 0.88
           }
         }
       ],
@@ -9921,12 +9788,7 @@
           "total_detections": 8
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.21
-      }
+      "transcription_id": 6
     },
     {
       "second": 26,
@@ -9938,11 +9800,11 @@
         781,
         810
       ],
-      "unified_description": "4K WIDE-ANGLE SHOT OF A MAN WITH A BAG WALKING DOWN THE STREET",
+      "unified_description": "2 people are walking in front of a building and there is also a car visible in the scene.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:21",
-        "processing_time": 2.94,
+        "timestamp": "2025-11-09T16:27:55",
+        "processing_time": 2.44,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -9956,7 +9818,7 @@
           "description": "a man walking down the street with a bag",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.35
+            "processing_time": 1.01
           }
         }
       ],
@@ -10989,12 +10851,7 @@
           "total_detections": 11
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.77
-      }
+      "transcription_id": 6
     },
     {
       "second": 27,
@@ -11006,11 +10863,11 @@
         811,
         840
       ],
-      "unified_description": "30 second video showcasing various subjects, such as a man leaving a boat, people, and scenery. The camera perspective is first-person, and the footage appears to be shot with a wide-angle lens, which can distort the scene slightly.",
+      "unified_description": "28 unique object tracks, 6 groups, camera positioned on body, first-person perspective",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:23",
-        "processing_time": 3.03,
+        "timestamp": "2025-11-09T16:27:56",
+        "processing_time": 2.34,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -11024,7 +10881,7 @@
           "description": "a man is getting off the boat and getting off",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.71
+            "processing_time": 1.06
           }
         }
       ],
@@ -11680,12 +11537,7 @@
           "total_detections": 7
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 4.69
-      }
+      "transcription_id": 6
     },
     {
       "second": 28,
@@ -11697,11 +11549,11 @@
         841,
         870
       ],
-      "unified_description": "512 words",
+      "unified_description": "1-second scene including a man fixinging a car",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:24",
-        "processing_time": 2.11,
+        "timestamp": "2025-11-09T16:27:57",
+        "processing_time": 2.26,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -11715,7 +11567,7 @@
           "description": "a man in a black jacket and hat is fixing a car",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.11
+            "processing_time": 0.91
           }
         }
       ],
@@ -12150,12 +12002,7 @@
           "total_detections": 5
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 2.13
-      }
+      "transcription_id": 7
     },
     {
       "second": 29,
@@ -12167,11 +12014,11 @@
         871,
         900
       ],
-      "unified_description": "1-second scene where a man is riding a motorcycle with a camera mounted on it. The image also includes a backpack-mounted camera and another camera held by the person.",
+      "unified_description": "\n\nIn this image, there is a person wearing a helmet who is in front of a tall building. The camera is mounted on the side of the individual's helmet, capturing their viewpoint. There are several other people present in the scene. A backpack can be seen close to one of the individuals. Overall, the image captures a group of people possibly engaged in some outdoor activity or adventure.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:25",
-        "processing_time": 2.61,
+        "timestamp": "2025-11-09T16:27:59",
+        "processing_time": 3.28,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -12185,7 +12032,7 @@
           "description": "a man in a helicopter with a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.79
+            "processing_time": 0.59
           }
         }
       ],
@@ -12607,12 +12454,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 3.24
-      }
+      "transcription_id": 7
     },
     {
       "second": 30,
@@ -12624,11 +12466,11 @@
         901,
         930
       ],
-      "unified_description": "\nBased on the image descriptions and object detections, it appears to be an action camera recording of a man in a boat driving down the river. The camera is likely mounted on a backpack or tripod, capturing the scene with a wide-angle lens, which might cause some distortion. There are several people and objects present in the image, indicating that the video might have been taken during an event or outing where multiple subjects are captured.",
+      "unified_description": "\nThe image has a camera perspective as if it were shot from the first-person's point of view. It captures a man in a boat driving down the river, surrounded by nature, possibly including a forest nearby. The field of view appears wide-angle, showing both the river and the surrounding environment.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:30",
-        "processing_time": 3.54,
+        "timestamp": "2025-11-09T16:28:00",
+        "processing_time": 3.29,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -12642,7 +12484,7 @@
           "description": "a man in a boat is driving down the river",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.9
+            "processing_time": 0.73
           }
         }
       ],
@@ -12843,12 +12685,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.22
-      }
+      "transcription_id": 7
     },
     {
       "second": 31,
@@ -12860,11 +12697,11 @@
         931,
         960
       ],
-      "unified_description": "1-second scene, shot with camera positioned , capturing motion in outdoor setting",
+      "unified_description": "360 degrees of freedom, movement, color, depth, and audio are all captured in this single image.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:31",
-        "processing_time": 2.42,
+        "timestamp": "2025-11-09T16:28:01",
+        "processing_time": 3.05,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -12878,7 +12715,7 @@
           "description": "a boat is in the water near a house",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.68
+            "processing_time": 0.69
           }
         }
       ],
@@ -13066,12 +12903,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.73
-      }
+      "transcription_id": 7
     },
     {
       "second": 32,
@@ -13083,11 +12915,11 @@
         961,
         990
       ],
-      "unified_description": "\n\nIn this scene, there is a person standing on a boat. The camera is positioned in such a way that it captures the entire scene in one shot, showcasing the beautiful outdoor setting. There are no other people or objects visible in the image. The entire scene can be covered within a single wide-angle perspective, providing an engaging view of the surrounding area for viewers.",
+      "unified_description": "\nIn this image, there are several interesting elements. There is a man standing on top of a boat. The camera perspective appears to be from inside another boat, capturing the scene outdoors. This may suggest that the camera was mounted on the second boat. Additionally, there are multiple people in the scene, not just the man on the boat but also others near the water. There is a backpack in the scene, possibly belonging to one of the people present. Since the image description focuses on the unique tracking information, it suggests that this video may have been taken using a camera drone or other remote recording device.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:33",
-        "processing_time": 3.55,
+        "timestamp": "2025-11-09T16:28:03",
+        "processing_time": 3.89,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -13101,7 +12933,7 @@
           "description": "a boat is seen from the inside of a boat",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.97
+            "processing_time": 0.99
           }
         }
       ],
@@ -13263,12 +13095,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.19
-      }
+      "transcription_id": 8
     },
     {
       "second": 33,
@@ -13280,11 +13107,11 @@
         991,
         1020
       ],
-      "unified_description": "3D WORK, COURSE OF THE SEASONS, TRADE SHOW, BOAT RIDE, VLOG, HANDHELD CAMERA, NARRATIVE STYLE, WIDE ANGLE LENS, Natural outdoor lighting",
+      "unified_description": "4K WIDE ANGLE SHOT OF A MAN IN A BOAT.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:35",
-        "processing_time": 3.07,
+        "timestamp": "2025-11-09T16:28:04",
+        "processing_time": 2.8,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -13298,7 +13125,7 @@
           "description": "a man in a boat with a camera",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.78
+            "processing_time": 1.14
           }
         }
       ],
@@ -13564,12 +13391,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.22
-      }
+      "transcription_id": 8
     },
     {
       "second": 34,
@@ -13581,11 +13403,11 @@
         1021,
         1050
       ],
-      "unified_description": "3DWALKER",
+      "unified_description": "3rd person camera perspective",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:35",
-        "processing_time": 2.19,
+        "timestamp": "2025-11-09T16:28:04",
+        "processing_time": 2.65,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -13599,7 +13421,7 @@
           "description": "a man in a helicopter flying over a river",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.98
+            "processing_time": 0.91
           }
         }
       ],
@@ -13891,12 +13713,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.32
-      }
+      "transcription_id": 8
     },
     {
       "second": 35,
@@ -13908,11 +13725,11 @@
         1051,
         1080
       ],
-      "unified_description": "3rd person perspective with wide-angle lens showing the landscape and water in the background. The camera is stable, capturing the scene without any noticeable artifacts or distortion.",
+      "unified_description": "1-second scene including objects, people, actions, and location",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:37",
-        "processing_time": 2.59,
+        "timestamp": "2025-11-09T16:28:07",
+        "processing_time": 2.28,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -13926,7 +13743,7 @@
           "description": "a view of a lake from a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.88
+            "processing_time": 1.59
           }
         }
       ],
@@ -14231,12 +14048,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 8
     },
     {
       "second": 36,
@@ -14248,11 +14060,11 @@
         1081,
         1110
       ],
-      "unified_description": "1-second scene showing a small plane flying over a lake, with multiple objects and people visible in image.",
+      "unified_description": "\n\nThe image depicts a first-person perspective of a person wearing a backpack-mounted camera on their back, recording a video of a small plane flying over a lake. The camera is stable, capturing clear visuals of the scene without any noticeable distortion or technical issues. The field of view is wide-angle showing the plane, lake, and other surrounding objects in the frame. This type of camera setup is commonly used for action camera or documentary filming.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:38",
-        "processing_time": 2.38,
+        "timestamp": "2025-11-09T16:28:09",
+        "processing_time": 3.73,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -14266,7 +14078,7 @@
           "description": "a small plane flying over a lake",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.09
+            "processing_time": 1.58
           }
         }
       ],
@@ -14571,12 +14383,7 @@
           "total_detections": 4
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.22
-      }
+      "transcription_id": 9
     },
     {
       "second": 37,
@@ -14588,11 +14395,11 @@
         1111,
         1140
       ],
-      "unified_description": "2D scene from a first-person perspective camera mounted on a backpack, showing a young boy in a helicopter looking out the window.",
+      "unified_description": "4K camera capturing footage for a documentary film",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:39",
-        "processing_time": 2.67,
+        "timestamp": "2025-11-09T16:28:10",
+        "processing_time": 3.68,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -14606,7 +14413,7 @@
           "description": "a young boy in a helicopter looking out the window",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.09
+            "processing_time": 1.72
           }
         }
       ],
@@ -14963,12 +14770,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.27
-      }
+      "transcription_id": 9
     },
     {
       "second": 38,
@@ -14980,11 +14782,11 @@
         1141,
         1170
       ],
-      "unified_description": "3rd person POV camera perspective, wide-angle distorted lens, stabilized camera positioning, action camera setup, etc.",
+      "unified_description": "360 footage of an outdoor scene that includes a helicopter, a lake, and clouds in the sky.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:40",
-        "processing_time": 2.69,
+        "timestamp": "2025-11-09T16:28:11",
+        "processing_time": 2.59,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -14998,7 +14800,7 @@
           "description": "a helicopter flying over a lake with a cloudy sky",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.7
+            "processing_time": 0.98
           }
         }
       ],
@@ -15171,12 +14973,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.19
-      }
+      "transcription_id": 9
     },
     {
       "second": 39,
@@ -15188,11 +14985,11 @@
         1171,
         1200
       ],
-      "unified_description": "3rd person perspective, stable camera, wide-angle lens, action camera, etc.",
+      "unified_description": "3rd person camera perspective with some camera movement in the scene. The image features an outdoor setting and includes several objects and people.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:42",
-        "processing_time": 2.32,
+        "timestamp": "2025-11-09T16:28:13",
+        "processing_time": 2.44,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -15206,7 +15003,7 @@
           "description": "a view from the cockpit of a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.1
+            "processing_time": 1.26
           }
         }
       ],
@@ -15602,12 +15399,7 @@
           "total_detections": 5
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.19
-      }
+      "transcription_id": 9
     },
     {
       "second": 40,
@@ -15619,11 +15411,11 @@
         1201,
         1230
       ],
-      "unified_description": "2 people riding jet skis in a body of water, one person is driving the other one, they are wearing life jackets, it seems like they are having fun",
+      "unified_description": "0",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:43",
-        "processing_time": 2.77,
+        "timestamp": "2025-11-09T16:28:13",
+        "processing_time": 2.11,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -15637,7 +15429,7 @@
           "description": "a view from the cockpit of a plane flying over a river",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.21
+            "processing_time": 1.53
           }
         }
       ],
@@ -16033,12 +15825,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 10
     },
     {
       "second": 41,
@@ -16050,11 +15837,11 @@
         1231,
         1260
       ],
-      "unified_description": "\nIn the image, two boys are seen sitting inside a small airplane. The camera is positioned in such a way that it captures both boys and the plane's interior. This scene is likely part of a documentary or a narrative video production.",
+      "unified_description": "3rd person perspective, handheld camera, wide-angle lens, stable camera positioning, indoor lighting, documenting plane cockpit",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:44",
-        "processing_time": 3.2,
+        "timestamp": "2025-11-09T16:28:14",
+        "processing_time": 2.68,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -16068,7 +15855,7 @@
           "description": "two boys are sitting in the cockpit of a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.77
+            "processing_time": 0.76
           }
         }
       ],
@@ -16306,12 +16093,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 10
     },
     {
       "second": 42,
@@ -16323,11 +16105,11 @@
         1261,
         1290
       ],
-      "unified_description": "\n\nFirst-person video shot of the two boys sitting in the cockpit of a small plane. The camera was mounted on the body of one of the boys. The video has natural outdoor lighting, showing details like the airplane's instruments and controls.",
+      "unified_description": "2 boys sit inside small aircraft in scene, captured using wide-angle lens that shows distortion at edges, indoors with stable camera positioning, and likely shot in first-person perspective.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:46",
-        "processing_time": 3.0,
+        "timestamp": "2025-11-09T16:28:17",
+        "processing_time": 2.61,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -16341,7 +16123,7 @@
           "description": "two boys are sitting in the cockpit of a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.91
+            "processing_time": 1.43
           }
         }
       ],
@@ -16540,12 +16322,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.24
-      }
+      "transcription_id": 10
     },
     {
       "second": 43,
@@ -16557,11 +16334,11 @@
         1291,
         1320
       ],
-      "unified_description": "\nIn the image, there is a view from the cockpit of a plane. The scene includes three main objects or groups of objects: \n\n1. Group 1: The left wing, the top of the body, and the nose of the airplane are visible. There are no people visible in this grouping.\n2. Group 2: The right wing, the bottom of the body, and the tail of the airplane are visible. Again, there are no people in this object grouping.\n3. Group 3: A person is standing in front of the airplane. This grouping focuses on the individual rather than the plane itself.",
+      "unified_description": "1-second scene including a view from the cockpit of a plane",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:49",
-        "processing_time": 4.32,
+        "timestamp": "2025-11-09T16:28:17",
+        "processing_time": 2.85,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -16575,7 +16352,7 @@
           "description": "a view from the cockpit of a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.99
+            "processing_time": 1.35
           }
         }
       ],
@@ -16802,12 +16579,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.22
-      }
+      "transcription_id": 10
     },
     {
       "second": 44,
@@ -16819,11 +16591,11 @@
         1321,
         1350
       ],
-      "unified_description": "1-second scene including two men in a helicopter with headphones on, shot with a GoPro camera, wide-angle distortion evident, stable camera positioning, and natural outdoor lighting.",
+      "unified_description": "3D model of a scene with a man in red standing by a car.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:50",
-        "processing_time": 4.02,
+        "timestamp": "2025-11-09T16:28:18",
+        "processing_time": 2.69,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -16837,7 +16609,7 @@
           "description": "two men in a helicopter with headphones on",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.88
+            "processing_time": 0.73
           }
         }
       ],
@@ -17023,12 +16795,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.28
-      }
+      "transcription_id": 11
     },
     {
       "second": 45,
@@ -17040,11 +16807,11 @@
         1351,
         1380
       ],
-      "unified_description": "\nBased on these image descriptions and object detections, provide a unified detailed description of this 1-second scene. Include:\n- Content Description - What is happening in the scene:\n   - Objects, people, actions, and location",
+      "unified_description": "0",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:51",
-        "processing_time": 3.53,
+        "timestamp": "2025-11-09T16:28:21",
+        "processing_time": 2.11,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -17058,7 +16825,7 @@
           "description": "a view of a mountain range from a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.04
+            "processing_time": 1.8
           }
         }
       ],
@@ -17467,12 +17234,7 @@
           "total_detections": 1
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.31
-      }
+      "transcription_id": 11
     },
     {
       "second": 46,
@@ -17484,11 +17246,11 @@
         1381,
         1410
       ],
-      "unified_description": "3D WIDE ANGLE VIDEO SHOWING A LANDSCAPE WITH AIRCRAFT.",
+      "unified_description": "1-second scene with objects, people, actions, and location. Camera perspective, field of view, lens characteristics, production style, and lighting are also covered.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:53",
-        "processing_time": 2.42,
+        "timestamp": "2025-11-09T16:28:22",
+        "processing_time": 2.72,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -17502,7 +17264,7 @@
           "description": "a view from a plane of mountains and clouds",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.62
+            "processing_time": 1.88
           }
         }
       ],
@@ -17768,12 +17530,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.18
-      }
+      "transcription_id": 11
     },
     {
       "second": 47,
@@ -17785,11 +17542,11 @@
         1411,
         1440
       ],
-      "unified_description": "1-second scene including a person flying a small plane over a mountain",
+      "unified_description": "30 seconds left",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:54",
-        "processing_time": 2.4,
+        "timestamp": "2025-11-09T16:28:22",
+        "processing_time": 2.77,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -17803,7 +17560,7 @@
           "description": "a person flying a small plane over a mountain",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.35
+            "processing_time": 1.56
           }
         }
       ],
@@ -18277,12 +18034,7 @@
           "total_detections": 5
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.27
-      }
+      "transcription_id": 11
     },
     {
       "second": 48,
@@ -18294,11 +18046,11 @@
         1441,
         1470
       ],
-      "unified_description": "\n\nThis scene is an action camera video showing a first-person perspective, with the camera mounted on a person's head. The footage captures an outdoor setting with natural lighting. There are several distinct objects or groups in the scene, which can be tracked and identified. This indicates that the videographer has effectively utilized the camera's wide field of view to capture various subjects simultaneously, resulting in a dynamic and engaging video production.",
+      "unified_description": "\nA: Content Description - What is happening in the scene:\n   - Objects, people, actions, and location:\n   - A person on a skateboard in a parking lot.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:56",
-        "processing_time": 4.01,
+        "timestamp": "2025-11-09T16:28:24",
+        "processing_time": 2.68,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -18312,7 +18064,7 @@
           "description": "a view of the mountains from a helicopter",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.63
+            "processing_time": 0.79
           }
         }
       ],
@@ -18838,12 +18590,7 @@
           "total_detections": 8
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.23
-      }
+      "transcription_id": 12
     },
     {
       "second": 49,
@@ -18855,11 +18602,11 @@
         1471,
         1500
       ],
-      "unified_description": "3D model of a scene with people, animals, buildings, trees, sky, and ground.",
+      "unified_description": "\nThe image depicts a man in a helicopter flying over a mountain range. The helicopter is captured from the rider's POV, providing an immersive perspective of the beautiful landscape below. \n\nIn this particular scene, the following objects/people are visible and their spatial relationships can be inferred:\n- Man riding helicopter\n- Mountain range in background\n- Trees growing on mountains\n- Camera mounted on helmets' stable positioning",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:57",
-        "processing_time": 2.53,
+        "timestamp": "2025-11-09T16:28:27",
+        "processing_time": 3.51,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -18873,7 +18620,7 @@
           "description": "a man in a helicopter flying over a mountain range",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.23
+            "processing_time": 1.44
           }
         }
       ],
@@ -19438,12 +19185,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.22
-      }
+      "transcription_id": 12
     },
     {
       "second": 50,
@@ -19455,11 +19197,11 @@
         1501,
         1530
       ],
-      "unified_description": "1-second scene including a view from the cockpit of a plane flying over a mountain range",
+      "unified_description": "1-second scene where a video camera is recording what it sees. The camera captures two people standing on a wide road or field. The surroundings are blurry, but the camera focuses on the two individuals, maintaining them in the frame as they move or stand still.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:58",
-        "processing_time": 2.51,
+        "timestamp": "2025-11-09T16:28:28",
+        "processing_time": 4.65,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -19473,7 +19215,7 @@
           "description": "a view from the cockpit of a plane flying over a mountain range",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.68
+            "processing_time": 1.53
           }
         }
       ],
@@ -20103,12 +19845,7 @@
           "total_detections": 9
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.28
-      }
+      "transcription_id": 12
     },
     {
       "second": 51,
@@ -20120,11 +19857,11 @@
         1531,
         1560
       ],
-      "unified_description": "3D model of a person in a red coat on a plane set in motion, with camera mounted on a tripod.",
+      "unified_description": "\n\n1. Content Description - What is happening in the scene:\n   - A man wearing a red jacket is sitting in an airplane. He seems relaxed as he enjoys the flight. The airplane is captured from a first-person perspective, providing an intimate view of the traveler. In addition to the main subject, the surrounding scenery and other objects in the airplane are also documented by the camera.\n\n2. Camera Perspective and Technical Details:\n   - The camera is positioned in such a way that it captures the scene from the traveler's point of view, creating an immersive experience for the viewers. The wide-angle lens helps to capture more of the interior airplane space, allowing us to see not only the man in the red jacket but also other passengers and objects within the plane.\n\n3. Video Production Style and Characteristics: \n   - The video appears to be a part of a travel vlog, showcasing the experience of flying with various on-board camera shots. This includes capturing the passenger's personal moments, such as their outfit, as well as the airplane's interior space and amenities.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:11:59",
-        "processing_time": 2.41,
+        "timestamp": "2025-11-09T16:28:32",
+        "processing_time": 7.17,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -20138,7 +19875,7 @@
           "description": "a man in a red jacket sitting in a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.94
+            "processing_time": 0.75
           }
         }
       ],
@@ -20378,12 +20115,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 12
     },
     {
       "second": 52,
@@ -20395,11 +20127,11 @@
         1561,
         1590
       ],
-      "unified_description": "1-second scene showing aerial view of outdoor landscape and possibly some people or objects in it.",
+      "unified_description": "\n\nVideo Description: The image features an overhead view of a cockpit inside a plane flying high above a body of water. Within the scene, there are several objects and people visible. Some details include the presence of a small plane, a person sitting in the pilot seat, a clock on the wall, and a couple of other items. The camera perspective appears to be mounted on the body of the person inside the plane, providing a first-person view of the cockpit.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:01",
-        "processing_time": 2.37,
+        "timestamp": "2025-11-09T16:28:34",
+        "processing_time": 5.78,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -20413,7 +20145,7 @@
           "description": "a view from the cockpit of a plane flying over a lake",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.13
+            "processing_time": 1.52
           }
         }
       ],
@@ -20692,12 +20424,7 @@
           "total_detections": 4
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 13
     },
     {
       "second": 53,
@@ -20709,11 +20436,11 @@
         1591,
         1620
       ],
-      "unified_description": "2.6 seconds of video showing an outdoor scene with several people",
+      "unified_description": "1-second scene including a lake, handheld camera, and GoPro-style action camera.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:01",
-        "processing_time": 2.36,
+        "timestamp": "2025-11-09T16:28:35",
+        "processing_time": 5.32,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -20727,7 +20454,7 @@
           "description": "a view of a lake from a plane",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.66
+            "processing_time": 1.13
           }
         }
       ],
@@ -20939,12 +20666,7 @@
           "total_detections": 0
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.27
-      }
+      "transcription_id": 13
     },
     {
       "second": 54,
@@ -20956,11 +20678,11 @@
         1621,
         1650
       ],
-      "unified_description": "1-second scene featuring handheld camera capturing action camera footage.",
+      "unified_description": "1-second scene featuring a plane flying over a lake with mountains in the background",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:03",
-        "processing_time": 2.25,
+        "timestamp": "2025-11-09T16:28:36",
+        "processing_time": 2.47,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -20974,7 +20696,7 @@
           "description": "a plane flying over a lake with mountains in the background",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.81
+            "processing_time": 1.21
           }
         }
       ],
@@ -21292,12 +21014,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.19
-      }
+      "transcription_id": 13
     },
     {
       "second": 55,
@@ -21309,11 +21026,11 @@
         1651,
         1680
       ],
-      "unified_description": "1 second left to right",
+      "unified_description": "1 second video featuring a plane, a lake, and some mountains. The camera is capturing first-person perspective footage, making it feel like the viewer is in the cockpit of the plane. There's some motion blur visible due to the camera panning to follow the plane's movement.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:04",
-        "processing_time": 2.14,
+        "timestamp": "2025-11-09T16:28:39",
+        "processing_time": 2.96,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -21327,7 +21044,7 @@
           "description": "a plane flying over a lake with mountains in the background",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 1.15
+            "processing_time": 1.56
           }
         }
       ],
@@ -21671,12 +21388,7 @@
           "total_detections": 7
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.21
-      }
+      "transcription_id": 13
     },
     {
       "second": 56,
@@ -21688,11 +21400,11 @@
         1681,
         1710
       ],
-      "unified_description": "10-second summary of the entire scene: In this short video, we see a person riding in a helicopter flying over a lake. The camera captures the motion of the chopper as it hovers above the water. Nearby, there are two backpacks, possibly belonging to people enjoying their time by the lake.",
+      "unified_description": "3rd person perspective, camera on tripod, image stabilization on, field of view is wide-angle, no technical artifacts evident.",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:06",
-        "processing_time": 3.24,
+        "timestamp": "2025-11-09T16:28:40",
+        "processing_time": 3.29,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -21706,7 +21418,7 @@
           "description": "a man in a helicopter flying over a lake",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.77
+            "processing_time": 1.44
           }
         }
       ],
@@ -22141,12 +21853,7 @@
           "total_detections": 4
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.23
-      }
+      "transcription_id": 14
     },
     {
       "second": 57,
@@ -22158,11 +21865,11 @@
         1711,
         1740
       ],
-      "unified_description": "1-second scene, including:\n   - A man in a boat is driving through the water",
+      "unified_description": "3rd person POV camera, wide-angle lens, stable camera positioning, action camera setup, outdoor setting, natural lighting",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:06",
-        "processing_time": 2.57,
+        "timestamp": "2025-11-09T16:28:40",
+        "processing_time": 3.33,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -22176,7 +21883,7 @@
           "description": "a man in a boat is driving through the water",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.69
+            "processing_time": 0.83
           }
         }
       ],
@@ -22481,12 +22188,7 @@
           "total_detections": 3
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.32
-      }
+      "transcription_id": 14
     },
     {
       "second": 58,
@@ -22498,11 +22200,11 @@
         1741,
         1770
       ],
-      "unified_description": "1-second scene showing a person riding a boat down a river, captured using a camera mounted on a backpack. The footage appears stable, with no signs of motion blur or other technical artifacts.",
+      "unified_description": "1-second scene featuring a man driving a boat on a river",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:08",
-        "processing_time": 2.6,
+        "timestamp": "2025-11-09T16:28:42",
+        "processing_time": 2.29,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -22516,7 +22218,7 @@
           "description": "a man driving a boat on a river",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.87
+            "processing_time": 1.16
           }
         }
       ],
@@ -22860,12 +22562,7 @@
           "total_detections": 2
         }
       ],
-      "transcription": "",
-      "transcription_metadata": {
-        "model": "base",
-        "language": "en",
-        "processing_time": 0.2
-      }
+      "transcription_id": 14
     },
     {
       "second": 59,
@@ -22877,11 +22574,11 @@
         1771,
         1798
       ],
-      "unified_description": "10-second scene including a man in a helicopter cockpit",
+      "unified_description": "\n- A 1-second scene featuring a man in a helicopter cockpit",
       "llava_metadata": {
         "model": "bakllava",
-        "timestamp": "2025-11-09T16:12:09",
-        "processing_time": 2.26,
+        "timestamp": "2025-11-09T16:28:43",
+        "processing_time": 2.33,
         "note": "LLaVA processed with text only"
       },
       "blip_descriptions": [
@@ -22895,7 +22592,7 @@
           "description": "a man in a helicopter cockpit is seen",
           "blip_metadata": {
             "model": "Salesforce/blip-image-captioning-base",
-            "processing_time": 0.88
+            "processing_time": 0.97
           }
         }
       ],
@@ -23200,11 +22897,1972 @@
           "total_detections": 1
         }
       ],
+      "transcription_id": 14
+    }
+  ],
+  "transcriptions": [
+    {
+      "id": 0,
+      "time_range": [
+        0,
+        5
+      ],
+      "transcription": "Luke here with the Outdoor Boys YouTube channel and welcome to Alaska. Me and my boys are gonna",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 12.89
+      }
+    },
+    {
+      "id": 1,
+      "time_range": [
+        4,
+        9
+      ],
+      "transcription": "Me and my boys are going to be dropped off by a float plane and camp here for the next three days. We're going to be",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 4.98
+      }
+    },
+    {
+      "id": 2,
+      "time_range": [
+        8,
+        13
+      ],
+      "transcription": "We're gonna be fishing for Dolly Vardin, Lake Trout, an Arctic Grailing, hiking.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.5
+      }
+    },
+    {
+      "id": 3,
+      "time_range": [
+        12,
+        17
+      ],
+      "transcription": "Hiking, pack rafting, and exploring the homestead of Dick Prennicky, the original bush",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.43
+      }
+    },
+    {
+      "id": 4,
+      "time_range": [
+        16,
+        21
+      ],
+      "transcription": "the original bush crafting youtuber.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.24
+      }
+    },
+    {
+      "id": 5,
+      "time_range": [
+        20,
+        25
+      ],
+      "transcription": "There's your plane.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.26
+      }
+    },
+    {
+      "id": 6,
+      "time_range": [
+        24,
+        29
+      ],
+      "transcription": "Really funny.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.78
+      }
+    },
+    {
+      "id": 7,
+      "time_range": [
+        28,
+        33
+      ],
+      "transcription": "Thank you. Take care. Bye.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.57
+      }
+    },
+    {
+      "id": 8,
+      "time_range": [
+        32,
+        37
+      ],
       "transcription": "",
-      "transcription_metadata": {
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.19
+      }
+    },
+    {
+      "id": 9,
+      "time_range": [
+        36,
+        41
+      ],
+      "transcription": "",
+      "metadata": {
         "model": "base",
         "language": "en",
         "processing_time": 0.21
+      }
+    },
+    {
+      "id": 10,
+      "time_range": [
+        40,
+        45
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.22
+      }
+    },
+    {
+      "id": 11,
+      "time_range": [
+        44,
+        49
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.22
+      }
+    },
+    {
+      "id": 12,
+      "time_range": [
+        48,
+        53
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.22
+      }
+    },
+    {
+      "id": 13,
+      "time_range": [
+        52,
+        57
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.23
+      }
+    },
+    {
+      "id": 14,
+      "time_range": [
+        56,
+        61
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 61.49
+      }
+    },
+    {
+      "id": 15,
+      "time_range": [
+        60,
+        65
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.23
+      }
+    },
+    {
+      "id": 16,
+      "time_range": [
+        64,
+        69
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.31
+      }
+    },
+    {
+      "id": 17,
+      "time_range": [
+        68,
+        73
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.31
+      }
+    },
+    {
+      "id": 18,
+      "time_range": [
+        72,
+        77
+      ],
+      "transcription": "Well guys that's it we're all by our side.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.34
+      }
+    },
+    {
+      "id": 19,
+      "time_range": [
+        76,
+        81
+      ],
+      "transcription": "We're all by ourselves. He's not going to come and get us for three days. Welcome to Twins.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.56
+      }
+    },
+    {
+      "id": 20,
+      "time_range": [
+        80,
+        85
+      ],
+      "transcription": "Welcome to Twin Lakes We had to fly about an hour",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.37
+      }
+    },
+    {
+      "id": 21,
+      "time_range": [
+        84,
+        89
+      ],
+      "transcription": "to fly about an hour and a half in a float plane to get here and this is very much room",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.44
+      }
+    },
+    {
+      "id": 22,
+      "time_range": [
+        88,
+        93
+      ],
+      "transcription": "very much remote Alaskan wilderness. Okay, whether forecast is is gonna be raining on.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.46
+      }
+    },
+    {
+      "id": 23,
+      "time_range": [
+        92,
+        97
+      ],
+      "transcription": "going to be raining on and off so I don't want to find a place to build my shelter.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.47
+      }
+    },
+    {
+      "id": 24,
+      "time_range": [
+        96,
+        101
+      ],
+      "transcription": "All right, you guys like this spot huh?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.35
+      }
+    },
+    {
+      "id": 25,
+      "time_range": [
+        100,
+        105
+      ],
+      "transcription": "this spot huh let's drop it you guys think you can go grab the other stuff",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.42
+      }
+    },
+    {
+      "id": 26,
+      "time_range": [
+        104,
+        109
+      ],
+      "transcription": "stuff.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.24
+      }
+    },
+    {
+      "id": 27,
+      "time_range": [
+        108,
+        113
+      ],
+      "transcription": "the the",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 28,
+      "time_range": [
+        112,
+        117
+      ],
+      "transcription": "that can see you and your",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 27.63
+      }
+    },
+    {
+      "id": 29,
+      "time_range": [
+        116,
+        121
+      ],
+      "transcription": "Yeah, I like it. Go nailing.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.96
+      }
+    },
+    {
+      "id": 30,
+      "time_range": [
+        120,
+        125
+      ],
+      "transcription": "Tommy, you're going fishing? Grab your bear spray.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.43
+      }
+    },
+    {
+      "id": 31,
+      "time_range": [
+        124,
+        129
+      ],
+      "transcription": "You have your bear spray.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 32,
+      "time_range": [
+        128,
+        133
+      ],
+      "transcription": "It's nothing toob.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.33
+      }
+    },
+    {
+      "id": 33,
+      "time_range": [
+        132,
+        137
+      ],
+      "transcription": "Oh god\u5929 Oh god",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 2.35
+      }
+    },
+    {
+      "id": 34,
+      "time_range": [
+        136,
+        141
+      ],
+      "transcription": "Get in there. Yes! Hurry, get in the wall! Yes! Yes!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.56
+      }
+    },
+    {
+      "id": 35,
+      "time_range": [
+        140,
+        145
+      ],
+      "transcription": "Yeah. Oh yeah. Oh, I need to...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.71
+      }
+    },
+    {
+      "id": 36,
+      "time_range": [
+        144,
+        149
+      ],
+      "transcription": "Let's have line out, let's have line out. That is a chart, that's a dollar.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.58
+      }
+    },
+    {
+      "id": 37,
+      "time_range": [
+        148,
+        153
+      ],
+      "transcription": "That's a Dolly Barton. You ready to eat it for dinner? Yep. Okay. Also I can bonk them.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.68
+      }
+    },
+    {
+      "id": 38,
+      "time_range": [
+        152,
+        157
+      ],
+      "transcription": "Also I can bump behind it. I have a fish blancher now. So that right there, that's a deli varten.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.64
+      }
+    },
+    {
+      "id": 39,
+      "time_range": [
+        156,
+        161
+      ],
+      "transcription": "to Dolly Barton. See how he's got the pink spot? Oh yeah. He's a member of the char family. Okay.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 40,
+      "time_range": [
+        160,
+        165
+      ],
+      "transcription": "Okay, there you go. Go, go.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.44
+      }
+    },
+    {
+      "id": 41,
+      "time_range": [
+        164,
+        169
+      ],
+      "transcription": "There you go, there's your dinner buddy. Yeah!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.49
+      }
+    },
+    {
+      "id": 42,
+      "time_range": [
+        168,
+        173
+      ],
+      "transcription": "Oh, there's a dolly isn't it? Yeah, there's a dolly of art. Nice.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.63
+      }
+    },
+    {
+      "id": 43,
+      "time_range": [
+        172,
+        177
+      ],
+      "transcription": "about 50 yea see ya Okay I win it c'mon",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.25
+      }
+    },
+    {
+      "id": 44,
+      "time_range": [
+        176,
+        181
+      ],
+      "transcription": "Tom, let me see what you got. You got a dolly.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 45,
+      "time_range": [
+        180,
+        185
+      ],
+      "transcription": "Oh, it's another lovely dolly Sharon let this one go. This is weird",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 46,
+      "time_range": [
+        184,
+        189
+      ],
+      "transcription": "This one goes, it's we already got a fish.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.45
+      }
+    },
+    {
+      "id": 47,
+      "time_range": [
+        188,
+        193
+      ],
+      "transcription": "they're actually never blind hey hey",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.56
+      }
+    },
+    {
+      "id": 48,
+      "time_range": [
+        192,
+        197
+      ],
+      "transcription": "Hey, nice. Alright, we'll get another one.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.48
+      }
+    },
+    {
+      "id": 49,
+      "time_range": [
+        196,
+        201
+      ],
+      "transcription": "Hey Tommy I want to make a",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.41
+      }
+    },
+    {
+      "id": 50,
+      "time_range": [
+        200,
+        205
+      ],
+      "transcription": "Hey Tommy, I'm gonna make lunch, you wanna stay in fish? Yup.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 51,
+      "time_range": [
+        204,
+        209
+      ],
+      "transcription": "\ub3c4\u0441\u0430-Dortey. Congratulations. Okay.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.42
+      }
+    },
+    {
+      "id": 52,
+      "time_range": [
+        208,
+        213
+      ],
+      "transcription": "Alright, what are with this guy's been eating his stomachs full? Little...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 53,
+      "time_range": [
+        212,
+        217
+      ],
+      "transcription": "little mosquitoes and flies just thousands and thousands of bugs",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 54,
+      "time_range": [
+        216,
+        221
+      ],
+      "transcription": "There we go.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.4
+      }
+    },
+    {
+      "id": 55,
+      "time_range": [
+        220,
+        225
+      ],
+      "transcription": "Hi",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.16
+      }
+    },
+    {
+      "id": 56,
+      "time_range": [
+        224,
+        229
+      ],
+      "transcription": "Hi, forgot.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.53
+      }
+    },
+    {
+      "id": 57,
+      "time_range": [
+        228,
+        233
+      ],
+      "transcription": "I think you're full. That's what chocolate makes. You're a bit like...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.76
+      }
+    },
+    {
+      "id": 58,
+      "time_range": [
+        232,
+        237
+      ],
+      "transcription": "You're just like That's hot. I just hold it no",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.53
+      }
+    },
+    {
+      "id": 59,
+      "time_range": [
+        236,
+        241
+      ],
+      "transcription": "Just hold it and the warm up your hands first.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.51
+      }
+    },
+    {
+      "id": 60,
+      "time_range": [
+        240,
+        245
+      ],
+      "transcription": "Oh my god, my god. Put all your shells in here so we don't attract bears and stuff.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 3.55
+      }
+    },
+    {
+      "id": 61,
+      "time_range": [
+        244,
+        249
+      ],
+      "transcription": "I wouldn't stop. Yeah.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.0
+      }
+    },
+    {
+      "id": 62,
+      "time_range": [
+        248,
+        253
+      ],
+      "transcription": "I'm sure you guys are pretty hungry, right? Oh yeah, please.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.58
+      }
+    },
+    {
+      "id": 63,
+      "time_range": [
+        252,
+        257
+      ],
+      "transcription": "please yeah and then at the other bite",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.47
+      }
+    },
+    {
+      "id": 64,
+      "time_range": [
+        256,
+        261
+      ],
+      "transcription": "I don't feel it!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.02
+      }
+    },
+    {
+      "id": 65,
+      "time_range": [
+        260,
+        265
+      ],
+      "transcription": "5",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.44
+      }
+    },
+    {
+      "id": 66,
+      "time_range": [
+        264,
+        269
+      ],
+      "transcription": "Put that fish in there.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.54
+      }
+    },
+    {
+      "id": 67,
+      "time_range": [
+        268,
+        273
+      ],
+      "transcription": "fish in the oiling broth.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.66
+      }
+    },
+    {
+      "id": 68,
+      "time_range": [
+        272,
+        277
+      ],
+      "transcription": "actionable",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.06
+      }
+    },
+    {
+      "id": 69,
+      "time_range": [
+        276,
+        281
+      ],
+      "transcription": "Are you ready for some some ramen flavored dolly here?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 70,
+      "time_range": [
+        280,
+        285
+      ],
+      "transcription": "Yeah, that's good. Wing. Dolly tastes a lot like a trowel or something.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.76
+      }
+    },
+    {
+      "id": 71,
+      "time_range": [
+        284,
+        289
+      ],
+      "transcription": "I got a trout or salmon. Yeah. Do you want a little salt on them?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 72,
+      "time_range": [
+        288,
+        293
+      ],
+      "transcription": "Salt there? Oh yeah, little salt and pepper",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 73,
+      "time_range": [
+        292,
+        297
+      ],
+      "transcription": "A little salt and pepper is good. Oh. Alright.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.67
+      }
+    },
+    {
+      "id": 74,
+      "time_range": [
+        296,
+        301
+      ],
+      "transcription": "Alright, I'll do some dishes. Ooh!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.5
+      }
+    },
+    {
+      "id": 75,
+      "time_range": [
+        300,
+        305
+      ],
+      "transcription": "Oh, look at that. That's nice.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.49
+      }
+    },
+    {
+      "id": 76,
+      "time_range": [
+        304,
+        309
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.51
+      }
+    },
+    {
+      "id": 77,
+      "time_range": [
+        308,
+        313
+      ],
+      "transcription": "Oh, you got one!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.4
+      }
+    },
+    {
+      "id": 78,
+      "time_range": [
+        312,
+        317
+      ],
+      "transcription": "What the hell you got one? Good job, Tom! What Tom's doing pretty well, he just landed another dolly...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.7
+      }
+    },
+    {
+      "id": 79,
+      "time_range": [
+        316,
+        321
+      ],
+      "transcription": "landed another dolly down at the stream.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.43
+      }
+    },
+    {
+      "id": 80,
+      "time_range": [
+        320,
+        325
+      ],
+      "transcription": "Sun's come out and it's beautiful but we've got more rain.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.54
+      }
+    },
+    {
+      "id": 81,
+      "time_range": [
+        324,
+        329
+      ],
+      "transcription": "got more rain coming in about 30 minutes maybe an hour. It's how it is.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 82,
+      "time_range": [
+        328,
+        333
+      ],
+      "transcription": "It's how it is if you don't like the weather in Alaska, wait five minutes.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.59
+      }
+    },
+    {
+      "id": 83,
+      "time_range": [
+        332,
+        337
+      ],
+      "transcription": "I am blind. It's really blind.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.46
+      }
+    },
+    {
+      "id": 84,
+      "time_range": [
+        336,
+        341
+      ],
+      "transcription": "Sorry, Narena, get in it. I have no flaws, look angry. Yeah.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.64
+      }
+    },
+    {
+      "id": 85,
+      "time_range": [
+        340,
+        345
+      ],
+      "transcription": "Yeah, it looks like it might rain a little bit.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.49
+      }
+    },
+    {
+      "id": 86,
+      "time_range": [
+        344,
+        349
+      ],
+      "transcription": "Rain's picking up. I think I'm gonna retreat.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.52
+      }
+    },
+    {
+      "id": 87,
+      "time_range": [
+        348,
+        353
+      ],
+      "transcription": "retreat!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.02
+      }
+    },
+    {
+      "id": 88,
+      "time_range": [
+        352,
+        357
+      ],
+      "transcription": "You're gonna get ready for better, you're gonna wait a little bit. Wait a little bit. You guys wanna have a little...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.71
+      }
+    },
+    {
+      "id": 89,
+      "time_range": [
+        356,
+        361
+      ],
+      "transcription": "You guys wanna have a little dessert while we wait? Oh yeah, what is it? We got some brownies.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.67
+      }
+    },
+    {
+      "id": 90,
+      "time_range": [
+        360,
+        365
+      ],
+      "transcription": "some brownies. Yes! We're allowed one a day.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.57
+      }
+    },
+    {
+      "id": 91,
+      "time_range": [
+        364,
+        369
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.47
+      }
+    },
+    {
+      "id": 92,
+      "time_range": [
+        368,
+        373
+      ],
+      "transcription": "The salmon come up these rivers and into lakes to spawn.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.54
+      }
+    },
+    {
+      "id": 93,
+      "time_range": [
+        372,
+        377
+      ],
+      "transcription": "to spawn and the trout loved to feast on the salmon eggs. So salmon eggs make X.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.6
+      }
+    },
+    {
+      "id": 94,
+      "time_range": [
+        376,
+        381
+      ],
+      "transcription": "Timing eggs make excellent Hey,",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.31
+      }
+    },
+    {
+      "id": 95,
+      "time_range": [
+        380,
+        385
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.39
+      }
+    },
+    {
+      "id": 96,
+      "time_range": [
+        384,
+        389
+      ],
+      "transcription": "The environment is so cool.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.92
+      }
+    },
+    {
+      "id": 97,
+      "time_range": [
+        388,
+        393
+      ],
+      "transcription": "You're just walkingometimes out on my.. Here's A",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.05
+      }
+    },
+    {
+      "id": 98,
+      "time_range": [
+        392,
+        397
+      ],
+      "transcription": "He is 18 inches. Now we'll check out his girth. 9 and...",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.66
+      }
+    },
+    {
+      "id": 99,
+      "time_range": [
+        396,
+        401
+      ],
+      "transcription": "9.5 inches round. Here's fat here. And anything.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.59
+      }
+    },
+    {
+      "id": 100,
+      "time_range": [
+        400,
+        405
+      ],
+      "transcription": "You pulled the fin. See? Look at that.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.58
+      }
+    },
+    {
+      "id": 101,
+      "time_range": [
+        404,
+        409
+      ],
+      "transcription": "Look at that that is a beautiful Arctic Grailing. Really a lot of ghosts.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.7
+      }
+    },
+    {
+      "id": 102,
+      "time_range": [
+        408,
+        413
+      ],
+      "transcription": "We're a lot of go this what is",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.56
+      }
+    },
+    {
+      "id": 103,
+      "time_range": [
+        412,
+        417
+      ],
+      "transcription": "That was pretty cool.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.48
+      }
+    },
+    {
+      "id": 104,
+      "time_range": [
+        416,
+        421
+      ],
+      "transcription": "Cool. Yeah, look at that.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.55
+      }
+    },
+    {
+      "id": 105,
+      "time_range": [
+        420,
+        425
+      ],
+      "transcription": "Yeah, look at that nice it we hold this for",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.54
+      }
+    },
+    {
+      "id": 106,
+      "time_range": [
+        424,
+        429
+      ],
+      "transcription": "There you go. There you go. Last number three, tall.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.64
+      }
+    },
+    {
+      "id": 107,
+      "time_range": [
+        428,
+        433
+      ],
+      "transcription": "Last number three, Tom. Number three for me. There you go.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.67
+      }
+    },
+    {
+      "id": 108,
+      "time_range": [
+        432,
+        437
+      ],
+      "transcription": "Hey guys",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.43
+      }
+    },
+    {
+      "id": 109,
+      "time_range": [
+        436,
+        441
+      ],
+      "transcription": "Let's see, it's like that. Oh, my God. Oh, my God.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.71
+      }
+    },
+    {
+      "id": 110,
+      "time_range": [
+        440,
+        445
+      ],
+      "transcription": "Haha",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.25
+      }
+    },
+    {
+      "id": 111,
+      "time_range": [
+        444,
+        449
+      ],
+      "transcription": "It's a little cramped but got three bags set up and I got an emergency bivvy",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.63
+      }
+    },
+    {
+      "id": 112,
+      "time_range": [
+        448,
+        453
+      ],
+      "transcription": "Emergency bivvy around each bag so if a little wind or rain gets under the tarp it won't be a big deal",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.68
+      }
+    },
+    {
+      "id": 113,
+      "time_range": [
+        452,
+        457
+      ],
+      "transcription": "it won't be a big deal.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.5
+      }
+    },
+    {
+      "id": 114,
+      "time_range": [
+        456,
+        461
+      ],
+      "transcription": "Alright guys, it's late. We're going to bed. We're gonna see you guys in the morning.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.7
+      }
+    },
+    {
+      "id": 115,
+      "time_range": [
+        460,
+        465
+      ],
+      "transcription": "in the morning.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.64
+      }
+    },
+    {
+      "id": 116,
+      "time_range": [
+        464,
+        469
+      ],
+      "transcription": "Do you want me to walk away?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.35
+      }
+    },
+    {
+      "id": 117,
+      "time_range": [
+        468,
+        473
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.47
+      }
+    },
+    {
+      "id": 118,
+      "time_range": [
+        472,
+        477
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.48
+      }
+    },
+    {
+      "id": 119,
+      "time_range": [
+        476,
+        481
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 120,
+      "time_range": [
+        480,
+        485
+      ],
+      "transcription": "The charger.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.07
+      }
+    },
+    {
+      "id": 121,
+      "time_range": [
+        484,
+        489
+      ],
+      "transcription": "Here's your hot chocolate. We're gonna hard boil three eggs, and then we're gonna steam three.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 122,
+      "time_range": [
+        488,
+        493
+      ],
+      "transcription": "we're gonna steam three eggs. Hey.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.56
+      }
+    },
+    {
+      "id": 123,
+      "time_range": [
+        492,
+        497
+      ],
+      "transcription": "Okay, let's get down here.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.53
+      }
+    },
+    {
+      "id": 124,
+      "time_range": [
+        496,
+        501
+      ],
+      "transcription": "okay",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.79
+      }
+    },
+    {
+      "id": 125,
+      "time_range": [
+        500,
+        505
+      ],
+      "transcription": "little egg sandwich with a hard boiled egg",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.52
+      }
+    },
+    {
+      "id": 126,
+      "time_range": [
+        504,
+        509
+      ],
+      "transcription": "Oh my goodness. You eat like an anaconda.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.62
+      }
+    },
+    {
+      "id": 127,
+      "time_range": [
+        508,
+        513
+      ],
+      "transcription": "an anaconda.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.49
+      }
+    },
+    {
+      "id": 128,
+      "time_range": [
+        512,
+        517
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.6
+      }
+    },
+    {
+      "id": 129,
+      "time_range": [
+        516,
+        521
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.48
+      }
+    },
+    {
+      "id": 130,
+      "time_range": [
+        520,
+        525
+      ],
+      "transcription": "Now it looks like a laker.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.58
+      }
+    },
+    {
+      "id": 131,
+      "time_range": [
+        524,
+        529
+      ],
+      "transcription": "Yeah, look at that. Kind of a small average size lake.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.66
+      }
+    },
+    {
+      "id": 132,
+      "time_range": [
+        528,
+        533
+      ],
+      "transcription": "average size lake trout right there they get up to like 30 40 pounds",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.61
+      }
+    },
+    {
+      "id": 133,
+      "time_range": [
+        532,
+        537
+      ],
+      "transcription": "Well, we want to do a little like spl-",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.58
+      }
+    },
+    {
+      "id": 134,
+      "time_range": [
+        536,
+        541
+      ],
+      "transcription": "want to do a little exploring so we're gonna bust the raft out.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.63
+      }
+    },
+    {
+      "id": 135,
+      "time_range": [
+        540,
+        545
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.48
+      }
+    },
+    {
+      "id": 136,
+      "time_range": [
+        544,
+        549
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.64
+      }
+    },
+    {
+      "id": 137,
+      "time_range": [
+        548,
+        553
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.62
+      }
+    },
+    {
+      "id": 138,
+      "time_range": [
+        552,
+        557
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.57
+      }
+    },
+    {
+      "id": 139,
+      "time_range": [
+        556,
+        561
+      ],
+      "transcription": "Just failed Are we different? Where is that used to the way we worked? He's just sayin",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.79
+      }
+    },
+    {
+      "id": 140,
+      "time_range": [
+        560,
+        565
+      ],
+      "transcription": "You just sit down into the sea. Okay, then put your head.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.76
+      }
+    },
+    {
+      "id": 141,
+      "time_range": [
+        564,
+        569
+      ],
+      "transcription": "and then flip real quick.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.41
+      }
+    },
+    {
+      "id": 142,
+      "time_range": [
+        568,
+        573
+      ],
+      "transcription": "Smoke.. Venow!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.14
+      }
+    },
+    {
+      "id": 143,
+      "time_range": [
+        572,
+        577
+      ],
+      "transcription": "Thanks!",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 144,
+      "time_range": [
+        576,
+        581
+      ],
+      "transcription": "How you doing Nathan? You okay?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.72
+      }
+    },
+    {
+      "id": 145,
+      "time_range": [
+        580,
+        585
+      ],
+      "transcription": "You guys want to go see a cool cabin?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.78
+      }
+    },
+    {
+      "id": 146,
+      "time_range": [
+        584,
+        589
+      ],
+      "transcription": "Where you gonna see Dick Priniky's cabin?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.78
+      }
+    },
+    {
+      "id": 147,
+      "time_range": [
+        588,
+        593
+      ],
+      "transcription": "We're doing good, swimming water.",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 1.87
+      }
+    },
+    {
+      "id": 148,
+      "time_range": [
+        592,
+        597
+      ],
+      "transcription": "Sorry, how about a need?",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.71
+      }
+    },
+    {
+      "id": 149,
+      "time_range": [
+        596,
+        600.0
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.87
+      }
+    },
+    {
+      "id": 150,
+      "time_range": [
+        600,
+        600.0
+      ],
+      "transcription": "",
+      "metadata": {
+        "model": "base",
+        "language": "en",
+        "processing_time": 0.53,
+        "error": "Video has no audio track or audio extraction failed"
       }
     }
   ]

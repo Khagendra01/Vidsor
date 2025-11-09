@@ -27,6 +27,8 @@ OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "bakllava"
 BLIP_MODEL = "Salesforce/blip-image-captioning-base"
 WHISPER_MODEL = "base"  # Fast and accurate balance
+AUDIO_SEGMENT_DURATION = 5  # Transcribe 5-second segments for better accuracy (optimal for Whisper)
+AUDIO_OVERLAP = 1  # 1 second overlap between segments
 MAX_WORKERS = 3
 
 
@@ -290,7 +292,7 @@ class SegmentTreeGenerator:
                 }
             }
     
-    def transcribe_audio_segment(self, second_idx: int) -> Dict:
+    def transcribe_audio_segment(self, start_sec: float, end_sec: float) -> Dict:
         """Transcribe audio for a specific second of video using ffmpeg"""
         if self.whisper_model is None:
             return {
@@ -306,9 +308,7 @@ class SegmentTreeGenerator:
         start_time = time.time()
         temp_audio_path = None
         try:
-            # Extract 1-second audio segment using ffmpeg
-            start_sec = second_idx
-            end_sec = min(second_idx + 1, self.video_duration) if self.video_duration else second_idx + 1
+            # Use provided start_sec and end_sec (already calculated with overlap)
             
             # Create temporary file for audio segment
             with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as tmp_file:
@@ -327,17 +327,41 @@ class SegmentTreeGenerator:
                 temp_audio_path
             ]
             
-            # Run ffmpeg (suppress output)
-            subprocess.run(
+            # Run ffmpeg (capture stderr to check for errors)
+            ffmpeg_result = subprocess.run(
                 ffmpeg_cmd,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                stderr=subprocess.PIPE,
                 check=True
             )
             
-            # Transcribe with Whisper
-            result = self.whisper_model.transcribe(temp_audio_path, language="en", task="transcribe")
-            transcription_text = result["text"].strip()
+            # Validate audio file exists and has content
+            if not os.path.exists(temp_audio_path):
+                raise Exception("Audio file was not created by FFmpeg")
+            
+            file_size = os.path.getsize(temp_audio_path)
+            # For 5 seconds of 16kHz mono audio, expect at least ~160KB (16kHz * 2 bytes * 5 seconds)
+            # But allow smaller files in case of silence/compression
+            if file_size < 500:  # Less than 500 bytes is definitely invalid for 5-second segment
+                # Check stderr for clues
+                stderr_msg = ffmpeg_result.stderr.decode('utf-8', errors='ignore') if ffmpeg_result.stderr else ""
+                if "No audio stream" in stderr_msg or "Stream map" in stderr_msg:
+                    raise Exception(f"Video has no audio track or audio extraction failed")
+                raise Exception(f"Audio file too small ({file_size} bytes), likely empty or invalid")
+            
+            # Transcribe with Whisper (with better error handling)
+            transcription_text = ""
+            whisper_result = None
+            try:
+                whisper_result = self.whisper_model.transcribe(temp_audio_path, language="en", task="transcribe")
+                transcription_text = whisper_result["text"].strip()
+            except Exception as whisper_error:
+                # If Whisper fails, check if it's due to empty audio
+                if "reshape" in str(whisper_error).lower() or "0 elements" in str(whisper_error):
+                    transcription_text = ""  # Empty audio, no transcription
+                    # Continue without error - just empty transcription
+                else:
+                    raise  # Re-raise other Whisper errors
             
             # Clean up temporary file
             try:
@@ -352,7 +376,7 @@ class SegmentTreeGenerator:
                 "transcription": transcription_text,
                 "transcription_metadata": {
                     "model": WHISPER_MODEL,
-                    "language": result.get("language", "en"),
+                    "language": whisper_result.get("language", "en") if whisper_result else "en",
                     "processing_time": round(processing_time, 2)
                 }
             }
@@ -579,10 +603,7 @@ class SegmentTreeGenerator:
                 "note": "LLaVA processing disabled, using BLIP descriptions only"
             }
         
-        # Transcribe audio for this second
-        transcription_result = self.transcribe_audio_segment(second_idx)
-        
-        # Build second data
+        # Build second data (transcription will be added separately)
         second_data = {
             "second": second_idx,
             "time_range": [round(second_idx, 3), round(second_idx + 0.999, 3)],
@@ -590,9 +611,7 @@ class SegmentTreeGenerator:
             "unified_description": unified_description,
             "llava_metadata": llava_metadata,
             "blip_descriptions": blip_descriptions,
-            "detection_groups": detection_groups,
-            "transcription": transcription_result["transcription"],
-            "transcription_metadata": transcription_result["transcription_metadata"]
+            "detection_groups": detection_groups
         }
         
         return second_data
@@ -634,12 +653,69 @@ class SegmentTreeGenerator:
         # Sort by second index
         seconds_data.sort(key=lambda x: x["second"])
         
+        # Generate transcriptions with 1-second overlap
+        print("\nGenerating audio transcriptions with 1-second overlap...")
+        transcriptions = []
+        if self.video_duration and self.whisper_model:
+            step = AUDIO_SEGMENT_DURATION - AUDIO_OVERLAP  # 4 seconds step (5 sec duration - 1 sec overlap)
+            transcription_start = 0
+            
+            while transcription_start < self.video_duration:
+                transcription_end = min(transcription_start + AUDIO_SEGMENT_DURATION, self.video_duration)
+                
+                transcription_result = self.transcribe_audio_segment(transcription_start, transcription_end)
+                
+                transcriptions.append({
+                    "id": len(transcriptions),
+                    "time_range": [round(transcription_start, 2), round(transcription_end, 2)],
+                    "transcription": transcription_result["transcription"],
+                    "metadata": transcription_result["transcription_metadata"]
+                })
+                
+                print(f"Transcribed audio segment {len(transcriptions)}: {transcription_start:.1f}s - {transcription_end:.1f}s")
+                
+                # Move to next segment (with 1-second overlap)
+                transcription_start += step
+        
+        # Map each second to its transcription
+        # Find the transcription that best covers each second (prefer the one that starts closest)
+        for second_data in seconds_data:
+            second_idx = second_data["second"]
+            second_time = second_idx + 0.5  # Middle of the second
+            
+            # Find transcription that covers this second
+            best_transcription_id = None
+            best_distance = float('inf')
+            
+            for trans in transcriptions:
+                time_range = trans["time_range"]
+                if time_range[0] <= second_time <= time_range[1]:
+                    # This transcription covers the second
+                    distance = abs(time_range[0] - second_time)
+                    if distance < best_distance:
+                        best_distance = distance
+                        best_transcription_id = trans["id"]
+            
+            # If no exact match, find the closest one
+            if best_transcription_id is None:
+                for trans in transcriptions:
+                    time_range = trans["time_range"]
+                    # Check if second is near this transcription
+                    if abs(time_range[0] - second_time) < 3:  # Within 3 seconds
+                        distance = abs(time_range[0] - second_time)
+                        if distance < best_distance:
+                            best_distance = distance
+                            best_transcription_id = trans["id"]
+            
+            second_data["transcription_id"] = best_transcription_id
+        
         # Build output structure
         output_data = {
             "video": video_path,
             "fps": FPS,
             "tracker": self.tracker,
-            "seconds": seconds_data
+            "seconds": seconds_data,
+            "transcriptions": transcriptions
         }
         
         # Save output
