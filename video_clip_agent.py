@@ -79,17 +79,29 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         
         system_prompt = """You are a video analysis planner agent. Your job is to:
 1. Analyze user queries about video content
-2. Determine what type of search is needed (visual descriptions, audio transcriptions, object detection, or activities)
+2. Determine what type of search is needed (visual descriptions, audio transcriptions, object detection, activities, or semantic search)
 3. Use the available tools to find relevant moments
 4. Assess confidence in results
 5. Ask for clarification if the query is ambiguous, especially for audio-related queries
 
 Available query types:
-- "visual": Search visual descriptions (BLIP/unified)
-- "audio": Search audio transcriptions
-- "combined": Search both visual and audio
+- "visual": Search visual descriptions (BLIP/unified) using keywords
+- "audio": Search audio transcriptions using keywords
+- "combined": Search both visual and audio using keywords
+- "semantic": Use semantic similarity search (best for natural language, conceptual queries, or when exact keywords might not match)
 - "object": Find specific objects by class name
 - "activity": Check for specific activities (e.g., fishing, catching fish)
+
+Use "semantic" search when:
+- Query is in natural language (e.g., "man pointing at camera", "someone cooking food")
+- Query describes concepts or actions rather than exact words
+- Query might have synonyms or different phrasings
+- You want to find semantically similar content even if exact words don't match
+
+Use keyword-based search ("visual", "audio", "combined") when:
+- Query contains specific words that should match exactly
+- User is looking for exact phrases or terminology
+- Query is very specific and keyword matching is appropriate
 
 For audio queries, be especially careful and ask for clarification if:
 - The query uses ambiguous pronouns ("they", "he", "she", "it") without clear context
@@ -109,8 +121,9 @@ Examples of good queries:
 
 Return your analysis as JSON with:
 {
-    "query_type": "visual|audio|combined|object|activity",
-    "search_keywords": ["keyword1", "keyword2"],
+    "query_type": "visual|audio|combined|semantic|object|activity",
+    "search_keywords": ["keyword1", "keyword2"] (if not semantic),
+    "semantic_query": "full query text" (if semantic search),
     "object_class": "class_name" (if object search),
     "activity_name": "activity" (if activity search),
     "evidence_keywords": ["keyword1"] (if activity search, for stronger evidence),
@@ -148,19 +161,21 @@ Return your analysis as JSON with:
             if json_match:
                 plan = json.loads(json_match.group())
             else:
-                # Default plan
+                # Default plan - try semantic search as it's more flexible
                 plan = {
-                    "query_type": "combined",
-                    "search_keywords": query.split(),
+                    "query_type": "semantic",
+                    "semantic_query": query,
                     "confidence": 0.5,
-                    "needs_clarification": True,
-                    "clarification_question": "Could you clarify what specific moment you're looking for?"
+                    "needs_clarification": False
                 }
         
         if verbose:
             print("\n[PLAN] Extracted plan:")
             print(f"  Query Type: {plan.get('query_type', 'N/A')}")
-            print(f"  Search Keywords: {plan.get('search_keywords', [])}")
+            if plan.get('query_type') == 'semantic':
+                print(f"  Semantic Query: {plan.get('semantic_query', query)}")
+            else:
+                print(f"  Search Keywords: {plan.get('search_keywords', [])}")
             print(f"  Confidence: {plan.get('confidence', 0):.2f}")
             print(f"  Needs Clarification: {plan.get('needs_clarification', False)}")
         
@@ -204,8 +219,36 @@ Return your analysis as JSON with:
                 print("\n[EXECUTING] Performing search...")
             query_type = plan.get("query_type", "combined")
             search_keywords = plan.get("search_keywords", [])
+            semantic_query = plan.get("semantic_query", query)  # Use original query if not specified
             
-            if query_type == "visual":
+            if query_type == "semantic":
+                # Use semantic similarity search
+                if verbose:
+                    print(f"  [SEARCH] Semantic search for: '{semantic_query}'")
+                results = segment_tree.semantic_search(
+                    semantic_query,
+                    top_k=10,
+                    threshold=0.3,
+                    search_transcriptions=True,
+                    search_unified=True,
+                    verbose=verbose
+                )
+                search_results = results
+                if verbose:
+                    print(f"    Found {len(results)} semantic matches")
+                # Extract time ranges from semantic search results
+                for result in results:
+                    tr = result.get("time_range", [])
+                    if tr and len(tr) >= 2:
+                        time_ranges.append((tr[0], tr[1]))
+                        if verbose:
+                            score = result.get("score", 0)
+                            result_type = result.get("type", "unknown")
+                            text_snippet = result.get("text", "")[:60]
+                            print(f"      [{result_type}] Score: {score:.3f} | Time: {tr[0]:.1f}s - {tr[1]:.1f}s")
+                            print(f"        Text: {text_snippet}...")
+            
+            elif query_type == "visual":
                 # Search visual descriptions
                 if verbose:
                     print(f"  [SEARCH] Visual search for keywords: {search_keywords}")
@@ -310,6 +353,12 @@ Return your analysis as JSON with:
                 print(f"\n[RESULTS] Search completed:")
                 print(f"  Total search results: {len(search_results)}")
                 print(f"  Time ranges found: {len(time_ranges)}")
+                if time_ranges:
+                    print(f"  Time ranges:")
+                    for i, (start, end) in enumerate(time_ranges[:5], 1):
+                        print(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+                    if len(time_ranges) > 5:
+                        print(f"    ... and {len(time_ranges) - 5} more")
             
             if not search_results or not time_ranges:
                 confidence = 0.3
@@ -338,11 +387,18 @@ Return your analysis as JSON with:
         # Merge overlapping time ranges
         if time_ranges:
             original_count = len(time_ranges)
+            if verbose:
+                print(f"\n[MERGING] Merging {original_count} time ranges...")
+                print(f"  Before merge: {original_count} ranges")
             time_ranges = merge_time_ranges(time_ranges)
             if verbose:
-                print(f"\n[MERGING] Merged {original_count} time ranges into {len(time_ranges)} non-overlapping ranges")
+                print(f"  After merge: {len(time_ranges)} non-overlapping ranges")
+                print(f"  Merged ranges with 2.0s padding:")
                 for i, (start, end) in enumerate(time_ranges, 1):
-                    print(f"  Range {i}: {start:.1f}s - {end:.1f}s (duration: {end-start:.1f}s)")
+                    print(f"    Range {i}: {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+        else:
+            if verbose:
+                print("\n[MERGING] No time ranges to merge")
         
         return {
             **state,
@@ -419,12 +475,14 @@ def create_execution_agent():
         # Load video
         try:
             if verbose:
-                print(f"\n[LOADING] Opening video file...")
+                print(f"\n[LOADING] Opening video file: {video_path}")
             video = VideoFileClip(video_path)
             if verbose:
-                print(f"  Video duration: {video.duration:.2f}s")
+                print(f"[LOADING] Video loaded successfully:")
+                print(f"  Duration: {video.duration:.2f}s")
                 print(f"  FPS: {video.fps}")
                 print(f"  Resolution: {video.size}")
+                print(f"  Codec: {video.codec if hasattr(video, 'codec') else 'N/A'}")
         except Exception as e:
             if verbose:
                 print(f"[ERROR] Failed to load video: {str(e)}")
@@ -512,7 +570,17 @@ def create_clarification_node():
     
     def clarification_node(state: AgentState) -> AgentState:
         """Ask user for clarification."""
+        verbose = state.get("verbose", False)
         question = state.get("clarification_question", "Could you provide more details?")
+        
+        if verbose:
+            print("\n" + "=" * 60)
+            print("CLARIFIER: Asking for Clarification")
+            print("=" * 60)
+            print(f"Question: {question}")
+            print("\n[CLARIFIER] User needs to provide more information")
+            print("[CLARIFIER] Workflow ending - waiting for user response")
+        
         return {
             **state,
             "messages": state["messages"] + [
@@ -525,7 +593,23 @@ def create_clarification_node():
 
 def should_ask_clarification(state: AgentState) -> Literal["clarify", "execute"]:
     """Router: decide whether to ask for clarification or execute."""
-    if state.get("needs_clarification", False):
+    verbose = state.get("verbose", False)
+    needs_clarification = state.get("needs_clarification", False)
+    
+    if verbose:
+        print("\n" + "=" * 60)
+        print("ROUTING DECISION")
+        print("=" * 60)
+        print(f"Needs clarification: {needs_clarification}")
+        if needs_clarification:
+            print(f"Clarification question: {state.get('clarification_question', 'N/A')}")
+            print("[ROUTING] → Going to CLARIFIER")
+        else:
+            print(f"Confidence: {state.get('confidence', 0):.2f}")
+            print(f"Time ranges found: {len(state.get('time_ranges', []))}")
+            print("[ROUTING] → Going to EXECUTOR")
+    
+    if needs_clarification:
         return "clarify"
     return "execute"
 
@@ -577,8 +661,29 @@ def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "
 def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gpt-4o-mini", verbose: bool = True):
     """Run the video clip extraction agent with a user query."""
     
+    if verbose:
+        print("\n" + "=" * 60)
+        print("VIDEO CLIP EXTRACTION AGENT")
+        print("=" * 60)
+        print(f"Query: {query}")
+        print(f"Video: {video_path}")
+        print(f"Segment Tree: {json_path}")
+        print(f"Model: {model_name}")
+        print("\n[INITIALIZATION] Starting agent...")
+    
     # Create agent
+    if verbose:
+        print("[INITIALIZATION] Loading segment tree...")
     app, segment_tree = create_video_clip_agent(json_path, video_path, model_name)
+    
+    if verbose:
+        video_info = segment_tree.get_video_info()
+        print(f"[INITIALIZATION] Segment tree loaded:")
+        print(f"  Video duration: {video_info.get('duration_seconds', 0)} seconds")
+        print(f"  FPS: {video_info.get('fps', 0)}")
+        print(f"  Total frames: {video_info.get('total_frames', 0)}")
+        print(f"[INITIALIZATION] Workflow graph created")
+        print(f"[INITIALIZATION] Ready to process query\n")
     
     # Initial state
     initial_state = {
@@ -598,7 +703,12 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
     }
     
     # Run agent
+    if verbose:
+        print("[WORKFLOW] Invoking agent workflow...")
     result = app.invoke(initial_state)
+    
+    if verbose:
+        print("\n[WORKFLOW] Agent workflow completed")
     
     return result
 

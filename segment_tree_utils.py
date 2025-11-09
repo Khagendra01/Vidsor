@@ -989,9 +989,11 @@ class SegmentTreeQuery:
         
         return self._embedding_model
     
-    def _load_embeddings_from_cache(self) -> bool:
+    def _load_embeddings_from_cache(self, verbose: bool = True) -> bool:
         """Try to load embeddings from cache file. Returns True if successful."""
         if not self._cache_path.exists():
+            if verbose:
+                print(f"[CACHE] Cache file not found: {self._cache_path}")
             return False
         
         try:
@@ -1001,44 +1003,60 @@ class SegmentTreeQuery:
             
             if cache_mtime < json_mtime:
                 # JSON file was modified after cache, cache is stale
-                print("Cache file is older than JSON file, will recompute embeddings.")
+                if verbose:
+                    print(f"[CACHE] Cache file is older than JSON file (cache: {cache_mtime}, json: {json_mtime})")
+                    print("[CACHE] Will recompute embeddings.")
                 return False
             
             # Load from cache
-            print(f"Loading embeddings from cache: {self._cache_path}")
+            if verbose:
+                print(f"[CACHE] Loading embeddings from cache: {self._cache_path}")
             cache_data = np.load(self._cache_path, allow_pickle=True)
             
             self._transcription_embeddings = cache_data.get("transcription_embeddings")
             self._unified_description_embeddings = cache_data.get("unified_description_embeddings")
             self._embedding_metadata = cache_data["embedding_metadata"].item()
             
-            print("Embeddings loaded from cache successfully.")
+            if verbose:
+                trans_count = len(self._embedding_metadata.get("transcriptions", [])) if self._embedding_metadata else 0
+                unified_count = len(self._embedding_metadata.get("unified", [])) if self._embedding_metadata else 0
+                print(f"[CACHE] Embeddings loaded successfully:")
+                print(f"  Transcriptions: {trans_count}")
+                print(f"  Unified descriptions: {unified_count}")
             return True
         except Exception as e:
-            print(f"Error loading cache: {e}. Will recompute embeddings.")
+            if verbose:
+                print(f"[CACHE] Error loading cache: {e}. Will recompute embeddings.")
             return False
     
-    def _save_embeddings_to_cache(self):
+    def _save_embeddings_to_cache(self, verbose: bool = True):
         """Save computed embeddings to cache file."""
         try:
-            print(f"Saving embeddings to cache: {self._cache_path}")
+            if verbose:
+                print(f"[CACHE] Saving embeddings to cache: {self._cache_path}")
             np.savez(
                 self._cache_path,
                 transcription_embeddings=self._transcription_embeddings,
                 unified_description_embeddings=self._unified_description_embeddings,
                 embedding_metadata=self._embedding_metadata
             )
-            print("Embeddings saved to cache successfully.")
+            if verbose:
+                import os
+                file_size = os.path.getsize(self._cache_path) / 1024  # KB
+                print(f"[CACHE] Embeddings saved successfully ({file_size:.1f} KB)")
         except Exception as e:
-            print(f"Warning: Could not save embeddings to cache: {e}")
+            if verbose:
+                print(f"[CACHE] Warning: Could not save embeddings to cache: {e}")
     
-    def _compute_embeddings(self):
+    def _compute_embeddings(self, verbose: bool = True):
         """Compute embeddings for all transcriptions and unified descriptions."""
         if self._transcription_embeddings is not None:
+            if verbose:
+                print("[EMBEDDINGS] Embeddings already computed, skipping.")
             return  # Already computed
         
         # Try to load from cache first
-        if self._load_embeddings_from_cache():
+        if self._load_embeddings_from_cache(verbose=verbose):
             return
         
         model = self._get_embedding_model()
@@ -1072,23 +1090,33 @@ class SegmentTreeQuery:
                 })
         
         # Compute embeddings in batches
-        print(f"Computing embeddings for {len(transcription_texts)} transcriptions and {len(unified_texts)} unified descriptions...")
+        if verbose:
+            print(f"[EMBEDDINGS] Computing embeddings for {len(transcription_texts)} transcriptions and {len(unified_texts)} unified descriptions...")
+            print(f"[EMBEDDINGS] Using model: all-MiniLM-L6-v2 (384 dimensions)")
         
         if transcription_texts:
+            if verbose:
+                print(f"[EMBEDDINGS] Encoding {len(transcription_texts)} transcriptions...")
             self._transcription_embeddings = model.encode(
                 transcription_texts,
-                show_progress_bar=True,
+                show_progress_bar=verbose,
                 batch_size=32,
                 convert_to_numpy=True
             )
+            if verbose:
+                print(f"[EMBEDDINGS] Transcription embeddings shape: {self._transcription_embeddings.shape}")
         
         if unified_texts:
+            if verbose:
+                print(f"[EMBEDDINGS] Encoding {len(unified_texts)} unified descriptions...")
             self._unified_description_embeddings = model.encode(
                 unified_texts,
-                show_progress_bar=True,
+                show_progress_bar=verbose,
                 batch_size=32,
                 convert_to_numpy=True
             )
+            if verbose:
+                print(f"[EMBEDDINGS] Unified description embeddings shape: {self._unified_description_embeddings.shape}")
         
         # Store metadata
         self._embedding_metadata = {
@@ -1096,15 +1124,17 @@ class SegmentTreeQuery:
             "unified": unified_metadata
         }
         
-        print("Embeddings computed successfully.")
+        if verbose:
+            print("[EMBEDDINGS] Embeddings computed successfully.")
         
         # Save to cache
-        self._save_embeddings_to_cache()
+        self._save_embeddings_to_cache(verbose=verbose)
     
     def semantic_search(self, query: str, top_k: int = 5, 
                        threshold: float = 0.3,
                        search_transcriptions: bool = True,
-                       search_unified: bool = True) -> List[Dict[str, Any]]:
+                       search_unified: bool = True,
+                       verbose: bool = True) -> List[Dict[str, Any]]:
         """
         Perform semantic similarity search across transcriptions and unified descriptions.
         
@@ -1130,18 +1160,26 @@ class SegmentTreeQuery:
             )
         
         # Compute embeddings if not already done
-        self._compute_embeddings()
+        self._compute_embeddings(verbose=verbose)
         
         model = self._get_embedding_model()
         
         # Embed the query
+        if verbose:
+            print(f"[SEMANTIC SEARCH] Embedding query: '{query}'")
         query_embedding = model.encode([query], convert_to_numpy=True)[0]
+        if verbose:
+            print(f"[SEMANTIC SEARCH] Query embedding shape: {query_embedding.shape}")
         
         results = []
         
         # Search transcriptions
         if search_transcriptions and self._transcription_embeddings is not None:
+            if verbose:
+                print(f"[SEMANTIC SEARCH] Searching {len(self._embedding_metadata['transcriptions'])} transcriptions...")
             # Compute cosine similarity
+            if verbose:
+                print(f"[SEMANTIC SEARCH] Computing cosine similarity for transcriptions...")
             similarities = np.dot(
                 self._transcription_embeddings,
                 query_embedding
@@ -1149,6 +1187,10 @@ class SegmentTreeQuery:
                 np.linalg.norm(self._transcription_embeddings, axis=1) *
                 np.linalg.norm(query_embedding)
             )
+            
+            if verbose:
+                above_threshold = np.sum(similarities >= threshold)
+                print(f"[SEMANTIC SEARCH] Found {above_threshold} transcription matches above threshold {threshold}")
             
             # Get top matches
             for idx, similarity in enumerate(similarities):
@@ -1169,7 +1211,11 @@ class SegmentTreeQuery:
         
         # Search unified descriptions
         if search_unified and self._unified_description_embeddings is not None:
+            if verbose:
+                print(f"[SEMANTIC SEARCH] Searching {len(self._embedding_metadata['unified'])} unified descriptions...")
             # Compute cosine similarity
+            if verbose:
+                print(f"[SEMANTIC SEARCH] Computing cosine similarity for unified descriptions...")
             similarities = np.dot(
                 self._unified_description_embeddings,
                 query_embedding
@@ -1177,6 +1223,10 @@ class SegmentTreeQuery:
                 np.linalg.norm(self._unified_description_embeddings, axis=1) *
                 np.linalg.norm(query_embedding)
             )
+            
+            if verbose:
+                above_threshold = np.sum(similarities >= threshold)
+                print(f"[SEMANTIC SEARCH] Found {above_threshold} unified description matches above threshold {threshold}")
             
             # Get top matches
             for idx, similarity in enumerate(similarities):
@@ -1194,6 +1244,12 @@ class SegmentTreeQuery:
         
         # Sort by score (descending) and return top_k
         results.sort(key=lambda x: x["score"], reverse=True)
+        
+        if verbose:
+            print(f"[SEMANTIC SEARCH] Total matches found: {len(results)}")
+            print(f"[SEMANTIC SEARCH] Returning top {min(top_k, len(results))} results")
+            if results:
+                print(f"[SEMANTIC SEARCH] Score range: {results[-1]['score']:.3f} - {results[0]['score']:.3f}")
         
         return results[:top_k]
     
