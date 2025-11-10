@@ -6,15 +6,10 @@ import io
 import time
 import base64
 import requests
-import sys
-import os
 from typing import Dict, List, Optional
 from PIL import Image
 
-# Add parent directory to path to import prompt
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from prompt import get_llava_prompt
-
+from agent.prompt import get_llava_prompt
 from extractor.config import OLLAMA_URL, OLLAMA_MODEL
 
 

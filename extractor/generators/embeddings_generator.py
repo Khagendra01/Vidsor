@@ -2,12 +2,7 @@
 Embeddings generation module.
 """
 
-import sys
-import os
-
-# Add parent directory to path to import generate_embeddings
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from generate_embeddings import generate_embeddings
+from agent.generate_embeddings import generate_embeddings
 
 
 class EmbeddingsGenerator:

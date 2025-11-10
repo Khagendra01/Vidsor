@@ -2,12 +2,7 @@
 Hierarchical tree generation module.
 """
 
-import sys
-import os
-
-# Add parent directory to path to import generate_hierarchical_tree
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from generate_hierarchical_tree import generate_hierarchical_tree
+from agent.generate_hierarchical_tree import generate_hierarchical_tree
 
 
 class HierarchicalGenerator:

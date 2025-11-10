@@ -6,12 +6,15 @@ fast-forward detection, and highlight marking.
 
 import os
 import tkinter as tk
-from tkinter import ttk, filedialog, messagebox
+from tkinter import ttk, filedialog, messagebox, simpledialog
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
 from pathlib import Path
 import threading
 import time
+import json
+import shutil
+from datetime import datetime
 
 try:
     # MoviePy 2.x imports (direct from moviepy)
@@ -24,6 +27,8 @@ except ImportError:
         raise ImportError("MoviePy is required. Install with: pip install moviepy")
 
 from agent.segment_tree_utils import load_segment_tree, SegmentTreeQuery
+from extractor.pipeline import SegmentTreePipeline
+from extractor.config import ExtractorConfig
 
 
 @dataclass
@@ -72,21 +77,255 @@ class Vidsor:
         self.segment_tree: Optional[SegmentTreeQuery] = None
         self.edit_state = EditState(chunks=[])
         
+        # Project management
+        self.current_project_path: Optional[str] = None
+        self.projects_dir = os.path.join(os.getcwd(), "projects")
+        self._ensure_projects_dir()
+        
         # UI components
         self.root: Optional[tk.Tk] = None
         self.preview_label: Optional[tk.Label] = None
         self.timeline_canvas: Optional[tk.Canvas] = None
-        self.status_label: Optional[tk.Label] = None
+        self.status_label: Optional[ttk.Label] = None
         self.load_video_btn: Optional[ttk.Button] = None
         self.analyze_btn: Optional[ttk.Button] = None
         self.play_btn: Optional[ttk.Button] = None
         self.export_btn: Optional[ttk.Button] = None
+        self.project_label: Optional[ttk.Label] = None
+        self.project_combo: Optional[ttk.Combobox] = None
+        self.progress_bar: Optional[ttk.Progressbar] = None
+        self.extraction_thread: Optional[threading.Thread] = None
+        self.is_extracting = False
         
         # Load video and segment tree if provided
         if self.video_path:
             self._load_video()
             if self.segment_tree_path:
                 self._load_segment_tree()
+    
+    def _ensure_projects_dir(self):
+        """Ensure projects directory exists."""
+        if not os.path.exists(self.projects_dir):
+            os.makedirs(self.projects_dir)
+    
+    def create_new_project(self, project_name: str) -> str:
+        """
+        Create a new project folder structure.
+        
+        Args:
+            project_name: Name of the project
+            
+        Returns:
+            Path to the created project folder
+        """
+        # Sanitize project name
+        safe_name = "".join(c for c in project_name if c.isalnum() or c in (' ', '-', '_')).strip()
+        safe_name = safe_name.replace(' ', '_')
+        
+        if not safe_name:
+            raise ValueError("Invalid project name")
+        
+        project_path = os.path.join(self.projects_dir, safe_name)
+        
+        if os.path.exists(project_path):
+            raise ValueError(f"Project '{safe_name}' already exists")
+        
+        # Create project structure
+        os.makedirs(project_path)
+        os.makedirs(os.path.join(project_path, "video"))
+        
+        # Create project config
+        config = {
+            "project_name": safe_name,
+            "created_at": datetime.now().isoformat(),
+            "video_filename": None,
+            "segment_tree_path": None
+        }
+        
+        config_path = os.path.join(project_path, "project_config.json")
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=2)
+        
+        print(f"[VIDSOR] Created project: {project_path}")
+        return project_path
+    
+    def set_current_project(self, project_path: str):
+        """Set the current active project."""
+        if not os.path.exists(project_path):
+            raise ValueError(f"Project path does not exist: {project_path}")
+        
+        self.current_project_path = project_path
+        print(f"[VIDSOR] Set current project: {project_path}")
+        
+        # Try to load project if it has video and segment tree
+        self._load_project()
+    
+    def _load_project(self):
+        """Load project video and segment tree if they exist."""
+        if not self.current_project_path:
+            return
+        
+        config_path = os.path.join(self.current_project_path, "project_config.json")
+        if not os.path.exists(config_path):
+            return
+        
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        
+        # Check for video
+        video_dir = os.path.join(self.current_project_path, "video")
+        if os.path.exists(video_dir):
+            video_files = [f for f in os.listdir(video_dir) 
+                          if f.lower().endswith(('.mp4', '.avi', '.mov', '.mkv', '.flv', '.wmv'))]
+            if video_files:
+                video_path = os.path.join(video_dir, video_files[0])
+                try:
+                    self._load_video(video_path)
+                except Exception as e:
+                    print(f"[VIDSOR] Failed to load project video: {e}")
+        
+        # Check for segment tree
+        segment_tree_path = os.path.join(self.current_project_path, "segment_tree.json")
+        if os.path.exists(segment_tree_path):
+            self.segment_tree_path = segment_tree_path
+            self._load_segment_tree()
+    
+    def upload_video_to_project(self, video_path: str, project_path: str) -> str:
+        """
+        Copy video to project folder.
+        
+        Args:
+            video_path: Source video path
+            project_path: Project folder path
+            
+        Returns:
+            Path to the copied video in project
+        """
+        if not os.path.exists(video_path):
+            raise FileNotFoundError(f"Video file not found: {video_path}")
+        
+        video_dir = os.path.join(project_path, "video")
+        if not os.path.exists(video_dir):
+            os.makedirs(video_dir)
+        
+        # Get original filename
+        original_filename = os.path.basename(video_path)
+        dest_path = os.path.join(video_dir, original_filename)
+        
+        # Copy video
+        shutil.copy2(video_path, dest_path)
+        print(f"[VIDSOR] Copied video to project: {dest_path}")
+        
+        # Update project config
+        config_path = os.path.join(project_path, "project_config.json")
+        if os.path.exists(config_path):
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+            config["video_filename"] = original_filename
+            with open(config_path, 'w') as f:
+                json.dump(config, f, indent=2)
+        
+        return dest_path
+    
+    def run_extractor_for_project(self, project_path: str, video_path: str):
+        """
+        Run extractor pipeline for a project.
+        
+        Args:
+            project_path: Project folder path
+            video_path: Path to video file in project
+        """
+        if self.is_extracting:
+            raise Exception("Extraction already in progress")
+        
+        # Determine paths
+        tracking_path = os.path.join(project_path, "tracking.json")
+        output_path = os.path.join(project_path, "segment_tree.json")
+        
+        # Create extractor config
+        config = ExtractorConfig(
+            video_path=video_path,
+            tracking_json_path=tracking_path,
+            output_path=output_path
+        )
+        
+        # Run in background thread
+        self.is_extracting = True
+        self.extraction_thread = threading.Thread(
+            target=self._run_extractor_thread,
+            args=(config, output_path),
+            daemon=True
+        )
+        self.extraction_thread.start()
+    
+    def _run_extractor_thread(self, config: ExtractorConfig, output_path: str):
+        """Run extractor in background thread."""
+        try:
+            # Update status
+            if self.root:
+                self.root.after(0, lambda: self.status_label.config(
+                    text="Extracting video features... This may take several minutes."
+                ))
+                if self.progress_bar:
+                    self.root.after(0, lambda: self.progress_bar.config(mode='indeterminate'))
+                    self.root.after(0, self.progress_bar.start)
+            
+            # Run pipeline
+            pipeline = SegmentTreePipeline(config)
+            pipeline.run()
+            
+            # Update project config
+            if self.current_project_path:
+                config_path = os.path.join(self.current_project_path, "project_config.json")
+                if os.path.exists(config_path):
+                    with open(config_path, 'r') as f:
+                        project_config = json.load(f)
+                    project_config["segment_tree_path"] = output_path
+                    with open(config_path, 'w') as f:
+                        json.dump(project_config, f, indent=2)
+            
+            # Load segment tree
+            if os.path.exists(output_path):
+                self.segment_tree_path = output_path
+                if self.root:
+                    self.root.after(0, self._load_segment_tree)
+                    self.root.after(0, lambda: self.status_label.config(
+                        text="Extraction complete! Segment tree loaded."
+                    ))
+                    self.root.after(0, self._update_ui_state)
+                    if self.progress_bar:
+                        self.root.after(0, self.progress_bar.stop)
+                        self.root.after(0, lambda: self.progress_bar.config(mode='determinate'))
+                    self.root.after(0, lambda: messagebox.showinfo(
+                        "Success", 
+                        "Video extraction complete!\n\nSegment tree has been generated and loaded."
+                    ))
+            
+        except Exception as e:
+            error_msg = f"Extraction failed: {str(e)}"
+            print(f"[VIDSOR] {error_msg}")
+            if self.root:
+                self.root.after(0, lambda: self.status_label.config(text=error_msg))
+                if self.progress_bar:
+                    self.root.after(0, self.progress_bar.stop)
+                    self.root.after(0, lambda: self.progress_bar.config(mode='determinate'))
+                self.root.after(0, lambda: messagebox.showerror("Extraction Error", error_msg))
+        finally:
+            self.is_extracting = False
+    
+    def get_available_projects(self) -> List[str]:
+        """Get list of available project names."""
+        if not os.path.exists(self.projects_dir):
+            return []
+        
+        projects = []
+        for item in os.listdir(self.projects_dir):
+            project_path = os.path.join(self.projects_dir, item)
+            if os.path.isdir(project_path):
+                config_path = os.path.join(project_path, "project_config.json")
+                if os.path.exists(config_path):
+                    projects.append(item)
+        return sorted(projects)
     
     def _load_video(self, video_path: Optional[str] = None):
         """Load video file with MoviePy."""
@@ -296,13 +535,36 @@ class Vidsor:
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
         
+        # Project management frame
+        project_frame = ttk.LabelFrame(main_frame, text="Project", padding="15")
+        project_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        project_frame.columnconfigure(0, weight=1)
+        
+        # New Project button - first row with generous spacing
+        new_project_btn = ttk.Button(project_frame, text="New Project", command=self._on_new_project)
+        new_project_btn.grid(row=0, column=0, sticky=tk.W, padx=5, pady=(5, 15))
+        
+        # Project selection row - second row
+        ttk.Label(project_frame, text="Project:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+        self.project_combo = ttk.Combobox(project_frame, state="readonly", width=30)
+        self.project_combo.grid(row=1, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
+        self.project_combo.bind("<<ComboboxSelected>>", self._on_project_selected)
+        
+        self.project_label = ttk.Label(project_frame, text="No project selected")
+        self.project_label.grid(row=1, column=2, padx=5, pady=5, sticky=tk.W)
+        
+        project_frame.columnconfigure(1, weight=1)
+        
+        # Update project list
+        self._update_project_list()
+        
         # Preview area
         preview_frame = ttk.LabelFrame(main_frame, text="Preview", padding="10")
-        preview_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        preview_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
         self.preview_label = tk.Label(
             preview_frame,
-            text="No video loaded\n\nClick 'Load Video' to get started",
+            text="No project selected\n\nCreate a new project and upload a video to get started",
             bg="black",
             fg="white",
             width=80,
@@ -313,7 +575,7 @@ class Vidsor:
         
         # Timeline
         timeline_frame = ttk.LabelFrame(main_frame, text="Timeline", padding="10")
-        timeline_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        timeline_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
         timeline_frame.columnconfigure(0, weight=1)
         
         # Canvas for timeline
@@ -336,10 +598,10 @@ class Vidsor:
         
         # Controls
         controls_frame = ttk.Frame(main_frame)
-        controls_frame.grid(row=2, column=0, columnspan=2, pady=10)
+        controls_frame.grid(row=3, column=0, columnspan=2, pady=10)
         
         # Buttons
-        self.load_video_btn = ttk.Button(controls_frame, text="Load Video", command=self._on_load_video)
+        self.load_video_btn = ttk.Button(controls_frame, text="Upload Video", command=self._on_load_video)
         self.load_video_btn.pack(side=tk.LEFT, padx=5)
         
         self.analyze_btn = ttk.Button(controls_frame, text="Analyze Video", command=self._on_analyze, state=tk.DISABLED)
@@ -353,9 +615,17 @@ class Vidsor:
         self.export_btn = ttk.Button(controls_frame, text="Export", command=self._on_export, state=tk.DISABLED)
         self.export_btn.pack(side=tk.LEFT, padx=5)
         
+        # Progress bar
+        progress_frame = ttk.Frame(main_frame)
+        progress_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+        progress_frame.columnconfigure(0, weight=1)
+        
+        self.progress_bar = ttk.Progressbar(progress_frame, mode='determinate', length=400)
+        self.progress_bar.grid(row=0, column=0, sticky=(tk.W, tk.E))
+        
         # Status
-        self.status_label = ttk.Label(main_frame, text="Ready - No video loaded")
-        self.status_label.grid(row=3, column=0, columnspan=2, pady=5)
+        self.status_label = ttk.Label(main_frame, text="Ready - No project selected")
+        self.status_label.grid(row=5, column=0, columnspan=2, pady=5)
         
         # Configure grid weights
         main_frame.columnconfigure(0, weight=1)
@@ -367,8 +637,75 @@ class Vidsor:
         # Initialize UI state
         self._update_ui_state()
     
+    def _update_project_list(self):
+        """Update the project dropdown list."""
+        if self.project_combo:
+            projects = self.get_available_projects()
+            self.project_combo['values'] = projects
+            
+            # Select current project if any
+            if self.current_project_path:
+                project_name = os.path.basename(self.current_project_path)
+                if project_name in projects:
+                    self.project_combo.set(project_name)
+                    self.project_label.config(text=f"Active: {project_name}")
+                else:
+                    self.project_label.config(text="No project selected")
+            else:
+                self.project_combo.set("")
+                self.project_label.config(text="No project selected")
+    
+    def _on_new_project(self):
+        """Handle new project button click."""
+        project_name = simpledialog.askstring(
+            "New Project",
+            "Enter project name:",
+            parent=self.root
+        )
+        
+        if not project_name:
+            return
+        
+        try:
+            project_path = self.create_new_project(project_name)
+            self.set_current_project(project_path)
+            self._update_project_list()
+            messagebox.showinfo("Success", f"Project '{project_name}' created successfully!")
+        except ValueError as e:
+            messagebox.showerror("Error", str(e))
+    
+    def _on_project_selected(self, event=None):
+        """Handle project selection from dropdown."""
+        selected = self.project_combo.get()
+        if not selected:
+            return
+        
+        project_path = os.path.join(self.projects_dir, selected)
+        if os.path.exists(project_path):
+            self.set_current_project(project_path)
+            self._update_project_list()
+            self._update_ui_state()
+            # Update status
+            if self.status_label:
+                project_name = os.path.basename(project_path)
+                self.status_label.config(text=f"Project '{project_name}' selected")
+    
     def _on_load_video(self):
         """Load video button handler."""
+        # Check if project is selected
+        if not self.current_project_path:
+            response = messagebox.askyesno(
+                "No Project Selected",
+                "No project is currently selected. Would you like to create a new project first?",
+                parent=self.root
+            )
+            if response:
+                self._on_new_project()
+                if not self.current_project_path:
+                    return  # User cancelled project creation
+            else:
+                return  # User chose not to create project
+        
         video_path = filedialog.askopenfilename(
             title="Select Video File",
             filetypes=[
@@ -379,25 +716,43 @@ class Vidsor:
         )
         
         if video_path:
-            self.status_label.config(text="Loading video...")
+            self.status_label.config(text="Uploading video to project...")
             self.root.update()
             
             try:
-                self._load_video(video_path)
+                # Upload video to project
+                project_video_path = self.upload_video_to_project(video_path, self.current_project_path)
                 
-                # Ask for segment tree if not auto-detected
-                if not self.segment_tree:
-                    tree_path = filedialog.askopenfilename(
-                        title="Select Segment Tree JSON (Optional)",
-                        filetypes=[("JSON files", "*.json"), ("All files", "*.*")],
-                        initialdir=os.path.dirname(video_path)
+                # Load the video
+                self._load_video(project_video_path)
+                
+                # Check if segment tree already exists
+                segment_tree_path = os.path.join(self.current_project_path, "segment_tree.json")
+                if os.path.exists(segment_tree_path):
+                    self.segment_tree_path = segment_tree_path
+                    self._load_segment_tree()
+                    self.status_label.config(text=f"Video loaded: {os.path.basename(video_path)}")
+                    messagebox.showinfo(
+                        "Success", 
+                        f"Video uploaded successfully!\n\n{os.path.basename(video_path)}\n\nSegment tree already exists and has been loaded."
                     )
-                    if tree_path:
-                        self.segment_tree_path = tree_path
-                        self._load_segment_tree()
-                
-                self.status_label.config(text=f"Video loaded: {os.path.basename(video_path)}")
-                messagebox.showinfo("Success", f"Video loaded successfully!\n\n{os.path.basename(video_path)}")
+                else:
+                    # Ask if user wants to run extraction
+                    response = messagebox.askyesno(
+                        "Extract Video Features",
+                        "No segment tree found for this video.\n\nWould you like to extract video features now?\n\nThis will analyze the video and may take several minutes.",
+                        parent=self.root
+                    )
+                    
+                    if response:
+                        # Run extractor
+                        self.run_extractor_for_project(self.current_project_path, project_video_path)
+                    else:
+                        self.status_label.config(text=f"Video loaded: {os.path.basename(video_path)}")
+                        messagebox.showinfo(
+                            "Success", 
+                            f"Video uploaded successfully!\n\n{os.path.basename(video_path)}\n\nYou can extract features later using the 'Analyze Video' button."
+                        )
                 
             except Exception as e:
                 messagebox.showerror("Error", f"Failed to load video: {str(e)}")
@@ -418,8 +773,11 @@ class Vidsor:
         if self.preview_label:
             if has_video:
                 self.preview_label.config(text=f"Video: {os.path.basename(self.video_path)}\n\nDuration: {self.video_clip.duration:.1f}s\nFPS: {self.video_clip.fps}")
+            elif self.current_project_path:
+                project_name = os.path.basename(self.current_project_path)
+                self.preview_label.config(text=f"Project: {project_name}\n\nNo video uploaded\n\nClick 'Upload Video' to add a video")
             else:
-                self.preview_label.config(text="No video loaded\n\nClick 'Load Video' to get started")
+                self.preview_label.config(text="No project selected\n\nCreate a new project and upload a video to get started")
     
     def _on_analyze(self):
         """Analyze video button handler."""
