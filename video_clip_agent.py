@@ -8,7 +8,6 @@ from typing import Dict, List, Any, Optional, TypedDict, Annotated, Literal, Tup
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
-import contextlib
 try:
     from langchain_openai import ChatOpenAI
     HAS_OPENAI = True
@@ -66,397 +65,465 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         raise ValueError("Need either langchain-openai or langchain-anthropic installed")
     
     def planner_node(state: AgentState) -> AgentState:
-        """Planner agent: Analyzes user query and retrieves relevant moments."""
+        """Planner agent: Analyzes user query and retrieves relevant moments using ALL search types."""
         query = state["user_query"]
         segment_tree = state["segment_tree"]
         verbose = state.get("verbose", False)
         
+        # Initialize variables
+        search_results = []
+        time_ranges = []
+        confidence = 0.5
+        needs_clarification = False
+        clarification_question = None
+        
         if verbose:
             print("\n" + "=" * 60)
-            print("PLANNER AGENT: Analyzing Query")
+            print("PLANNER AGENT: Multi-Modal Search Strategy")
             print("=" * 60)
             print(f"Query: {query}")
-            print("\n[THINKING] Determining search strategy...")
+            print("\n[STEP 1] Generating search queries for all modalities...")
         
-        system_prompt = """You are a video analysis planner agent. Your job is to:
-1. Analyze user queries about video content
-2. Determine what type of search is needed (visual descriptions, audio transcriptions, object detection, activities, or semantic search)
-3. Use the available tools to find relevant moments
-4. Assess confidence in results
-5. Ask for clarification if the query is ambiguous, especially for audio-related queries
+        # STEP 1: Generate search queries/keywords for ALL search types
+        system_prompt_step1 = """You are a video analysis planner. Generate search queries and keywords for ALL possible search types based on the user query.
 
-Available query types:
-- "visual": Search visual descriptions (BLIP/unified) using keywords
-- "audio": Search audio transcriptions using keywords
-- "combined": Search both visual and audio using keywords
-- "semantic": Use semantic similarity search (best for natural language, conceptual queries, or when exact keywords might not match)
-- "object": Find specific objects by class name
-- "activity": Check for specific activities (e.g., fishing, catching fish)
+Available search types:
+1. "semantic": Natural language semantic search (use the full query or a refined version)
+2. "visual": Keywords for visual descriptions (BLIP/unified descriptions)
+3. "audio": Keywords for audio transcriptions
+4. "object": Object class names to search for (e.g., "person", "boat", "car")
+5. "activity": Activity names and evidence keywords (e.g., "cooking", "fishing")
 
-Use "semantic" search when:
-- Query is in natural language (e.g., "man pointing at camera", "someone cooking food")
-- Query describes concepts or actions rather than exact words
-- Query might have synonyms or different phrasings
-- You want to find semantically similar content even if exact words don't match
+For each search type, generate relevant queries/keywords that would help find the content.
 
-Use keyword-based search ("visual", "audio", "combined") when:
-- Query contains specific words that should match exactly
-- User is looking for exact phrases or terminology
-- Query is very specific and keyword matching is appropriate
-
-For audio queries, be especially careful and ask for clarification if:
-- The query uses ambiguous pronouns ("they", "he", "she", "it") without clear context
-- The query mentions words that could have multiple meanings in audio context
-- The query is vague or could match many different moments
-- You're unsure if the user wants to search audio transcriptions or visual descriptions
-
-Examples of queries that need clarification:
-- "find when they talk about it" -> Who is "they"? What is "it"?
-- "show me that moment" -> Which moment? Need more context
-- "find the conversation" -> Too vague, which conversation?
-
-Examples of good queries:
-- "find moments where they catch fish" -> Clear activity
-- "find when someone says 'Alaska'" -> Clear audio search
-- "show me all boats in the video" -> Clear object search
-
-Return your analysis as JSON with:
+Return JSON with:
 {
-    "query_type": "visual|audio|combined|semantic|object|activity",
-    "search_keywords": ["keyword1", "keyword2"] (if not semantic),
-    "semantic_query": "full query text" (if semantic search),
-    "object_class": "class_name" (if object search),
-    "activity_name": "activity" (if activity search),
-    "evidence_keywords": ["keyword1"] (if activity search, for stronger evidence),
-    "confidence": 0.0-1.0,
+    "semantic_queries": ["query1", "query2"],  // Can be multiple variations
+    "visual_keywords": ["keyword1", "keyword2"],
+    "audio_keywords": ["keyword1", "keyword2"],
+    "object_classes": ["class1", "class2"],  // If objects are mentioned
+    "activity_name": "activity",  // If activity is mentioned
+    "activity_keywords": ["keyword1", "keyword2"],  // Keywords for activity search
+    "evidence_keywords": ["keyword1"],  // Strong evidence keywords for activities
     "needs_clarification": true/false,
-    "clarification_question": "question to ask" (if needed)
-}"""
+    "clarification_question": "question" (if needed)
+}
+
+Generate comprehensive search terms - be creative and think of synonyms, related terms, and different phrasings."""
         
-        messages = [
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=f"User query: {query}\n\nAnalyze this query and determine how to search the video. Return JSON only.")
+        messages_step1 = [
+            SystemMessage(content=system_prompt_step1),
+            HumanMessage(content=f"User query: {query}\n\nGenerate search queries and keywords for ALL search types. Return JSON only.")
         ]
         
         if verbose:
-            print("[THINKING] Calling LLM to analyze query...")
+            print("[LLM] Calling LLM to generate search queries...")
         
-        response = llm.invoke(messages)
-        response_text = response.content.strip()
+        response_step1 = llm.invoke(messages_step1)
+        response_text_step1 = response_step1.content.strip()
         
         if verbose:
-            print(f"[LLM RESPONSE] {response_text[:200]}...")
+            print(f"[LLM RESPONSE] {response_text_step1[:300]}...")
         
-        # Extract JSON from response (handle markdown code blocks)
-        if "```json" in response_text:
-            response_text = response_text.split("```json")[1].split("```")[0].strip()
-        elif "```" in response_text:
-            response_text = response_text.split("```")[1].split("```")[0].strip()
+        # Extract JSON from response
+        if "```json" in response_text_step1:
+            response_text_step1 = response_text_step1.split("```json")[1].split("```")[0].strip()
+        elif "```" in response_text_step1:
+            response_text_step1 = response_text_step1.split("```")[1].split("```")[0].strip()
         
         try:
-            plan = json.loads(response_text)
+            search_plan = json.loads(response_text_step1)
         except:
-            # Fallback: try to extract JSON from text
             import re
-            json_match = re.search(r'\{[^}]+\}', response_text)
+            json_match = re.search(r'\{[^}]+\}', response_text_step1)
             if json_match:
-                plan = json.loads(json_match.group())
+                search_plan = json.loads(json_match.group())
             else:
-                # Default plan - try semantic search as it's more flexible
-                plan = {
-                    "query_type": "semantic",
-                    "semantic_query": query,
-                    "confidence": 0.5,
+                # Fallback: use original query for semantic, extract keywords for others
+                search_plan = {
+                    "semantic_queries": [query],
+                    "visual_keywords": query.split(),
+                    "audio_keywords": query.split(),
+                    "object_classes": [],
+                    "activity_name": "",
+                    "activity_keywords": [],
+                    "evidence_keywords": [],
                     "needs_clarification": False
                 }
         
         if verbose:
-            print("\n[PLAN] Extracted plan:")
-            print(f"  Query Type: {plan.get('query_type', 'N/A')}")
-            if plan.get('query_type') == 'semantic':
-                print(f"  Semantic Query: {plan.get('semantic_query', query)}")
-            else:
-                print(f"  Search Keywords: {plan.get('search_keywords', [])}")
-            print(f"  Confidence: {plan.get('confidence', 0):.2f}")
-            print(f"  Needs Clarification: {plan.get('needs_clarification', False)}")
+            print("\n[SEARCH PLAN] Generated search queries:")
+            print(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
+            print(f"  Visual keywords: {search_plan.get('visual_keywords', [])}")
+            print(f"  Audio keywords: {search_plan.get('audio_keywords', [])}")
+            print(f"  Object classes: {search_plan.get('object_classes', [])}")
+            print(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
         
-        # Execute the search based on plan
-        search_results = []
-        time_ranges = []
-        confidence = plan.get("confidence", 0.5)
-        needs_clarification = plan.get("needs_clarification", False)
-        clarification_question = plan.get("clarification_question")
+        needs_clarification = search_plan.get("needs_clarification", False)
+        clarification_question = search_plan.get("clarification_question")
         
         # Check for audio query ambiguity
         query_lower = query.lower()
         audio_indicators = ["say", "said", "talk", "speak", "mention", "discuss", "conversation", "audio", "transcription"]
         is_audio_query = any(indicator in query_lower for indicator in audio_indicators)
-        
-        # Check for ambiguous references
         ambiguous_pronouns = ["they", "he", "she", "it", "that", "this", "those", "these"]
         has_ambiguous_refs = any(pronoun in query_lower.split() for pronoun in ambiguous_pronouns)
         
-        if verbose:
-            print(f"\n[ANALYSIS] Audio query detected: {is_audio_query}")
-            print(f"  Ambiguous references found: {has_ambiguous_refs}")
-        
-        # Only ask for clarification for audio queries with ambiguous references
-        # For visual/activity queries, "they" is usually clear from context
         if is_audio_query and has_ambiguous_refs and not needs_clarification:
             needs_clarification = True
-            clarification_question = "I notice your query mentions audio/transcription but uses ambiguous references. Could you clarify who or what you're looking for? For example, 'find when they say [specific word]' or 'find conversation about [specific topic]'."
+            clarification_question = "I notice your query mentions audio/transcription but uses ambiguous references. Could you clarify who or what you're looking for?"
             if verbose:
                 print("[WARNING] Ambiguous audio query detected - will ask for clarification")
         
-        # If LLM suggested clarification but it's not an audio query, try searching anyway
-        # We'll only ask for clarification if search returns no results
         if needs_clarification and not is_audio_query:
             if verbose:
                 print("[INFO] LLM suggested clarification, but query seems clear enough. Will try searching first.")
-            needs_clarification = False  # Try searching first
+            needs_clarification = False
         
         if not needs_clarification:
             if verbose:
-                print("\n[EXECUTING] Performing search...")
-            query_type = plan.get("query_type", "combined")
-            search_keywords = plan.get("search_keywords", [])
-            semantic_query = plan.get("semantic_query", query)  # Use original query if not specified
+                print("\n[STEP 2] Executing ALL search types...")
             
-            if query_type == "semantic":
-                # Use semantic similarity search with higher threshold for better quality
+            # STEP 2: Execute ALL search types and collect results
+            all_search_results = []  # Store all results with metadata about search type
+            all_time_ranges = []  # Collect all time ranges
+            
+            # 1. Semantic search
+            semantic_queries = search_plan.get("semantic_queries", [query])
+            if semantic_queries:
                 if verbose:
-                    print(f"  [SEARCH] Semantic search for: '{semantic_query}'")
-                # Start with a higher threshold for better quality matches
-                # If no results, lower it progressively
-                threshold = 0.45
-                results = segment_tree.semantic_search(
-                    semantic_query,
-                    top_k=10,
-                    threshold=threshold,
-                    search_transcriptions=True,
-                    search_unified=True,
-                    verbose=verbose
-                )
-                
-                # If no results with higher threshold, try lower threshold
-                if not results:
+                    print(f"\n  [SEARCH TYPE: Semantic]")
+                for sem_query in semantic_queries:
                     if verbose:
-                        print(f"  [SEARCH] No results with threshold {threshold}, trying lower threshold 0.35...")
-                    threshold = 0.35
+                        print(f"    Query: '{sem_query}'")
+                    threshold = 0.45
                     results = segment_tree.semantic_search(
-                        semantic_query,
-                        top_k=10,
-                        threshold=threshold,
-                        search_transcriptions=True,
-                        search_unified=True,
-                        verbose=False  # Less verbose on retry
-                    )
-                
-                # If still no results, try minimum threshold
-                if not results:
-                    if verbose:
-                        print(f"  [SEARCH] No results with threshold {threshold}, trying minimum threshold 0.3...")
-                    threshold = 0.3
-                    results = segment_tree.semantic_search(
-                        semantic_query,
+                        sem_query,
                         top_k=10,
                         threshold=threshold,
                         search_transcriptions=True,
                         search_unified=True,
                         verbose=False
                     )
-                
-                search_results = results
-                if verbose:
-                    print(f"    Found {len(results)} semantic matches (threshold: {threshold})")
-                
-                # Extract time ranges from semantic search results
-                # Only include results with reasonable scores
-                # Also validate results contain relevant keywords
-                query_lower = semantic_query.lower()
-                query_keywords = set(query_lower.split())
-                # Remove common stop words
-                stop_words = {"find", "moment", "when", "they", "the", "a", "an", "is", "are", "was", "were", "to", "of", "in", "on", "at", "for", "with"}
-                query_keywords = {w for w in query_keywords if w not in stop_words and len(w) > 2}
-                
-                for result in results:
-                    score = result.get("score", 0)
-                    tr = result.get("time_range", [])
-                    if tr and len(tr) >= 2:
-                        # Check if result text contains relevant keywords (for better validation)
-                        result_text = result.get("text", "").lower()
-                        keyword_matches = sum(1 for kw in query_keywords if kw in result_text)
-                        
-                        # Only add if:
-                        # 1. Score is good (>= 0.35), OR
-                        # 2. It's in top 3 results, OR  
-                        # 3. It has keyword matches (even with lower score)
-                        should_include = (
-                            score >= 0.35 or 
-                            len(time_ranges) < 3 or
-                            (keyword_matches > 0 and score >= 0.3)
+                    if not results:
+                        threshold = 0.35
+                        results = segment_tree.semantic_search(
+                            sem_query,
+                            top_k=10,
+                            threshold=threshold,
+                            search_transcriptions=True,
+                            search_unified=True,
+                            verbose=False
                         )
-                        
-                        if should_include:
-                            time_ranges.append((tr[0], tr[1]))
-                        if verbose:
-                            result_type = result.get("type", "unknown")
-                            text_snippet = result.get("text", "")[:100]  # Show more text
-                            keyword_info = f" (keywords: {keyword_matches}/{len(query_keywords)})" if query_keywords else ""
-                            print(f"      [{result_type}] Score: {score:.3f}{keyword_info} | Time: {tr[0]:.1f}s - {tr[1]:.1f}s")
-                            print(f"        Text: {text_snippet}...")
+                    if not results:
+                        threshold = 0.3
+                        results = segment_tree.semantic_search(
+                            sem_query,
+                            top_k=10,
+                            threshold=threshold,
+                            search_transcriptions=True,
+                            search_unified=True,
+                            verbose=False
+                        )
+                    
+                    for result in results:
+                        result["search_type"] = "semantic"
+                        result["search_query"] = sem_query
+                        all_search_results.append(result)
+                        tr = result.get("time_range", [])
+                        if tr and len(tr) >= 2:
+                            all_time_ranges.append((tr[0], tr[1], "semantic", result.get("score", 0)))
+                    if verbose:
+                        print(f"      Found {len(results)} matches")
             
-            elif query_type == "visual":
-                # Search visual descriptions
+            # 2. Visual search
+            visual_keywords = search_plan.get("visual_keywords", [])
+            if visual_keywords:
                 if verbose:
-                    print(f"  [SEARCH] Visual search for keywords: {search_keywords}")
-                for keyword in search_keywords:
+                    print(f"\n  [SEARCH TYPE: Visual]")
+                for keyword in visual_keywords:
+                    if verbose:
+                        print(f"    Keyword: '{keyword}'")
                     results = segment_tree.search_descriptions(keyword, search_type="any")
-                    search_results.extend(results)
+                    for result in results:
+                        result["search_type"] = "visual"
+                        result["search_keyword"] = keyword
+                        all_search_results.append(result)
+                        for match in result.get("matches", []):
+                            tr = result.get("time_range", [])
+                            if tr and len(tr) >= 2:
+                                all_time_ranges.append((tr[0], tr[1], "visual", 1.0))
                     if verbose:
-                        print(f"    Keyword '{keyword}': Found {len(results)} visual matches")
+                        print(f"      Found {len(results)} matches")
             
-            elif query_type == "audio":
-                # Search audio transcriptions
+            # 3. Audio search
+            audio_keywords = search_plan.get("audio_keywords", [])
+            if audio_keywords:
                 if verbose:
-                    print(f"  [SEARCH] Audio search for keywords: {search_keywords}")
-                for keyword in search_keywords:
+                    print(f"\n  [SEARCH TYPE: Audio]")
+                for keyword in audio_keywords:
+                    if verbose:
+                        print(f"    Keyword: '{keyword}'")
                     results = segment_tree.search_transcriptions(keyword)
-                    search_results.extend(results)
-                    if verbose:
-                        print(f"    Keyword '{keyword}': Found {len(results)} audio matches")
-                    # Extract time ranges
                     for result in results:
+                        result["search_type"] = "audio"
+                        result["search_keyword"] = keyword
+                        all_search_results.append(result)
                         tr = result.get("time_range", [])
                         if tr and len(tr) >= 2:
-                            time_ranges.append((tr[0], tr[1]))
-                            if verbose:
-                                print(f"      Time range: {tr[0]:.1f}s - {tr[1]:.1f}s")
+                            all_time_ranges.append((tr[0], tr[1], "audio", 1.0))
+                    if verbose:
+                        print(f"      Found {len(results)} matches")
             
-            elif query_type == "combined":
-                # Search all modalities
+            # 4. Object search
+            object_classes = search_plan.get("object_classes", [])
+            if object_classes:
                 if verbose:
-                    print(f"  [SEARCH] Combined search (visual + audio) for keywords: {search_keywords}")
-                for keyword in search_keywords:
-                    result = segment_tree.search_all_modalities(keyword)
-                    search_results.append(result)
+                    print(f"\n  [SEARCH TYPE: Object]")
+                for obj_class in object_classes:
                     if verbose:
-                        print(f"    Keyword '{keyword}': {result.get('visual_count', 0)} visual, {result.get('audio_count', 0)} audio matches")
-                    # Extract time ranges from both visual and audio
-                    for match in result.get("all_matches", []):
-                        tr = match.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            time_ranges.append((tr[0], tr[1]))
-                            if verbose:
-                                source = match.get("source", "unknown")
-                                print(f"      [{source}] Time range: {tr[0]:.1f}s - {tr[1]:.1f}s")
-            
-            elif query_type == "object":
-                # Find objects by class
-                object_class = plan.get("object_class", search_keywords[0] if search_keywords else "")
-                if object_class:
-                    if verbose:
-                        print(f"  [SEARCH] Object search for class: {object_class}")
-                    results = segment_tree.find_objects_by_class(object_class)
-                    search_results = results
-                    if verbose:
-                        print(f"    Found {len(results)} detections of '{object_class}'")
-                    # Extract time ranges
+                        print(f"    Class: '{obj_class}'")
+                    results = segment_tree.find_objects_by_class(obj_class)
                     for result in results:
+                        result["search_type"] = "object"
+                        result["object_class"] = obj_class
+                        all_search_results.append(result)
                         tr = result.get("time_range", [])
                         if tr and len(tr) >= 2:
-                            time_ranges.append((tr[0], tr[1]))
-                            if verbose:
-                                track_id = result.get("detection", {}).get("track_id", "N/A")
-                                print(f"      Track {track_id} at {tr[0]:.1f}s - {tr[1]:.1f}s")
+                            all_time_ranges.append((tr[0], tr[1], "object", 1.0))
+                    if verbose:
+                        print(f"      Found {len(results)} detections")
             
-            elif query_type == "activity":
-                # Check for activities - special handling for "fish caught"
-                activity_name = plan.get("activity_name", "activity")
+            # 5. Activity search
+            activity_name = search_plan.get("activity_name", "")
+            activity_keywords = search_plan.get("activity_keywords", [])
+            evidence_keywords = search_plan.get("evidence_keywords", [])
+            if activity_name or activity_keywords:
+                if verbose:
+                    print(f"\n  [SEARCH TYPE: Activity]")
                 if "fish" in query_lower and ("catch" in query_lower or "caught" in query_lower):
-                    # Use the specialized fish catching function
                     if verbose:
-                        print(f"  [SEARCH] Activity search: Fish catching (specialized function)")
+                        print(f"    Activity: Fish catching (specialized)")
                     result = segment_tree.check_fish_caught()
-                    search_results.append(result)
-                    if verbose:
-                        print(f"    Fish caught: {result.get('fish_caught', False)}")
-                        print(f"    Evidence scenes: {result.get('fish_holding_count', 0)}")
-                    # Extract time ranges from evidence
+                    result["search_type"] = "activity"
+                    all_search_results.append(result)
                     for evidence in result.get("evidence", []):
                         tr = evidence.get("time_range", [])
                         if tr and len(tr) >= 2:
-                            time_ranges.append((tr[0], tr[1]))
-                            if verbose:
-                                second = evidence.get("second", "N/A")
-                                desc = evidence.get("description", "")[:50]
-                                print(f"      Second {second}: {desc}...")
-                else:
-                    # Use general activity check
-                    evidence_keywords = plan.get("evidence_keywords", search_keywords)
+                            all_time_ranges.append((tr[0], tr[1], "activity", 1.0))
+                    if verbose:
+                        print(f"      Evidence scenes: {result.get('fish_holding_count', 0)}")
+                elif activity_keywords:
+                    if verbose:
+                        print(f"    Activity: {activity_name or 'general'}")
                     result = segment_tree.check_activity(
-                        activity_keywords=search_keywords,
-                        evidence_keywords=evidence_keywords,
-                        activity_name=activity_name
+                        activity_keywords=activity_keywords,
+                        evidence_keywords=evidence_keywords or activity_keywords,
+                        activity_name=activity_name or "activity"
                     )
-                    search_results.append(result)
-                    # Extract time ranges from evidence
+                    result["search_type"] = "activity"
+                    all_search_results.append(result)
                     for evidence in result.get("evidence", []):
                         tr = evidence.get("time_range", [])
                         if tr and len(tr) >= 2:
-                            time_ranges.append((tr[0], tr[1]))
-            
-            # Assess confidence based on results and match quality
-            if query_type == "semantic" and search_results:
-                # Check average score of results
-                avg_score = sum(r.get("score", 0) for r in search_results) / len(search_results)
-                max_score = max((r.get("score", 0) for r in search_results), default=0)
-                
-                # Adjust confidence based on match quality
-                if max_score >= 0.5:
-                    confidence = min(0.9, confidence + 0.1)  # High quality matches
-                elif max_score >= 0.4:
-                    confidence = min(0.8, confidence)  # Good matches
-                elif max_score < 0.35:
-                    confidence = max(0.4, confidence - 0.2)  # Low quality matches
+                            all_time_ranges.append((tr[0], tr[1], "activity", 1.0))
                     if verbose:
-                        print(f"  [WARNING] Low match quality (max score: {max_score:.3f}) - results may not be accurate")
-                
-                if verbose:
-                    print(f"  [QUALITY] Average score: {avg_score:.3f}, Max score: {max_score:.3f}")
+                        print(f"      Evidence scenes: {result.get('evidence_count', 0)}")
             
             if verbose:
-                print(f"\n[RESULTS] Search completed:")
-                print(f"  Total search results: {len(search_results)}")
-                print(f"  Time ranges found: {len(time_ranges)}")
+                print(f"\n[AGGREGATION] Collected results from all search types:")
+                print(f"  Total results: {len(all_search_results)}")
+                print(f"  Total time ranges: {len(all_time_ranges)}")
+            
+            # STEP 3: Deduplicate and shortlist time ranges
+            # Group by time range (with small tolerance for near-duplicates)
+            time_range_map = {}  # (start, end) -> (count, max_score, search_types)
+            for start, end, search_type, score in all_time_ranges:
+                # Round to nearest second for deduplication
+                start_rounded = round(start)
+                end_rounded = round(end)
+                key = (start_rounded, end_rounded)
+                
+                if key not in time_range_map:
+                    time_range_map[key] = {
+                        "count": 0,
+                        "max_score": score,
+                        "search_types": set(),
+                        "original_ranges": []
+                    }
+                
+                time_range_map[key]["count"] += 1
+                time_range_map[key]["max_score"] = max(time_range_map[key]["max_score"], score)
+                time_range_map[key]["search_types"].add(search_type)
+                time_range_map[key]["original_ranges"].append((start, end, search_type, score))
+            
+            # Convert to list of (start, end, metadata) for ranking
+            shortlisted_ranges = []
+            for (start, end), metadata in time_range_map.items():
+                # Use the most precise original range
+                best_range = min(metadata["original_ranges"], key=lambda x: abs(x[1] - x[0]))
+                shortlisted_ranges.append({
+                    "time_range": (best_range[0], best_range[1]),
+                    "count": metadata["count"],
+                    "score": metadata["max_score"],
+                    "search_types": list(metadata["search_types"]),
+                    "match_count": metadata["count"]
+                })
+            
+            # Sort by match count and score
+            shortlisted_ranges.sort(key=lambda x: (x["count"], x["score"]), reverse=True)
+            
+            if verbose:
+                print(f"\n[SHORTLISTING] Deduplicated to {len(shortlisted_ranges)} unique time ranges")
+                print(f"  Top 10 ranges:")
+                for i, r in enumerate(shortlisted_ranges[:10], 1):
+                    start, end = r["time_range"]
+                    print(f"    {i}. {start:.1f}s - {end:.1f}s | Matches: {r['count']} | Score: {r['score']:.3f} | Types: {', '.join(r['search_types'])}")
+            
+            # STEP 4: Use LLM to rank/filter results
+            if verbose:
+                print(f"\n[STEP 3] Using LLM to rank and filter results...")
+            
+            # Prepare results summary for LLM
+            results_summary = []
+            for i, r in enumerate(shortlisted_ranges[:20], 1):  # Top 20 for ranking
+                start, end = r["time_range"]
+                results_summary.append({
+                    "index": i,
+                    "time_range": f"{start:.1f}s - {end:.1f}s",
+                    "duration": f"{end - start:.1f}s",
+                    "match_count": r["count"],
+                    "score": r["score"],
+                    "search_types": ", ".join(r["search_types"])
+                })
+            
+            system_prompt_step2 = """You are a video search result ranker. Your job is to:
+1. Rank the search results by relevance to the user's query
+2. Determine if the user query implies they want ONE specific moment or MULTIPLE moments
+3. Filter out irrelevant or low-quality results
+4. Return the best results based on the user's intent
+
+Indicators that user wants ONE result:
+- "find the moment", "show me when", "find when" (singular)
+- "the best", "the most", "the first"
+- Queries that describe a specific, unique event
+
+Indicators that user wants MULTIPLE results:
+- "find moments", "show all", "find all", "every time"
+- "all instances", "all scenes"
+- Queries that describe recurring events or multiple occurrences
+
+Return JSON with:
+{
+    "user_wants_one": true/false,  // Does user query imply they want one result?
+    "ranked_indices": [1, 3, 5, ...],  // Indices of results in order of relevance (1-based)
+    "filtered_indices": [2, 4, ...],  // Indices to exclude (irrelevant results)
+    "confidence": 0.0-1.0,  // Confidence in the ranking
+    "reasoning": "brief explanation"  // Why these results were selected
+}"""
+            
+            results_text = "\n".join([
+                f"{r['index']}. Time: {r['time_range']} (duration: {r['duration']}) | "
+                f"Matches: {r['match_count']} | Score: {r['score']:.3f} | Types: {r['search_types']}"
+                for r in results_summary
+            ])
+            
+            messages_step2 = [
+                SystemMessage(content=system_prompt_step2),
+                HumanMessage(content=f"User query: {query}\n\nSearch results:\n{results_text}\n\nRank and filter these results. Return JSON only.")
+            ]
+            
+            if verbose:
+                print("[LLM] Calling LLM to rank results...")
+            
+            response_step2 = llm.invoke(messages_step2)
+            response_text_step2 = response_step2.content.strip()
+            
+            if verbose:
+                print(f"[LLM RESPONSE] {response_text_step2[:300]}...")
+            
+            # Extract JSON
+            if "```json" in response_text_step2:
+                response_text_step2 = response_text_step2.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text_step2:
+                response_text_step2 = response_text_step2.split("```")[1].split("```")[0].strip()
+            
+            try:
+                ranking = json.loads(response_text_step2)
+            except:
+                import re
+                json_match = re.search(r'\{[^}]+\}', response_text_step2)
+                if json_match:
+                    ranking = json.loads(json_match.group())
+                else:
+                    # Fallback: use top results
+                    ranking = {
+                        "user_wants_one": "moment" in query.lower() and "all" not in query.lower(),
+                        "ranked_indices": list(range(1, min(6, len(shortlisted_ranges) + 1))),
+                        "filtered_indices": [],
+                        "confidence": 0.6,
+                        "reasoning": "Fallback ranking"
+                    }
+            
+            if verbose:
+                print(f"\n[RANKING] LLM Analysis:")
+                print(f"  User wants one result: {ranking.get('user_wants_one', False)}")
+                print(f"  Ranked indices: {ranking.get('ranked_indices', [])}")
+                print(f"  Filtered indices: {ranking.get('filtered_indices', [])}")
+                print(f"  Confidence: {ranking.get('confidence', 0):.2f}")
+                print(f"  Reasoning: {ranking.get('reasoning', 'N/A')}")
+            
+            # STEP 5: Select final time ranges based on ranking
+            ranked_indices = ranking.get("ranked_indices", [])
+            filtered_indices = set(ranking.get("filtered_indices", []))
+            user_wants_one = ranking.get("user_wants_one", False)
+            confidence = ranking.get("confidence", 0.7)
+            
+            # Get final time ranges
+            final_time_ranges = []
+            for idx in ranked_indices:
+                if idx in filtered_indices:
+                    continue
+                if 1 <= idx <= len(shortlisted_ranges):
+                    r = shortlisted_ranges[idx - 1]  # Convert to 0-based
+                    final_time_ranges.append(r["time_range"])
+            
+            # If user wants one, take only the top result
+            if user_wants_one and final_time_ranges:
+                final_time_ranges = [final_time_ranges[0]]
+                if verbose:
+                    print(f"\n[SELECTION] User wants one result - selecting top match")
+            elif not final_time_ranges and shortlisted_ranges:
+                # Fallback: use top 5 if ranking failed
+                final_time_ranges = [r["time_range"] for r in shortlisted_ranges[:5]]
+                if verbose:
+                    print(f"\n[SELECTION] Ranking failed - using top 5 results")
+            
+            # Store all search results for reference
+            search_results = all_search_results
+            time_ranges = final_time_ranges
+            
+            if verbose:
+                print(f"\n[FINAL SELECTION]")
+                print(f"  Selected {len(time_ranges)} time range(s)")
                 if time_ranges:
                     print(f"  Time ranges:")
-                    for i, (start, end) in enumerate(time_ranges[:5], 1):
+                    for i, (start, end) in enumerate(time_ranges, 1):
                         print(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
-                    if len(time_ranges) > 5:
-                        print(f"    ... and {len(time_ranges) - 5} more")
             
-            if not search_results or not time_ranges:
+            if not time_ranges:
                 confidence = 0.3
                 needs_clarification = True
-                clarification_question = "No results found. Could you rephrase your query or provide more details? For example, try 'find moments where someone is cooking' or 'find scenes with food preparation'."
+                clarification_question = "No relevant results found. Could you rephrase your query or provide more details?"
                 if verbose:
                     print("  [WARNING] No results found - will ask for clarification")
-            elif len(time_ranges) == 0:
-                confidence = 0.4
-                needs_clarification = True
-                clarification_question = "Found some matches but couldn't extract time ranges. Could you be more specific?"
-                if verbose:
-                    print("  [WARNING] No time ranges extracted - will ask for clarification")
             elif len(time_ranges) > 15:
-                # Only ask for clarification if there are way too many results
                 confidence = 0.6
                 needs_clarification = True
                 clarification_question = f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?"
                 if verbose:
                     print(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
             else:
-                # Good results found, proceed with extraction
                 if verbose:
                     print(f"  [SUCCESS] Found {len(time_ranges)} time range(s) - proceeding with extraction")
         
@@ -478,7 +545,7 @@ Return your analysis as JSON with:
         
         return {
             **state,
-            "query_type": plan.get("query_type"),
+            "query_type": "multi_modal",  # Indicate we used all search types
             "search_results": search_results,
             "time_ranges": time_ranges,
             "confidence": confidence,
@@ -590,11 +657,8 @@ def create_execution_agent():
                 if verbose:
                     print(f"  [PROCESSING] Extracting subclip...")
                 
-                # Suppress MoviePy warnings/messages during processing
-                with open(os.devnull, 'w') as devnull:
-                    with contextlib.redirect_stderr(devnull):
-                        with contextlib.redirect_stdout(devnull):
-                            clip = video.subclipped(start_time, end_time)
+                # Extract the subclip (no output suppression needed for subclipped)
+                clip = video.subclipped(start_time, end_time)
                 
                 # Generate filename
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -605,18 +669,15 @@ def create_execution_agent():
                     print(f"  [SAVING] Writing to: {filename}")
                 
                 # Write clip (moviepy 2.x uses logger instead of verbose)
-                # Suppress MoviePy output during writing
-                with open(os.devnull, 'w') as devnull:
-                    with contextlib.redirect_stderr(devnull):
-                        with contextlib.redirect_stdout(devnull):
-                            clip.write_videofile(
-                                output_path,
-                                codec='libx264',
-                                audio_codec='aac',
-                                temp_audiofile='temp-audio.m4a',
-                                remove_temp=True,
-                                logger=None  # None suppresses output
-                            )
+                # logger=None suppresses MoviePy's own output
+                clip.write_videofile(
+                    output_path,
+                    codec='libx264',
+                    audio_codec='aac',
+                    temp_audiofile='temp-audio.m4a',
+                    remove_temp=True,
+                    logger=None  # None suppresses output
+                )
                 
                 clip.close()
                 saved_clips.append(output_path)
