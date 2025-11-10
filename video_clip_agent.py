@@ -26,6 +26,7 @@ except ImportError:
     # MoviePy 2.x uses different import path
     from moviepy.video.io.VideoFileClip import VideoFileClip
 import os
+import time
 from datetime import datetime
 from segment_tree_utils import SegmentTreeQuery, load_segment_tree
 
@@ -640,10 +641,22 @@ def create_execution_agent():
         saved_clips = []
         
         for i, (start_time, end_time) in enumerate(time_ranges):
+            clip = None
             try:
                 if verbose:
                     print(f"\n[EXTRACTING] Clip {i+1}/{len(time_ranges)}")
                     print(f"  Original range: {start_time:.2f}s - {end_time:.2f}s")
+                
+                # Close and reopen video file between clips to reset MoviePy's internal state
+                # This ensures clean subprocess state for each clip on Windows
+                if i > 0:  # Don't close on first clip
+                    if verbose:
+                        print(f"  [CLEANUP] Closing video file to reset state...")
+                    video.close()
+                    time.sleep(1.0)  # Give Windows time to fully cleanup subprocesses
+                    if verbose:
+                        print(f"  [CLEANUP] Reopening video file...")
+                    video = VideoFileClip(video_path)
                 
                 # Ensure times are within video duration
                 start_time = max(0, min(start_time, video.duration))
@@ -668,31 +681,59 @@ def create_execution_agent():
                 if verbose:
                     print(f"  [SAVING] Writing to: {filename}")
                 
-                # Write clip (moviepy 2.x uses logger instead of verbose)
-                # logger=None suppresses MoviePy's own output
+                # Write clip without logger - MoviePy 2.x works fine without it
+                # Use unique temp audio file per clip to avoid Windows subprocess conflicts
+                temp_audio = f'temp-audio-{i+1}-{timestamp}.m4a'
+                
                 clip.write_videofile(
                     output_path,
                     codec='libx264',
                     audio_codec='aac',
-                    temp_audiofile='temp-audio.m4a',
-                    remove_temp=True,
-                    logger=None  # None suppresses output
+                    temp_audiofile=temp_audio,
+                    remove_temp=True
                 )
                 
-                clip.close()
+                if clip:
+                    clip.close()
+                
+                # Clean up temp audio file if it still exists
+                if os.path.exists(temp_audio):
+                    try:
+                        os.remove(temp_audio)
+                    except:
+                        pass
+                
+                # Verify file was created and has content
+                if not os.path.exists(output_path):
+                    raise Exception(f"Output file was not created: {output_path}")
+                
+                file_size = os.path.getsize(output_path)
+                if file_size < 1000:  # Less than 1KB is likely corrupted/empty
+                    raise Exception(f"Output file is too small ({file_size} bytes), likely corrupted")
+                
                 saved_clips.append(output_path)
                 
                 if verbose:
-                    print(f"  [SUCCESS] Clip saved: {output_path}")
+                    print(f"  [SUCCESS] Clip saved: {output_path} ({file_size} bytes)")
                 
             except Exception as e:
                 error_msg = f"Error extracting clip {i+1}: {str(e)}"
                 if verbose:
                     print(f"  [ERROR] {error_msg}")
                 print(error_msg)
+                if clip:
+                    try:
+                        clip.close()
+                    except:
+                        pass
                 continue
         
-        video.close()
+        # Final cleanup
+        if video:
+            try:
+                video.close()
+            except:
+                pass
         
         if verbose:
             print(f"\n[COMPLETE] Successfully extracted {len(saved_clips)} clip(s)")
@@ -715,7 +756,7 @@ def create_clarification_node():
     """Node that asks user for clarification."""
     
     def clarification_node(state: AgentState) -> AgentState:
-        """Ask user for clarification."""
+        """Ask user for clarification and get their response."""
         verbose = state.get("verbose", False)
         question = state.get("clarification_question", "Could you provide more details?")
         
@@ -724,14 +765,31 @@ def create_clarification_node():
             print("CLARIFIER: Asking for Clarification")
             print("=" * 60)
             print(f"Question: {question}")
-            print("\n[CLARIFIER] User needs to provide more information")
-            print("[CLARIFIER] Workflow ending - waiting for user response")
+            print("\n[CLARIFIER] Waiting for user response...")
         
+        # Prompt user for input
+        print(f"\n{question}")
+        user_response = input("Your response: ").strip()
+        
+        if not user_response:
+            # If user just presses enter, use original query
+            user_response = state["user_query"]
+            if verbose:
+                print("[CLARIFIER] No response provided, using original query")
+        else:
+            if verbose:
+                print(f"[CLARIFIER] User provided: {user_response}")
+        
+        # Update state with new query and continue to planner
         return {
             **state,
+            "user_query": user_response,
             "messages": state["messages"] + [
-                AIMessage(content=question)
-            ]
+                AIMessage(content=question),
+                HumanMessage(content=user_response)
+            ],
+            "needs_clarification": False,  # Clear the flag so planner processes the new query
+            "clarification_question": None
         }
     
     return clarification_node
@@ -793,7 +851,7 @@ def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "
     )
     
     # From clarifier, go back to planner (user will provide new query)
-    workflow.add_edge("clarifier", END)
+    workflow.add_edge("clarifier", "planner")
     
     # From executor, end
     workflow.add_edge("executor", END)
