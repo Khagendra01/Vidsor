@@ -126,98 +126,186 @@ def extract_json(text: str) -> str:
     return text.strip()
 
 
-def analyze_query_intent(query: str, llm) -> Dict[str, Any]:
+def analyze_query_semantics(query: str, llm) -> Dict[str, Any]:
     """
-    Analyze query to determine:
-    1. Is it object-centric? (e.g., "find all clips where person is detected")
-    2. What object classes are mentioned?
-    3. What's the primary intent?
+    Agentic semantic query analyzer - understands query meaning, not just keywords.
+    Replaces heuristic-based intent detection with LLM-driven semantic understanding.
     """
-    system_prompt = """Analyze the user query and determine the search intent.
+    system_prompt = """You are a semantic query analyzer for video search. Your job is to deeply understand what the user is asking for, not just extract keywords.
 
-CRITICAL DISTINCTION:
-- OBJECT-CENTRIC: User wants to find clips where specific objects appear, regardless of what they're doing.
-  Examples: "find all clips where person is detected", "show all cars", "find every time a boat appears"
-  Key indicators: "detected", "appears", "is present", "find all clips where [object]"
-  
-- ACTIVITY-CENTRIC: User wants to find moments where specific activities/actions happen, even if objects are mentioned.
-  Examples: "find moments where they catch fish", "show when someone runs", "find scenes of cooking"
-  Key indicators: Action verbs (catch, run, jump, cook, throw, etc.) + objects, "moments where", "when they"
-  
-- HYBRID: Query mentions both objects and activities, or is ambiguous.
-  Examples: "find person catching fish", "show car driving"
+Analyze the query and determine:
+
+1. QUERY TYPE (choose the most specific):
+   - POSITIVE: Find moments WITH something (e.g., "find person", "show fish")
+   - NEGATIVE: Find moments WITHOUT something (e.g., "find moments without person", "no people")
+   - TEMPORAL: Find moments relative to time/events (e.g., "after they catch fish", "before sunset")
+   - CONDITIONAL: Find moments with multiple conditions (e.g., "person AND fish", "person but no boat")
+   - COMPARATIVE: Find moments with comparisons (e.g., "more fish than people", "longest clip")
+   - AGGREGATE: Find all/any/some instances (e.g., "all moments", "any time")
+
+2. TARGET ENTITIES: What are we searching for?
+   - Objects: ["person", "fish", "boat"]
+   - Activities: ["catching", "running", "cooking"]
+   - Concepts: ["happiness", "conflict", "nature"]
+
+3. CONSTRAINTS: Any conditions or filters?
+   - Duration: "longer than 5 seconds"
+   - Quality: "best", "most relevant"
+   - Count: "top 10", "first 5"
+
+4. MODALITIES NEEDED: Which search types are relevant?
+   - object_detection: For object queries
+   - activity_detection: For action/activity queries
+   - semantic_search: For concept/description queries
+   - temporal_reasoning: For before/after queries
+   - hierarchical_search: For keyword-based fast lookup
+
+5. SPECIAL HANDLING: Does this query need custom logic?
+   - negation: true if query contains "not", "without", "no", "absence"
+   - temporal: true if query contains "before", "after", "during", "while"
+   - conditional: true if query contains "and", "but", "or", "except"
+   - counting: true if query contains numbers or "top", "first", "best"
+
+6. SEARCH INTENT: What's the primary focus?
+   - object: Finding specific objects
+   - activity: Finding specific actions/activities
+   - semantic: Finding concepts/descriptions
+   - hybrid: Combination of above
 
 Return JSON:
 {
-    "is_object_centric": true/false,
-    "mentioned_classes": ["person", "car"],
-    "primary_intent": "object" | "activity" | "semantic" | "hybrid",
-    "object_priority": {"person": 1.0, "car": 0.8},  // Priority scores for each class (0-1)
-    "needs_semantic": true/false,
-    "needs_activity": true/false,
-    "needs_hierarchical": true/false,
-    "confidence": 0.0-1.0  // Confidence in classification
+    "query_type": "POSITIVE" | "NEGATIVE" | "TEMPORAL" | "CONDITIONAL" | "COMPARATIVE" | "AGGREGATE",
+    "target_entities": {
+        "objects": ["person", "fish"],
+        "activities": ["catching"],
+        "concepts": []
+    },
+    "constraints": {
+        "duration": null or {"min": 5, "max": null},
+        "quality": null or "best" | "most_relevant",
+        "count": null or 10
+    },
+    "modalities": {
+        "object_detection": true/false,
+        "activity_detection": true/false,
+        "semantic_search": true/false,
+        "temporal_reasoning": true/false,
+        "hierarchical_search": true/false
+    },
+    "special_handling": {
+        "negation": true/false,
+        "temporal": true/false,
+        "conditional": true/false,
+        "counting": true/false
+    },
+    "search_intent": "object" | "activity" | "semantic" | "hybrid",
+    "object_priority": {"person": 1.0},  // For object classes mentioned
+    "confidence": 0.0-1.0,
+    "reasoning": "brief explanation of your analysis"
 }"""
     
     try:
         response = llm.invoke([
             SystemMessage(content=system_prompt),
-            HumanMessage(content=f"Query: {query}\n\nAnalyze this query carefully. Check for action verbs that indicate activities. Return JSON only.")
+            HumanMessage(content=f"Query: {query}\n\nPerform deep semantic analysis. Understand the true meaning, not just keywords. Return JSON only.")
         ])
         
         response_text = response.content.strip()
         json_text = extract_json(response_text)
         result = json.loads(json_text)
         
-        # Ensure confidence is set
+        # Ensure all required fields exist with defaults
         if "confidence" not in result:
             result["confidence"] = 0.7
+        if "target_entities" not in result:
+            result["target_entities"] = {"objects": [], "activities": [], "concepts": []}
+        if "constraints" not in result:
+            result["constraints"] = {}
+        if "modalities" not in result:
+            result["modalities"] = {}
+        if "special_handling" not in result:
+            result["special_handling"] = {}
+        if "object_priority" not in result:
+            result["object_priority"] = {}
         
         return result
     except Exception as e:
-        # Fallback: try to detect using heuristics
+        # Fallback: basic heuristic detection
         query_lower = query.lower()
         
-        # Activity verb indicators
-        activity_verbs = ["catch", "throw", "run", "jump", "cook", "drive", "walk", "swim", "climb", 
-                         "kick", "hit", "throw", "pick", "drop", "lift", "carry", "push", "pull",
-                         "eat", "drink", "play", "dance", "sing", "talk", "speak", "write", "read"]
-        has_activity_verb = any(verb in query_lower for verb in activity_verbs)
+        # Detect negation
+        negation_keywords = ["not", "without", "no", "absence", "lack", "missing"]
+        has_negation = any(kw in query_lower for kw in negation_keywords)
         
-        # Object-centric indicators (must be explicit)
-        object_indicators = ["is detected", "appears", "is present", "find all clips where", 
-                            "show all", "every time", "all instances of"]
-        is_object_centric = any(indicator in query_lower for indicator in object_indicators) and not has_activity_verb
+        # Detect temporal
+        temporal_keywords = ["before", "after", "during", "while", "when", "then"]
+        has_temporal = any(kw in query_lower for kw in temporal_keywords)
         
-        # Activity-centric indicators
-        activity_indicators = ["moments where", "when they", "when someone", "scenes of", "instances of"]
-        is_activity_centric = (has_activity_verb or any(indicator in query_lower for indicator in activity_indicators)) and not is_object_centric
-        
-        # Extract potential object classes
+        # Extract objects
         mentioned_classes = []
         common_classes = ["person", "car", "fish", "boat", "dog", "cat", "bird", "bike", "truck"]
         for cls in common_classes:
             if cls in query_lower:
                 mentioned_classes.append(cls)
         
-        # Determine primary intent
-        if is_object_centric:
-            primary_intent = "object"
-        elif is_activity_centric:
-            primary_intent = "activity"
+        # Determine query type
+        if has_negation:
+            query_type = "NEGATIVE"
+        elif has_temporal:
+            query_type = "TEMPORAL"
         else:
-            primary_intent = "hybrid"  # Default to hybrid when ambiguous
+            query_type = "POSITIVE"
         
         return {
-            "is_object_centric": is_object_centric,
-            "mentioned_classes": mentioned_classes,
-            "primary_intent": primary_intent,
-            "object_priority": {cls: 1.0 if is_object_centric else 0.5 for cls in mentioned_classes},
-            "needs_semantic": not is_object_centric,
-            "needs_activity": not is_object_centric or is_activity_centric,
-            "needs_hierarchical": True,
-            "confidence": 0.6  # Lower confidence for fallback
+            "query_type": query_type,
+            "target_entities": {
+                "objects": mentioned_classes,
+                "activities": [],
+                "concepts": []
+            },
+            "constraints": {},
+            "modalities": {
+                "object_detection": bool(mentioned_classes),
+                "activity_detection": False,
+                "semantic_search": True,
+                "temporal_reasoning": has_temporal,
+                "hierarchical_search": True
+            },
+            "special_handling": {
+                "negation": has_negation,
+                "temporal": has_temporal,
+                "conditional": False,
+                "counting": False
+            },
+            "search_intent": "object" if mentioned_classes else "hybrid",
+            "object_priority": {cls: 1.0 for cls in mentioned_classes},
+            "confidence": 0.5,  # Low confidence for fallback
+            "reasoning": "Fallback heuristic analysis"
         }
+
+
+def analyze_query_intent(query: str, llm) -> Dict[str, Any]:
+    """
+    Legacy function - now calls semantic analyzer and converts to old format for compatibility.
+    """
+    semantic_analysis = analyze_query_semantics(query, llm)
+    
+    # Convert to old format for backward compatibility
+    is_object_centric = semantic_analysis.get("search_intent") == "object"
+    mentioned_classes = semantic_analysis.get("target_entities", {}).get("objects", [])
+    
+    return {
+        "is_object_centric": is_object_centric,
+        "mentioned_classes": mentioned_classes,
+        "primary_intent": semantic_analysis.get("search_intent", "hybrid"),
+        "object_priority": semantic_analysis.get("object_priority", {}),
+        "needs_semantic": semantic_analysis.get("modalities", {}).get("semantic_search", True),
+        "needs_activity": semantic_analysis.get("modalities", {}).get("activity_detection", False),
+        "needs_hierarchical": semantic_analysis.get("modalities", {}).get("hierarchical_search", True),
+        "confidence": semantic_analysis.get("confidence", 0.7),
+        # New fields from semantic analysis
+        "_semantic_analysis": semantic_analysis  # Store full analysis for strategy planner
+    }
 
 
 def validate_and_adjust_intent(query_intent: Dict, search_plan: Dict, verbose: bool = False) -> Dict[str, Any]:
@@ -283,6 +371,158 @@ def validate_and_adjust_intent(query_intent: Dict, search_plan: Dict, verbose: b
         print(f"  [VALIDATION] No conflicts detected")
     
     return adjusted_intent
+
+
+def plan_search_strategy(semantic_analysis: Dict, llm, verbose: bool = False) -> Dict[str, Any]:
+    """
+    Agentic dynamic strategy planner - generates custom search strategy based on semantic analysis.
+    Replaces fixed search plan generation with LLM-driven strategy planning.
+    """
+    query_type = semantic_analysis.get("query_type", "POSITIVE")
+    target_entities = semantic_analysis.get("target_entities", {})
+    special_handling = semantic_analysis.get("special_handling", {})
+    modalities = semantic_analysis.get("modalities", {})
+    
+    system_prompt = """You are a video search strategy planner. Based on the semantic analysis of a query, generate a custom search strategy.
+
+Available search operations:
+1. object_detection: Search for object classes using YOLO detections
+2. semantic_search: Search using embeddings (visual descriptions + audio transcriptions)
+3. activity_detection: Search for activities/actions using pattern matching
+4. hierarchical_search: Fast keyword-based tree lookup
+5. temporal_reasoning: Find moments relative to other events (before/after)
+
+Special operations for complex queries:
+- NEGATIVE queries: Invert object detection results (find seconds WITHOUT objects)
+- CONDITIONAL queries: Combine multiple searches with AND/OR logic
+- TEMPORAL queries: Use temporal reasoning to find moments relative to events
+
+Generate a strategy JSON:
+{
+    "search_operations": [
+        {
+            "type": "object_detection" | "semantic_search" | "activity_detection" | "hierarchical_search" | "temporal_reasoning",
+            "params": {
+                // Type-specific parameters
+                // For object_detection: {"classes": ["person"], "invert": true/false}
+                // For semantic_search: {"queries": ["..."], "threshold": 0.3}
+                // For activity_detection: {"activity_name": "...", "keywords": [...]}
+                // For hierarchical_search: {"keywords": [...]}
+            },
+            "weight": 0.0-1.0,  // How much this operation contributes to final score
+            "required": true/false  // Must succeed for query to work
+        }
+    ],
+    "scoring": {
+        "formula": "description of how to combine operation results",
+        "weights": {
+            "semantic": 0.4,
+            "activity": 0.3,
+            "hierarchical": 0.1,
+            "object": 0.2
+        },
+        "threshold": 0.3,
+        "object_weights": {"person": 1.0}  // Per-class weights
+    },
+    "post_processing": [
+        "filter_by_duration" | "remove_overlaps" | "rank_by_relevance" | "invert_results"
+    ],
+    "reasoning": "brief explanation of why this strategy fits the query"
+}"""
+    
+    analysis_summary = f"""
+Query Type: {query_type}
+Target Entities: {target_entities}
+Special Handling: {special_handling}
+Modalities Needed: {modalities}
+"""
+    
+    try:
+        response = llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=f"Semantic Analysis:\n{analysis_summary}\n\nGenerate a search strategy that handles this query type. Return JSON only.")
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        strategy = json.loads(json_text)
+        
+        # Validate and set defaults
+        if "search_operations" not in strategy:
+            strategy["search_operations"] = []
+        if "scoring" not in strategy:
+            strategy["scoring"] = {}
+        if "post_processing" not in strategy:
+            strategy["post_processing"] = []
+        
+        return strategy
+    except Exception as e:
+        # Fallback: generate basic strategy from semantic analysis
+        if verbose:
+            print(f"  [FALLBACK] Strategy planning failed, using default strategy")
+        
+        search_operations = []
+        
+        # Add object detection if needed
+        if modalities.get("object_detection") and target_entities.get("objects"):
+            invert = special_handling.get("negation", False)
+            search_operations.append({
+                "type": "object_detection",
+                "params": {
+                    "classes": target_entities["objects"],
+                    "invert": invert
+                },
+                "weight": 1.0 if query_type == "NEGATIVE" and invert else 0.8,
+                "required": True
+            })
+        
+        # Add semantic search if needed
+        if modalities.get("semantic_search"):
+            search_operations.append({
+                "type": "semantic_search",
+                "params": {
+                    "queries": [],  # Will be filled by search plan generator
+                    "threshold": 0.3
+                },
+                "weight": 0.4,
+                "required": False
+            })
+        
+        # Add activity detection if needed
+        if modalities.get("activity_detection") and target_entities.get("activities"):
+            search_operations.append({
+                "type": "activity_detection",
+                "params": {
+                    "activity_name": target_entities["activities"][0] if target_entities["activities"] else "",
+                    "keywords": target_entities["activities"]
+                },
+                "weight": 0.3,
+                "required": False
+            })
+        
+        # Default scoring
+        scoring = {
+            "weights": {
+                "semantic": 0.4 if modalities.get("semantic_search") else 0.0,
+                "activity": 0.3 if modalities.get("activity_detection") else 0.0,
+                "hierarchical": 0.1 if modalities.get("hierarchical_search") else 0.0,
+                "object": 0.2 if modalities.get("object_detection") else 0.0
+            },
+            "threshold": 0.3,
+            "object_weights": semantic_analysis.get("object_priority", {})
+        }
+        
+        post_processing = []
+        if special_handling.get("negation"):
+            post_processing.append("invert_results")
+        post_processing.extend(["remove_overlaps", "rank_by_relevance"])
+        
+        return {
+            "search_operations": search_operations,
+            "scoring": scoring,
+            "post_processing": post_processing,
+            "reasoning": "Fallback strategy based on semantic analysis"
+        }
 
 
 def configure_weights(query_intent: Dict, all_object_classes: Set[str]) -> Dict[str, Any]:
@@ -352,9 +592,14 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
                   semantic_results: List[Dict],
                   activity_results: List[Dict],
                   hierarchical_results: List[Dict],
+                  semantic_analysis: Optional[Dict] = None,
+                  negated_second_indices: Optional[Set[int]] = None,
                   verbose: bool = False) -> List[Dict]:
     """
-    Score all seconds using weighted features.
+    Score seconds using weighted features.
+    
+    If negated_second_indices is provided (for negative queries), only score those specific seconds.
+    Otherwise, score all seconds.
     
     Returns list of {second_idx, score, features, time_range, ...}
     """
@@ -397,14 +642,24 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
             if second_idx is not None:
                 hierarchical_map[second_idx] = result.get("score", 1.0)
     
+    # Determine which seconds to score
+    seconds_to_score = range(len(feature_extractor.segment_tree.seconds))
+    if negated_second_indices is not None:
+        # CORE FIX: Only score the seconds identified by negation logic
+        seconds_to_score = sorted(negated_second_indices)
+        if verbose:
+            print(f"\n[SCORING] Scoring {len(seconds_to_score)} negated seconds (restricted set)...")
+    else:
+        if verbose:
+            print(f"\n[SCORING] Scoring {len(feature_extractor.segment_tree.seconds)} seconds...")
+    
     if verbose:
-        print(f"\n[SCORING] Scoring {len(feature_extractor.segment_tree.seconds)} seconds...")
         print(f"  Semantic matches: {len(semantic_map)} seconds")
         print(f"  Activity matches: {len(activity_map)} seconds")
         print(f"  Hierarchical matches: {len(hierarchical_map)} seconds")
     
-    # Score each second
-    for second_idx in range(len(feature_extractor.segment_tree.seconds)):
+    # Score each second (only negated ones if negative query)
+    for second_idx in seconds_to_score:
         features = feature_extractor.extract_features_for_second(second_idx)
         if not features:
             continue
@@ -416,11 +671,21 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
         
         # Compute object score
         object_score = 0.0
+        is_negative = False
+        if semantic_analysis:
+            is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
+        
         for class_name, normalized_count in features["object_presence"].items():
             class_weight = weights["object_weights"].get(class_name, 0.1)
             # Normalize count to [0, 1] (max 3 -> 1.0)
             normalized = normalized_count / 3.0
-            object_score += class_weight * normalized
+            if is_negative:
+                # For negative queries: score HIGH when objects are ABSENT (low count)
+                # Invert: 1.0 - normalized means absence = high score
+                object_score += class_weight * (1.0 - normalized)
+            else:
+                # For positive queries: score HIGH when objects are PRESENT (high count)
+                object_score += class_weight * normalized
         
         # Final weighted score
         final_score = (
@@ -671,6 +936,95 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     }
 
 
+def validate_search_results(query: str, semantic_analysis: Dict, filtered_seconds: List[Dict], 
+                            llm, verbose: bool = False) -> Dict[str, Any]:
+    """
+    Agentic self-validation - checks if search results match query intent.
+    Uses LLM to validate results and suggest improvements.
+    """
+    if not filtered_seconds:
+        return {
+            "is_valid": False,
+            "needs_refinement": True,
+            "issues": ["No results found"],
+            "suggestions": ["Try lowering threshold or expanding search"],
+            "confidence": 0.0
+        }
+    
+    # Prepare summary of results for validation
+    top_results_summary = []
+    for sec in filtered_seconds[:10]:  # Top 10 for validation
+        top_results_summary.append({
+            "second": sec.get("second"),
+            "score": sec.get("score", 0),
+            "semantic_score": sec.get("semantic_score", 0),
+            "activity_score": sec.get("activity_score", 0),
+            "object_score": sec.get("object_score", 0)
+        })
+    
+    system_prompt = """You are a search result validator. Your job is to check if the search results match the user's query intent.
+
+Analyze:
+1. Do the results match what the user asked for?
+2. Are there obvious false positives?
+3. Are the results relevant to the query type (positive, negative, temporal, etc.)?
+4. Should the search be refined?
+
+Return JSON:
+{
+    "is_valid": true/false,
+    "needs_refinement": true/false,
+    "issues": ["issue1", "issue2"],
+    "suggestions": ["suggestion1", "suggestion2"],
+    "confidence": 0.0-1.0,
+    "reasoning": "brief explanation"
+}"""
+    
+    query_type = semantic_analysis.get("query_type", "POSITIVE")
+    search_intent = semantic_analysis.get("search_intent", "hybrid")
+    
+    validation_prompt = f"""
+Query: {query}
+Query Type: {query_type}
+Search Intent: {search_intent}
+Number of results: {len(filtered_seconds)}
+Top 10 results summary: {json.dumps(top_results_summary, indent=2)}
+
+Validate if these results make sense for the query. Return JSON only.
+"""
+    
+    try:
+        response = llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=validation_prompt)
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        result = json.loads(json_text)
+        
+        if verbose:
+            print(f"  Validation confidence: {result.get('confidence', 0.7):.2f}")
+            if result.get("is_valid"):
+                print(f"  [VALIDATION] Results are valid")
+            else:
+                print(f"  [VALIDATION] Results need refinement")
+        
+        return result
+    except Exception as e:
+        # Fallback: basic validation
+        if verbose:
+            print(f"  [FALLBACK] Validation failed, assuming valid")
+        return {
+            "is_valid": True,
+            "needs_refinement": False,
+            "issues": [],
+            "suggestions": [],
+            "confidence": 0.5,
+            "reasoning": "Fallback validation"
+        }
+
+
 def create_planner_agent(model_name: str = "gpt-4o-mini"):
     """Create the planner agent that analyzes queries and retrieves relevant moments."""
     
@@ -811,31 +1165,67 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             print(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
             print(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
         
-        # NEW: Analyze query intent
+        # AGENTIC PHASE 1: Semantic Query Analysis
         if verbose:
-            print("\n[QUERY ANALYSIS] Analyzing query intent...")
-        query_intent = analyze_query_intent(query, llm)
+            print("\n[AGENTIC] Phase 1: Semantic Query Analysis...")
+        semantic_analysis = analyze_query_semantics(query, llm)
         if verbose:
-            print(f"  Is object-centric: {query_intent.get('is_object_centric', False)}")
-            print(f"  Primary intent: {query_intent.get('primary_intent', 'hybrid')}")
-            print(f"  Mentioned classes: {query_intent.get('mentioned_classes', [])}")
-            print(f"  Confidence: {query_intent.get('confidence', 0.7):.2f}")
+            print(f"  Query type: {semantic_analysis.get('query_type', 'POSITIVE')}")
+            print(f"  Search intent: {semantic_analysis.get('search_intent', 'hybrid')}")
+            print(f"  Target entities: {semantic_analysis.get('target_entities', {})}")
+            print(f"  Special handling: {semantic_analysis.get('special_handling', {})}")
+            print(f"  Reasoning: {semantic_analysis.get('reasoning', 'N/A')}")
         
-        # NEW: Cross-validate with search plan
+        # AGENTIC PHASE 2: Dynamic Strategy Planning
         if verbose:
-            print("\n[VALIDATION] Cross-validating intent with search plan...")
+            print("\n[AGENTIC] Phase 2: Dynamic Strategy Planning...")
+        strategy = plan_search_strategy(semantic_analysis, llm, verbose=verbose)
+        if verbose:
+            print(f"  Strategy operations: {len(strategy.get('search_operations', []))}")
+            print(f"  Post-processing: {strategy.get('post_processing', [])}")
+            print(f"  Reasoning: {strategy.get('reasoning', 'N/A')}")
+        
+        # Convert strategy to query_intent format for backward compatibility
+        query_intent = {
+            "is_object_centric": semantic_analysis.get("search_intent") == "object",
+            "mentioned_classes": semantic_analysis.get("target_entities", {}).get("objects", []),
+            "primary_intent": semantic_analysis.get("search_intent", "hybrid"),
+            "object_priority": semantic_analysis.get("object_priority", {}),
+            "needs_semantic": semantic_analysis.get("modalities", {}).get("semantic_search", True),
+            "needs_activity": semantic_analysis.get("modalities", {}).get("activity_detection", False),
+            "needs_hierarchical": semantic_analysis.get("modalities", {}).get("hierarchical_search", True),
+            "confidence": semantic_analysis.get("confidence", 0.7),
+            "_semantic_analysis": semantic_analysis,
+            "_strategy": strategy
+        }
+        
+        # Cross-validate with search plan (keep for compatibility)
+        if verbose:
+            print("\n[VALIDATION] Cross-validating with search plan...")
         query_intent = validate_and_adjust_intent(query_intent, search_plan, verbose=verbose)
-        if verbose:
-            print(f"  Final intent: {query_intent.get('primary_intent', 'hybrid')}")
-            print(f"  Needs semantic: {query_intent.get('needs_semantic', True)}")
-            print(f"  Needs activity: {query_intent.get('needs_activity', True)}")
         
         # NEW: Initialize feature extractor
         feature_extractor = PerSecondFeatureExtractor(segment_tree)
         
-        # NEW: Get all object classes and configure weights
+        # NEW: Get all object classes and configure weights (use strategy scoring if available)
         all_object_classes = set(segment_tree.get_all_classes().keys())
-        weights = configure_weights(query_intent, all_object_classes)
+        if strategy.get("scoring"):
+            # Use strategy-based weights
+            strategy_scoring = strategy["scoring"]
+            weights = {
+                "semantic_weight": strategy_scoring.get("weights", {}).get("semantic", 0.4),
+                "activity_weight": strategy_scoring.get("weights", {}).get("activity", 0.3),
+                "hierarchical_weight": strategy_scoring.get("weights", {}).get("hierarchical", 0.1),
+                "object_weights": strategy_scoring.get("object_weights", {}),
+                "threshold": strategy_scoring.get("threshold", 0.3)
+            }
+            # Initialize all object classes with default low weight
+            for class_name in all_object_classes:
+                if class_name not in weights["object_weights"]:
+                    weights["object_weights"][class_name] = 0.1
+        else:
+            # Fallback to old weight configuration
+            weights = configure_weights(query_intent, all_object_classes)
         if verbose:
             print(f"\n[WEIGHT CONFIGURATION]")
             print(f"  Semantic weight: {weights['semantic_weight']:.2f}")
@@ -975,21 +1365,84 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                     if verbose:
                         print(f"      Found {len(results)} matches")
             
-            # 3. Object search (keep - uses YOLO detection data)
+            # 3. Object search (with negation handling)
             object_classes = search_plan.get("object_classes", [])
-            if object_classes:
+            # Also check semantic analysis for object classes
+            semantic_objects = semantic_analysis.get("target_entities", {}).get("objects", [])
+            all_object_classes = list(set(object_classes + semantic_objects))
+            
+            # Check if this is a negative query
+            is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
+            
+            if all_object_classes:
                 if verbose:
                     print(f"\n  [SEARCH TYPE: Object Detection (YOLO)]")
-                for obj_class in object_classes:
+                    if is_negative:
+                        print(f"    [NEGATION] Inverting search - finding seconds WITHOUT objects")
+                
+                if is_negative:
+                    # NEGATIVE QUERY: Find seconds WITHOUT the objects
+                    # Strategy: Get all seconds, then remove those with object detections
+                    all_seconds_with_objects = set()
+                    total_seconds = len(segment_tree.seconds)
+                    
+                    # Helper to map time to second index
+                    def time_to_second_idx(time_seconds: float) -> Optional[int]:
+                        """Map a time in seconds to the corresponding second index."""
+                        for idx, second_data in enumerate(segment_tree.seconds):
+                            tr = second_data.get("time_range", [])
+                            if tr and len(tr) >= 2 and tr[0] <= time_seconds <= tr[1]:
+                                return idx
+                        # Fallback: approximate by rounding
+                        return int(time_seconds) if 0 <= int(time_seconds) < total_seconds else None
+                    
+                    for obj_class in all_object_classes:
+                        if verbose:
+                            print(f"    Class: '{obj_class}' (inverted)")
+                        results = segment_tree.find_objects_by_class(obj_class)
+                        for result in results:
+                            tr = result.get("time_range", [])
+                            if tr and len(tr) >= 2:
+                                # Map time to second index properly
+                                start_idx = time_to_second_idx(tr[0])
+                                end_idx = time_to_second_idx(tr[1])
+                                # Mark all seconds in the range as having the object
+                                if start_idx is not None and end_idx is not None:
+                                    for idx in range(start_idx, end_idx + 1):
+                                        if 0 <= idx < total_seconds:
+                                            all_seconds_with_objects.add(idx)
+                                elif start_idx is not None:
+                                    all_seconds_with_objects.add(start_idx)
+                    
+                    # Create results for seconds WITHOUT objects
+                    for second_idx in range(total_seconds):
+                        if second_idx not in all_seconds_with_objects:
+                            second_data = segment_tree.get_second_by_index(second_idx)
+                            if second_data:
+                                tr = second_data.get("time_range", [])
+                                if tr and len(tr) >= 2:
+                                    all_search_results.append({
+                                        "search_type": "object_negated",
+                                        "object_class": all_object_classes[0],  # Primary class
+                                        "time_range": tr,
+                                        "second": second_idx,
+                                        "inverted": True
+                                    })
+                    
                     if verbose:
-                        print(f"    Class: '{obj_class}'")
-                    results = segment_tree.find_objects_by_class(obj_class)
-                    for result in results:
-                        result["search_type"] = "object"
-                        result["object_class"] = obj_class
-                        all_search_results.append(result)
-                    if verbose:
-                        print(f"      Found {len(results)} detections")
+                        print(f"      Found {total_seconds - len(all_seconds_with_objects)} seconds WITHOUT objects (inverted from {len(all_seconds_with_objects)} with objects)")
+                else:
+                    # POSITIVE QUERY: Normal object detection
+                    for obj_class in all_object_classes:
+                        if verbose:
+                            print(f"    Class: '{obj_class}'")
+                        results = segment_tree.find_objects_by_class(obj_class)
+                        for result in results:
+                            result["search_type"] = "object"
+                            result["object_class"] = obj_class
+                            all_search_results.append(result)
+                        if verbose:
+                            print(f"      Found {len(results)} detections")
             
             # 4. Activity search (keep - pattern matching)
             activity_name = search_plan.get("activity_name", "")
@@ -1031,8 +1484,24 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             semantic_results = [r for r in all_search_results if r.get("search_type") == "semantic"]
             activity_results = [r for r in all_search_results if r.get("search_type") == "activity"]
             hierarchical_results = [r for r in all_search_results if r.get("search_type") in ["hierarchical", "hierarchical_highlight"]]
+            negated_results = [r for r in all_search_results if r.get("search_type") == "object_negated"]
             
-            # Score all seconds
+            # CORE FIX: For negative queries, only score the seconds identified by negation logic
+            is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
+            negated_second_indices = None
+            
+            if is_negative and negated_results:
+                # Extract the second indices from negated results - these are the ONLY seconds to score
+                negated_second_indices = set()
+                for result in negated_results:
+                    second_idx = result.get("second")
+                    if second_idx is not None:
+                        negated_second_indices.add(second_idx)
+                
+                if verbose:
+                    print(f"\n[NEGATION] Only scoring {len(negated_second_indices)} seconds identified by negation logic")
+            
+            # Score seconds (only negated ones if negative query)
             scored_seconds = score_seconds(
                 feature_extractor,
                 query_intent,
@@ -1040,6 +1509,8 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                 semantic_results,
                 activity_results,
                 hierarchical_results,
+                semantic_analysis=semantic_analysis,
+                negated_second_indices=negated_second_indices,  # Pass the restricted set
                 verbose=verbose
             )
             
@@ -1056,6 +1527,22 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         print(f"    {i}. Second {sec['second']}: score={sec['score']:.3f} "
                               f"(sem={sec['semantic_score']:.2f}, act={sec['activity_score']:.2f}, "
                               f"obj={sec['object_score']:.2f})")
+            
+            # AGENTIC PHASE 3: Self-Validation
+            if verbose:
+                print(f"\n[AGENTIC] Phase 3: Self-Validation...")
+            
+            validation_result = validate_search_results(
+                query=query,
+                semantic_analysis=semantic_analysis,
+                filtered_seconds=filtered_seconds[:20] if filtered_seconds else [],  # Top 20 for validation
+                llm=llm,
+                verbose=verbose
+            )
+            
+            if validation_result.get("needs_refinement", False) and verbose:
+                print(f"  [VALIDATION] Issues detected: {validation_result.get('issues', [])}")
+                print(f"  [VALIDATION] Suggestions: {validation_result.get('suggestions', [])}")
             
             # NEW STEP 4: Group contiguous seconds into time ranges
             if verbose:
