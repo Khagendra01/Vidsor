@@ -49,16 +49,6 @@ if __name__ == "__main__":
         action="store_true",
         help="Suppress verbose output"
     )
-    parser.add_argument(
-        "--openshot",
-        action="store_true",
-        help="Create OpenShot project file after extraction"
-    )
-    parser.add_argument(
-        "--openshot-auto-open",
-        action="store_true",
-        help="Automatically open OpenShot project after creation (requires --openshot)"
-    )
     
     args = parser.parse_args()
     
@@ -69,8 +59,6 @@ if __name__ == "__main__":
         print(f"Processing query: {args.query}")
         print(f"Video: {args.video}")
         print(f"JSON: {args.json}")
-        if args.openshot:
-            print(f"OpenShot: Enabled (auto-open: {args.openshot_auto_open})")
         print()
     
     result = run_agent(
@@ -78,9 +66,7 @@ if __name__ == "__main__":
         args.json, 
         args.video, 
         args.model, 
-        verbose=verbose,
-        create_openshot_project=args.openshot,
-        auto_open_openshot=args.openshot_auto_open
+        verbose=verbose
     )
     
     print("\n" + "=" * 60)
@@ -98,10 +84,6 @@ if __name__ == "__main__":
             print("\nSaved clips:")
             for clip in result["output_clips"]:
                 print(f"  - {clip}")
-        
-        if result.get("openshot_project_path"):
-            print(f"\nOpenShot project: {result.get('openshot_project_path')}")
-            print("  You can open this file in OpenShot Video Editor for further editing.")
         
         if result.get("log_file"):
             print(f"\nLog file: {result.get('log_file')}")

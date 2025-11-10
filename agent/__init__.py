@@ -63,8 +63,7 @@ def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "
 
 
 def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gpt-4o-mini", 
-              verbose: bool = True, create_openshot_project: bool = False, 
-              auto_open_openshot: bool = False, log_file: Optional[str] = None):
+              verbose: bool = True, log_file: Optional[str] = None):
     """
     Run the video clip extraction agent with a user query.
     
@@ -74,8 +73,6 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         video_path: Path to video file
         model_name: LLM model name (default: "gpt-4o-mini")
         verbose: Print verbose output (default: True)
-        create_openshot_project: Create OpenShot project file after extraction (default: False)
-        auto_open_openshot: Automatically open project in OpenShot if available (default: False)
         log_file: Path to log file (if None, auto-generate based on query)
     """
     
@@ -94,8 +91,6 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         logger.print(f"Segment Tree: {json_path}")
         logger.print(f"Model: {model_name}")
         logger.print(f"Log file: {log_file}")
-        if create_openshot_project:
-            logger.print(f"OpenShot Integration: Enabled (auto-open: {auto_open_openshot})")
         logger.print("\n[INITIALIZATION] Starting agent...")
     else:
         logger.info(f"Starting agent - Query: {query}, Video: {video_path}")
@@ -130,8 +125,6 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         "segment_tree": segment_tree,
         "verbose": verbose,
         "logger": logger,  # Pass logger to state
-        "create_openshot_project": create_openshot_project,
-        "auto_open_openshot": auto_open_openshot,
         # Memory fields (initialized to None for first query)
         "previous_time_ranges": None,
         "previous_scored_seconds": None,
