@@ -27,6 +27,7 @@ except ImportError:
         raise ImportError("MoviePy is required. Install with: pip install moviepy")
 
 from agent.segment_tree_utils import load_segment_tree, SegmentTreeQuery
+from agent import run_agent
 from extractor.pipeline import SegmentTreePipeline
 from extractor.config import ExtractorConfig
 
@@ -96,6 +97,15 @@ class Vidsor:
         self.progress_bar: Optional[ttk.Progressbar] = None
         self.extraction_thread: Optional[threading.Thread] = None
         self.is_extracting = False
+        
+        # Chat interface components
+        self.chat_history: List[Dict[str, str]] = []  # List of {"role": "user"/"assistant", "content": "..."}
+        self.chat_text: Optional[tk.Text] = None
+        self.chat_input: Optional[tk.Text] = None
+        self.chat_send_btn: Optional[ttk.Button] = None
+        self.chat_status_label: Optional[ttk.Label] = None
+        self.agent_thread: Optional[threading.Thread] = None
+        self.is_agent_running = False
         
         # Load video and segment tree if provided
         if self.video_path:
@@ -189,6 +199,9 @@ class Vidsor:
         if os.path.exists(segment_tree_path):
             self.segment_tree_path = segment_tree_path
             self._load_segment_tree()
+        
+        # Load chat history
+        self._load_chat_history()
     
     def upload_video_to_project(self, video_path: str, project_path: str) -> str:
         """
@@ -298,7 +311,7 @@ class Vidsor:
                         self.root.after(0, lambda: self.progress_bar.config(mode='determinate'))
                     self.root.after(0, lambda: messagebox.showinfo(
                         "Success", 
-                        "Video extraction complete!\n\nSegment tree has been generated and loaded."
+                        "Video extraction complete!\n\nSegment tree has been generated and loaded.\n\nYou can now use the chat interface to query your video!"
                     ))
             
         except Exception as e:
@@ -527,13 +540,27 @@ class Vidsor:
         """Create Tkinter UI for video editing."""
         self.root = tk.Tk()
         self.root.title("Vidsor - Video Editor")
-        self.root.geometry("1200x800")
+        self.root.geometry("1600x900")
         
-        # Main container
-        main_frame = ttk.Frame(self.root, padding="10")
-        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        # Main container with paned window for resizable split
+        main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
+        main_paned.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
+        
+        # Left panel - Video editor
+        left_frame = ttk.Frame(main_paned, padding="10")
+        main_paned.add(left_frame, weight=2)
+        
+        # Right panel - Chat interface
+        right_frame = ttk.Frame(main_paned, padding="10")
+        main_paned.add(right_frame, weight=1)
+        
+        # Main container (for left panel)
+        main_frame = ttk.Frame(left_frame, padding="10")
+        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        left_frame.columnconfigure(0, weight=1)
+        left_frame.rowconfigure(0, weight=1)
         
         # Project management frame
         project_frame = ttk.LabelFrame(main_frame, text="Project", padding="15")
@@ -636,6 +663,9 @@ class Vidsor:
         
         # Initialize UI state
         self._update_ui_state()
+        
+        # Create chat interface
+        self._create_chat_ui(right_frame)
     
     def _update_project_list(self):
         """Update the project dropdown list."""
@@ -689,6 +719,9 @@ class Vidsor:
             if self.status_label:
                 project_name = os.path.basename(project_path)
                 self.status_label.config(text=f"Project '{project_name}' selected")
+            # Reload chat history for the new project
+            self._load_chat_history()
+            self._display_chat_history()
     
     def _on_load_video(self):
         """Load video button handler."""
@@ -732,9 +765,10 @@ class Vidsor:
                     self.segment_tree_path = segment_tree_path
                     self._load_segment_tree()
                     self.status_label.config(text=f"Video loaded: {os.path.basename(video_path)}")
+                    self._update_ui_state()  # Enable chat button
                     messagebox.showinfo(
                         "Success", 
-                        f"Video uploaded successfully!\n\n{os.path.basename(video_path)}\n\nSegment tree already exists and has been loaded."
+                        f"Video uploaded successfully!\n\n{os.path.basename(video_path)}\n\nSegment tree already exists and has been loaded.\n\nYou can now use the chat interface!"
                     )
                 else:
                     # Ask if user wants to run extraction
@@ -768,6 +802,12 @@ class Vidsor:
             self.play_btn.config(state=tk.NORMAL if has_video else tk.DISABLED)
         if self.export_btn:
             self.export_btn.config(state=tk.NORMAL if has_video and self.edit_state.chunks else tk.DISABLED)
+        
+        # Update chat send button state
+        if self.chat_send_btn:
+            has_project = self.current_project_path is not None
+            has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path) if self.segment_tree_path else False
+            self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree and not self.is_agent_running) else tk.DISABLED)
         
         # Update preview label
         if self.preview_label:
@@ -938,6 +978,283 @@ class Vidsor:
             clip.close()
         
         print(f"[VIDSOR] Video exported to: {output_path}")
+    
+    def _create_chat_ui(self, parent_frame):
+        """Create chat interface UI components."""
+        # Chat frame
+        chat_frame = ttk.LabelFrame(parent_frame, text="Chat Assistant", padding="10")
+        chat_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        parent_frame.columnconfigure(0, weight=1)
+        parent_frame.rowconfigure(0, weight=1)
+        chat_frame.columnconfigure(0, weight=1)
+        chat_frame.rowconfigure(0, weight=1)
+        
+        # Chat history display (scrollable text widget)
+        chat_history_frame = ttk.Frame(chat_frame)
+        chat_history_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
+        chat_history_frame.columnconfigure(0, weight=1)
+        chat_history_frame.rowconfigure(0, weight=1)
+        
+        scrollbar = ttk.Scrollbar(chat_history_frame)
+        scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
+        
+        self.chat_text = tk.Text(
+            chat_history_frame,
+            wrap=tk.WORD,
+            yscrollcommand=scrollbar.set,
+            state=tk.DISABLED,
+            height=30,
+            font=("Arial", 10),
+            bg="#f5f5f5"
+        )
+        self.chat_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
+        scrollbar.config(command=self.chat_text.yview)
+        
+        # Chat input frame
+        input_frame = ttk.Frame(chat_frame)
+        input_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
+        input_frame.columnconfigure(0, weight=1)
+        
+        # Input text widget (multi-line)
+        self.chat_input = tk.Text(
+            input_frame,
+            wrap=tk.WORD,
+            height=3,
+            font=("Arial", 10)
+        )
+        self.chat_input.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 5))
+        
+        # Send button
+        self.chat_send_btn = ttk.Button(
+            input_frame,
+            text="Send",
+            command=self._on_send_message,
+            state=tk.DISABLED
+        )
+        self.chat_send_btn.grid(row=0, column=1, sticky=tk.E)
+        
+        # Bind Enter key (with Shift for new line)
+        self.chat_input.bind("<Return>", self._on_chat_input_return)
+        self.chat_input.bind("<Shift-Return>", lambda e: None)  # Allow Shift+Enter for new line
+        
+        # Chat status label
+        self.chat_status_label = ttk.Label(chat_frame, text="Ready", foreground="gray")
+        self.chat_status_label.grid(row=2, column=0, sticky=tk.W, pady=(5, 0))
+        
+        # Display existing chat history if any
+        self._display_chat_history()
+    
+    def _on_chat_input_return(self, event):
+        """Handle Enter key in chat input (send message, Shift+Enter for new line)."""
+        if event.state & 0x1:  # Shift key is pressed
+            return  # Allow default behavior (new line)
+        else:
+            self._on_send_message()
+            return "break"  # Prevent default behavior
+    
+    def _on_send_message(self):
+        """Handle send message button click."""
+        if self.is_agent_running:
+            messagebox.showwarning("Warning", "Agent is already processing a query. Please wait.")
+            return
+        
+        # Get message from input
+        message = self.chat_input.get("1.0", tk.END).strip()
+        if not message:
+            return
+        
+        # Check if project and video are loaded
+        if not self.current_project_path:
+            messagebox.showwarning("Warning", "Please select a project first.")
+            return
+        
+        if not self.video_path:
+            messagebox.showwarning("Warning", "Please upload a video first.")
+            return
+        
+        segment_tree_path = os.path.join(self.current_project_path, "segment_tree.json")
+        if not os.path.exists(segment_tree_path):
+            messagebox.showwarning(
+                "Warning",
+                "Segment tree not found. Please extract video features first using 'Upload Video' or 'Analyze Video'."
+            )
+            return
+        
+        # Clear input
+        self.chat_input.delete("1.0", tk.END)
+        
+        # Add user message to history
+        self._add_chat_message("user", message)
+        
+        # Run agent in background thread
+        self.is_agent_running = True
+        self.chat_send_btn.config(state=tk.DISABLED)
+        self.chat_status_label.config(text="Processing query...", foreground="blue")
+        
+        self.agent_thread = threading.Thread(
+            target=self._run_agent_thread,
+            args=(message, segment_tree_path),
+            daemon=True
+        )
+        self.agent_thread.start()
+    
+    def _run_agent_thread(self, query: str, segment_tree_path: str):
+        """Run agent in background thread."""
+        try:
+            # Run agent
+            result = run_agent(
+                query=query,
+                json_path=segment_tree_path,
+                video_path=self.video_path,
+                model_name="gpt-4o-mini",
+                verbose=False
+            )
+            
+            # Extract response
+            if result.get("needs_clarification"):
+                response = f"Clarification needed: {result.get('clarification_question', 'Please provide more details.')}"
+            else:
+                clips = result.get("output_clips", [])
+                time_ranges = result.get("time_ranges", [])
+                confidence = result.get("confidence", 0)
+                
+                response_parts = []
+                if clips:
+                    response_parts.append(f"Found {len(clips)} clip(s):")
+                    for i, clip in enumerate(clips, 1):
+                        clip_name = os.path.basename(clip)
+                        response_parts.append(f"  {i}. {clip_name}")
+                elif time_ranges:
+                    response_parts.append(f"Found {len(time_ranges)} time range(s):")
+                    for i, (start, end) in enumerate(time_ranges, 1):
+                        response_parts.append(f"  {i}. {start:.1f}s - {end:.1f}s")
+                else:
+                    response_parts.append("No matching clips found.")
+                
+                if confidence is not None:
+                    response_parts.append(f"\nConfidence: {confidence:.2%}")
+                
+                response = "\n".join(response_parts)
+            
+            # Update UI in main thread
+            if self.root:
+                self.root.after(0, lambda: self._add_chat_message("assistant", response))
+                self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+            
+        except Exception as e:
+            error_msg = f"Error processing query: {str(e)}"
+            print(f"[VIDSOR] {error_msg}")
+            if self.root:
+                self.root.after(0, lambda: self._add_chat_message("assistant", error_msg))
+                self.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
+                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+        finally:
+            self.is_agent_running = False
+    
+    def _add_chat_message(self, role: str, content: str):
+        """Add a message to chat history and display it."""
+        # Add to history
+        self.chat_history.append({"role": role, "content": content})
+        
+        # Save to file
+        self._save_chat_history()
+        
+        # Display in chat text widget
+        self.chat_text.config(state=tk.NORMAL)
+        
+        # Format message
+        if role == "user":
+            prefix = "You: "
+            tag = "user"
+        else:
+            prefix = "Assistant: "
+            tag = "assistant"
+        
+        # Get start position before inserting
+        start_pos = self.chat_text.index(tk.END)
+        self.chat_text.insert(tk.END, f"{prefix}{content}\n\n")
+        # Get end position after inserting (before the two newlines)
+        end_pos = self.chat_text.index(f"{start_pos}+{len(prefix)+len(content)}c")
+        
+        # Apply tags for styling
+        self.chat_text.tag_add(tag, start_pos, end_pos)
+        
+        # Configure tag styles
+        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
+        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
+        
+        self.chat_text.config(state=tk.DISABLED)
+        self.chat_text.see(tk.END)
+    
+    def _save_chat_history(self):
+        """Save chat history to project folder."""
+        if not self.current_project_path:
+            return
+        
+        chat_history_path = os.path.join(self.current_project_path, "chat_history.json")
+        try:
+            with open(chat_history_path, 'w') as f:
+                json.dump(self.chat_history, f, indent=2)
+        except Exception as e:
+            print(f"[VIDSOR] Failed to save chat history: {e}")
+    
+    def _load_chat_history(self):
+        """Load chat history from project folder."""
+        if not self.current_project_path:
+            self.chat_history = []
+            return
+        
+        chat_history_path = os.path.join(self.current_project_path, "chat_history.json")
+        if os.path.exists(chat_history_path):
+            try:
+                with open(chat_history_path, 'r') as f:
+                    self.chat_history = json.load(f)
+            except Exception as e:
+                print(f"[VIDSOR] Failed to load chat history: {e}")
+                self.chat_history = []
+        else:
+            self.chat_history = []
+    
+    def _display_chat_history(self):
+        """Display all chat history in the chat text widget."""
+        if not self.chat_text:
+            return
+        
+        self.chat_text.config(state=tk.NORMAL)
+        self.chat_text.delete("1.0", tk.END)
+        
+        for msg in self.chat_history:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            
+            if role == "user":
+                prefix = "You: "
+                tag = "user"
+            else:
+                prefix = "Assistant: "
+                tag = "assistant"
+            
+            start_pos = self.chat_text.index(tk.END)
+            self.chat_text.insert(tk.END, f"{prefix}{content}\n\n")
+            end_pos = self.chat_text.index(tk.END)
+            
+            # Apply tags
+            self.chat_text.tag_add(tag, start_pos, f"{end_pos}-2c")
+        
+        # Configure tag styles
+        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
+        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
+        
+        self.chat_text.config(state=tk.DISABLED)
+        self.chat_text.see(tk.END)
+        
+        # Update send button state
+        if self.chat_send_btn:
+            has_project = self.current_project_path is not None
+            has_video = self.video_path is not None
+            has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path)
+            self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree) else tk.DISABLED)
     
     def run(self):
         """Run the Vidsor editor UI."""
