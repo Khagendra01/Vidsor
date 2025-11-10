@@ -1,3 +1,5 @@
 python generate_segment_tree_llava.py --video hiker.mp4 --use-images
 
+python generate_embeddings.py --json camp_segment_tree.json
+
 future can be duckdb in python

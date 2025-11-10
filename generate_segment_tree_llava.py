@@ -11,7 +11,7 @@ from PIL import Image
 import torch
 import requests
 import base64
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 import os
 from ultralytics import YOLO
 from prompt import get_llava_prompt
@@ -426,6 +426,21 @@ class SegmentTreeGenerator:
                 }
             }
     
+    def find_frame_by_number(self, frames_data: List[Dict], frame_number: int) -> Optional[Dict]:
+        """Find frame data by frame_number (handles stride in tracking data)"""
+        # Binary search for efficiency since frames are sorted by frame_number
+        left, right = 0, len(frames_data) - 1
+        while left <= right:
+            mid = (left + right) // 2
+            mid_frame_num = frames_data[mid].get('frame_number', 0)
+            if mid_frame_num == frame_number:
+                return frames_data[mid]
+            elif mid_frame_num < frame_number:
+                left = mid + 1
+            else:
+                right = mid - 1
+        return None
+    
     def group_detections(self, frames_data: List[Dict], start_frame: int, end_frame: int) -> List[Dict]:
         """Group 5 frames of detections together, deduplicate by track_id"""
         groups = []
@@ -438,8 +453,8 @@ class SegmentTreeGenerator:
             # Collect all detections from this group
             all_detections = {}
             for frame_num in frame_range:
-                if frame_num <= len(frames_data):
-                    frame_data = frames_data[frame_num - 1]
+                frame_data = self.find_frame_by_number(frames_data, frame_num)
+                if frame_data:
                     for det in frame_data.get('detections', []):
                         track_id = det.get('track_id')
                         if track_id is not None:
@@ -462,10 +477,15 @@ class SegmentTreeGenerator:
         
         return groups
     
-    def process_second(self, second_idx: int, frames_data: List[Dict], video_fps: float) -> Dict:
+    def process_second(self, second_idx: int, frames_data: List[Dict], video_fps: float, max_frame: int = None) -> Dict:
         """Process one second of video"""
         start_frame = (second_idx * FPS) + 1
-        end_frame = min(start_frame + FPS - 1, len(frames_data))
+        if max_frame is not None:
+            end_frame = min(start_frame + FPS - 1, max_frame)
+        else:
+            # Fallback: find max frame number from tracking data
+            max_tracked_frame = max((f.get('frame_number', 0) for f in frames_data), default=0)
+            end_frame = min(start_frame + FPS - 1, max_tracked_frame)
         
         # Group detections
         detection_groups = self.group_detections(frames_data, start_frame, end_frame)
@@ -629,16 +649,22 @@ class SegmentTreeGenerator:
         # Load models
         self.load_models()
         
-        # Calculate number of seconds
-        total_frames = len(frames_data)
-        num_seconds = (total_frames + FPS - 1) // FPS
-        
-        print(f"Processing {num_seconds} seconds ({total_frames} frames)...")
+        # Calculate number of seconds using video duration if available, otherwise use tracking data
+        if self.video_duration:
+            num_seconds = int(self.video_duration) + (1 if self.video_duration % 1 >= 0.5 else 0)
+            max_frame = int(self.video_duration * FPS)
+            print(f"Processing {num_seconds} seconds (video duration: {self.video_duration:.2f}s, max frame: {max_frame})...")
+        else:
+            # Fallback: use tracking data to estimate
+            max_tracked_frame = max((f.get('frame_number', 0) for f in frames_data), default=0)
+            num_seconds = (max_tracked_frame + FPS - 1) // FPS
+            max_frame = max_tracked_frame
+            print(f"Processing {num_seconds} seconds (estimated from tracking data, max frame: {max_frame})...")
         
         # Process seconds in parallel
         seconds_data = []
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = {executor.submit(self.process_second, i, frames_data, FPS): i 
+            futures = {executor.submit(self.process_second, i, frames_data, FPS, max_frame): i 
                       for i in range(num_seconds)}
             
             for future in as_completed(futures):

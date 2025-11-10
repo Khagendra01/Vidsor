@@ -1086,7 +1086,8 @@ class SegmentTreeQuery:
                 unified_metadata.append({
                     "second": second_data.get("second", 0),
                     "time_range": second_data.get("time_range", []),
-                    "type": "unified"
+                    "type": "unified",
+                    "text": unified_desc.strip()  # Store text directly to avoid lookup issues
                 })
         
         # Compute embeddings in batches
@@ -1232,11 +1233,19 @@ class SegmentTreeQuery:
             for idx, similarity in enumerate(similarities):
                 if similarity >= threshold:
                     metadata = self._embedding_metadata["unified"][idx]
+                    # Get text from metadata (stored during embedding creation) or fallback to lookup
+                    unified_text = metadata.get("text", "")
+                    if not unified_text:
+                        # Fallback: try to get from seconds list
+                        second_num = metadata.get("second", -1)
+                        if 0 <= second_num < len(self.seconds):
+                            unified_text = self.seconds[second_num].get("unified_description", "")
+                    
                     results.append({
                         "time_range": metadata["time_range"],
                         "score": float(similarity),
                         "type": "unified",
-                        "text": self.seconds[metadata["second"]].get("unified_description", ""),
+                        "text": unified_text,
                         "metadata": {
                             "second": metadata["second"]
                         }
