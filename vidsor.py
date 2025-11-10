@@ -71,6 +71,7 @@ class EditState:
     selected_chunk: Optional[int] = None
     preview_time: float = 0.0
     is_playing: bool = False
+    has_started_playback: bool = False  # Track if playback has started (for resume button)
 
 
 class Vidsor:
@@ -839,16 +840,41 @@ class Vidsor:
                 messagebox.showerror("Error", f"Failed to load video: {str(e)}")
                 self.status_label.config(text="Failed to load video")
     
+    def _update_playback_controls(self):
+        """Update playback control buttons (Play, Pause, Stop) based on current state."""
+        has_video = self.video_clip is not None
+        has_chunks = bool(self.edit_state.chunks)
+        
+        # Update Play button
+        if self.play_btn:
+            self.play_btn.config(
+                state=tk.NORMAL if (has_video and has_chunks and not self.edit_state.is_playing) else tk.DISABLED
+            )
+        
+        # Update Pause/Resume button - this is the critical one
+        if self.pause_btn:
+            if has_video and has_chunks:
+                if self.edit_state.is_playing:
+                    # Currently playing - show Pause
+                    self.pause_btn.config(text="Pause", state=tk.NORMAL)
+                elif self.edit_state.has_started_playback:
+                    # Was playing, now paused - show Resume (ENABLED)
+                    self.pause_btn.config(text="Resume", state=tk.NORMAL)
+                else:
+                    # Not started yet - disable
+                    self.pause_btn.config(text="Pause", state=tk.DISABLED)
+            else:
+                # No video or chunks - disable
+                self.pause_btn.config(text="Pause", state=tk.DISABLED)
+    
     def _update_ui_state(self):
         """Update UI button states based on video loading status."""
         has_video = self.video_clip is not None
         
-        if self.play_btn:
-            # Enable play if video and chunks exist, disable if playing
-            self.play_btn.config(state=tk.NORMAL if (has_video and self.edit_state.chunks and not self.edit_state.is_playing) else tk.DISABLED)
-        if self.pause_btn:
-            # Enable pause only if playing
-            self.pause_btn.config(state=tk.NORMAL if (has_video and self.edit_state.is_playing) else tk.DISABLED)
+        # Update playback controls using dedicated method
+        self._update_playback_controls()
+        
+        # Update other buttons
         if self.export_btn:
             self.export_btn.config(state=tk.NORMAL if has_video and self.edit_state.chunks else tk.DISABLED)
         
@@ -913,10 +939,11 @@ class Vidsor:
         
         self.edit_state.is_playing = True
         self.edit_state.preview_time = 0.0
+        self.edit_state.has_started_playback = True  # Mark that playback has started
         self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
-        self.play_btn.config(state=tk.DISABLED)
-        if self.pause_btn:
-            self.pause_btn.config(state=tk.NORMAL, text="Pause")
+        
+        # Update playback controls
+        self._update_playback_controls()
         
         # Show canvas, hide label
         if self.preview_canvas:
@@ -1053,12 +1080,11 @@ class Vidsor:
             
             # Playback finished
             if self.root:
+                self.edit_state.is_playing = False
                 self.root.after(0, lambda: self.status_label.config(
                     text=f"Preview finished ({timeline_duration:.1f}s)"
                 ))
-                self.root.after(0, lambda: self.play_btn.config(state=tk.NORMAL) if self.play_btn else None)
-                self.root.after(0, lambda: self.pause_btn.config(state=tk.DISABLED) if self.pause_btn else None)
-                self.edit_state.is_playing = False
+                self.root.after(0, self._update_playback_controls)
                 
         except Exception as e:
             print(f"[VIDSOR] Playback error: {e}")
@@ -1255,38 +1281,41 @@ class Vidsor:
         if self.edit_state.is_playing:
             # Pause
             self.edit_state.is_playing = False
+            # Keep has_started_playback = True so resume button stays enabled
             self.status_label.config(text="Paused")
-            if self.play_btn:
-                self.play_btn.config(state=tk.NORMAL)
-            if self.pause_btn:
-                self.pause_btn.config(text="Resume", state=tk.NORMAL)
+            
             # Pause audio
             if HAS_PYGAME:
                 try:
                     pygame.mixer.music.pause()
                 except:
                     pass
+            
+            # Update playback controls - this will set Resume button correctly
+            self._update_playback_controls()
+            
             # Keep canvas visible when paused (don't switch back to label)
         else:
             # Resume
             self.edit_state.is_playing = True
             timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks) if self.edit_state.chunks else 0
             self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
-            if self.play_btn:
-                self.play_btn.config(state=tk.DISABLED)
-            if self.pause_btn:
-                self.pause_btn.config(text="Pause", state=tk.NORMAL)
+            
             # Resume audio
             if HAS_PYGAME:
                 try:
                     pygame.mixer.music.unpause()
                 except:
                     pass
+            
+            # Update playback controls - this will set Pause button correctly
+            self._update_playback_controls()
     
     def _on_stop(self):
         """Stop preview button handler."""
         self.edit_state.is_playing = False
         self.edit_state.preview_time = 0.0
+        self.edit_state.has_started_playback = False  # Reset playback flag
         self.status_label.config(text="Stopped")
         
         # Stop audio
@@ -1296,11 +1325,8 @@ class Vidsor:
             except:
                 pass
         
-        # Update button states
-        if self.play_btn:
-            self.play_btn.config(state=tk.NORMAL if (self.video_clip and self.edit_state.chunks) else tk.DISABLED)
-        if self.pause_btn:
-            self.pause_btn.config(state=tk.DISABLED)
+        # Update playback controls
+        self._update_playback_controls()
         
         # Reset preview display
         if self.preview_canvas:
