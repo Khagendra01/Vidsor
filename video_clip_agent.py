@@ -4,10 +4,13 @@ Takes user queries, retrieves relevant moments from video, and saves clips as MP
 """
 
 import json
-from typing import Dict, List, Any, Optional, TypedDict, Annotated, Literal, Tuple
+from typing import Dict, List, Any, Optional, TypedDict, Annotated, Literal, Tuple, Set
 from langgraph.graph import StateGraph, END
 from langgraph.graph.message import add_messages
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+import dotenv
+dotenv.load_dotenv()
+
 try:
     from langchain_openai import ChatOpenAI
     HAS_OPENAI = True
@@ -46,6 +49,626 @@ class AgentState(TypedDict):
     output_clips: List[str]  # Paths to saved clip files
     segment_tree: Optional[SegmentTreeQuery]
     verbose: bool  # Whether to print verbose output
+    # Memory/context fields for agentic behavior
+    previous_time_ranges: Optional[List[Tuple[float, float]]]  # Previous search results
+    previous_scored_seconds: Optional[List[Dict]]  # Previous scored seconds with scores
+    previous_query: Optional[str]  # Original query before clarification
+    previous_search_results: Optional[List[Dict]]  # Previous search results
+
+
+class PerSecondFeatureExtractor:
+    """Extract normalized features for each second of video."""
+    
+    def __init__(self, segment_tree: SegmentTreeQuery):
+        self.segment_tree = segment_tree
+        self.feature_cache = {}  # Cache per-second features
+        
+    def extract_features_for_second(self, second_idx: int) -> Dict[str, Any]:
+        """Extract all features for a single second."""
+        if second_idx in self.feature_cache:
+            return self.feature_cache[second_idx]
+            
+        second_data = self.segment_tree.get_second_by_index(second_idx)
+        if not second_data:
+            return None
+        
+        features = {
+            "second": second_idx,
+            "time_range": second_data.get("time_range", []),
+            "semantic_score": 0.0,  # Will be filled by semantic search
+            "activity_score": 0.0,  # Will be filled by activity search
+            "hierarchical_score": 0.0,  # Will be filled by hierarchical search
+            "transcript_score": 0.0,  # Will be filled by transcript search
+            "object_presence": {},  # {class_name: normalized_count}
+            "object_tracks": {},  # {class_name: distinct_track_count}
+            "event_flags": {}  # {event_name: bool}
+        }
+        
+        # Extract object presence (normalized per second)
+        for group in second_data.get("detection_groups", []):
+            for detection in group.get("detections", []):
+                class_name = detection.get("class_name")
+                if class_name:
+                    if class_name not in features["object_presence"]:
+                        features["object_presence"][class_name] = 0
+                        features["object_tracks"][class_name] = set()
+                    features["object_presence"][class_name] += 1
+                    track_id = detection.get("track_id")
+                    if track_id is not None:
+                        features["object_tracks"][class_name].add(track_id)
+        
+        # Normalize object counts (cap at 3 or use log)
+        for class_name in list(features["object_presence"].keys()):
+            count = features["object_presence"][class_name]
+            features["object_presence"][class_name] = min(count, 3)  # Cap at 3
+            features["object_tracks"][class_name] = len(features["object_tracks"][class_name])
+        
+        self.feature_cache[second_idx] = features
+        return features
+    
+    def get_all_seconds_features(self):
+        """Get features for all seconds (lazy load)."""
+        for i in range(len(self.segment_tree.seconds)):
+            yield self.extract_features_for_second(i)
+
+
+def extract_json(text: str) -> str:
+    """Extract JSON from LLM response."""
+    if "```json" in text:
+        return text.split("```json")[1].split("```")[0].strip()
+    elif "```" in text:
+        return text.split("```")[1].split("```")[0].strip()
+    else:
+        import re
+        json_match = re.search(r'\{.*\}', text, re.DOTALL)
+        if json_match:
+            return json_match.group()
+    return text.strip()
+
+
+def analyze_query_intent(query: str, llm) -> Dict[str, Any]:
+    """
+    Analyze query to determine:
+    1. Is it object-centric? (e.g., "find all clips where person is detected")
+    2. What object classes are mentioned?
+    3. What's the primary intent?
+    """
+    system_prompt = """Analyze the user query and determine the search intent.
+
+CRITICAL DISTINCTION:
+- OBJECT-CENTRIC: User wants to find clips where specific objects appear, regardless of what they're doing.
+  Examples: "find all clips where person is detected", "show all cars", "find every time a boat appears"
+  Key indicators: "detected", "appears", "is present", "find all clips where [object]"
+  
+- ACTIVITY-CENTRIC: User wants to find moments where specific activities/actions happen, even if objects are mentioned.
+  Examples: "find moments where they catch fish", "show when someone runs", "find scenes of cooking"
+  Key indicators: Action verbs (catch, run, jump, cook, throw, etc.) + objects, "moments where", "when they"
+  
+- HYBRID: Query mentions both objects and activities, or is ambiguous.
+  Examples: "find person catching fish", "show car driving"
+
+Return JSON:
+{
+    "is_object_centric": true/false,
+    "mentioned_classes": ["person", "car"],
+    "primary_intent": "object" | "activity" | "semantic" | "hybrid",
+    "object_priority": {"person": 1.0, "car": 0.8},  // Priority scores for each class (0-1)
+    "needs_semantic": true/false,
+    "needs_activity": true/false,
+    "needs_hierarchical": true/false,
+    "confidence": 0.0-1.0  // Confidence in classification
+}"""
+    
+    try:
+        response = llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=f"Query: {query}\n\nAnalyze this query carefully. Check for action verbs that indicate activities. Return JSON only.")
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        result = json.loads(json_text)
+        
+        # Ensure confidence is set
+        if "confidence" not in result:
+            result["confidence"] = 0.7
+        
+        return result
+    except Exception as e:
+        # Fallback: try to detect using heuristics
+        query_lower = query.lower()
+        
+        # Activity verb indicators
+        activity_verbs = ["catch", "throw", "run", "jump", "cook", "drive", "walk", "swim", "climb", 
+                         "kick", "hit", "throw", "pick", "drop", "lift", "carry", "push", "pull",
+                         "eat", "drink", "play", "dance", "sing", "talk", "speak", "write", "read"]
+        has_activity_verb = any(verb in query_lower for verb in activity_verbs)
+        
+        # Object-centric indicators (must be explicit)
+        object_indicators = ["is detected", "appears", "is present", "find all clips where", 
+                            "show all", "every time", "all instances of"]
+        is_object_centric = any(indicator in query_lower for indicator in object_indicators) and not has_activity_verb
+        
+        # Activity-centric indicators
+        activity_indicators = ["moments where", "when they", "when someone", "scenes of", "instances of"]
+        is_activity_centric = (has_activity_verb or any(indicator in query_lower for indicator in activity_indicators)) and not is_object_centric
+        
+        # Extract potential object classes
+        mentioned_classes = []
+        common_classes = ["person", "car", "fish", "boat", "dog", "cat", "bird", "bike", "truck"]
+        for cls in common_classes:
+            if cls in query_lower:
+                mentioned_classes.append(cls)
+        
+        # Determine primary intent
+        if is_object_centric:
+            primary_intent = "object"
+        elif is_activity_centric:
+            primary_intent = "activity"
+        else:
+            primary_intent = "hybrid"  # Default to hybrid when ambiguous
+        
+        return {
+            "is_object_centric": is_object_centric,
+            "mentioned_classes": mentioned_classes,
+            "primary_intent": primary_intent,
+            "object_priority": {cls: 1.0 if is_object_centric else 0.5 for cls in mentioned_classes},
+            "needs_semantic": not is_object_centric,
+            "needs_activity": not is_object_centric or is_activity_centric,
+            "needs_hierarchical": True,
+            "confidence": 0.6  # Lower confidence for fallback
+        }
+
+
+def validate_and_adjust_intent(query_intent: Dict, search_plan: Dict, verbose: bool = False) -> Dict[str, Any]:
+    """
+    Cross-validate query intent with search plan and adjust if there's a conflict.
+    This catches cases where LLM misclassified but search plan generator got it right.
+    """
+    adjusted_intent = query_intent.copy()
+    
+    # Check if search plan indicates activity but intent says object-centric
+    has_activity_in_plan = bool(
+        search_plan.get("activity_name") or 
+        search_plan.get("activity_keywords") or
+        search_plan.get("evidence_keywords")
+    )
+    
+    # Check if search plan has semantic queries (indicates semantic intent)
+    has_semantic_in_plan = bool(search_plan.get("semantic_queries"))
+    
+    # Conflict detection
+    conflicts = []
+    
+    # Conflict 1: Search plan has activity but intent is object-centric
+    if has_activity_in_plan and adjusted_intent.get("is_object_centric") and adjusted_intent.get("primary_intent") == "object":
+        conflicts.append("Search plan has activity keywords but intent is object-centric")
+        if verbose:
+            print(f"  [CONFLICT DETECTED] {conflicts[-1]}")
+        # Override: This is likely activity-centric or hybrid
+        if adjusted_intent.get("confidence", 0.7) < 0.8:  # Only override if low confidence
+            adjusted_intent["is_object_centric"] = False
+            adjusted_intent["primary_intent"] = "activity" if has_activity_in_plan else "hybrid"
+            adjusted_intent["needs_activity"] = True
+            adjusted_intent["needs_semantic"] = True
+            if verbose:
+                print(f"  [ADJUSTED] Changed to {adjusted_intent['primary_intent']} intent")
+    
+    # Conflict 2: Search plan has semantic queries but intent disabled semantic
+    if has_semantic_in_plan and not adjusted_intent.get("needs_semantic"):
+        conflicts.append("Search plan has semantic queries but intent disabled semantic")
+        if verbose:
+            print(f"  [CONFLICT DETECTED] {conflicts[-1]}")
+        # Enable semantic
+        adjusted_intent["needs_semantic"] = True
+        if adjusted_intent.get("primary_intent") == "object":
+            adjusted_intent["primary_intent"] = "hybrid"
+        if verbose:
+            print(f"  [ADJUSTED] Enabled semantic search")
+    
+    # Conflict 3: Low confidence + ambiguous → default to hybrid
+    if adjusted_intent.get("confidence", 0.7) < 0.6 and not conflicts:
+        # If confidence is low and no clear conflicts, default to hybrid for safety
+        if adjusted_intent.get("primary_intent") in ["object", "activity"]:
+            if verbose:
+                print(f"  [LOW CONFIDENCE] Defaulting to hybrid for safety")
+            adjusted_intent["primary_intent"] = "hybrid"
+            adjusted_intent["is_object_centric"] = False
+            adjusted_intent["needs_semantic"] = True
+            adjusted_intent["needs_activity"] = True
+    
+    if verbose and conflicts:
+        print(f"  [VALIDATION] Found {len(conflicts)} conflict(s), adjusted intent")
+    elif verbose:
+        print(f"  [VALIDATION] No conflicts detected")
+    
+    return adjusted_intent
+
+
+def configure_weights(query_intent: Dict, all_object_classes: Set[str]) -> Dict[str, Any]:
+    """
+    Configure scoring weights based on query intent.
+    
+    Returns:
+    {
+        "semantic_weight": 0.4,
+        "activity_weight": 0.3,
+        "hierarchical_weight": 0.1,
+        "object_weights": {"person": 0.1, "fish": 0.8},
+        "threshold": 0.3
+    }
+    """
+    weights = {
+        "semantic_weight": 0.0,
+        "activity_weight": 0.0,
+        "hierarchical_weight": 0.0,
+        "object_weights": {},
+        "threshold": 0.3
+    }
+    
+    # Initialize all object classes with default low weight
+    for class_name in all_object_classes:
+        weights["object_weights"][class_name] = 0.1  # Default low
+    
+    # If object-centric query
+    if query_intent.get("is_object_centric"):
+        # Set high weights for mentioned classes
+        for class_name, priority in query_intent.get("object_priority", {}).items():
+            weights["object_weights"][class_name] = priority
+        
+        # Lower threshold for pure object queries
+        weights["threshold"] = 0.1
+        weights["semantic_weight"] = 0.0
+        weights["activity_weight"] = 0.0
+        weights["hierarchical_weight"] = 0.0
+    
+    # If hybrid query
+    elif query_intent.get("primary_intent") == "hybrid":
+        # Balance all modalities
+        weights["semantic_weight"] = 0.3
+        weights["activity_weight"] = 0.3
+        weights["hierarchical_weight"] = 0.1
+        
+        # Boost mentioned object classes
+        for class_name, priority in query_intent.get("object_priority", {}).items():
+            weights["object_weights"][class_name] = priority
+    
+    # If activity/semantic query (default)
+    else:
+        weights["semantic_weight"] = 0.4
+        weights["activity_weight"] = 0.3
+        weights["hierarchical_weight"] = 0.1
+        
+        # Only boost rare/mentioned objects
+        for class_name, priority in query_intent.get("object_priority", {}).items():
+            weights["object_weights"][class_name] = priority
+    
+    return weights
+
+
+def score_seconds(feature_extractor: PerSecondFeatureExtractor, 
+                  query_intent: Dict,
+                  weights: Dict,
+                  semantic_results: List[Dict],
+                  activity_results: List[Dict],
+                  hierarchical_results: List[Dict],
+                  verbose: bool = False) -> List[Dict]:
+    """
+    Score all seconds using weighted features.
+    
+    Returns list of {second_idx, score, features, time_range, ...}
+    """
+    scored_seconds = []
+    
+    # Helper function to map time to second index
+    def time_to_second_idx(time_seconds: float) -> Optional[int]:
+        """Map a time in seconds to the corresponding second index."""
+        for idx, second_data in enumerate(feature_extractor.segment_tree.seconds):
+            tr = second_data.get("time_range", [])
+            if tr and len(tr) >= 2 and tr[0] <= time_seconds <= tr[1]:
+                return idx
+        # Fallback: approximate by rounding
+        return int(time_seconds) if 0 <= int(time_seconds) < len(feature_extractor.segment_tree.seconds) else None
+    
+    # Build lookup maps for search results
+    semantic_map = {}  # second_idx -> max_score
+    for result in semantic_results:
+        tr = result.get("time_range", [])
+        if tr and len(tr) >= 2:
+            second_idx = time_to_second_idx(tr[0])
+            if second_idx is not None:
+                score = result.get("score", 0)
+                semantic_map[second_idx] = max(semantic_map.get(second_idx, 0), score)
+    
+    activity_map = {}  # second_idx -> score
+    for result in activity_results:
+        for evidence in result.get("evidence", []):
+            tr = evidence.get("time_range", [])
+            if tr and len(tr) >= 2:
+                second_idx = time_to_second_idx(tr[0])
+                if second_idx is not None:
+                    activity_map[second_idx] = 1.0  # Activity is binary
+    
+    hierarchical_map = {}  # second_idx -> score
+    for result in hierarchical_results:
+        tr = result.get("time_range", [])
+        if tr and len(tr) >= 2:
+            second_idx = time_to_second_idx(tr[0])
+            if second_idx is not None:
+                hierarchical_map[second_idx] = result.get("score", 1.0)
+    
+    if verbose:
+        print(f"\n[SCORING] Scoring {len(feature_extractor.segment_tree.seconds)} seconds...")
+        print(f"  Semantic matches: {len(semantic_map)} seconds")
+        print(f"  Activity matches: {len(activity_map)} seconds")
+        print(f"  Hierarchical matches: {len(hierarchical_map)} seconds")
+    
+    # Score each second
+    for second_idx in range(len(feature_extractor.segment_tree.seconds)):
+        features = feature_extractor.extract_features_for_second(second_idx)
+        if not features:
+            continue
+        
+        # Get search result scores
+        semantic_score = semantic_map.get(second_idx, 0.0)
+        activity_score = activity_map.get(second_idx, 0.0)
+        hierarchical_score = hierarchical_map.get(second_idx, 0.0)
+        
+        # Compute object score
+        object_score = 0.0
+        for class_name, normalized_count in features["object_presence"].items():
+            class_weight = weights["object_weights"].get(class_name, 0.1)
+            # Normalize count to [0, 1] (max 3 -> 1.0)
+            normalized = normalized_count / 3.0
+            object_score += class_weight * normalized
+        
+        # Final weighted score
+        final_score = (
+            weights["semantic_weight"] * semantic_score +
+            weights["activity_weight"] * activity_score +
+            weights["hierarchical_weight"] * hierarchical_score +
+            object_score
+        )
+        
+        # Contextual boost: if object-centric and object present, ensure minimum score
+        if query_intent.get("is_object_centric") and object_score > 0:
+            final_score = max(final_score, weights["threshold"])
+        
+        scored_seconds.append({
+            "second": second_idx,
+            "score": final_score,
+            "time_range": features["time_range"],
+            "semantic_score": semantic_score,
+            "activity_score": activity_score,
+            "hierarchical_score": hierarchical_score,
+            "object_score": object_score,
+            "features": features
+        })
+    
+    if verbose:
+        if scored_seconds:
+            sorted_scores = sorted(scored_seconds, key=lambda x: x["score"], reverse=True)
+            print(f"  Score range: {sorted_scores[-1]['score']:.3f} - {sorted_scores[0]['score']:.3f}")
+            top_scores = [f"{s['second']}:{s['score']:.3f}" for s in sorted_scores[:5]]
+            print(f"  Top 5 scores: {top_scores}")
+    
+    return scored_seconds
+
+
+def group_contiguous_seconds(scored_seconds: List[Dict], 
+                              min_duration: float = 1.0,
+                              gap_tolerance: float = 2.0) -> List[Tuple[float, float]]:
+    """
+    Group contiguous high-scoring seconds into time ranges.
+    """
+    if not scored_seconds:
+        return []
+    
+    # Sort by second index
+    sorted_seconds = sorted(scored_seconds, key=lambda x: x["second"])
+    
+    time_ranges = []
+    current_start = None
+    current_end = None
+    
+    for sec in sorted_seconds:
+        tr = sec.get("time_range", [])
+        if not tr or len(tr) < 2:
+            continue
+        
+        start, end = tr[0], tr[1]
+        
+        if current_start is None:
+            current_start = start
+            current_end = end
+        elif start - current_end <= gap_tolerance:
+            # Contiguous or close enough, merge
+            current_end = end
+        else:
+            # Gap detected, save current range and start new
+            if current_end - current_start >= min_duration:
+                time_ranges.append((current_start, current_end))
+            current_start = start
+            current_end = end
+    
+    # Add final range
+    if current_start is not None and current_end - current_start >= min_duration:
+        time_ranges.append((current_start, current_end))
+    
+    return time_ranges
+
+
+def decide_refine_or_research(state: AgentState, llm) -> Dict[str, Any]:
+    """
+    Agentic decision: Should we refine existing results or do a new search?
+    Uses LLM to understand context and make intelligent decision.
+    """
+    previous_time_ranges = state.get("previous_time_ranges")
+    previous_query = state.get("previous_query")
+    current_query = state.get("user_query", "")
+    
+    # If no previous results, always do new search
+    if not previous_time_ranges or not previous_query:
+        return {
+            "action": "NEW_SEARCH",
+            "reason": "No previous results to refine",
+            "extract_number": None
+        }
+    
+    # Use LLM to decide based on context
+    system_prompt = """You are a video search agent assistant. You need to decide whether the user wants you to:
+1. REFINE existing results - select/filter from results you already found
+2. NEW_SEARCH - perform a completely new search
+
+Context:
+- Previous query: "{previous_query}"
+- Previous results: Found {num_results} time ranges
+- Current user response: "{current_query}"
+
+Examples:
+- User said "top 10" after you found 28 results → REFINE (select top 10 from 28)
+- User said "best 5" after you found results → REFINE (select best 5)
+- User said "actually, find cooking moments" → NEW_SEARCH (completely different topic)
+- User said "show me longer clips" → REFINE (filter existing by duration)
+- User said "find moments where they run" → NEW_SEARCH (different activity)
+
+Return JSON:
+{{
+    "action": "REFINE" | "NEW_SEARCH",
+    "reason": "brief explanation",
+    "extract_number": null or number  // If action is REFINE and user mentioned a number (e.g., "top 10" → 10)
+}}"""
+    
+    try:
+        response = llm.invoke([
+            SystemMessage(content=system_prompt.format(
+                previous_query=previous_query,
+                num_results=len(previous_time_ranges),
+                current_query=current_query
+            )),
+            HumanMessage(content=f"Analyze the user's intent and decide. Return JSON only.")
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        decision = json.loads(json_text)
+        
+        return decision
+    except Exception as e:
+        # Fallback: heuristic detection
+        query_lower = current_query.lower()
+        
+        # Check for refinement indicators
+        refinement_keywords = ["top", "best", "first", "most", "select", "give me", "show me"]
+        has_refinement = any(kw in query_lower for kw in refinement_keywords)
+        
+        # Check for number
+        import re
+        numbers = re.findall(r'\d+', current_query)
+        extract_number = int(numbers[0]) if numbers else None
+        
+        # Check if it's a completely different topic (simple heuristic)
+        previous_words = set(previous_query.lower().split())
+        current_words = set(query_lower.split())
+        overlap = len(previous_words & current_words) / max(len(previous_words), 1)
+        
+        if overlap < 0.3 and not has_refinement:
+            # Very different words, likely new search
+            return {
+                "action": "NEW_SEARCH",
+                "reason": "Query seems to be about different topic",
+                "extract_number": None
+            }
+        elif has_refinement:
+            return {
+                "action": "REFINE",
+                "reason": "User wants to refine/select from previous results",
+                "extract_number": extract_number
+            }
+        else:
+            # Default to refine if we have previous results
+            return {
+                "action": "REFINE",
+                "reason": "Default: refine existing results",
+                "extract_number": extract_number
+            }
+
+
+def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = False) -> AgentState:
+    """
+    Refine existing results based on user's clarification.
+    Selects top N, filters, or applies other refinements.
+    """
+    previous_time_ranges = state.get("previous_time_ranges", [])
+    previous_scored_seconds = state.get("previous_scored_seconds", [])
+    extract_number = decision.get("extract_number")
+    
+    if verbose:
+        print("\n[REFINEMENT] Refining existing results...")
+        print(f"  Previous results: {len(previous_time_ranges)} time ranges")
+        print(f"  User request: {decision.get('reason', 'N/A')}")
+        if extract_number:
+            print(f"  Extracting top {extract_number} results")
+    
+    # If we have scored seconds, use them to rank
+    if previous_scored_seconds:
+        # Build a map: second_index -> score
+        second_scores = {}
+        for scored_sec in previous_scored_seconds:
+            second_idx = scored_sec.get("second")
+            score = scored_sec.get("score", 0)
+            if second_idx is not None:
+                second_scores[second_idx] = max(second_scores.get(second_idx, 0), score)
+        
+        # Score each time range (use max score of any second in the range)
+        scored_ranges = []
+        for tr in previous_time_ranges:
+            start, end = tr[0], tr[1]
+            # Find seconds that overlap with this time range
+            max_score = 0
+            for second_idx, score in second_scores.items():
+                # Get the second's time range from segment tree
+                segment_tree = state.get("segment_tree")
+                if segment_tree:
+                    second_data = segment_tree.get_second_by_index(second_idx)
+                    if second_data:
+                        sec_tr = second_data.get("time_range", [])
+                        if sec_tr and len(sec_tr) >= 2:
+                            sec_start, sec_end = sec_tr[0], sec_tr[1]
+                            # Check if this second overlaps with the time range
+                            if sec_start <= end and sec_end >= start:
+                                max_score = max(max_score, score)
+            
+            scored_ranges.append((tr, max_score))
+        
+        # Sort by score
+        scored_ranges.sort(key=lambda x: x[1], reverse=True)
+        
+        # Extract top N if specified
+        if extract_number:
+            scored_ranges = scored_ranges[:extract_number]
+            if verbose:
+                print(f"  Selected top {extract_number} by score")
+                print(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
+        
+        # Extract just the time ranges
+        refined_ranges = [tr for tr, _ in scored_ranges]
+    else:
+        # No scores, just take first N or all
+        if extract_number:
+            refined_ranges = previous_time_ranges[:extract_number]
+        else:
+            refined_ranges = previous_time_ranges
+    
+    if verbose:
+        print(f"  Refined to {len(refined_ranges)} time ranges")
+    
+    return {
+        **state,
+        "time_ranges": refined_ranges,
+        "needs_clarification": False,
+        "confidence": state.get("confidence", 0.7)
+    }
 
 
 def create_planner_agent(model_name: str = "gpt-4o-mini"):
@@ -71,12 +694,37 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         segment_tree = state["segment_tree"]
         verbose = state.get("verbose", False)
         
+        # AGENTIC DECISION: Check if we should refine existing results or do new search
+        if state.get("previous_time_ranges") and state.get("previous_query"):
+            if verbose:
+                print("\n" + "=" * 60)
+                print("PLANNER AGENT: Context-Aware Decision")
+                print("=" * 60)
+                print(f"Previous query: {state.get('previous_query')}")
+                print(f"Previous results: {len(state.get('previous_time_ranges', []))} time ranges")
+                print(f"Current query: {query}")
+                print("\n[DECISION] Analyzing user intent...")
+            
+            decision = decide_refine_or_research(state, llm)
+            
+            if verbose:
+                print(f"  Decision: {decision.get('action')}")
+                print(f"  Reason: {decision.get('reason')}")
+                if decision.get('extract_number'):
+                    print(f"  Extract number: {decision.get('extract_number')}")
+            
+            if decision.get("action") == "REFINE":
+                # Refine existing results
+                return refine_existing_results(state, decision, verbose=verbose)
+            # Otherwise, continue with new search (fall through)
+        
         # Initialize variables
         search_results = []
         time_ranges = []
         confidence = 0.5
         needs_clarification = False
         clarification_question = None
+        filtered_seconds = []  # For preserving scored seconds
         
         if verbose:
             print("\n" + "=" * 60)
@@ -163,6 +811,41 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             print(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
             print(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
         
+        # NEW: Analyze query intent
+        if verbose:
+            print("\n[QUERY ANALYSIS] Analyzing query intent...")
+        query_intent = analyze_query_intent(query, llm)
+        if verbose:
+            print(f"  Is object-centric: {query_intent.get('is_object_centric', False)}")
+            print(f"  Primary intent: {query_intent.get('primary_intent', 'hybrid')}")
+            print(f"  Mentioned classes: {query_intent.get('mentioned_classes', [])}")
+            print(f"  Confidence: {query_intent.get('confidence', 0.7):.2f}")
+        
+        # NEW: Cross-validate with search plan
+        if verbose:
+            print("\n[VALIDATION] Cross-validating intent with search plan...")
+        query_intent = validate_and_adjust_intent(query_intent, search_plan, verbose=verbose)
+        if verbose:
+            print(f"  Final intent: {query_intent.get('primary_intent', 'hybrid')}")
+            print(f"  Needs semantic: {query_intent.get('needs_semantic', True)}")
+            print(f"  Needs activity: {query_intent.get('needs_activity', True)}")
+        
+        # NEW: Initialize feature extractor
+        feature_extractor = PerSecondFeatureExtractor(segment_tree)
+        
+        # NEW: Get all object classes and configure weights
+        all_object_classes = set(segment_tree.get_all_classes().keys())
+        weights = configure_weights(query_intent, all_object_classes)
+        if verbose:
+            print(f"\n[WEIGHT CONFIGURATION]")
+            print(f"  Semantic weight: {weights['semantic_weight']:.2f}")
+            print(f"  Activity weight: {weights['activity_weight']:.2f}")
+            print(f"  Hierarchical weight: {weights['hierarchical_weight']:.2f}")
+            print(f"  Threshold: {weights['threshold']:.2f}")
+            high_priority_objects = {k: v for k, v in weights['object_weights'].items() if v > 0.3}
+            if high_priority_objects:
+                print(f"  High priority objects: {high_priority_objects}")
+        
         needs_clarification = search_plan.get("needs_clarification", False)
         clarification_question = search_plan.get("clarification_question")
         
@@ -190,7 +873,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             
             # STEP 2: Execute search types and collect results
             all_search_results = []  # Store all results with metadata about search type
-            all_time_ranges = []  # Collect all time ranges
             
             # Check if this is a general highlight query
             is_general_highlight = search_plan.get("is_general_highlight_query", False)
@@ -210,7 +892,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                 for leaf in scored_leaves:
                     tr = leaf.get("time_range", [])
                     if tr and len(tr) >= 2:
-                        all_time_ranges.append((tr[0], tr[1], "hierarchical_highlight", leaf.get("score", 0)))
                         all_search_results.append({
                             "search_type": "hierarchical_highlight",
                             "time_range": tr,
@@ -239,7 +920,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         if result.get("level", -1) == 0:
                             tr = result.get("time_range", [])
                             if tr and len(tr) >= 2:
-                                all_time_ranges.append((tr[0], tr[1], "hierarchical", result.get("match_count", 1)))
                                 all_search_results.append({
                                     "search_type": "hierarchical",
                                     "time_range": tr,
@@ -292,9 +972,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         result["search_type"] = "semantic"
                         result["search_query"] = sem_query
                         all_search_results.append(result)
-                        tr = result.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            all_time_ranges.append((tr[0], tr[1], "semantic", result.get("score", 0)))
                     if verbose:
                         print(f"      Found {len(results)} matches")
             
@@ -311,9 +988,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         result["search_type"] = "object"
                         result["object_class"] = obj_class
                         all_search_results.append(result)
-                        tr = result.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            all_time_ranges.append((tr[0], tr[1], "object", 1.0))
                     if verbose:
                         print(f"      Found {len(results)} detections")
             
@@ -330,10 +1004,6 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                     result = segment_tree.check_fish_caught()
                     result["search_type"] = "activity"
                     all_search_results.append(result)
-                    for evidence in result.get("evidence", []):
-                        tr = evidence.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            all_time_ranges.append((tr[0], tr[1], "activity", 1.0))
                     if verbose:
                         print(f"      Evidence scenes: {result.get('fish_holding_count', 0)}")
                 elif activity_keywords:
@@ -346,196 +1016,127 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                     )
                     result["search_type"] = "activity"
                     all_search_results.append(result)
-                    for evidence in result.get("evidence", []):
-                        tr = evidence.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            all_time_ranges.append((tr[0], tr[1], "activity", 1.0))
                     if verbose:
                         print(f"      Evidence scenes: {result.get('evidence_count', 0)}")
             
             if verbose:
                 print(f"\n[AGGREGATION] Collected results from all search types:")
                 print(f"  Total results: {len(all_search_results)}")
-                print(f"  Total time ranges: {len(all_time_ranges)}")
             
-            # STEP 3: Deduplicate and shortlist time ranges
-            # Group by time range (with small tolerance for near-duplicates)
-            time_range_map = {}  # (start, end) -> (count, max_score, search_types)
-            for start, end, search_type, score in all_time_ranges:
-                # Round to nearest second for deduplication
-                start_rounded = round(start)
-                end_rounded = round(end)
-                key = (start_rounded, end_rounded)
-                
-                if key not in time_range_map:
-                    time_range_map[key] = {
-                        "count": 0,
-                        "max_score": score,
-                        "search_types": set(),
-                        "original_ranges": []
-                    }
-                
-                time_range_map[key]["count"] += 1
-                time_range_map[key]["max_score"] = max(time_range_map[key]["max_score"], score)
-                time_range_map[key]["search_types"].add(search_type)
-                time_range_map[key]["original_ranges"].append((start, end, search_type, score))
+            # NEW STEP 3: Score all seconds using weighted features
+            if verbose:
+                print(f"\n[STEP 3] Scoring all seconds with weighted features...")
             
-            # Convert to list of (start, end, metadata) for ranking
-            shortlisted_ranges = []
-            for (start, end), metadata in time_range_map.items():
-                # Prefer hierarchical tree ranges (5 seconds) over semantic search (1 second)
-                # Sort by: 1) hierarchical search types first, 2) longer duration
-                def range_priority(r):
-                    _, _, search_type, _ = r
-                    is_hierarchical = search_type in ["hierarchical", "hierarchical_highlight"]
-                    duration = abs(r[1] - r[0])
-                    return (not is_hierarchical, -duration)  # False (hierarchical) sorts first
-                
-                best_range = min(metadata["original_ranges"], key=range_priority)
-                shortlisted_ranges.append({
-                    "time_range": (best_range[0], best_range[1]),
-                    "count": metadata["count"],
-                    "score": metadata["max_score"],
-                    "search_types": list(metadata["search_types"]),
-                    "match_count": metadata["count"]
-                })
+            # Separate results by type for scoring
+            semantic_results = [r for r in all_search_results if r.get("search_type") == "semantic"]
+            activity_results = [r for r in all_search_results if r.get("search_type") == "activity"]
+            hierarchical_results = [r for r in all_search_results if r.get("search_type") in ["hierarchical", "hierarchical_highlight"]]
             
-            # Sort by match count and score
-            shortlisted_ranges.sort(key=lambda x: (x["count"], x["score"]), reverse=True)
+            # Score all seconds
+            scored_seconds = score_seconds(
+                feature_extractor,
+                query_intent,
+                weights,
+                semantic_results,
+                activity_results,
+                hierarchical_results,
+                verbose=verbose
+            )
+            
+            # Filter by threshold and sort
+            threshold = weights["threshold"]
+            filtered_seconds = [s for s in scored_seconds if s["score"] >= threshold]
+            filtered_seconds.sort(key=lambda x: x["score"], reverse=True)
             
             if verbose:
-                print(f"\n[SHORTLISTING] Deduplicated to {len(shortlisted_ranges)} unique time ranges")
-                print(f"  Top 10 ranges:")
-                for i, r in enumerate(shortlisted_ranges[:10], 1):
-                    start, end = r["time_range"]
-                    print(f"    {i}. {start:.1f}s - {end:.1f}s | Matches: {r['count']} | Score: {r['score']:.3f} | Types: {', '.join(r['search_types'])}")
+                print(f"\n[FILTERING] Filtered to {len(filtered_seconds)} seconds above threshold {threshold:.2f}")
+                if filtered_seconds:
+                    print(f"  Top 10 scored seconds:")
+                    for i, sec in enumerate(filtered_seconds[:10], 1):
+                        print(f"    {i}. Second {sec['second']}: score={sec['score']:.3f} "
+                              f"(sem={sec['semantic_score']:.2f}, act={sec['activity_score']:.2f}, "
+                              f"obj={sec['object_score']:.2f})")
             
-            # STEP 4: Use LLM to rank/filter results
+            # NEW STEP 4: Group contiguous seconds into time ranges
             if verbose:
-                print(f"\n[STEP 3] Using LLM to rank and filter results...")
+                print(f"\n[STEP 4] Grouping contiguous seconds into time ranges...")
             
-            # Prepare results summary for LLM
-            results_summary = []
-            for i, r in enumerate(shortlisted_ranges[:20], 1):  # Top 20 for ranking
-                start, end = r["time_range"]
-                results_summary.append({
-                    "index": i,
-                    "time_range": f"{start:.1f}s - {end:.1f}s",
-                    "duration": f"{end - start:.1f}s",
-                    "match_count": r["count"],
-                    "score": r["score"],
-                    "search_types": ", ".join(r["search_types"])
-                })
+            time_ranges = group_contiguous_seconds(filtered_seconds, min_duration=1.0, gap_tolerance=2.0)
             
-            system_prompt_step2 = """You are a video search result ranker. Your job is to:
-1. Rank the search results by relevance to the user's query
-2. Determine if the user query implies they want ONE specific moment or MULTIPLE moments
-3. Filter out irrelevant or low-quality results
-4. Return the best results based on the user's intent
-
-Indicators that user wants ONE result:
-- "find the moment", "show me when", "find when" (singular)
-- "the best", "the most", "the first"
-- Queries that describe a specific, unique event
-
-Indicators that user wants MULTIPLE results:
-- "find moments", "show all", "find all", "every time"
-- "all instances", "all scenes"
-- Queries that describe recurring events or multiple occurrences
-
-Return JSON with:
-{
-    "user_wants_one": true/false,  // Does user query imply they want one result?
-    "ranked_indices": [1, 3, 5, ...],  // Indices of results in order of relevance (1-based)
-    "filtered_indices": [2, 4, ...],  // Indices to exclude (irrelevant results)
-    "confidence": 0.0-1.0,  // Confidence in the ranking
-    "reasoning": "brief explanation"  // Why these results were selected
-}"""
+            if verbose:
+                print(f"  Grouped into {len(time_ranges)} time range(s)")
+                if time_ranges:
+                    for i, (start, end) in enumerate(time_ranges, 1):
+                        print(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
             
-            results_text = "\n".join([
-                f"{r['index']}. Time: {r['time_range']} (duration: {r['duration']}) | "
-                f"Matches: {r['match_count']} | Score: {r['score']:.3f} | Types: {r['search_types']}"
-                for r in results_summary
-            ])
+            # Determine if user wants one or multiple results
+            query_lower = query.lower()
             
-            messages_step2 = [
-                SystemMessage(content=system_prompt_step2),
-                HumanMessage(content=f"User query: {query}\n\nSearch results:\n{results_text}\n\nRank and filter these results. Return JSON only.")
+            # Indicators for multiple results (strong signals)
+            multiple_indicators = [
+                "all", "every", "each", "multiple", "several",
+                "moments", "instances", "scenes", "clips", "times"
             ]
+            has_multiple_indicator = any(indicator in query_lower for indicator in multiple_indicators)
+            
+            # Indicators for single result (strong signals)
+            single_indicators = [
+                "the moment", "the best", "the first", "the one",
+                "a moment", "one moment", "single moment"
+            ]
+            has_single_indicator = any(indicator in query_lower for indicator in single_indicators)
+            
+            # Check for plural vs singular "moment"
+            has_plural_moment = "moments" in query_lower
+            has_singular_moment = "moment" in query_lower and "moments" not in query_lower
+            
+            # Determine intent
+            if has_multiple_indicator:
+                user_wants_one = False
+                reason = "multiple indicator detected"
+            elif has_single_indicator:
+                user_wants_one = True
+                reason = "single indicator detected"
+            elif has_plural_moment:
+                user_wants_one = False  # Plural suggests multiple
+                reason = "plural 'moments' detected"
+            elif has_singular_moment:
+                user_wants_one = True  # Singular suggests one
+                reason = "singular 'moment' detected"
+            else:
+                # Default: if we found many results, assume user wants multiple
+                user_wants_one = len(time_ranges) <= 3
+                reason = f"default (found {len(time_ranges)} ranges)"
             
             if verbose:
-                print("[LLM] Calling LLM to rank results...")
+                print(f"\n[SELECTION] User intent detection:")
+                print(f"  Multiple indicators: {has_multiple_indicator}")
+                print(f"  Single indicators: {has_single_indicator}")
+                print(f"  Plural 'moments': {has_plural_moment}")
+                print(f"  Singular 'moment': {has_singular_moment}")
+                print(f"  Decision: {'ONE result' if user_wants_one else 'MULTIPLE results'} ({reason})")
             
-            response_step2 = llm.invoke(messages_step2)
-            response_text_step2 = response_step2.content.strip()
-            
-            if verbose:
-                print(f"[LLM RESPONSE] {response_text_step2[:300]}...")
-            
-            # Extract JSON
-            if "```json" in response_text_step2:
-                response_text_step2 = response_text_step2.split("```json")[1].split("```")[0].strip()
-            elif "```" in response_text_step2:
-                response_text_step2 = response_text_step2.split("```")[1].split("```")[0].strip()
-            
-            try:
-                ranking = json.loads(response_text_step2)
-            except:
-                import re
-                json_match = re.search(r'\{[^}]+\}', response_text_step2)
-                if json_match:
-                    ranking = json.loads(json_match.group())
-                else:
-                    # Fallback: use top results
-                    ranking = {
-                        "user_wants_one": "moment" in query.lower() and "all" not in query.lower(),
-                        "ranked_indices": list(range(1, min(6, len(shortlisted_ranges) + 1))),
-                        "filtered_indices": [],
-                        "confidence": 0.6,
-                        "reasoning": "Fallback ranking"
-                    }
-            
-            if verbose:
-                print(f"\n[RANKING] LLM Analysis:")
-                print(f"  User wants one result: {ranking.get('user_wants_one', False)}")
-                print(f"  Ranked indices: {ranking.get('ranked_indices', [])}")
-                print(f"  Filtered indices: {ranking.get('filtered_indices', [])}")
-                print(f"  Confidence: {ranking.get('confidence', 0):.2f}")
-                print(f"  Reasoning: {ranking.get('reasoning', 'N/A')}")
-            
-            # STEP 5: Select final time ranges based on ranking
-            ranked_indices = ranking.get("ranked_indices", [])
-            filtered_indices = set(ranking.get("filtered_indices", []))
-            user_wants_one = ranking.get("user_wants_one", False)
-            confidence = ranking.get("confidence", 0.7)
-            
-            # Get final time ranges
-            final_time_ranges = []
-            for idx in ranked_indices:
-                if idx in filtered_indices:
-                    continue
-                if 1 <= idx <= len(shortlisted_ranges):
-                    r = shortlisted_ranges[idx - 1]  # Convert to 0-based
-                    final_time_ranges.append(r["time_range"])
-            
-            # If user wants one, take only the top result
-            if user_wants_one and final_time_ranges:
-                final_time_ranges = [final_time_ranges[0]]
+            if user_wants_one and time_ranges:
+                time_ranges = [time_ranges[0]]
                 if verbose:
-                    print(f"\n[SELECTION] User wants one result - selecting top match")
-            elif not final_time_ranges and shortlisted_ranges:
-                # Fallback: use top 5 if ranking failed
-                final_time_ranges = [r["time_range"] for r in shortlisted_ranges[:5]]
-                if verbose:
-                    print(f"\n[SELECTION] Ranking failed - using top 5 results")
+                    print(f"  [ACTION] Selecting top match only")
+            elif not user_wants_one and verbose:
+                print(f"  [ACTION] Returning all {len(time_ranges)} time ranges")
+            
+            # Calculate confidence based on scores
+            if filtered_seconds:
+                top_score = filtered_seconds[0]["score"]
+                confidence = min(0.95, max(0.3, top_score))  # Map score to confidence
+            else:
+                confidence = 0.3
             
             # Store all search results for reference
             search_results = all_search_results
-            time_ranges = final_time_ranges
             
             if verbose:
                 print(f"\n[FINAL SELECTION]")
                 print(f"  Selected {len(time_ranges)} time range(s)")
+                print(f"  Confidence: {confidence:.2f}")
                 if time_ranges:
                     print(f"  Time ranges:")
                     for i, (start, end) in enumerate(time_ranges, 1):
@@ -556,7 +1157,7 @@ Return JSON with:
             else:
                 if verbose:
                     print(f"  [SUCCESS] Found {len(time_ranges)} time range(s) - proceeding with extraction")
-        
+            
         # Merge overlapping time ranges
         if time_ranges:
             original_count = len(time_ranges)
@@ -573,6 +1174,10 @@ Return JSON with:
             if verbose:
                 print("\n[MERGING] No time ranges to merge")
         
+        # Preserve state for potential refinement (preserve even if clarification needed)
+        # This allows user to refine results after clarification
+        preserved_scored_seconds = filtered_seconds if filtered_seconds else state.get("previous_scored_seconds")
+        
         return {
             **state,
             "query_type": "multi_modal",  # Indicate we used all search types
@@ -580,7 +1185,12 @@ Return JSON with:
             "time_ranges": time_ranges,
             "confidence": confidence,
             "needs_clarification": needs_clarification,
-            "clarification_question": clarification_question
+            "clarification_question": clarification_question,
+            # Preserve for future refinement (always preserve if we have new results)
+            "previous_time_ranges": time_ranges if time_ranges else state.get("previous_time_ranges"),
+            "previous_scored_seconds": preserved_scored_seconds,
+            "previous_query": query if time_ranges else state.get("previous_query"),
+            "previous_search_results": search_results if search_results else state.get("previous_search_results")
         }
     
     return planner_node
@@ -932,7 +1542,12 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         "clarification_question": None,
         "output_clips": [],
         "segment_tree": segment_tree,
-        "verbose": verbose
+        "verbose": verbose,
+        # Memory fields (initialized to None for first query)
+        "previous_time_ranges": None,
+        "previous_scored_seconds": None,
+        "previous_query": None,
+        "previous_search_results": None
     }
     
     # Run agent
