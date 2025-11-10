@@ -41,6 +41,12 @@ class Chunk:
     speed: float = 1.0  # Playback speed (1.0 = normal, 2.0 = 2x speed)
     description: str = ""
     score: float = 0.0  # Interest score
+    # Metadata for agent-extracted clips
+    original_start_time: Optional[float] = None  # Original timing in source video
+    original_end_time: Optional[float] = None
+    unified_description: Optional[str] = None  # Visual description
+    audio_description: Optional[str] = None  # Audio transcription
+    clip_path: Optional[str] = None  # Path to extracted clip file
 
 
 @dataclass
@@ -199,6 +205,9 @@ class Vidsor:
         if os.path.exists(segment_tree_path):
             self.segment_tree_path = segment_tree_path
             self._load_segment_tree()
+        
+        # Load timeline from timeline.json
+        self._load_timeline()
         
         # Load chat history
         self._load_chat_history()
@@ -419,6 +428,10 @@ class Vidsor:
         
         self.edit_state.chunks = chunks
         print(f"[VIDSOR] Analysis complete: {len(chunks)} chunks generated")
+        
+        # Save timeline to timeline.json
+        self._save_timeline()
+        
         return chunks
     
     def _analyze_with_segment_tree(self,
@@ -809,10 +822,21 @@ class Vidsor:
             has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path) if self.segment_tree_path else False
             self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree and not self.is_agent_running) else tk.DISABLED)
         
-        # Update preview label
+        # Update preview label with timeline info
         if self.preview_label:
             if has_video:
-                self.preview_label.config(text=f"Video: {os.path.basename(self.video_path)}\n\nDuration: {self.video_clip.duration:.1f}s\nFPS: {self.video_clip.fps}")
+                timeline_info = ""
+                if self.edit_state.chunks:
+                    highlight_count = sum(1 for c in self.edit_state.chunks if c.chunk_type == "highlight")
+                    total_chunks = len(self.edit_state.chunks)
+                    timeline_info = f"\nTimeline: {total_chunks} chunks ({highlight_count} highlights)"
+                
+                self.preview_label.config(
+                    text=f"Video: {os.path.basename(self.video_path)}\n\n"
+                         f"Duration: {self.video_clip.duration:.1f}s\n"
+                         f"FPS: {self.video_clip.fps}{timeline_info}\n\n"
+                         f"Preview will render from timeline.json"
+                )
             elif self.current_project_path:
                 project_name = os.path.basename(self.current_project_path)
                 self.preview_label.config(text=f"Project: {project_name}\n\nNo video uploaded\n\nClick 'Upload Video' to add a video")
@@ -824,6 +848,26 @@ class Vidsor:
         if not self.video_clip:
             messagebox.showwarning("Warning", "No video loaded. Please load a video first.")
             return
+        
+        # Check if timeline.json has data - warn user
+        timeline_path = os.path.join(self.current_project_path, "timeline.json") if self.current_project_path else None
+        if timeline_path and os.path.exists(timeline_path):
+            try:
+                with open(timeline_path, 'r') as f:
+                    timeline_data = json.load(f)
+                    chunks_data = timeline_data.get("chunks", [])
+                    if chunks_data:
+                        response = messagebox.askyesno(
+                            "Timeline Has Data",
+                            f"Timeline.json already contains {len(chunks_data)} chunks.\n\n"
+                            "Analyzing will replace existing timeline data.\n\n"
+                            "Do you want to continue?",
+                            parent=self.root
+                        )
+                        if not response:
+                            return
+            except Exception:
+                pass  # Continue if we can't read the file
         
         self.status_label.config(text="Analyzing video...")
         self.root.update()
@@ -881,17 +925,45 @@ class Vidsor:
     
     def _draw_timeline(self):
         """Draw timeline with chunks."""
-        if not self.timeline_canvas or not self.edit_state.chunks:
+        print(f"[VIDSOR] _draw_timeline called - canvas: {self.timeline_canvas is not None}, chunks: {len(self.edit_state.chunks) if self.edit_state.chunks else 0}, video: {self.video_clip is not None}")
+        
+        if not self.timeline_canvas:
+            print("[VIDSOR] Timeline canvas not available")
+            return
+        
+        if not self.edit_state.chunks:
+            print("[VIDSOR] No chunks to draw")
+            # Still draw empty timeline with time markers
+            if not self.video_clip:
+                return
+            self.timeline_canvas.delete("all")
+            duration = self.video_clip.duration
+            canvas_width = self.timeline_canvas.winfo_width() or 1000
+            scale = canvas_width / duration
+            # Draw time markers only
+            y_start = 20
+            for t in range(0, int(duration) + 1, 10):
+                x = t * scale
+                self.timeline_canvas.create_line(x, 0, x, y_start, fill="gray")
+                self.timeline_canvas.create_text(x, y_start/2, text=f"{t}s", font=("Arial", 8))
+            self.timeline_canvas.configure(scrollregion=(0, 0, duration * scale, 150))
             return
         
         self.timeline_canvas.delete("all")
         
         if not self.video_clip:
+            print("[VIDSOR] No video clip available for timeline")
             return
         
-        duration = self.video_clip.duration
+        # Calculate timeline duration (sum of all chunks in edited timeline)
+        if self.edit_state.chunks:
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        else:
+            timeline_duration = self.video_clip.duration if self.video_clip else 100
+        
         canvas_width = self.timeline_canvas.winfo_width() or 1000
-        scale = canvas_width / duration
+        scale = canvas_width / timeline_duration
+        print(f"[VIDSOR] Drawing timeline - timeline_duration: {timeline_duration}s, canvas_width: {canvas_width}, scale: {scale}")
         
         # Draw chunks
         y_start = 20
@@ -901,6 +973,7 @@ class Vidsor:
             x_start = chunk.start_time * scale
             x_end = chunk.end_time * scale
             width = x_end - x_start
+            print(f"[VIDSOR] Drawing chunk {i}: {chunk.chunk_type} at {chunk.start_time:.1f}s-{chunk.end_time:.1f}s (x: {x_start:.1f}-{x_end:.1f})")
             
             # Color based on chunk type
             if chunk.chunk_type == "highlight":
@@ -917,23 +990,31 @@ class Vidsor:
             )
             
             # Draw label
-            label = f"{chunk.chunk_type}\n{chunk.start_time:.1f}s-{chunk.end_time:.1f}s"
-            if chunk.speed != 1.0:
-                label += f"\n{chunk.speed}x"
+            if chunk.chunk_type == "highlight" and chunk.original_start_time is not None:
+                # Show original timing and description for highlights
+                label = f"Highlight\n{chunk.original_start_time:.1f}s-{chunk.original_end_time:.1f}s"
+                if chunk.description:
+                    # Truncate description if too long
+                    desc = chunk.description[:40] + "..." if len(chunk.description) > 40 else chunk.description
+                    label += f"\n{desc}"
+            else:
+                label = f"{chunk.chunk_type}\n{chunk.start_time:.1f}s-{chunk.end_time:.1f}s"
+                if chunk.speed != 1.0:
+                    label += f"\n{chunk.speed}x"
             
             self.timeline_canvas.create_text(
                 x_start + width/2, y_start + y_height/2,
                 text=label, font=("Arial", 8), tags=f"chunk_{i}"
             )
         
-        # Draw time markers
-        for t in range(0, int(duration) + 1, 10):
+        # Draw time markers based on timeline duration
+        for t in range(0, int(timeline_duration) + 1, 10):
             x = t * scale
             self.timeline_canvas.create_line(x, 0, x, y_start, fill="gray")
             self.timeline_canvas.create_text(x, y_start/2, text=f"{t}s", font=("Arial", 8))
         
         # Update scroll region
-        self.timeline_canvas.configure(scrollregion=(0, 0, duration * scale, 150))
+        self.timeline_canvas.configure(scrollregion=(0, 0, timeline_duration * scale, 150))
     
     def export_video(self, output_path: str):
         """
@@ -948,8 +1029,13 @@ class Vidsor:
         clips = []
         
         for chunk in self.edit_state.chunks:
-            # Extract subclip
-            subclip = self.video_clip.subclipped(chunk.start_time, chunk.end_time)
+            # Use original timing to extract from source video
+            # If original timing is not available, fall back to start_time/end_time
+            extract_start = chunk.original_start_time if chunk.original_start_time is not None else chunk.start_time
+            extract_end = chunk.original_end_time if chunk.original_end_time is not None else chunk.end_time
+            
+            # Extract subclip from source video using original timing
+            subclip = self.video_clip.subclipped(extract_start, extract_end)
             
             # Apply speed if needed
             if chunk.speed != 1.0:
@@ -1113,9 +1199,14 @@ class Vidsor:
             # Extract response
             if result.get("needs_clarification"):
                 response = f"Clarification needed: {result.get('clarification_question', 'Please provide more details.')}"
+                if self.root:
+                    self.root.after(0, lambda: self._add_chat_message("assistant", response))
+                    self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                    self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
             else:
                 clips = result.get("output_clips", [])
                 time_ranges = result.get("time_ranges", [])
+                search_results = result.get("search_results", [])
                 confidence = result.get("confidence", 0)
                 
                 response_parts = []
@@ -1135,12 +1226,42 @@ class Vidsor:
                     response_parts.append(f"\nConfidence: {confidence:.2%}")
                 
                 response = "\n".join(response_parts)
-            
-            # Update UI in main thread
-            if self.root:
-                self.root.after(0, lambda: self._add_chat_message("assistant", response))
-                self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
-                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+                
+                # Check if this is a highlights query and process clips
+                query_lower = query.lower()
+                is_highlights_query = any(keyword in query_lower for keyword in [
+                    "highlight", "highlights", "best moments", "best parts", 
+                    "interesting moments", "key moments", "important moments",
+                    "find the highlights", "find highlights", "show highlights"
+                ])
+                
+                if is_highlights_query and (clips or time_ranges):
+                    # Process highlights and add to timeline
+                    # Use a proper closure to avoid lambda variable capture issues
+                    if self.root:
+                        def process_highlights_wrapper():
+                            try:
+                                num_items = len(clips) if clips else len(time_ranges) if time_ranges else 0
+                                print(f"[VIDSOR] Processing {num_items} highlights for timeline")
+                                if self.status_label:
+                                    self.status_label.config(text=f"Processing {num_items} highlights and adding to timeline...")
+                                self._process_highlights(result, clips, time_ranges, search_results)
+                                if self.status_label:
+                                    self.status_label.config(text=f"Added {num_items} highlights to timeline")
+                            except Exception as e:
+                                print(f"[VIDSOR] Error processing highlights: {e}")
+                                import traceback
+                                traceback.print_exc()
+                                if self.status_label:
+                                    self.status_label.config(text=f"Error processing highlights: {str(e)}")
+                        
+                        self.root.after(0, process_highlights_wrapper)
+                
+                # Update UI in main thread
+                if self.root:
+                    self.root.after(0, lambda: self._add_chat_message("assistant", response))
+                    self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                    self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
             
         except Exception as e:
             error_msg = f"Error processing query: {str(e)}"
@@ -1151,6 +1272,220 @@ class Vidsor:
                 self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
             self.is_agent_running = False
+    
+    def _process_highlights(self, result: Dict, clips: List[str], time_ranges: List[Tuple[float, float]], 
+                           search_results: List[Dict]):
+        """
+        Process highlights from agent result: extract metadata, sort by timing, and add to timeline.
+        Only adds to timeline if timeline.json is empty (preserves existing data).
+        
+        Args:
+            result: Full agent result dictionary
+            clips: List of extracted clip file paths
+            time_ranges: List of (start, end) time tuples
+            search_results: List of search result dictionaries with metadata
+        """
+        print(f"[VIDSOR] _process_highlights called with {len(clips) if clips else 0} clips and {len(time_ranges) if time_ranges else 0} time ranges")
+        
+        # Check if timeline.json exists and has data
+        timeline_path = os.path.join(self.current_project_path, "timeline.json") if self.current_project_path else None
+        timeline_has_data = False
+        if timeline_path and os.path.exists(timeline_path):
+            try:
+                with open(timeline_path, 'r') as f:
+                    timeline_data = json.load(f)
+                    chunks_data = timeline_data.get("chunks", [])
+                    if chunks_data:
+                        timeline_has_data = True
+                        print(f"[VIDSOR] Timeline.json already has {len(chunks_data)} chunks, preserving existing data")
+            except Exception as e:
+                print(f"[VIDSOR] Error checking timeline.json: {e}")
+        
+        # Only process highlights if timeline is empty
+        if timeline_has_data:
+            print("[VIDSOR] Timeline.json has existing data, skipping AI-generated highlights")
+            return
+        
+        if not self.segment_tree:
+            print("[VIDSOR] No segment tree available for metadata extraction")
+            # Still process highlights even without segment tree for metadata
+            if not time_ranges and not clips:
+                return
+        else:
+            print(f"[VIDSOR] Segment tree available, extracting metadata")
+        
+        highlight_chunks = []
+        
+        # Create a mapping from time ranges to clips
+        clip_map = {}
+        if clips and time_ranges:
+            for clip_path, (start, end) in zip(clips, time_ranges):
+                clip_map[(start, end)] = clip_path
+        
+        # Process time ranges (use clips if available, otherwise time_ranges)
+        ranges_to_process = []
+        if clips and time_ranges and len(clips) == len(time_ranges):
+            # Use clips with their corresponding time ranges (perfect match)
+            for clip_path, (start, end) in zip(clips, time_ranges):
+                ranges_to_process.append((start, end, clip_path))
+        elif clips:
+            # We have clips but maybe no time_ranges or mismatch - extract timing from filenames
+            import re
+            for clip_path in clips:
+                # Try to extract timing from filename like "clip_1_22s_to_28s_..."
+                match = re.search(r'(\d+)s_to_(\d+)s', os.path.basename(clip_path))
+                if match:
+                    start = float(match.group(1))
+                    end = float(match.group(2))
+                    ranges_to_process.append((start, end, clip_path))
+                else:
+                    print(f"[VIDSOR] Warning: Could not extract timing from clip filename: {clip_path}")
+        elif time_ranges:
+            # Only time ranges, no clips extracted yet
+            for start, end in time_ranges:
+                ranges_to_process.append((start, end, None))
+        else:
+            print("[VIDSOR] No time ranges or clips to process")
+            return
+        
+        # Sort by start time
+        ranges_to_process.sort(key=lambda x: x[0])
+        
+        # Extract metadata for each range
+        for start, end, clip_path in ranges_to_process:
+            # Get metadata from segment tree
+            unified_desc = None
+            audio_desc = None
+            
+            # Try to get description from search_results first
+            if search_results:
+                for search_result in search_results:
+                    result_time_range = search_result.get("time_range", [])
+                    if len(result_time_range) >= 2:
+                        result_start, result_end = result_time_range[0], result_time_range[1]
+                        # Check if this search result overlaps with our time range
+                        if not (result_end < start or result_start > end):
+                            # Get text from search result
+                            text = search_result.get("text", "")
+                            result_type = search_result.get("type", "")
+                            
+                            # Also check for transcription text in different formats
+                            if not text:
+                                text = search_result.get("transcription", "")
+                            
+                            if result_type == "unified" and not unified_desc and text:
+                                unified_desc = text
+                            elif (result_type == "transcription" or result_type == "audio") and not audio_desc and text:
+                                audio_desc = text
+                            # Handle generic search results
+                            elif not result_type and text:
+                                # If we don't have unified_desc yet, use this as visual
+                                if not unified_desc:
+                                    unified_desc = text
+            
+            # If not found in search_results, query segment tree directly
+            # Sample multiple points in the time range to get better descriptions
+            if not unified_desc or not audio_desc:
+                sample_times = [
+                    start,
+                    start + (end - start) * 0.25,
+                    (start + end) / 2,
+                    start + (end - start) * 0.75,
+                    end
+                ]
+                
+                for sample_time in sample_times:
+                    second_data = self.segment_tree.get_second_by_time(sample_time)
+                    
+                    if second_data:
+                        if not unified_desc:
+                            desc = second_data.get("unified_description", "")
+                            if desc and desc != "0":
+                                unified_desc = desc
+                                break  # Found one, move on
+                        
+                        if not audio_desc:
+                            # Try to get audio transcription
+                            transcription_id = second_data.get("transcription_id")
+                            if transcription_id and transcription_id in self.segment_tree._transcription_map:
+                                transcription = self.segment_tree._transcription_map[transcription_id]
+                                audio = transcription.get("transcription", "")
+                                if audio:
+                                    audio_desc = audio
+                                    break  # Found one, move on
+                    
+                    # If we found both, no need to continue
+                    if unified_desc and audio_desc:
+                        break
+            
+            # Build description from available sources
+            description_parts = []
+            if unified_desc:
+                description_parts.append(f"Visual: {unified_desc}")
+            if audio_desc:
+                description_parts.append(f"Audio: {audio_desc}")
+            
+            description = " | ".join(description_parts) if description_parts else "Highlight moment"
+            
+            # Calculate sequential timeline position (clips appear one after another in edited timeline)
+            # start_time/end_time = position in edited timeline (sequential)
+            # original_start_time/original_end_time = position in source video
+            clip_duration = end - start
+            if highlight_chunks:
+                # Start after the last chunk
+                timeline_start = highlight_chunks[-1].end_time
+            else:
+                # First chunk starts at 0
+                timeline_start = 0.0
+            timeline_end = timeline_start + clip_duration
+            
+            # Create chunk
+            chunk = Chunk(
+                start_time=timeline_start,  # Sequential position in edited timeline
+                end_time=timeline_end,     # Sequential position in edited timeline
+                chunk_type="highlight",
+                speed=1.0,
+                description=description,
+                score=1.0,  # Highlights have high score
+                original_start_time=start,  # Original position in source video
+                original_end_time=end,      # Original position in source video
+                unified_description=unified_desc,
+                audio_description=audio_desc,
+                clip_path=clip_path
+            )
+            
+            highlight_chunks.append(chunk)
+        
+        # Add highlight chunks to edit state
+        # Replace existing chunks if they're also highlights, otherwise append
+        existing_highlights = [c for c in self.edit_state.chunks if c.chunk_type == "highlight"]
+        if existing_highlights:
+            # Replace existing highlights
+            other_chunks = [c for c in self.edit_state.chunks if c.chunk_type != "highlight"]
+            self.edit_state.chunks = other_chunks + highlight_chunks
+        else:
+            # Append to existing chunks
+            self.edit_state.chunks.extend(highlight_chunks)
+        
+        # Sort all chunks by start_time (highlights are already sorted by original timing)
+        self.edit_state.chunks.sort(key=lambda x: x.start_time)
+        
+        # Save timeline to timeline.json
+        self._save_timeline()
+        
+        # Update timeline display
+        print(f"[VIDSOR] Drawing timeline with {len(self.edit_state.chunks)} total chunks")
+        self._draw_timeline()
+        
+        # Update UI state
+        self._update_ui_state()
+        
+        # Force UI update
+        if self.root:
+            self.root.update_idletasks()
+        
+        print(f"[VIDSOR] Processed {len(highlight_chunks)} highlight clips and added to timeline")
+        print(f"[VIDSOR] Total chunks in edit_state: {len(self.edit_state.chunks)}")
     
     def _add_chat_message(self, role: str, content: str):
         """Add a message to chat history and display it."""
@@ -1198,6 +1533,103 @@ class Vidsor:
                 json.dump(self.chat_history, f, indent=2)
         except Exception as e:
             print(f"[VIDSOR] Failed to save chat history: {e}")
+    
+    def _load_timeline(self):
+        """Load timeline from timeline.json in project folder."""
+        if not self.current_project_path:
+            self.edit_state.chunks = []
+            return
+        
+        timeline_path = os.path.join(self.current_project_path, "timeline.json")
+        if os.path.exists(timeline_path):
+            try:
+                with open(timeline_path, 'r') as f:
+                    timeline_data = json.load(f)
+                
+                # Check if timeline is empty
+                chunks_data = timeline_data.get("chunks", [])
+                if not chunks_data:
+                    print("[VIDSOR] Timeline.json is empty, will be filled with AI-generated clips")
+                    self.edit_state.chunks = []
+                    return
+                
+                # Load chunks from timeline.json
+                chunks = []
+                for chunk_data in chunks_data:
+                    chunk = Chunk(
+                        start_time=chunk_data.get("start_time", 0.0),
+                        end_time=chunk_data.get("end_time", 0.0),
+                        chunk_type=chunk_data.get("chunk_type", "normal"),
+                        speed=chunk_data.get("speed", 1.0),
+                        description=chunk_data.get("description", ""),
+                        score=chunk_data.get("score", 0.0),
+                        original_start_time=chunk_data.get("original_start_time"),
+                        original_end_time=chunk_data.get("original_end_time"),
+                        unified_description=chunk_data.get("unified_description"),
+                        audio_description=chunk_data.get("audio_description"),
+                        clip_path=chunk_data.get("clip_path")
+                    )
+                    chunks.append(chunk)
+                
+                self.edit_state.chunks = chunks
+                print(f"[VIDSOR] Loaded {len(chunks)} chunks from timeline.json")
+                
+                # Update timeline display if UI is ready
+                if self.root and self.timeline_canvas:
+                    self.root.after(0, self._draw_timeline)
+                
+            except Exception as e:
+                print(f"[VIDSOR] Failed to load timeline: {e}")
+                import traceback
+                traceback.print_exc()
+                self.edit_state.chunks = []
+        else:
+            # Timeline.json doesn't exist, create empty one
+            print("[VIDSOR] timeline.json not found, will be created when clips are added")
+            self.edit_state.chunks = []
+            self._save_timeline()  # Create empty timeline.json
+    
+    def _save_timeline(self):
+        """Save timeline to timeline.json in project folder."""
+        if not self.current_project_path:
+            return
+        
+        timeline_path = os.path.join(self.current_project_path, "timeline.json")
+        try:
+            # Convert chunks to JSON-serializable format
+            chunks_data = []
+            for chunk in self.edit_state.chunks:
+                chunk_dict = {
+                    "start_time": chunk.start_time,
+                    "end_time": chunk.end_time,
+                    "chunk_type": chunk.chunk_type,
+                    "speed": chunk.speed,
+                    "description": chunk.description,
+                    "score": chunk.score,
+                    "original_start_time": chunk.original_start_time,
+                    "original_end_time": chunk.original_end_time,
+                    "unified_description": chunk.unified_description,
+                    "audio_description": chunk.audio_description,
+                    "clip_path": chunk.clip_path
+                }
+                chunks_data.append(chunk_dict)
+            
+            timeline_data = {
+                "version": "1.0",
+                "created_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat(),
+                "chunks": chunks_data
+            }
+            
+            with open(timeline_path, 'w') as f:
+                json.dump(timeline_data, f, indent=2)
+            
+            print(f"[VIDSOR] Saved {len(chunks_data)} chunks to timeline.json")
+            
+        except Exception as e:
+            print(f"[VIDSOR] Failed to save timeline: {e}")
+            import traceback
+            traceback.print_exc()
     
     def _load_chat_history(self):
         """Load chat history from project folder."""
