@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <style>
+    .node-text { font-family: Arial, sans-serif; font-size: 10px; text-anchor: middle; }
+    .node-label { font-weight: bold; font-size: 9px; }
+    .edge { stroke: #666; stroke-width: 1.5; fill: none; }
+  </style>
+</defs>
+  <line x1="50.0" y1="400.0" x2="50.0" y2="50.0" class="edge"/>
+  <line x1="50.0" y1="400.0" x2="207.14285714285714" y2="50.0" class="edge"/>
+  <line x1="416.66666666666663" y1="400.0" x2="364.2857142857143" y2="50.0" class="edge"/>
+  <line x1="416.66666666666663" y1="400.0" x2="521.4285714285713" y2="50.0" class="edge"/>
+  <line x1="783.3333333333333" y1="400.0" x2="678.5714285714286" y2="50.0" class="edge"/>
+  <line x1="783.3333333333333" y1="400.0" x2="835.7142857142857" y2="50.0" class="edge"/>
+  <line x1="1150.0" y1="400.0" x2="992.8571428571428" y2="50.0" class="edge"/>
+  <line x1="1150.0" y1="400.0" x2="1150.0" y2="50.0" class="edge"/>
+  <line x1="50.0" y1="750.0" x2="50.0" y2="400.0" class="edge"/>
+  <line x1="50.0" y1="750.0" x2="416.66666666666663" y2="400.0" class="edge"/>
+  <line x1="1150.0" y1="750.0" x2="783.3333333333333" y2="400.0" class="edge"/>
+  <line x1="1150.0" y1="750.0" x2="1150.0" y2="400.0" class="edge"/>
+  <rect x="-50.599999999999994" y="649.4" width="201.2" height="201.2" fill="hsl(137, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="50.0" y="644.4" class="node-text node-label">n6_0</text>
+  <text x="50.0" y="862.6" class="node-text">806kw</text>
+  <rect x="1051.1" y="651.1" width="197.8" height="197.8" fill="hsl(137, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="1150.0" y="646.1" class="node-text node-label">n6_1</text>
+  <text x="1150.0" y="860.9" class="node-text">789kw</text>
+  <rect x="-27.200000000000003" y="322.8" width="154.4" height="154.4" fill="hsl(154, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="50.0" y="317.8" class="node-text node-label">n5_0</text>
+  <text x="50.0" y="489.2" class="node-text">572kw</text>
+  <rect x="344.3666666666666" y="327.7" width="144.6" height="144.6" fill="hsl(154, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="416.66666666666663" y="322.7" class="node-text node-label">n5_1</text>
+  <text x="416.66666666666663" y="484.3" class="node-text">523kw</text>
+  <rect x="704.9333333333333" y="321.6" width="156.8" height="156.8" fill="hsl(154, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="783.3333333333333" y="316.6" class="node-text node-label">n5_2</text>
+  <text x="783.3333333333333" y="490.4" class="node-text">584kw</text>
+  <rect x="1084.6" y="334.6" width="130.8" height="130.8" fill="hsl(154, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="1150.0" y="329.6" class="node-text node-label">n5_3</text>
+  <text x="1150.0" y="477.4" class="node-text">454kw</text>
+  <rect x="-10.299999999999997" y="-10.299999999999997" width="120.6" height="120.6" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="50.0" y="-15.299999999999997" class="node-text node-label">n4_0</text>
+  <text x="50.0" y="122.3" class="node-text">403kw</text>
+  <rect x="150.34285714285716" y="-6.799999999999997" width="113.6" height="113.6" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="207.14285714285714" y="-11.799999999999997" class="node-text node-label">n4_1</text>
+  <text x="207.14285714285714" y="118.8" class="node-text">368kw</text>
+  <rect x="306.0857142857143" y="-8.200000000000003" width="116.4" height="116.4" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="364.2857142857143" y="-13.200000000000003" class="node-text node-label">n4_2</text>
+  <text x="364.2857142857143" y="120.2" class="node-text">382kw</text>
+  <rect x="469.52857142857135" y="-1.8999999999999986" width="103.8" height="103.8" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="521.4285714285713" y="-6.899999999999999" class="node-text node-label">n4_3</text>
+  <text x="521.4285714285713" y="113.9" class="node-text">319kw</text>
+  <rect x="619.1714285714286" y="-9.399999999999999" width="118.8" height="118.8" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="678.5714285714286" y="-14.399999999999999" class="node-text node-label">n4_4</text>
+  <text x="678.5714285714286" y="121.4" class="node-text">394kw</text>
+  <rect x="776.6142857142856" y="-9.100000000000001" width="118.2" height="118.2" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="835.7142857142857" y="-14.100000000000001" class="node-text node-label">n4_5</text>
+  <text x="835.7142857142857" y="121.1" class="node-text">391kw</text>
+  <rect x="937.7571428571428" y="-5.100000000000001" width="110.2" height="110.2" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="992.8571428571428" y="-10.100000000000001" class="node-text node-label">n4_6</text>
+  <text x="992.8571428571428" y="117.1" class="node-text">351kw</text>
+  <rect x="1108.5" y="8.5" width="83.0" height="83.0" fill="hsl(171, 70%, 80%)" stroke="black" stroke-width="2" rx="3"/>
+  <text x="1150.0" y="3.5" class="node-text node-label">n4_7</text>
+  <text x="1150.0" y="103.5" class="node-text">215kw</text>
+  <text x="600" y="25" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold">Hierarchical Tree - 240 nodes, 8 levels</text>
+</svg>
