@@ -86,26 +86,25 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             print("\n[STEP 1] Generating search queries for all modalities...")
         
         # STEP 1: Generate search queries/keywords for ALL search types
-        system_prompt_step1 = """You are a video analysis planner. Generate search queries and keywords for ALL possible search types based on the user query.
+        system_prompt_step1 = """You are a video analysis planner. Generate search queries and keywords for search types based on the user query.
 
 Available search types:
-1. "semantic": Natural language semantic search (use the full query or a refined version)
-2. "visual": Keywords for visual descriptions (BLIP/unified descriptions)
-3. "audio": Keywords for audio transcriptions
-4. "object": Object class names to search for (e.g., "person", "boat", "car")
-5. "activity": Activity names and evidence keywords (e.g., "cooking", "fishing")
+1. "semantic": Natural language semantic search (searches both visual descriptions AND audio transcriptions using embeddings)
+2. "hierarchical_keywords": Keywords for fast hierarchical tree lookup (extract key nouns/verbs from query)
+3. "object": Object class names to search for (e.g., "person", "boat", "car") - uses YOLO detection data
+4. "activity": Activity names and evidence keywords (e.g., "cooking", "fishing") - pattern matching
 
-For each search type, generate relevant queries/keywords that would help find the content.
+Note: Semantic search replaces the old visual/audio keyword search - it searches both automatically.
 
 Return JSON with:
 {
-    "semantic_queries": ["query1", "query2"],  // Can be multiple variations
-    "visual_keywords": ["keyword1", "keyword2"],
-    "audio_keywords": ["keyword1", "keyword2"],
+    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search
+    "hierarchical_keywords": ["keyword1", "keyword2"],  // Key nouns/verbs for fast tree lookup
     "object_classes": ["class1", "class2"],  // If objects are mentioned
     "activity_name": "activity",  // If activity is mentioned
     "activity_keywords": ["keyword1", "keyword2"],  // Keywords for activity search
     "evidence_keywords": ["keyword1"],  // Strong evidence keywords for activities
+    "is_general_highlight_query": true/false,  // True if query is asking for general highlights
     "needs_clarification": true/false,
     "clarification_question": "question" (if needed)
 }
@@ -140,25 +139,29 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             if json_match:
                 search_plan = json.loads(json_match.group())
             else:
-                # Fallback: use original query for semantic, extract keywords for others
+                # Fallback: use original query for semantic, extract keywords for hierarchical tree
+                import re
+                # Extract meaningful keywords (nouns/verbs, at least 3 chars)
+                words = re.findall(r'\b\w+\b', query.lower())
+                meaningful_keywords = [w for w in words if len(w) >= 3]
                 search_plan = {
                     "semantic_queries": [query],
-                    "visual_keywords": query.split(),
-                    "audio_keywords": query.split(),
+                    "hierarchical_keywords": meaningful_keywords[:5],  # Top 5 keywords
                     "object_classes": [],
                     "activity_name": "",
                     "activity_keywords": [],
                     "evidence_keywords": [],
+                    "is_general_highlight_query": "highlight" in query.lower(),
                     "needs_clarification": False
                 }
         
         if verbose:
             print("\n[SEARCH PLAN] Generated search queries:")
             print(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
-            print(f"  Visual keywords: {search_plan.get('visual_keywords', [])}")
-            print(f"  Audio keywords: {search_plan.get('audio_keywords', [])}")
+            print(f"  Hierarchical keywords: {search_plan.get('hierarchical_keywords', [])}")
             print(f"  Object classes: {search_plan.get('object_classes', [])}")
             print(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
+            print(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
         
         needs_clarification = search_plan.get("needs_clarification", False)
         clarification_question = search_plan.get("clarification_question")
@@ -183,24 +186,82 @@ Generate comprehensive search terms - be creative and think of synonyms, related
         
         if not needs_clarification:
             if verbose:
-                print("\n[STEP 2] Executing ALL search types...")
+                print("\n[STEP 2] Executing search with hierarchical tree + semantic search...")
             
-            # STEP 2: Execute ALL search types and collect results
+            # STEP 2: Execute search types and collect results
             all_search_results = []  # Store all results with metadata about search type
             all_time_ranges = []  # Collect all time ranges
             
-            # 1. Semantic search
+            # Check if this is a general highlight query
+            is_general_highlight = search_plan.get("is_general_highlight_query", False)
+            if "highlight" in query_lower and ("all" in query_lower or "find" in query_lower):
+                is_general_highlight = True
+            
+            # 0. General highlight detection (using hierarchical tree)
+            if is_general_highlight and segment_tree.hierarchical_tree:
+                if verbose:
+                    print(f"\n  [SEARCH TYPE: General Highlights (Hierarchical Tree)]")
+                # Extract action keywords from query if any
+                hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
+                scored_leaves = segment_tree.hierarchical_score_leaves_for_highlights(
+                    action_keywords=hierarchical_keywords if hierarchical_keywords else None,
+                    max_results=20
+                )
+                for leaf in scored_leaves:
+                    tr = leaf.get("time_range", [])
+                    if tr and len(tr) >= 2:
+                        all_time_ranges.append((tr[0], tr[1], "hierarchical_highlight", leaf.get("score", 0)))
+                        all_search_results.append({
+                            "search_type": "hierarchical_highlight",
+                            "time_range": tr,
+                            "score": leaf.get("score", 0),
+                            "node_id": leaf.get("node_id"),
+                            "keyword_count": leaf.get("keyword_count", 0)
+                        })
+                if verbose:
+                    print(f"      Found {len(scored_leaves)} highlight candidates")
+            
+            # 1. Hierarchical tree keyword search (fast pre-filter)
+            hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
+            if hierarchical_keywords and segment_tree.hierarchical_tree:
+                if verbose:
+                    print(f"\n  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]")
+                for keyword in hierarchical_keywords:
+                    if verbose:
+                        print(f"    Keyword: '{keyword}'")
+                    results = segment_tree.hierarchical_keyword_search(
+                        [keyword],
+                        match_mode="any",
+                        max_results=20
+                    )
+                    for result in results:
+                        # Prefer leaf nodes
+                        if result.get("level", -1) == 0:
+                            tr = result.get("time_range", [])
+                            if tr and len(tr) >= 2:
+                                all_time_ranges.append((tr[0], tr[1], "hierarchical", result.get("match_count", 1)))
+                                all_search_results.append({
+                                    "search_type": "hierarchical",
+                                    "time_range": tr,
+                                    "score": result.get("match_count", 1),
+                                    "node_id": result.get("node_id"),
+                                    "matched_keyword": keyword
+                                })
+                    if verbose:
+                        print(f"      Found {len([r for r in results if r.get('level') == 0])} leaf node matches")
+            
+            # 2. Semantic search (replaces old visual/audio keyword search)
             semantic_queries = search_plan.get("semantic_queries", [query])
             if semantic_queries:
                 if verbose:
-                    print(f"\n  [SEARCH TYPE: Semantic]")
+                    print(f"\n  [SEARCH TYPE: Semantic Search (Visual + Audio)]")
                 for sem_query in semantic_queries:
                     if verbose:
                         print(f"    Query: '{sem_query}'")
                     threshold = 0.45
                     results = segment_tree.semantic_search(
                         sem_query,
-                        top_k=10,
+                        top_k=15,
                         threshold=threshold,
                         search_transcriptions=True,
                         search_unified=True,
@@ -210,7 +271,7 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         threshold = 0.35
                         results = segment_tree.semantic_search(
                             sem_query,
-                            top_k=10,
+                            top_k=15,
                             threshold=threshold,
                             search_transcriptions=True,
                             search_unified=True,
@@ -220,7 +281,7 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         threshold = 0.3
                         results = segment_tree.semantic_search(
                             sem_query,
-                            top_k=10,
+                            top_k=15,
                             threshold=threshold,
                             search_transcriptions=True,
                             search_unified=True,
@@ -237,50 +298,11 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                     if verbose:
                         print(f"      Found {len(results)} matches")
             
-            # 2. Visual search
-            visual_keywords = search_plan.get("visual_keywords", [])
-            if visual_keywords:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Visual]")
-                for keyword in visual_keywords:
-                    if verbose:
-                        print(f"    Keyword: '{keyword}'")
-                    results = segment_tree.search_descriptions(keyword, search_type="any")
-                    for result in results:
-                        result["search_type"] = "visual"
-                        result["search_keyword"] = keyword
-                        all_search_results.append(result)
-                        for match in result.get("matches", []):
-                            tr = result.get("time_range", [])
-                            if tr and len(tr) >= 2:
-                                all_time_ranges.append((tr[0], tr[1], "visual", 1.0))
-                    if verbose:
-                        print(f"      Found {len(results)} matches")
-            
-            # 3. Audio search
-            audio_keywords = search_plan.get("audio_keywords", [])
-            if audio_keywords:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Audio]")
-                for keyword in audio_keywords:
-                    if verbose:
-                        print(f"    Keyword: '{keyword}'")
-                    results = segment_tree.search_transcriptions(keyword)
-                    for result in results:
-                        result["search_type"] = "audio"
-                        result["search_keyword"] = keyword
-                        all_search_results.append(result)
-                        tr = result.get("time_range", [])
-                        if tr and len(tr) >= 2:
-                            all_time_ranges.append((tr[0], tr[1], "audio", 1.0))
-                    if verbose:
-                        print(f"      Found {len(results)} matches")
-            
-            # 4. Object search
+            # 3. Object search (keep - uses YOLO detection data)
             object_classes = search_plan.get("object_classes", [])
             if object_classes:
                 if verbose:
-                    print(f"\n  [SEARCH TYPE: Object]")
+                    print(f"\n  [SEARCH TYPE: Object Detection (YOLO)]")
                 for obj_class in object_classes:
                     if verbose:
                         print(f"    Class: '{obj_class}'")
@@ -295,13 +317,13 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                     if verbose:
                         print(f"      Found {len(results)} detections")
             
-            # 5. Activity search
+            # 4. Activity search (keep - pattern matching)
             activity_name = search_plan.get("activity_name", "")
             activity_keywords = search_plan.get("activity_keywords", [])
             evidence_keywords = search_plan.get("evidence_keywords", [])
             if activity_name or activity_keywords:
                 if verbose:
-                    print(f"\n  [SEARCH TYPE: Activity]")
+                    print(f"\n  [SEARCH TYPE: Activity Pattern Matching]")
                 if "fish" in query_lower and ("catch" in query_lower or "caught" in query_lower):
                     if verbose:
                         print(f"    Activity: Fish catching (specialized)")
@@ -361,8 +383,15 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             # Convert to list of (start, end, metadata) for ranking
             shortlisted_ranges = []
             for (start, end), metadata in time_range_map.items():
-                # Use the most precise original range
-                best_range = min(metadata["original_ranges"], key=lambda x: abs(x[1] - x[0]))
+                # Prefer hierarchical tree ranges (5 seconds) over semantic search (1 second)
+                # Sort by: 1) hierarchical search types first, 2) longer duration
+                def range_priority(r):
+                    _, _, search_type, _ = r
+                    is_hierarchical = search_type in ["hierarchical", "hierarchical_highlight"]
+                    duration = abs(r[1] - r[0])
+                    return (not is_hierarchical, -duration)  # False (hierarchical) sorts first
+                
+                best_range = min(metadata["original_ranges"], key=range_priority)
                 shortlisted_ranges.append({
                     "time_range": (best_range[0], best_range[1]),
                     "count": metadata["count"],

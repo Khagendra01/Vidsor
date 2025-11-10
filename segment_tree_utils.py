@@ -23,7 +23,7 @@ class SegmentTreeQuery:
     def __init__(self, json_path: str):
         """Load and initialize the segment tree from JSON file."""
         self.json_path = json_path
-        with open(json_path, 'r') as f:
+        with open(json_path, 'r', encoding='utf-8') as f:
             self.data = json.load(f)
         self.video = self.data.get("video", "")
         self.fps = self.data.get("fps", 30)
@@ -42,6 +42,14 @@ class SegmentTreeQuery:
         # Cache file path for embeddings
         json_path_obj = Path(json_path)
         self._cache_path = json_path_obj.parent / f"{json_path_obj.stem}_embeddings.npz"
+        
+        # Hierarchical tree (if available)
+        self.hierarchical_tree = self.data.get("hierarchical_tree")
+        self._hierarchical_nodes = None
+        self._hierarchical_indexes = None
+        if self.hierarchical_tree:
+            self._hierarchical_nodes = self.hierarchical_tree.get("nodes", {})
+            self._hierarchical_indexes = self.hierarchical_tree.get("indexes", {})
         
     def get_video_info(self) -> Dict[str, Any]:
         """Get basic video information."""
@@ -1333,6 +1341,182 @@ class SegmentTreeQuery:
             "non_empty_transcriptions": non_empty_count,
             "video_duration": video_duration
         }
+    
+    def hierarchical_keyword_search(self, keywords: List[str], 
+                                    match_mode: str = "any",
+                                    max_results: Optional[int] = None) -> List[Dict[str, Any]]:
+        """
+        Fast keyword search using hierarchical tree index.
+        
+        Args:
+            keywords: List of keywords to search for
+            match_mode: "any" (OR) or "all" (AND) - whether to match any or all keywords
+            max_results: Maximum number of results to return (None = all)
+            
+        Returns:
+            List of nodes that contain the keywords, sorted by relevance
+        """
+        if not self.hierarchical_tree or not self._hierarchical_indexes:
+            return []
+        
+        by_keyword = self._hierarchical_indexes.get("by_keyword", {})
+        keywords_lower = [kw.lower() for kw in keywords]
+        
+        # Find nodes containing keywords
+        if match_mode == "all":
+            # AND: nodes must contain ALL keywords
+            matching_nodes = None
+            for keyword in keywords_lower:
+                nodes_with_keyword = set(by_keyword.get(keyword, []))
+                if matching_nodes is None:
+                    matching_nodes = nodes_with_keyword
+                else:
+                    matching_nodes = matching_nodes.intersection(nodes_with_keyword)
+            
+            if matching_nodes is None:
+                matching_nodes = set()
+        else:
+            # OR: nodes containing ANY keyword
+            matching_nodes = set()
+            for keyword in keywords_lower:
+                matching_nodes.update(by_keyword.get(keyword, []))
+        
+        # Get node details and score by keyword count
+        results = []
+        for node_id in matching_nodes:
+            node = self._hierarchical_nodes.get(node_id)
+            if not node:
+                continue
+            
+            # Count how many keywords this node contains
+            node_keywords = set(kw.lower() for kw in node.get("keywords", []))
+            matched_keywords = [kw for kw in keywords_lower if kw in node_keywords]
+            match_count = len(matched_keywords)
+            
+            results.append({
+                "node_id": node_id,
+                "time_range": node.get("time_range", []),
+                "duration": node.get("duration", 0),
+                "level": node.get("level", -1),
+                "keyword_count": node.get("keyword_count", 0),
+                "matched_keywords": matched_keywords,
+                "match_count": match_count,
+                "keywords": node.get("keywords", []),
+                "node": node
+            })
+        
+        # Sort by match count (more keywords = better), then by level (leaves first)
+        results.sort(key=lambda x: (-x["match_count"], x["level"]))
+        
+        if max_results:
+            results = results[:max_results]
+        
+        return results
+    
+    def hierarchical_get_leaf_nodes(self, time_start: Optional[float] = None,
+                                   time_end: Optional[float] = None) -> List[Dict[str, Any]]:
+        """
+        Get all leaf nodes, optionally filtered by time range.
+        
+        Args:
+            time_start: Optional start time filter
+            time_end: Optional end time filter
+            
+        Returns:
+            List of leaf nodes
+        """
+        if not self.hierarchical_tree or not self._hierarchical_nodes:
+            return []
+        
+        leaves = []
+        for node_id, node in self._hierarchical_nodes.items():
+            if node.get("level", -1) != 0:  # Only leaf nodes (level 0)
+                continue
+            
+            time_range = node.get("time_range", [])
+            if not time_range or len(time_range) < 2:
+                continue
+            
+            # Filter by time range if specified
+            if time_start is not None and time_range[1] < time_start:
+                continue
+            if time_end is not None and time_range[0] > time_end:
+                continue
+            
+            leaves.append({
+                "node_id": node_id,
+                "time_range": time_range,
+                "duration": node.get("duration", 0),
+                "keywords": node.get("keywords", []),
+                "keyword_count": node.get("keyword_count", 0),
+                "visual_text": node.get("visual_text", ""),
+                "audio_text": node.get("audio_text", ""),
+                "combined_text": node.get("combined_text", ""),
+                "node": node
+            })
+        
+        # Sort by time
+        leaves.sort(key=lambda x: x["time_range"][0])
+        return leaves
+    
+    def hierarchical_score_leaves_for_highlights(self,
+                                                action_keywords: Optional[List[str]] = None,
+                                                max_results: Optional[int] = None) -> List[Dict[str, Any]]:
+        """
+        Score all leaf nodes to find highlights based on keyword density and activity.
+        
+        Args:
+            action_keywords: Optional list of action keywords to boost (e.g., ["fishing", "cooking", "laughing"])
+            max_results: Maximum number of results to return
+            
+        Returns:
+            List of leaf nodes scored and ranked for highlight potential
+        """
+        leaves = self.hierarchical_get_leaf_nodes()
+        
+        if action_keywords is None:
+            # Default action keywords
+            action_keywords = ["fishing", "cooking", "catching", "laughing", "cheering", 
+                             "running", "jumping", "excited", "surprised", "achievement"]
+        
+        action_keywords_lower = [kw.lower() for kw in action_keywords]
+        
+        # Score each leaf
+        scored_leaves = []
+        for leaf in leaves:
+            keywords = [kw.lower() for kw in leaf.get("keywords", [])]
+            keyword_count = leaf.get("keyword_count", 0)
+            
+            # Score components
+            base_score = keyword_count  # More keywords = more activity
+            
+            # Boost for action keywords
+            action_matches = sum(1 for kw in keywords if kw in action_keywords_lower)
+            action_score = action_matches * 2  # Action keywords worth 2x
+            
+            # Boost for unique/rare keywords (if keyword count is high but not too high)
+            uniqueness_score = 0
+            if 20 <= keyword_count <= 80:  # Sweet spot for interesting moments
+                uniqueness_score = 10
+            
+            total_score = base_score + action_score + uniqueness_score
+            
+            scored_leaves.append({
+                **leaf,
+                "score": total_score,
+                "base_score": base_score,
+                "action_score": action_score,
+                "uniqueness_score": uniqueness_score,
+                "action_matches": action_matches
+            })
+        
+        # Sort by score (descending)
+        scored_leaves.sort(key=lambda x: x["score"], reverse=True)
+        
+        if max_results:
+            scored_leaves = scored_leaves[:max_results]
+        
+        return scored_leaves
 
 
 def load_segment_tree(json_path: str) -> SegmentTreeQuery:
