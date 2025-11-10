@@ -15,6 +15,21 @@ import time
 import json
 import shutil
 from datetime import datetime
+try:
+    from PIL import Image, ImageTk
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+    print("[VIDSOR] Warning: PIL/Pillow not available. Video preview will not work. Install with: pip install pillow")
+
+try:
+    import pygame
+    HAS_PYGAME = True
+except ImportError:
+    HAS_PYGAME = False
+    print("[VIDSOR] Warning: Pygame not available. Audio playback will not work. Install with: pip install pygame")
+
+import numpy as np
 
 try:
     # MoviePy 2.x imports (direct from moviepy)
@@ -81,6 +96,10 @@ class Vidsor:
         self.video_path = video_path
         self.segment_tree_path = segment_tree_path
         self.video_clip: Optional[VideoFileClip] = None
+        self.preview_clip: Optional[VideoFileClip] = None  # Rendered preview from timeline
+        self.playback_thread: Optional[threading.Thread] = None  # Thread for video playback
+        self.audio_thread: Optional[threading.Thread] = None  # Thread for audio playback
+        self.audio_clip = None  # Audio clip for playback
         self.segment_tree: Optional[SegmentTreeQuery] = None
         self.edit_state = EditState(chunks=[])
         
@@ -92,11 +111,12 @@ class Vidsor:
         # UI components
         self.root: Optional[tk.Tk] = None
         self.preview_label: Optional[tk.Label] = None
+        self.preview_canvas: Optional[tk.Canvas] = None
         self.timeline_canvas: Optional[tk.Canvas] = None
         self.status_label: Optional[ttk.Label] = None
         self.load_video_btn: Optional[ttk.Button] = None
-        self.analyze_btn: Optional[ttk.Button] = None
         self.play_btn: Optional[ttk.Button] = None
+        self.pause_btn: Optional[ttk.Button] = None
         self.export_btn: Optional[ttk.Button] = None
         self.project_label: Optional[ttk.Label] = None
         self.project_combo: Optional[ttk.Combobox] = None
@@ -602,16 +622,30 @@ class Vidsor:
         preview_frame = ttk.LabelFrame(main_frame, text="Preview", padding="10")
         preview_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         
+        # Preview label with fixed minimum size to prevent collapsing
+        # Use a Canvas for better image display control
+        self.preview_canvas = tk.Canvas(
+            preview_frame,
+            bg="black",
+            highlightthickness=0
+        )
+        # Canvas initially hidden, will be shown when playing
+        
+        # Also keep label for text display
         self.preview_label = tk.Label(
             preview_frame,
             text="No project selected\n\nCreate a new project and upload a video to get started",
             bg="black",
             fg="white",
-            width=80,
-            height=20,
-            font=("Arial", 12)
+            font=("Arial", 12),
+            anchor="center",
+            justify="center"
         )
-        self.preview_label.pack()
+        self.preview_label.pack(fill=tk.BOTH, expand=True)
+        
+        # Set minimum size for preview to prevent collapsing
+        preview_frame.grid_rowconfigure(0, weight=1, minsize=450)
+        preview_frame.grid_columnconfigure(0, weight=1, minsize=800)
         
         # Timeline
         timeline_frame = ttk.LabelFrame(main_frame, text="Timeline", padding="10")
@@ -644,11 +678,11 @@ class Vidsor:
         self.load_video_btn = ttk.Button(controls_frame, text="Upload Video", command=self._on_load_video)
         self.load_video_btn.pack(side=tk.LEFT, padx=5)
         
-        self.analyze_btn = ttk.Button(controls_frame, text="Analyze Video", command=self._on_analyze, state=tk.DISABLED)
-        self.analyze_btn.pack(side=tk.LEFT, padx=5)
-        
         self.play_btn = ttk.Button(controls_frame, text="Play Preview", command=self._on_play, state=tk.DISABLED)
         self.play_btn.pack(side=tk.LEFT, padx=5)
+        
+        self.pause_btn = ttk.Button(controls_frame, text="Pause", command=self._on_pause, state=tk.DISABLED)
+        self.pause_btn.pack(side=tk.LEFT, padx=5)
         
         ttk.Button(controls_frame, text="Stop", command=self._on_stop).pack(side=tk.LEFT, padx=5)
         
@@ -798,7 +832,7 @@ class Vidsor:
                         self.status_label.config(text=f"Video loaded: {os.path.basename(video_path)}")
                         messagebox.showinfo(
                             "Success", 
-                            f"Video uploaded successfully!\n\n{os.path.basename(video_path)}\n\nYou can extract features later using the 'Analyze Video' button."
+                            f"Video uploaded successfully!\n\n{os.path.basename(video_path)}"
                         )
                 
             except Exception as e:
@@ -809,10 +843,12 @@ class Vidsor:
         """Update UI button states based on video loading status."""
         has_video = self.video_clip is not None
         
-        if self.analyze_btn:
-            self.analyze_btn.config(state=tk.NORMAL if has_video else tk.DISABLED)
         if self.play_btn:
-            self.play_btn.config(state=tk.NORMAL if has_video else tk.DISABLED)
+            # Enable play if video and chunks exist, disable if playing
+            self.play_btn.config(state=tk.NORMAL if (has_video and self.edit_state.chunks and not self.edit_state.is_playing) else tk.DISABLED)
+        if self.pause_btn:
+            # Enable pause only if playing
+            self.pause_btn.config(state=tk.NORMAL if (has_video and self.edit_state.is_playing) else tk.DISABLED)
         if self.export_btn:
             self.export_btn.config(state=tk.NORMAL if has_video and self.edit_state.chunks else tk.DISABLED)
         
@@ -835,7 +871,7 @@ class Vidsor:
                     text=f"Video: {os.path.basename(self.video_path)}\n\n"
                          f"Duration: {self.video_clip.duration:.1f}s\n"
                          f"FPS: {self.video_clip.fps}{timeline_info}\n\n"
-                         f"Preview will render from timeline.json"
+                         f"Click 'Play Preview' to view timeline"
                 )
             elif self.current_project_path:
                 project_name = os.path.basename(self.current_project_path)
@@ -843,58 +879,452 @@ class Vidsor:
             else:
                 self.preview_label.config(text="No project selected\n\nCreate a new project and upload a video to get started")
     
-    def _on_analyze(self):
-        """Analyze video button handler."""
-        if not self.video_clip:
-            messagebox.showwarning("Warning", "No video loaded. Please load a video first.")
-            return
-        
-        # Check if timeline.json has data - warn user
-        timeline_path = os.path.join(self.current_project_path, "timeline.json") if self.current_project_path else None
-        if timeline_path and os.path.exists(timeline_path):
-            try:
-                with open(timeline_path, 'r') as f:
-                    timeline_data = json.load(f)
-                    chunks_data = timeline_data.get("chunks", [])
-                    if chunks_data:
-                        response = messagebox.askyesno(
-                            "Timeline Has Data",
-                            f"Timeline.json already contains {len(chunks_data)} chunks.\n\n"
-                            "Analyzing will replace existing timeline data.\n\n"
-                            "Do you want to continue?",
-                            parent=self.root
-                        )
-                        if not response:
-                            return
-            except Exception:
-                pass  # Continue if we can't read the file
-        
-        self.status_label.config(text="Analyzing video...")
-        self.root.update()
-        
-        try:
-            chunks = self.analyze_video()
-            self._draw_timeline()
-            self.status_label.config(text=f"Analysis complete: {len(chunks)} chunks")
-            self._update_ui_state()  # Enable export button
-        except Exception as e:
-            messagebox.showerror("Error", f"Analysis failed: {str(e)}")
-            self.status_label.config(text="Analysis failed")
-    
     def _on_play(self):
-        """Play preview button handler."""
+        """Play preview button handler - plays video directly from timeline.json chunks."""
         if not self.video_clip:
             messagebox.showwarning("Warning", "No video loaded")
             return
         
+        if not self.edit_state.chunks:
+            messagebox.showwarning("Warning", "No clips in timeline. Load timeline.json or generate highlights first.")
+            return
+        
+        # If already playing, do nothing
+        if self.edit_state.is_playing:
+            return
+        
+        # Start playback directly from source video using timeline chunks
+        self._start_playback_from_timeline()
+    
+    def _start_playback_from_timeline(self):
+        """Start video playback directly from timeline chunks (no pre-rendering)."""
+        if not self.video_clip or not self.edit_state.chunks:
+            return
+        
+        if not HAS_PIL:
+            messagebox.showerror(
+                "Error",
+                "PIL/Pillow is required for video preview.\n\nInstall with: pip install pillow"
+            )
+            return
+        
+        # Calculate total duration from timeline
+        timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks) if self.edit_state.chunks else 0
+        
         self.edit_state.is_playing = True
-        self.status_label.config(text="Playing...")
-        # TODO: Implement video preview playback
+        self.edit_state.preview_time = 0.0
+        self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
+        self.play_btn.config(state=tk.DISABLED)
+        if self.pause_btn:
+            self.pause_btn.config(state=tk.NORMAL, text="Pause")
+        
+        # Show canvas, hide label
+        if self.preview_canvas:
+            self.preview_canvas.pack(fill=tk.BOTH, expand=True)
+        if self.preview_label:
+            self.preview_label.pack_forget()
+        
+        # Initialize audio playback if available
+        if HAS_PYGAME and self.video_clip.audio is not None:
+            try:
+                pygame.mixer.init(frequency=22050, size=-16, channels=2, buffer=512)
+                # Extract audio from video
+                self.audio_clip = self.video_clip.audio
+            except Exception as e:
+                print(f"[VIDSOR] Warning: Could not initialize audio: {e}")
+                self.audio_clip = None
+        else:
+            self.audio_clip = None
+        
+        # Start video playback thread
+        if self.playback_thread and self.playback_thread.is_alive():
+            return
+        
+        self.playback_thread = threading.Thread(
+            target=self._playback_loop_from_timeline,
+            daemon=True
+        )
+        self.playback_thread.start()
+        
+        # Start audio playback thread if audio is available
+        if self.audio_clip and HAS_PYGAME:
+            if self.audio_thread and self.audio_thread.is_alive():
+                return
+            
+            self.audio_thread = threading.Thread(
+                target=self._audio_playback_loop,
+                daemon=True
+            )
+            self.audio_thread.start()
+    
+    def _playback_loop_from_timeline(self):
+        """Main playback loop - plays directly from source video using timeline chunks."""
+        if not self.video_clip or not self.edit_state.chunks:
+            return
+        
+        if not HAS_PIL:
+            return
+        
+        # Get video FPS for frame timing
+        video_fps = self.video_clip.fps
+        frame_duration = 1.0 / video_fps
+        
+        # Calculate total timeline duration
+        timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        
+        try:
+            while self.edit_state.is_playing and self.edit_state.preview_time < timeline_duration:
+                start_time = time.time()
+                
+                # Find which chunk we're currently in
+                current_chunk = None
+                for chunk in self.edit_state.chunks:
+                    if chunk.start_time <= self.edit_state.preview_time < chunk.end_time:
+                        current_chunk = chunk
+                        break
+                
+                if not current_chunk:
+                    # Between chunks or past end - advance time and continue
+                    self.edit_state.preview_time += frame_duration
+                    time.sleep(frame_duration)
+                    continue
+                
+                # Calculate position within this chunk (0.0 to 1.0)
+                chunk_position = (self.edit_state.preview_time - current_chunk.start_time) / (current_chunk.end_time - current_chunk.start_time)
+                
+                # Map to original video time
+                if current_chunk.original_start_time is not None and current_chunk.original_end_time is not None:
+                    original_time = current_chunk.original_start_time + chunk_position * (current_chunk.original_end_time - current_chunk.original_start_time)
+                else:
+                    # Fallback to sequential timing
+                    original_time = current_chunk.start_time + chunk_position * (current_chunk.end_time - current_chunk.start_time)
+                
+                # Ensure we're within video bounds
+                original_time = max(0, min(original_time, self.video_clip.duration - 0.1))
+                
+                # Get frame from source video at original time
+                frame = self.video_clip.get_frame(original_time)
+                
+                # Convert frame to PIL Image
+                frame_pil = Image.fromarray(frame)
+                
+                # Resize to fit preview canvas (maintain aspect ratio)
+                # Use reasonable size that matches our minimum size settings
+                # The preview frame has minsize of 800x450
+                max_width = 800
+                max_height = 500
+                
+                # Calculate resize dimensions maintaining aspect ratio
+                img_width, img_height = frame_pil.size
+                aspect = img_width / img_height
+                max_aspect = max_width / max_height
+                
+                if max_aspect > aspect:
+                    # Max area is wider - fit to height
+                    new_height = max_height
+                    new_width = int(new_height * aspect)
+                else:
+                    # Max area is taller - fit to width
+                    new_width = max_width
+                    new_height = int(new_width / aspect)
+                
+                # Always resize to fit preview area (scale down if needed, scale up if smaller)
+                frame_pil = frame_pil.resize((new_width, new_height), Image.Resampling.LANCZOS)
+                
+                # Convert to PhotoImage
+                photo = ImageTk.PhotoImage(image=frame_pil)
+                
+                # Update preview label in main thread
+                if self.root:
+                    self.root.after(0, lambda p=photo: self._update_preview_frame(p))
+                
+                # Advance timeline time
+                self.edit_state.preview_time += frame_duration
+                
+                # Sleep to maintain frame rate
+                elapsed = time.time() - start_time
+                sleep_time = max(0, frame_duration - elapsed)
+                if sleep_time > 0:
+                    time.sleep(sleep_time)
+                
+                # Check if we should stop
+                if not self.edit_state.is_playing:
+                    break
+            
+            # Playback finished
+            if self.root:
+                self.root.after(0, lambda: self.status_label.config(
+                    text=f"Preview finished ({timeline_duration:.1f}s)"
+                ))
+                self.root.after(0, lambda: self.play_btn.config(state=tk.NORMAL) if self.play_btn else None)
+                self.root.after(0, lambda: self.pause_btn.config(state=tk.DISABLED) if self.pause_btn else None)
+                self.edit_state.is_playing = False
+                
+        except Exception as e:
+            print(f"[VIDSOR] Playback error: {e}")
+            import traceback
+            traceback.print_exc()
+            if self.root:
+                self.root.after(0, lambda: self.status_label.config(text=f"Playback error: {str(e)}"))
+                self.edit_state.is_playing = False
+    
+    def _audio_playback_loop(self):
+        """Audio playback loop - plays audio synchronized with video timeline."""
+        if not self.audio_clip or not HAS_PYGAME or not self.edit_state.chunks:
+            return
+        
+        try:
+            # Build composite audio from timeline chunks
+            audio_segments = []
+            for chunk in self.edit_state.chunks:
+                # Use original timing to extract from source audio
+                extract_start = chunk.original_start_time if chunk.original_start_time is not None else chunk.start_time
+                extract_end = chunk.original_end_time if chunk.original_end_time is not None else chunk.end_time
+                
+                try:
+                    # Extract audio segment
+                    audio_segment = self.audio_clip.subclipped(extract_start, extract_end)
+                    
+                    # Note: Speed adjustment for audio is complex and may cause quality issues
+                    # For now, we'll play audio at normal speed even if video chunk has speed != 1.0
+                    # This ensures audio plays correctly synchronized with video
+                    
+                    audio_segments.append(audio_segment)
+                except Exception as e:
+                    print(f"[VIDSOR] Warning: Could not extract audio segment {extract_start}-{extract_end}s: {e}")
+                    continue
+            
+            if not audio_segments:
+                print("[VIDSOR] No audio segments to play")
+                return
+            
+            # Concatenate audio segments
+            from moviepy import concatenate_audioclips
+            try:
+                composite_audio = concatenate_audioclips(audio_segments)
+            except ImportError:
+                # Fallback for older MoviePy versions
+                from moviepy.editor import concatenate_audioclips
+                composite_audio = concatenate_audioclips(audio_segments)
+            
+            # Create a temporary audio file for playback
+            import tempfile
+            temp_audio = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
+            temp_audio_path = temp_audio.name
+            temp_audio.close()
+            
+            # Write composite audio to temporary file
+            try:
+                # Try with verbose parameter (MoviePy 2.x)
+                try:
+                    composite_audio.write_audiofile(temp_audio_path, verbose=False, logger=None)
+                except TypeError:
+                    # Fallback for MoviePy 1.x which doesn't support verbose parameter
+                    composite_audio.write_audiofile(temp_audio_path)
+            except Exception as e:
+                print(f"[VIDSOR] Warning: Could not write audio file: {e}")
+                # Cleanup
+                composite_audio.close()
+                for seg in audio_segments:
+                    seg.close()
+                return
+            
+            # Cleanup audio segments
+            composite_audio.close()
+            for seg in audio_segments:
+                seg.close()
+            
+            # Load and play audio
+            pygame.mixer.music.load(temp_audio_path)
+            pygame.mixer.music.play()
+            
+            # Wait for playback to finish or stop
+            while pygame.mixer.music.get_busy():
+                # Check if paused or stopped
+                if not self.edit_state.is_playing:
+                    # If paused, wait for resume
+                    while not self.edit_state.is_playing:
+                        time.sleep(0.1)
+                        if not pygame.mixer.music.get_busy():
+                            break
+                    # If resumed, unpause
+                    if self.edit_state.is_playing:
+                        try:
+                            pygame.mixer.music.unpause()
+                        except:
+                            pass
+                else:
+                    time.sleep(0.1)
+            
+            # Cleanup
+            try:
+                pygame.mixer.music.stop()
+                os.unlink(temp_audio_path)
+            except:
+                pass
+                
+        except Exception as e:
+            print(f"[VIDSOR] Audio playback error: {e}")
+            import traceback
+            traceback.print_exc()
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+    
+    def _update_preview_frame(self, photo):
+        """Update preview canvas with new frame (called from main thread)."""
+        if self.preview_canvas:
+            # Get canvas size (update first to get accurate size)
+            self.preview_canvas.update_idletasks()
+            canvas_width = self.preview_canvas.winfo_width()
+            canvas_height = self.preview_canvas.winfo_height()
+            
+            # Use actual canvas size or fallback
+            if canvas_width <= 1:
+                canvas_width = 800
+            if canvas_height <= 1:
+                canvas_height = 500
+            
+            # Get image size
+            img_width = photo.width()
+            img_height = photo.height()
+            
+            # Calculate position to center image
+            x = (canvas_width - img_width) // 2
+            y = (canvas_height - img_height) // 2
+            
+            # Clear canvas and draw image (centered)
+            self.preview_canvas.delete("all")
+            self.preview_canvas.create_image(x, y, anchor=tk.NW, image=photo)
+            self.preview_canvas.image = photo  # Keep a reference to prevent garbage collection
+            
+            # Hide label, show canvas
+            if self.preview_label:
+                self.preview_label.pack_forget()
+            if not self.preview_canvas.winfo_viewable():
+                self.preview_canvas.pack(fill=tk.BOTH, expand=True)
+    
+    def _render_preview_from_timeline(self):
+        """Render video preview from timeline.json chunks."""
+        if not self.video_clip or not self.edit_state.chunks:
+            return
+        
+        clips = []
+        
+        for chunk in self.edit_state.chunks:
+            # Use original timing to extract from source video
+            extract_start = chunk.original_start_time if chunk.original_start_time is not None else chunk.start_time
+            extract_end = chunk.original_end_time if chunk.original_end_time is not None else chunk.end_time
+            
+            try:
+                # Extract subclip from source video
+                subclip = self.video_clip.subclipped(extract_start, extract_end)
+                
+                # Apply speed if needed
+                if chunk.speed != 1.0:
+                    original_fps = subclip.fps
+                    original_duration = subclip.duration
+                    subclip = subclip.set_fps(original_fps * chunk.speed)
+                    subclip = subclip.set_duration(original_duration / chunk.speed)
+                
+                clips.append(subclip)
+            except Exception as e:
+                print(f"[VIDSOR] Warning: Failed to extract clip {extract_start}-{extract_end}s: {e}")
+                continue
+        
+        if not clips:
+            raise Exception("No clips could be extracted from timeline")
+        
+        # Concatenate all clips
+        preview_clip = concatenate_videoclips(clips)
+        
+        # Store preview clip (will be used for playback)
+        if hasattr(self, 'preview_clip') and self.preview_clip:
+            self.preview_clip.close()
+        self.preview_clip = preview_clip
+        
+        print(f"[VIDSOR] Preview rendered: {len(clips)} clips, total duration: {preview_clip.duration:.2f}s")
+        
+        # Clean up individual clips (preview_clip has its own copy)
+        for clip in clips:
+            clip.close()
+    
+    def _on_pause(self):
+        """Pause/Resume preview button handler."""
+        if self.edit_state.is_playing:
+            # Pause
+            self.edit_state.is_playing = False
+            self.status_label.config(text="Paused")
+            if self.play_btn:
+                self.play_btn.config(state=tk.NORMAL)
+            if self.pause_btn:
+                self.pause_btn.config(text="Resume", state=tk.NORMAL)
+            # Pause audio
+            if HAS_PYGAME:
+                try:
+                    pygame.mixer.music.pause()
+                except:
+                    pass
+            # Keep canvas visible when paused (don't switch back to label)
+        else:
+            # Resume
+            self.edit_state.is_playing = True
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks) if self.edit_state.chunks else 0
+            self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
+            if self.play_btn:
+                self.play_btn.config(state=tk.DISABLED)
+            if self.pause_btn:
+                self.pause_btn.config(text="Pause", state=tk.NORMAL)
+            # Resume audio
+            if HAS_PYGAME:
+                try:
+                    pygame.mixer.music.unpause()
+                except:
+                    pass
     
     def _on_stop(self):
         """Stop preview button handler."""
         self.edit_state.is_playing = False
+        self.edit_state.preview_time = 0.0
         self.status_label.config(text="Stopped")
+        
+        # Stop audio
+        if HAS_PYGAME:
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+        
+        # Update button states
+        if self.play_btn:
+            self.play_btn.config(state=tk.NORMAL if (self.video_clip and self.edit_state.chunks) else tk.DISABLED)
+        if self.pause_btn:
+            self.pause_btn.config(state=tk.DISABLED)
+        
+        # Reset preview display
+        if self.preview_canvas:
+            self.preview_canvas.delete("all")
+            self.preview_canvas.pack_forget()
+        
+        if self.preview_label:
+            if has_video := self.video_clip is not None:
+                timeline_info = ""
+                if self.edit_state.chunks:
+                    highlight_count = sum(1 for c in self.edit_state.chunks if c.chunk_type == "highlight")
+                    total_chunks = len(self.edit_state.chunks)
+                    timeline_info = f"\nTimeline: {total_chunks} chunks ({highlight_count} highlights)"
+                
+                self.preview_label.config(
+                    text=f"Video: {os.path.basename(self.video_path)}\n\n"
+                         f"Duration: {self.video_clip.duration:.1f}s\n"
+                         f"FPS: {self.video_clip.fps}{timeline_info}\n\n"
+                         f"Click Play Preview to view timeline"
+                )
+                self.preview_label.pack(fill=tk.BOTH, expand=True)
+            else:
+                self.preview_label.config(text="No video loaded")
+                self.preview_label.pack(fill=tk.BOTH, expand=True)
     
     def _on_export(self):
         """Export video button handler."""
@@ -1162,7 +1592,7 @@ class Vidsor:
         if not os.path.exists(segment_tree_path):
             messagebox.showwarning(
                 "Warning",
-                "Segment tree not found. Please extract video features first using 'Upload Video' or 'Analyze Video'."
+                "Segment tree not found. Please extract video features first using 'Upload Video'."
             )
             return
         
