@@ -16,6 +16,8 @@ import os
 from ultralytics import YOLO
 from prompt import get_llava_prompt
 import whisper
+from generate_hierarchical_tree import generate_hierarchical_tree
+from generate_embeddings import generate_embeddings
 
 # Configuration
 FPS = 30
@@ -755,6 +757,8 @@ class SegmentTreeGenerator:
         # Clean up resources
         if self.cap:
             self.cap.release()
+        
+        return output_path
 
 
 def main():
@@ -773,6 +777,14 @@ def main():
                        help="Process every Nth frame with YOLO (default: 10)")
     parser.add_argument("--blip-split", type=int, default=1, choices=[1, 2, 3],
                        help="Number of frames per second for BLIP: 1=middle, 2=first+last, 3=first+middle+last (default: 1)")
+    parser.add_argument("--no-hierarchical", action="store_true", default=False,
+                       help="Skip hierarchical tree generation (default: enabled)")
+    parser.add_argument("--no-embeddings", action="store_true", default=False,
+                       help="Skip embeddings generation (default: enabled)")
+    parser.add_argument("--leaf-duration", type=float, default=5.0,
+                       help="Duration of leaf nodes in seconds for hierarchical tree (default: 5.0)")
+    parser.add_argument("--branching-factor", type=int, default=2,
+                       help="Number of children per parent node in hierarchical tree (default: 2)")
     
     args = parser.parse_args()
     
@@ -790,7 +802,46 @@ def main():
     else:
         print("LLaVA processing: DISABLED (using BLIP descriptions only)")
     
-    generator.generate(args.output)
+    # Generate segment tree
+    output_path = generator.generate(args.output)
+    
+    # Generate hierarchical tree if enabled
+    if not args.no_hierarchical:
+        print("\n" + "=" * 60)
+        print("GENERATING HIERARCHICAL TREE")
+        print("=" * 60)
+        try:
+            generate_hierarchical_tree(
+                output_path,
+                output_json_path=None,  # Overwrite the same file
+                leaf_duration=args.leaf_duration,
+                branching_factor=args.branching_factor
+            )
+        except Exception as e:
+            print(f"Warning: Failed to generate hierarchical tree: {e}")
+            import traceback
+            traceback.print_exc()
+    else:
+        print("\nSkipping hierarchical tree generation (--no-hierarchical)")
+    
+    # Generate embeddings if enabled
+    if not args.no_embeddings:
+        print("\n" + "=" * 60)
+        print("GENERATING EMBEDDINGS")
+        print("=" * 60)
+        try:
+            generate_embeddings(output_path)
+        except Exception as e:
+            print(f"Warning: Failed to generate embeddings: {e}")
+            import traceback
+            traceback.print_exc()
+    else:
+        print("\nSkipping embeddings generation (--no-embeddings)")
+    
+    print("\n" + "=" * 60)
+    print("ALL PROCESSING COMPLETE")
+    print("=" * 60)
+    print(f"\nFinal output saved to: {output_path}")
 
 
 if __name__ == "__main__":
