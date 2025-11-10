@@ -1517,6 +1517,87 @@ class SegmentTreeQuery:
             scored_leaves = scored_leaves[:max_results]
         
         return scored_leaves
+    
+    def inspect_content(self, max_keywords: int = 100, max_sample_descriptions: int = 20) -> Dict[str, Any]:
+        """
+        Inspect and summarize the content available in the video.
+        Returns keywords, objects, and sample descriptions to help understand what's in the video.
+        
+        Args:
+            max_keywords: Maximum number of unique keywords to return
+            max_sample_descriptions: Maximum number of sample descriptions to return
+            
+        Returns:
+            Dictionary with:
+            - all_keywords: List of unique keywords found in the video
+            - object_classes: Dictionary of object classes and their counts
+            - sample_descriptions: Sample unified descriptions from the video
+            - hierarchical_available: Whether hierarchical tree is available
+            - total_seconds: Total video duration in seconds
+            - summary: Text summary of available content
+        """
+        all_keywords = set()
+        object_classes = self.get_all_classes()
+        sample_descriptions = []
+        
+        # Collect keywords from hierarchical tree if available
+        if self.hierarchical_tree and self._hierarchical_indexes:
+            by_keyword = self._hierarchical_indexes.get("by_keyword", {})
+            all_keywords.update(by_keyword.keys())
+        
+        # Also collect keywords from descriptions (fallback if no hierarchical tree)
+        if not all_keywords:
+            # Extract keywords from unified descriptions
+            for second_data in self.seconds[:max_sample_descriptions * 2]:  # Check more to get good samples
+                unified_desc = second_data.get("unified_description", "")
+                if unified_desc and unified_desc.lower() != "0":
+                    # Simple keyword extraction (words of 3+ chars)
+                    words = unified_desc.lower().split()
+                    keywords = [w.strip('.,!?;:()[]{}') for w in words if len(w.strip('.,!?;:()[]{}')) >= 3]
+                    all_keywords.update(keywords)
+        
+        # Collect sample descriptions
+        descriptions_collected = 0
+        for second_data in self.seconds:
+            if descriptions_collected >= max_sample_descriptions:
+                break
+            unified_desc = second_data.get("unified_description", "")
+            if unified_desc and unified_desc.lower() != "0":
+                sample_descriptions.append({
+                    "second": second_data.get("second", 0),
+                    "time_range": second_data.get("time_range", []),
+                    "description": unified_desc
+                })
+                descriptions_collected += 1
+        
+        # Sort keywords (most common first if we have frequency data, otherwise alphabetically)
+        all_keywords_list = sorted(list(all_keywords))[:max_keywords]
+        
+        # Build summary
+        total_seconds = len(self.seconds)
+        summary_parts = [
+            f"Video duration: {total_seconds} seconds",
+            f"Object classes detected: {len(object_classes)} ({', '.join(sorted(object_classes.keys())[:10])}{'...' if len(object_classes) > 10 else ''})",
+            f"Unique keywords: {len(all_keywords_list)}",
+        ]
+        if self.hierarchical_tree:
+            summary_parts.append("Hierarchical tree: Available")
+        else:
+            summary_parts.append("Hierarchical tree: Not available")
+        
+        summary = "\n".join(summary_parts)
+        
+        return {
+            "all_keywords": all_keywords_list,
+            "object_classes": object_classes,
+            "sample_descriptions": sample_descriptions,
+            "hierarchical_available": self.hierarchical_tree is not None,
+            "total_seconds": total_seconds,
+            "summary": summary,
+            "keyword_count": len(all_keywords_list),
+            "object_class_count": len(object_classes),
+            "sample_count": len(sample_descriptions)
+        }
 
 
 def load_segment_tree(json_path: str) -> SegmentTreeQuery:

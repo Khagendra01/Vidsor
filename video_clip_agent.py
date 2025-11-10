@@ -102,3 +102,7 @@ if __name__ == "__main__":
         if result.get("openshot_project_path"):
             print(f"\nOpenShot project: {result.get('openshot_project_path')}")
             print("  You can open this file in OpenShot Video Editor for further editing.")
+        
+        if result.get("log_file"):
+            print(f"\nLog file: {result.get('log_file')}")
+            print("  Full execution log saved to file.")

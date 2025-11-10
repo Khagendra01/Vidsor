@@ -1,6 +1,6 @@
 """Agent state definitions."""
 
-from typing import Dict, List, Optional, Tuple, Annotated, TypedDict
+from typing import Dict, List, Optional, Tuple, Annotated, TypedDict, Any
 from langgraph.graph.message import add_messages
 from agent.segment_tree_utils import SegmentTreeQuery
 
@@ -20,6 +20,7 @@ class AgentState(TypedDict):
     output_clips: List[str]  # Paths to saved clip files
     segment_tree: Optional[SegmentTreeQuery]
     verbose: bool  # Whether to print verbose output
+    logger: Optional[Any]  # Logger instance (optional)
     # Memory/context fields for agentic behavior
     previous_time_ranges: Optional[List[Tuple[float, float]]]  # Previous search results
     previous_scored_seconds: Optional[List[Dict]]  # Previous scored seconds with scores

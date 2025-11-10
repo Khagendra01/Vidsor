@@ -15,6 +15,12 @@ from agent.query_analysis import (
 from agent.scoring import score_seconds, group_contiguous_seconds
 from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
 from agent.utils import extract_json, merge_time_ranges
+from agent.prompts import (
+    PLANNER_SYSTEM_PROMPT,
+    SEGMENT_TREE_INSPECTION_PROMPT,
+    QUERY_REASONING_PROMPT,
+    SEARCH_QUERY_GENERATION_PROMPT
+)
 
 # Import LLM classes
 try:
@@ -90,37 +96,67 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             print("PLANNER AGENT: Multi-Modal Search Strategy")
             print("=" * 60)
             print(f"Query: {query}")
+        
+        # STEP 0: Decide if we need to inspect segment tree content
+        # Inspect for abstract queries, highlights, vague queries, etc.
+        query_lower = query.lower()
+        abstract_indicators = [
+            "highlight", "highlights", "best", "important", "key", "significant",
+            "interesting", "exciting", "memorable", "notable", "noteworthy",
+            "moments", "scenes", "parts", "events", "action"
+        ]
+        needs_inspection = any(indicator in query_lower for indicator in abstract_indicators)
+        
+        # Also inspect if query is very vague or general
+        vague_queries = ["what", "show me", "find", "get", "give me"]
+        if any(vq in query_lower for vq in vague_queries) and len(query.split()) <= 5:
+            needs_inspection = True
+        
+        content_inspection = None
+        if needs_inspection and segment_tree:
+            if verbose:
+                print("\n[INSPECTION] Inspecting segment tree to understand video content...")
+            try:
+                content_inspection = segment_tree.inspect_content(max_keywords=100, max_sample_descriptions=20)
+                if verbose:
+                    print(f"  Found {content_inspection['keyword_count']} unique keywords")
+                    print(f"  Found {content_inspection['object_class_count']} object classes")
+                    print(f"  Sample keywords: {', '.join(content_inspection['all_keywords'][:15])}...")
+            except Exception as e:
+                if verbose:
+                    print(f"  [WARNING] Inspection failed: {e}")
+                content_inspection = None
+        
+        if verbose:
             print("\n[STEP 1] Generating search queries for all modalities...")
         
         # STEP 1: Generate search queries/keywords for ALL search types
-        system_prompt_step1 = """You are a video analysis planner. Generate search queries and keywords for search types based on the user query.
+        # Use prompts from prompts.py
+        system_prompt_step1 = PLANNER_SYSTEM_PROMPT + "\n\n" + SEARCH_QUERY_GENERATION_PROMPT
+        
+        # Build user message with inspection data if available
+        user_message_content = f"User query: {query}\n\n"
+        if content_inspection:
+            user_message_content += f"""I've inspected the video content. Here's what's available:
 
-Available search types:
-1. "semantic": Natural language semantic search (searches both visual descriptions AND audio transcriptions using embeddings)
-2. "hierarchical_keywords": Keywords for fast hierarchical tree lookup (extract key nouns/verbs from query)
-3. "object": Object class names to search for (e.g., "person", "boat", "car") - uses YOLO detection data
-4. "activity": Activity names and evidence keywords (e.g., "cooking", "fishing") - pattern matching
+{content_inspection['summary']}
 
-Note: Semantic search replaces the old visual/audio keyword search - it searches both automatically.
+Sample keywords from video: {', '.join(content_inspection['all_keywords'][:30])}
+Object classes: {', '.join(sorted(content_inspection['object_classes'].keys())[:20])}
 
-Return JSON with:
-{
-    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search
-    "hierarchical_keywords": ["keyword1", "keyword2"],  // Key nouns/verbs for fast tree lookup
-    "object_classes": ["class1", "class2"],  // If objects are mentioned
-    "activity_name": "activity",  // If activity is mentioned
-    "activity_keywords": ["keyword1", "keyword2"],  // Keywords for activity search
-    "evidence_keywords": ["keyword1"],  // Strong evidence keywords for activities
-    "is_general_highlight_query": true/false,  // True if query is asking for general highlights
-    "needs_clarification": true/false,
-    "clarification_question": "question" (if needed)
-}
-
-Generate comprehensive search terms - be creative and think of synonyms, related terms, and different phrasings."""
+Sample descriptions:
+"""
+            for i, desc in enumerate(content_inspection['sample_descriptions'][:5], 1):
+                user_message_content += f"{i}. [{desc['second']}s] {desc['description'][:100]}\n"
+            
+            user_message_content += "\nBased on this actual video content, generate search queries that target concrete elements, not abstract concepts.\n"
+            user_message_content += "For example, if the query is 'highlights' and the video contains 'camping', 'fishing', 'cooking', generate queries like 'people cooking together', 'fishing success', 'group activities'.\n\n"
+        
+        user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
         
         messages_step1 = [
             SystemMessage(content=system_prompt_step1),
-            HumanMessage(content=f"User query: {query}\n\nGenerate search queries and keywords for ALL search types. Return JSON only.")
+            HumanMessage(content=user_message_content)
         ]
         
         if verbose:
@@ -162,6 +198,8 @@ Generate comprehensive search terms - be creative and think of synonyms, related
         
         if verbose:
             print("\n[SEARCH PLAN] Generated search queries:")
+            if content_inspection:
+                print(f"  [INSPECTION] Used segment tree inspection: Yes")
             print(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
             print(f"  Hierarchical keywords: {search_plan.get('hierarchical_keywords', [])}")
             print(f"  Object classes: {search_plan.get('object_classes', [])}")
@@ -226,9 +264,27 @@ Generate comprehensive search terms - be creative and think of synonyms, related
             for class_name in all_object_classes:
                 if class_name not in weights["object_weights"]:
                     weights["object_weights"][class_name] = 0.1
+            
+            # FIX: Ensure semantic weight is set if semantic queries were generated
+            has_semantic_queries = bool(search_plan.get("semantic_queries"))
+            if has_semantic_queries and weights["semantic_weight"] == 0.0:
+                # Override: if semantic queries exist, semantic weight should be > 0
+                if weights["hierarchical_weight"] > 0:
+                    # Reduce hierarchical to make room for semantic
+                    weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
+                weights["semantic_weight"] = 0.4  # Set reasonable default
         else:
             # Fallback to old weight configuration
             weights = configure_weights(query_intent, all_object_classes)
+            
+            # FIX: Ensure semantic weight is set if semantic queries were generated
+            has_semantic_queries = bool(search_plan.get("semantic_queries"))
+            if has_semantic_queries and weights["semantic_weight"] == 0.0:
+                # Override: if semantic queries exist, semantic weight should be > 0
+                if weights["hierarchical_weight"] > 0:
+                    # Reduce hierarchical to make room for semantic
+                    weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
+                weights["semantic_weight"] = 0.4  # Set reasonable default
         if verbose:
             print(f"\n[WEIGHT CONFIGURATION]")
             print(f"  Semantic weight: {weights['semantic_weight']:.2f}")

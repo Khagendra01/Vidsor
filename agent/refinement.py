@@ -264,7 +264,29 @@ Return JSON array with validation results. Return JSON only.
         
         response_text = response.content.strip()
         json_text = extract_json(response_text)
-        validation_results = json.loads(json_text)
+        
+        # FIX: Handle cases where JSON might have extra data or multiple objects
+        validation_results = []
+        try:
+            validation_results = json.loads(json_text)
+        except json.JSONDecodeError as e:
+            # Try to extract first valid JSON object
+            if verbose:
+                print(f"  [VALIDATION] JSON parsing error: {e}, attempting recovery...")
+            # Try to find first complete JSON array/object
+            import re
+            # Look for JSON array pattern
+            array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
+            if array_match:
+                try:
+                    validation_results = json.loads(array_match.group())
+                except:
+                    pass
+            # If still fails, use empty list (will keep all evidence)
+            if not validation_results:
+                if verbose:
+                    print(f"  [VALIDATION] Could not parse JSON, using all evidence")
+                validation_results = []
         
         # Convert to dict for easier lookup
         validation_map = {}

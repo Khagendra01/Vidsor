@@ -6,6 +6,7 @@ Takes user queries, retrieves relevant moments from video, and saves clips as MP
 import dotenv
 dotenv.load_dotenv()
 
+from typing import Optional
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage
 
@@ -14,6 +15,7 @@ from agent.planner import create_planner_agent
 from agent.executor import create_execution_agent
 from agent.clarifier import create_clarification_node, should_ask_clarification
 from agent.segment_tree_utils import load_segment_tree
+from agent.logging_utils import DualLogger, create_log_file
 
 
 def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "gpt-4o-mini"):
@@ -62,7 +64,7 @@ def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "
 
 def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gpt-4o-mini", 
               verbose: bool = True, create_openshot_project: bool = False, 
-              auto_open_openshot: bool = False):
+              auto_open_openshot: bool = False, log_file: Optional[str] = None):
     """
     Run the video clip extraction agent with a user query.
     
@@ -74,33 +76,43 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         verbose: Print verbose output (default: True)
         create_openshot_project: Create OpenShot project file after extraction (default: False)
         auto_open_openshot: Automatically open project in OpenShot if available (default: False)
+        log_file: Path to log file (if None, auto-generate based on query)
     """
     
+    # Set up logging
+    if log_file is None:
+        log_file = create_log_file(query)
+    
+    logger = DualLogger(log_file=log_file, verbose=verbose)
+    
     if verbose:
-        print("\n" + "=" * 60)
-        print("VIDEO CLIP EXTRACTION AGENT")
-        print("=" * 60)
-        print(f"Query: {query}")
-        print(f"Video: {video_path}")
-        print(f"Segment Tree: {json_path}")
-        print(f"Model: {model_name}")
+        logger.print("\n" + "=" * 60)
+        logger.print("VIDEO CLIP EXTRACTION AGENT")
+        logger.print("=" * 60)
+        logger.print(f"Query: {query}")
+        logger.print(f"Video: {video_path}")
+        logger.print(f"Segment Tree: {json_path}")
+        logger.print(f"Model: {model_name}")
+        logger.print(f"Log file: {log_file}")
         if create_openshot_project:
-            print(f"OpenShot Integration: Enabled (auto-open: {auto_open_openshot})")
-        print("\n[INITIALIZATION] Starting agent...")
+            logger.print(f"OpenShot Integration: Enabled (auto-open: {auto_open_openshot})")
+        logger.print("\n[INITIALIZATION] Starting agent...")
+    else:
+        logger.info(f"Starting agent - Query: {query}, Video: {video_path}")
     
     # Create agent
     if verbose:
-        print("[INITIALIZATION] Loading segment tree...")
+        logger.print("[INITIALIZATION] Loading segment tree...")
     app, segment_tree = create_video_clip_agent(json_path, video_path, model_name)
     
     if verbose:
         video_info = segment_tree.get_video_info()
-        print(f"[INITIALIZATION] Segment tree loaded:")
-        print(f"  Video duration: {video_info.get('duration_seconds', 0)} seconds")
-        print(f"  FPS: {video_info.get('fps', 0)}")
-        print(f"  Total frames: {video_info.get('total_frames', 0)}")
-        print(f"[INITIALIZATION] Workflow graph created")
-        print(f"[INITIALIZATION] Ready to process query\n")
+        logger.print(f"[INITIALIZATION] Segment tree loaded:")
+        logger.print(f"  Video duration: {video_info.get('duration_seconds', 0)} seconds")
+        logger.print(f"  FPS: {video_info.get('fps', 0)}")
+        logger.print(f"  Total frames: {video_info.get('total_frames', 0)}")
+        logger.print(f"[INITIALIZATION] Workflow graph created")
+        logger.print(f"[INITIALIZATION] Ready to process query\n")
     
     # Initial state
     initial_state = {
@@ -117,6 +129,7 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         "output_clips": [],
         "segment_tree": segment_tree,
         "verbose": verbose,
+        "logger": logger,  # Pass logger to state
         "create_openshot_project": create_openshot_project,
         "auto_open_openshot": auto_open_openshot,
         # Memory fields (initialized to None for first query)
@@ -128,11 +141,14 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
     
     # Run agent
     if verbose:
-        print("[WORKFLOW] Invoking agent workflow...")
+        logger.print("[WORKFLOW] Invoking agent workflow...")
     result = app.invoke(initial_state)
     
     if verbose:
-        print("\n[WORKFLOW] Agent workflow completed")
+        logger.print("\n[WORKFLOW] Agent workflow completed")
+    
+    # Add log file path to result
+    result["log_file"] = log_file
     
     return result
 
