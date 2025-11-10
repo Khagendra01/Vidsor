@@ -2,7 +2,7 @@
 
 from typing import Dict, List, Optional, Tuple, Annotated, TypedDict
 from langgraph.graph.message import add_messages
-from segment_tree_utils import SegmentTreeQuery
+from agent.segment_tree_utils import SegmentTreeQuery
 
 
 class AgentState(TypedDict):

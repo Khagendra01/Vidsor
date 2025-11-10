@@ -1,7 +1,7 @@
 """Feature extraction for video segments."""
 
 from typing import Dict, Any
-from segment_tree_utils import SegmentTreeQuery
+from agent.segment_tree_utils import SegmentTreeQuery
 
 
 class PerSecondFeatureExtractor:

@@ -13,7 +13,7 @@ from agent.state import AgentState
 from agent.planner import create_planner_agent
 from agent.executor import create_execution_agent
 from agent.clarifier import create_clarification_node, should_ask_clarification
-from segment_tree_utils import load_segment_tree
+from agent.segment_tree_utils import load_segment_tree
 
 
 def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "gpt-4o-mini"):
@@ -60,8 +60,21 @@ def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "
     return app, segment_tree
 
 
-def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gpt-4o-mini", verbose: bool = True):
-    """Run the video clip extraction agent with a user query."""
+def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gpt-4o-mini", 
+              verbose: bool = True, create_openshot_project: bool = False, 
+              auto_open_openshot: bool = False):
+    """
+    Run the video clip extraction agent with a user query.
+    
+    Args:
+        query: User query string
+        json_path: Path to segment tree JSON file
+        video_path: Path to video file
+        model_name: LLM model name (default: "gpt-4o-mini")
+        verbose: Print verbose output (default: True)
+        create_openshot_project: Create OpenShot project file after extraction (default: False)
+        auto_open_openshot: Automatically open project in OpenShot if available (default: False)
+    """
     
     if verbose:
         print("\n" + "=" * 60)
@@ -71,6 +84,8 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         print(f"Video: {video_path}")
         print(f"Segment Tree: {json_path}")
         print(f"Model: {model_name}")
+        if create_openshot_project:
+            print(f"OpenShot Integration: Enabled (auto-open: {auto_open_openshot})")
         print("\n[INITIALIZATION] Starting agent...")
     
     # Create agent
@@ -102,6 +117,8 @@ def run_agent(query: str, json_path: str, video_path: str, model_name: str = "gp
         "output_clips": [],
         "segment_tree": segment_tree,
         "verbose": verbose,
+        "create_openshot_project": create_openshot_project,
+        "auto_open_openshot": auto_open_openshot,
         # Memory fields (initialized to None for first query)
         "previous_time_ranges": None,
         "previous_scored_seconds": None,

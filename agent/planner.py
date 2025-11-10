@@ -13,7 +13,7 @@ from agent.query_analysis import (
     configure_weights
 )
 from agent.scoring import score_seconds, group_contiguous_seconds
-from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results
+from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
 from agent.utils import extract_json, merge_time_ranges
 
 # Import LLM classes
@@ -459,9 +459,19 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         print(f"    Activity: Fish catching (specialized)")
                     result = segment_tree.check_fish_caught()
                     result["search_type"] = "activity"
+                    # Add metadata for validation
+                    result["activity_name"] = "fishing"
+                    result["evidence_name"] = "fish caught"
+                    # Validate evidence descriptions to filter false positives
+                    if verbose:
+                        print(f"      Evidence scenes before validation: {result.get('fish_holding_count', 0)}")
+                    result = validate_activity_evidence(query, result, llm, verbose=verbose)
+                    # Update fish-specific fields after validation
+                    result["fish_holding_count"] = result.get("evidence_count", 0)
+                    result["fish_caught"] = result.get("detected", False)
                     all_search_results.append(result)
                     if verbose:
-                        print(f"      Evidence scenes: {result.get('fish_holding_count', 0)}")
+                        print(f"      Evidence scenes after validation: {result.get('fish_holding_count', 0)}")
                 elif activity_keywords:
                     if verbose:
                         print(f"    Activity: {activity_name or 'general'}")
@@ -471,9 +481,16 @@ Generate comprehensive search terms - be creative and think of synonyms, related
                         activity_name=activity_name or "activity"
                     )
                     result["search_type"] = "activity"
+                    # Add metadata for validation
+                    result["activity_name"] = activity_name or "activity"
+                    result["evidence_name"] = activity_name or "activity"
+                    # Validate evidence descriptions to filter false positives
+                    if verbose:
+                        print(f"      Evidence scenes before validation: {result.get('evidence_count', 0)}")
+                    result = validate_activity_evidence(query, result, llm, verbose=verbose)
                     all_search_results.append(result)
                     if verbose:
-                        print(f"      Evidence scenes: {result.get('evidence_count', 0)}")
+                        print(f"      Evidence scenes after validation: {result.get('evidence_count', 0)}")
             
             if verbose:
                 print(f"\n[AGGREGATION] Collected results from all search types:")

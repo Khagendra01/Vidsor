@@ -180,6 +180,184 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     }
 
 
+def validate_activity_evidence(query: str, activity_result: Dict, llm, verbose: bool = False) -> Dict[str, Any]:
+    """
+    Validate activity evidence by examining actual descriptions.
+    Filters out false positives (e.g., "eating fish" when query is "catching fish").
+    
+    Args:
+        query: Original user query
+        activity_result: Activity detection result with evidence list
+        llm: Language model for validation
+        verbose: Print debug info
+    
+    Returns:
+        Filtered activity result with validated evidence
+    """
+    evidence_list = activity_result.get("evidence", [])
+    if not evidence_list:
+        return activity_result
+    
+    if verbose:
+        print(f"  [VALIDATION] Validating {len(evidence_list)} evidence descriptions...")
+    
+    # Prepare descriptions for validation
+    evidence_to_validate = []
+    for ev in evidence_list:
+        desc = ev.get("description", "")
+        if desc:
+            evidence_to_validate.append({
+                "second": ev.get("second"),
+                "time_range": ev.get("time_range"),
+                "description": desc,
+                "type": ev.get("type", "unknown")
+            })
+    
+    if not evidence_to_validate:
+        return activity_result
+    
+    # Batch validate descriptions (process in chunks to avoid token limits)
+    system_prompt = """You are a video activity validator. Your job is to check if video descriptions actually match the user's query intent.
+
+You will receive:
+- User's query (what they're looking for)
+- A list of video descriptions that matched keywords
+
+For each description, determine if it TRULY matches the query intent, not just keywords.
+
+Examples:
+- Query: "find moments where they catch fish"
+  - "person holding a fish they just caught" → VALID (catching)
+  - "person eating a fish" → INVALID (eating, not catching)
+  - "person with a fish in their hands" → VALID (likely caught)
+  - "person cooking fish" → INVALID (cooking, not catching)
+
+- Query: "find moments where they eat"
+  - "person eating a fish" → VALID (eating)
+  - "person holding a fish" → INVALID (holding, not eating)
+
+Return JSON array with validation results:
+[
+    {
+        "index": 0,
+        "is_valid": true/false,
+        "reasoning": "brief explanation"
+    },
+    ...
+]"""
+    
+    validation_prompt = f"""
+Query: {query}
+
+Evidence descriptions to validate:
+{json.dumps(evidence_to_validate, indent=2)}
+
+For each description, determine if it truly matches the query "{query}".
+Return JSON array with validation results. Return JSON only.
+"""
+    
+    try:
+        response = llm.invoke([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=validation_prompt)
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        validation_results = json.loads(json_text)
+        
+        # Convert to dict for easier lookup
+        validation_map = {}
+        if isinstance(validation_results, list):
+            for val_result in validation_results:
+                idx = val_result.get("index")
+                if idx is not None:
+                    validation_map[idx] = val_result
+        elif isinstance(validation_results, dict):
+            # Handle case where LLM returns dict with list
+            if "results" in validation_results:
+                for i, val_result in enumerate(validation_results["results"]):
+                    validation_map[i] = val_result
+            else:
+                # Single result
+                validation_map[0] = validation_results
+        
+        # Filter evidence based on validation
+        validated_evidence = []
+        validated_evidence_scenes = []
+        filtered_count = 0
+        
+        # Build a set of valid evidence keys (second + description) for matching
+        valid_evidence_keys = set()
+        
+        for i, ev in enumerate(evidence_list):
+            val_result = validation_map.get(i, {})
+            is_valid = val_result.get("is_valid", True)  # Default to valid if validation failed
+            
+            if is_valid:
+                validated_evidence.append(ev)
+                # Create key for matching evidence_scenes
+                ev_key = (ev.get("second"), ev.get("description", ""))
+                valid_evidence_keys.add(ev_key)
+            else:
+                filtered_count += 1
+                if verbose:
+                    reasoning = val_result.get("reasoning", "No reasoning provided")
+                    desc_preview = ev.get("description", "")[:50]
+                    print(f"    Filtered out second {ev.get('second')} ({desc_preview}...): {reasoning}")
+        
+        # Filter evidence_scenes to match validated evidence
+        # Handle both standard format (evidence_scenes) and fish-specific format (fish_holding_scenes)
+        evidence_scenes = activity_result.get("evidence_scenes", [])
+        fish_holding_scenes = activity_result.get("fish_holding_scenes", [])
+        
+        validated_evidence_scenes = []
+        validated_fish_holding_scenes = []
+        
+        # Filter evidence_scenes (standard format)
+        for scene in evidence_scenes:
+            scene_key = (scene.get("second"), scene.get("description", ""))
+            if scene_key in valid_evidence_keys:
+                validated_evidence_scenes.append(scene)
+        
+        # Filter fish_holding_scenes (fish-specific format)
+        for scene in fish_holding_scenes:
+            scene_key = (scene.get("second"), scene.get("description", ""))
+            if scene_key in valid_evidence_keys:
+                validated_fish_holding_scenes.append(scene)
+        
+        if verbose:
+            print(f"  [VALIDATION] Kept {len(validated_evidence)}/{len(evidence_list)} evidence (filtered {filtered_count})")
+        
+        # Update activity result with filtered evidence
+        updated_result = activity_result.copy()
+        updated_result["evidence"] = validated_evidence
+        updated_result["evidence_count"] = len(validated_evidence)
+        updated_result["detected"] = len(validated_evidence) > 0
+        
+        # Update both formats if they exist in original result
+        if "evidence_scenes" in activity_result:
+            updated_result["evidence_scenes"] = validated_evidence_scenes
+        if "fish_holding_scenes" in activity_result:
+            updated_result["fish_holding_scenes"] = validated_fish_holding_scenes
+        
+        # Update summary
+        if len(validated_evidence) > 0:
+            evidence_name = activity_result.get("evidence_name", "evidence")
+            updated_result["summary"] = f"YES - {evidence_name.capitalize()} detected! Found {len(validated_evidence)} scene(s) with validated evidence."
+        else:
+            activity_name = activity_result.get("activity_name", "activity")
+            updated_result["summary"] = f"NO - No validated {activity_name} evidence found after filtering false positives."
+        
+        return updated_result
+        
+    except Exception as e:
+        if verbose:
+            print(f"  [VALIDATION] Error validating evidence: {str(e)}, keeping all evidence")
+        # On error, return original result (don't filter)
+        return activity_result
+
+
 def validate_search_results(query: str, semantic_analysis: Dict, filtered_seconds: List[Dict], 
                             llm, verbose: bool = False) -> Dict[str, Any]:
     """

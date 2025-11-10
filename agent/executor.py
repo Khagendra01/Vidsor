@@ -169,9 +169,33 @@ def create_execution_agent():
             for clip in saved_clips:
                 print(f"    - {os.path.basename(clip)}")
         
+        # Optional: Create OpenShot project if requested
+        create_openshot_project = state.get("create_openshot_project", False)
+        openshot_project_path = None
+        
+        if create_openshot_project and saved_clips:
+            try:
+                from openshot_integration import create_openshot_project_from_clips
+                query = state.get("user_query", "clips")[:30].replace(" ", "_")
+                openshot_project_path = create_openshot_project_from_clips(
+                    saved_clips,
+                    project_name=f"agent_{query}",
+                    auto_open=state.get("auto_open_openshot", False),
+                    verbose=verbose
+                )
+                if verbose:
+                    print(f"\n[OPENSHOT] Project created: {openshot_project_path}")
+            except ImportError:
+                if verbose:
+                    print("\n[OPENSHOT] openshot_integration module not found. Skipping project creation.")
+            except Exception as e:
+                if verbose:
+                    print(f"\n[OPENSHOT] Error creating project: {str(e)}")
+        
         return {
             **state,
             "output_clips": saved_clips,
+            "openshot_project_path": openshot_project_path,
             "messages": state["messages"] + [
                 AIMessage(content=f"Successfully extracted {len(saved_clips)} clip(s) to {output_dir}/")
             ]
