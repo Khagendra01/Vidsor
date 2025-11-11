@@ -12,9 +12,9 @@ from tkinter import ttk, messagebox
 
 from agent.orchestrator_runner import run_orchestrator
 from agent.utils.logging_utils import DualLogger, create_log_file
-from .chat_manager import ChatManager
-from .timeline_manager import TimelineManager
-from .models import Chunk
+from ..managers.chat_manager import ChatManager
+from ..managers.timeline_manager import TimelineManager
+from ..models import Chunk
 
 
 class AgentIntegration:

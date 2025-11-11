@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import List, Optional
 from moviepy import VideoFileClip
 from agent.utils.segment_tree_utils import load_segment_tree, SegmentTreeQuery
-from .models import Chunk
+from ..models import Chunk
 
 
 class VideoAnalyzer:

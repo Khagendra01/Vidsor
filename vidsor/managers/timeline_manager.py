@@ -6,7 +6,7 @@ import os
 import json
 from datetime import datetime
 from typing import List, Optional
-from .models import Chunk
+from ..models import Chunk
 
 
 class TimelineManager:

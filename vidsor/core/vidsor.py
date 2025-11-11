@@ -48,17 +48,17 @@ from extractor.pipeline import SegmentTreePipeline
 from extractor.config import ExtractorConfig
 
 # Import from organized modules
-from .models import Chunk, EditState
-from .utils import format_time, format_time_detailed, get_chunk_color
-from .timeline_manager import TimelineManager
-from .chat_manager import ChatManager
-from .export import VideoExporter
-from .project_manager import ProjectManager
-from .video_analyzer import VideoAnalyzer
-from .playback_controller import PlaybackController
-from .timeline_controller import TimelineController
-from .agent_integration import AgentIntegration
-from .ui.main_ui import (
+from ..models import Chunk, EditState
+from ..utils import format_time, format_time_detailed, get_chunk_color
+from ..managers.timeline_manager import TimelineManager
+from ..managers.chat_manager import ChatManager
+from ..export import VideoExporter
+from ..managers.project_manager import ProjectManager
+from ..analyzers.video_analyzer import VideoAnalyzer
+from ..managers.playback_controller import PlaybackController
+from ..managers.timeline_controller import TimelineController
+from ..integrations.agent_integration import AgentIntegration
+from ..ui.main_ui import (
     create_main_ui, update_project_list, on_new_project, 
     on_project_selected, update_ui_state, update_playback_controls
 )

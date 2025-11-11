@@ -9,7 +9,7 @@ try:
 except ImportError:
     HAS_PYGAME = False
 
-from .utils import format_time, get_chunk_color
+from ..utils import format_time, get_chunk_color
 
 
 class TimelineController:

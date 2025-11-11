@@ -3,7 +3,7 @@ Video export functionality for Vidsor.
 """
 
 from moviepy import VideoFileClip, concatenate_videoclips
-from .models import Chunk, EditState
+from ..models import Chunk, EditState
 
 
 class VideoExporter:
