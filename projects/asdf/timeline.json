@@ -1,24 +1,24 @@
 {
   "version": "1.0",
   "created_at": "2025-11-11T01:00:53.716664",
-  "updated_at": "2025-11-11T01:07:28.769138",
+  "updated_at": "2025-11-11T10:39:01.191467",
   "chunks": [
     {
       "start_time": 0.0,
-      "end_time": 23.999,
+      "end_time": 8.998999999999999,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Replacement clip 1: 0.0s - 24.0s",
       "score": 0.6095647335052491,
-      "original_start_time": 0,
-      "original_end_time": 23.999,
+      "original_start_time": 5.0,
+      "original_end_time": 13.998999999999999,
       "unified_description": "Replacement clip 1: 0.0s - 24.0s",
       "audio_description": "",
       "clip_path": null
     },
     {
-      "start_time": 23.999,
-      "end_time": 44.998000000000005,
+      "start_time": 8.998999999999999,
+      "end_time": 29.998,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Replacement clip 2: 23.0s - 44.0s",
@@ -30,8 +30,8 @@
       "clip_path": null
     },
     {
-      "start_time": 44.998000000000005,
-      "end_time": 52.997,
+      "start_time": 29.998,
+      "end_time": 37.997,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 3: 184.0s - 192.0s",
@@ -43,8 +43,8 @@
       "clip_path": null
     },
     {
-      "start_time": 52.997,
-      "end_time": 57.995999999999995,
+      "start_time": 37.997,
+      "end_time": 42.995999999999995,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 4: 196.0s - 201.0s",
@@ -56,8 +56,8 @@
       "clip_path": null
     },
     {
-      "start_time": 57.995999999999995,
-      "end_time": 61.99499999999999,
+      "start_time": 42.995999999999995,
+      "end_time": 46.99499999999999,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 5: 202.0s - 206.0s",
@@ -69,8 +69,8 @@
       "clip_path": null
     },
     {
-      "start_time": 61.99499999999999,
-      "end_time": 67.99399999999999,
+      "start_time": 46.99499999999999,
+      "end_time": 52.993999999999986,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 6: 215.0s - 221.0s",
@@ -82,8 +82,8 @@
       "clip_path": null
     },
     {
-      "start_time": 67.99399999999999,
-      "end_time": 72.99299999999998,
+      "start_time": 52.993999999999986,
+      "end_time": 57.99299999999998,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 7: 222.0s - 227.0s",
@@ -95,8 +95,8 @@
       "clip_path": null
     },
     {
-      "start_time": 72.99299999999998,
-      "end_time": 76.99199999999998,
+      "start_time": 57.99299999999998,
+      "end_time": 61.991999999999976,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 8: 235.0s - 239.0s",
@@ -108,8 +108,8 @@
       "clip_path": null
     },
     {
-      "start_time": 76.99199999999998,
-      "end_time": 80.99099999999997,
+      "start_time": 61.991999999999976,
+      "end_time": 65.99099999999997,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 9: 239.0s - 243.0s",
@@ -121,8 +121,8 @@
       "clip_path": null
     },
     {
-      "start_time": 80.99099999999997,
-      "end_time": 90.98999999999997,
+      "start_time": 65.99099999999997,
+      "end_time": 75.98999999999997,
       "chunk_type": "highlight",
       "speed": 1.0,
       "description": "Highlight 10: 242.0s - 252.0s",

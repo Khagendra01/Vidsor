@@ -9,7 +9,8 @@ from agent.orchestrator_handlers import (
     handle_cut,
     handle_replace,
     handle_insert,
-    handle_find_broll
+    handle_find_broll,
+    handle_trim
 )
 from agent.planner import create_planner_agent
 
@@ -177,6 +178,10 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                 elif current_operation == "FIND_BROLL":
                     operation_result_dict = handle_find_broll(
                         state, timeline_manager, operation_params, call_planner, verbose=verbose
+                    )
+                elif current_operation == "TRIM":
+                    operation_result_dict = handle_trim(
+                        state, timeline_manager, operation_params, verbose=verbose
                     )
                 else:
                     if verbose:

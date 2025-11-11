@@ -14,5 +14,29 @@
   {
     "role": "assistant",
     "content": "Replaced 2 clip(s) with 2 new clip(s)."
+  },
+  {
+    "role": "user",
+    "content": "trim the first clip to 10 sec"
+  },
+  {
+    "role": "assistant",
+    "content": "Error: Operation 'TRIM' not yet implemented"
+  },
+  {
+    "role": "user",
+    "content": "trim the first clip to 10 sec"
+  },
+  {
+    "role": "assistant",
+    "content": "Operation 'TRIM' completed."
+  },
+  {
+    "role": "user",
+    "content": "trim first 5 sec of clip"
+  },
+  {
+    "role": "assistant",
+    "content": "Operation 'TRIM' completed."
   }
 ]

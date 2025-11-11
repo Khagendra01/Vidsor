@@ -1,0 +1,79 @@
+2025-11-11 10:38:33 - INFO - ================================================================================
+2025-11-11 10:38:33 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 10:38:33 - INFO - ================================================================================
+2025-11-11 10:38:33 - INFO - Query: trim the first clip to 10 sec
+2025-11-11 10:38:33 - INFO - Log file: logs\agent_trim_the_first_clip_to_10_sec_20251111_103833.log
+2025-11-11 10:38:33 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-11 10:38:33 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 10:38:33 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 10:38:33 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:33 - INFO - Existing timeline loaded: 10 chunks
+2025-11-11 10:38:33 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 10:38:33 - INFO - CALLING ORCHESTRATOR
+2025-11-11 10:38:33 - INFO - --------------------------------------------------------------------------------
+2025-11-11 10:38:33 - INFO - 
+================================================================================
+2025-11-11 10:38:33 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 10:38:33 - INFO - ================================================================================
+2025-11-11 10:38:33 - INFO - Query: trim the first clip to 10 sec
+2025-11-11 10:38:33 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:33 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 10:38:33 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 10:38:33 - INFO - [LOADING] Loading segment tree...
+2025-11-11 10:38:33 - INFO -   ✓ Segment tree loaded
+2025-11-11 10:38:34 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 10:38:34 - INFO - 
+================================================================================
+2025-11-11 10:38:34 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 10:38:34 - INFO - ================================================================================
+2025-11-11 10:38:34 - INFO - Query: trim the first clip to 10 sec
+2025-11-11 10:38:34 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:34 - INFO - Timeline loaded: 10 chunks, 90.99s duration
+2025-11-11 10:38:39 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 10:38:39 - INFO -   Operation: TRIM
+2025-11-11 10:38:39 - INFO -   Confidence: 1.00
+2025-11-11 10:38:39 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': 0, 'trim_seconds': 10.0, 'trim_from': 'end'}
+2025-11-11 10:38:39 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:39 - INFO - 
+================================================================================
+2025-11-11 10:38:39 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 10:38:39 - INFO - ================================================================================
+2025-11-11 10:38:39 - INFO - Operation: TRIM
+2025-11-11 10:38:39 - INFO - Status: ✓ Success
+2025-11-11 10:38:39 - INFO - Timeline now has 10 chunks
+2025-11-11 10:38:39 - INFO - Total duration: 80.99s
+2025-11-11 10:38:39 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 10:38:39 - INFO - --------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - Operation: TRIM
+2025-11-11 10:38:39 - INFO - Success: True
+2025-11-11 10:38:39 - INFO - Timeline chunks after operation: 10
+2025-11-11 10:38:39 - INFO - Operation result keys: ['success', 'chunks_modified']
+2025-11-11 10:38:39 - INFO - Operation 'TRIM' completed
+2025-11-11 10:38:39 - INFO - Response message: Operation 'TRIM' completed....
+2025-11-11 10:38:39 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - UPDATING TIMELINE UI
+2025-11-11 10:38:39 - INFO - --------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - Timeline chunks to display: 10
+2025-11-11 10:38:39 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - Reloading timeline from file...
+2025-11-11 10:38:39 - INFO - UPDATING CHAT UI
+2025-11-11 10:38:39 - INFO - --------------------------------------------------------------------------------
+2025-11-11 10:38:39 - INFO - Timeline loaded: 10 chunks
+2025-11-11 10:38:39 - INFO - Drawing timeline on canvas...
+2025-11-11 10:38:39 - INFO - Timeline canvas updated
+2025-11-11 10:38:39 - INFO - Updating UI button states...
+2025-11-11 10:38:39 - INFO - [VIDSOR] Timeline updated: 10 chunks
+2025-11-11 10:38:39 - INFO - Chat UI update scheduled
+2025-11-11 10:38:39 - INFO - 
+================================================================================
+2025-11-11 10:38:39 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 10:38:39 - INFO - ================================================================================
+2025-11-11 10:38:39 - INFO - Agent thread completed

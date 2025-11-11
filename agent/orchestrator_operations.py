@@ -129,6 +129,8 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
     trim_index = None
     trim_seconds = None
     trim_from = None
+    trim_target_length = None
+    remove_range = None
     
     if operation == "TRIM":
         # Try to extract index
@@ -136,7 +138,15 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
         if trim_match:
             trim_index = int(trim_match.group(1))
         
-        # Try to extract seconds
+        # Try to extract explicit "set to X sec" target length
+        set_match = re.search(r'(?:set\s+(?:to|at)|to)\s+(\d+(?:\.\d+)?)\s*(?:second|sec|s)', query_lower)
+        if set_match:
+            try:
+                trim_target_length = float(set_match.group(1))
+            except:
+                trim_target_length = None
+        
+        # Try to extract seconds (delta trim)
         seconds_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:second|sec|s)', query_lower)
         if seconds_match:
             trim_seconds = float(seconds_match.group(1))
@@ -147,6 +157,23 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
             trim_from = "end"
         else:
             trim_from = "end"  # Default
+        
+        # Remove internal range: "remove X seconds from the middle"
+        if "remove" in query_lower and "middle" in query_lower:
+            # If only a single X seconds specified, center it
+            if seconds_match:
+                # We'll compute centered removal in handler; here mark as request
+                remove_range = {"start_offset": -1.0, "end_offset": -1.0, "center_length": float(seconds_match.group(1))}
+        
+        # Remove internal range: "remove between 2s and 5s" (offsets within the clip)
+        between_match = re.search(r'remove.*?between\s+(\d+(?:\.\d+)?)\s*(?:s|sec|seconds)\s*(?:and|to)\s*(\d+(?:\.\d+)?)\s*(?:s|sec|seconds)', query_lower)
+        if between_match:
+            try:
+                off_start = float(between_match.group(1))
+                off_end = float(between_match.group(2))
+                remove_range = {"start_offset": off_start, "end_offset": off_end}
+            except:
+                pass
     
     result = {
         "operation": operation,
@@ -160,7 +187,9 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
             "search_query": search_query,
             "trim_index": trim_index,
             "trim_seconds": trim_seconds,
-            "trim_from": trim_from
+            "trim_from": trim_from,
+            "trim_target_length": trim_target_length,
+            "remove_range": remove_range
         },
         "reasoning": "Heuristic classification (LLM classification failed)"
     }
@@ -356,6 +385,14 @@ def validate_operation_params(operation: str, params: Dict, chunk_count: int, ve
             return False, "TRIM requires trim_index"
         if trim_index < 0 or trim_index >= chunk_count:
             return False, f"Invalid trim_index: {trim_index}"
+        
+        # At least one trim spec must be provided
+        has_delta = params.get("trim_seconds") is not None
+        has_target = params.get("trim_target_length") is not None
+        has_remove = params.get("remove_range") is not None
+        if not (has_delta or has_target or has_remove):
+            # Legacy simple phrasing like "trim the first clip" without numbers is ambiguous
+            return False, "TRIM requires trim_seconds, trim_target_length, or remove_range"
     
     return True, None
 

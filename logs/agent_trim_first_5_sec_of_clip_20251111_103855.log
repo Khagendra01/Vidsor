@@ -1,0 +1,23 @@
+2025-11-11 10:38:55 - INFO - ================================================================================
+2025-11-11 10:38:55 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 10:38:55 - INFO - ================================================================================
+2025-11-11 10:38:55 - INFO - Query: trim first 5 sec of clip
+2025-11-11 10:38:55 - INFO - Log file: logs\agent_trim_first_5_sec_of_clip_20251111_103855.log
+2025-11-11 10:38:55 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-11 10:38:55 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 10:38:55 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 10:38:55 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:55 - INFO - Existing timeline loaded: 10 chunks
+2025-11-11 10:38:55 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 10:38:55 - INFO - CALLING ORCHESTRATOR
+2025-11-11 10:38:55 - INFO - --------------------------------------------------------------------------------
+2025-11-11 10:38:55 - INFO - 
+================================================================================
+2025-11-11 10:38:55 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 10:38:55 - INFO - ================================================================================
+2025-11-11 10:38:55 - INFO - Query: trim first 5 sec of clip
+2025-11-11 10:38:55 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 10:38:55 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 10:38:55 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 10:38:55 - INFO - [LOADING] Loading segment tree...
