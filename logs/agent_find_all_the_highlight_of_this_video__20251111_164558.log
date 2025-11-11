@@ -222,3 +222,116 @@
 2025-11-11 16:46:33 - INFO - 
 [AUTO-RERANK] Automatically reranking and filtering 55 results...
 2025-11-11 16:46:33 - INFO -   [LLM RANKING] Ranking 55 results to select top 55
+2025-11-11 16:46:40 - INFO -   [LLM RANKING] Selected top 10 results
+2025-11-11 16:46:40 - INFO -     1. 272.0s-273.0s: This clip features a woman in a hospital bed, which is likely a significant mome
+2025-11-11 16:46:40 - INFO -     2. 275.0s-276.0s: This scene includes a woman in a hospital bed with a monitor, indicating a criti
+2025-11-11 16:46:40 - INFO -     3. 315.0s-316.0s: This clip shows a woman in a hospital bed with a man, suggesting an emotional or
+2025-11-11 16:46:40 - INFO -     4. 232.0s-233.0s: This scene shows a woman in a hospital room with a baby, which is likely a highl
+2025-11-11 16:46:40 - INFO -     5. 91.0s-92.0s: This clip features a pregnant woman in a hospital waiting room, indicating a sig
+2025-11-11 16:46:40 - INFO -     6. 336.0s-337.0s: This scene shows a person in a hospital bed with a monitor, likely a highlight.
+2025-11-11 16:46:40 - INFO -     7. 210.0s-211.0s: This clip features a woman in a hospital room, which could be a highlight.
+2025-11-11 16:46:40 - INFO -     8. 321.0s-322.0s: This clip focuses on a woman in a hospital bed, indicating a significant moment.
+2025-11-11 16:46:40 - INFO -     9. 400.0s-401.0s: This wide-angle shot of a hospital room with a patient is likely a highlight.
+2025-11-11 16:46:40 - INFO -     10. 216.0s-217.0s: This additional context suggests the recording captures important moments.
+2025-11-11 16:46:40 - INFO -   [AUTO-FILTER] Validating 10 results to remove false positives...
+2025-11-11 16:46:52 - INFO -   [AUTO-RERANK] Reranked and filtered to 10 valid results
+2025-11-11 16:46:52 - INFO - 
+[FINAL SELECTION]
+2025-11-11 16:46:52 - INFO -   Selected 10 time range(s)
+2025-11-11 16:46:52 - INFO -   Confidence: 0.87
+2025-11-11 16:46:52 - INFO -   Time ranges:
+2025-11-11 16:46:52 - INFO -     1. 272.00s - 273.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     2. 275.00s - 276.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     3. 315.00s - 316.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     4. 232.00s - 233.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     5. 91.00s - 92.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     6. 336.00s - 337.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     7. 210.00s - 211.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     8. 321.00s - 322.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     9. 400.00s - 401.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -     10. 216.00s - 217.00s (duration: 1.00s)
+2025-11-11 16:46:52 - INFO -   [SUCCESS] Found 10 time range(s) - proceeding with extraction
+2025-11-11 16:46:52 - INFO - 
+[MERGING] Merging 10 time ranges...
+2025-11-11 16:46:52 - INFO -   Before merge: 10 ranges
+2025-11-11 16:46:52 - INFO -   After merge: 10 non-overlapping ranges
+2025-11-11 16:46:52 - INFO -   Merged ranges with 2.0s padding:
+2025-11-11 16:46:52 - INFO -     Range 1: 90.00s - 93.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 2: 209.00s - 212.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 3: 215.00s - 218.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 4: 231.00s - 234.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 5: 271.00s - 274.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 6: 274.00s - 277.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 7: 314.00s - 317.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 8: 320.00s - 323.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 9: 335.00s - 338.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -     Range 10: 399.00s - 402.00s (duration: 3.00s)
+2025-11-11 16:46:52 - INFO -   Planner found 10 time ranges
+2025-11-11 16:46:52 - INFO -   After merging: 9 time ranges
+2025-11-11 16:46:52 - INFO -   Total highlight duration: 30.0s (5.0% of video)
+2025-11-11 16:46:52 - INFO -     Created chunk 1: timeline 0.0s - 3.0s (source: 90.0s - 93.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 2: timeline 3.0s - 6.0s (source: 209.0s - 212.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 3: timeline 6.0s - 9.0s (source: 215.0s - 218.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 4: timeline 9.0s - 12.0s (source: 231.0s - 234.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 5: timeline 12.0s - 18.0s (source: 271.0s - 277.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 6: timeline 18.0s - 21.0s (source: 314.0s - 317.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 7: timeline 21.0s - 24.0s (source: 320.0s - 323.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 8: timeline 24.0s - 27.0s (source: 335.0s - 338.0s)
+2025-11-11 16:46:52 - INFO -     Created chunk 9: timeline 27.0s - 30.0s (source: 399.0s - 402.0s)
+2025-11-11 16:46:52 - INFO -   ✓ Created 9 highlight chunks
+2025-11-11 16:46:52 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 16:46:52 - INFO - 
+================================================================================
+2025-11-11 16:46:52 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 16:46:52 - INFO - ================================================================================
+2025-11-11 16:46:52 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 16:46:52 - INFO - Status: ✓ Success
+2025-11-11 16:46:52 - INFO - Chunks created: 9
+2025-11-11 16:46:52 - INFO - Timeline now has 9 chunks
+2025-11-11 16:46:52 - INFO - Total duration: 29.99s
+2025-11-11 16:46:52 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 16:46:52 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 16:46:52 - INFO - Success: True
+2025-11-11 16:46:52 - INFO - Timeline chunks after operation: 9
+2025-11-11 16:46:52 - INFO - Operation result keys: ['success', 'chunks_created', 'time_ranges']
+2025-11-11 16:46:52 - INFO -   Chunks created: 9
+2025-11-11 16:46:52 - INFO - FIND_HIGHLIGHTS: Created 9 chunks
+2025-11-11 16:46:52 - DEBUG -   Chunk 1: source=90.0s-93.0s, timeline=0.0s-3.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 2: source=209.0s-212.0s, timeline=3.0s-6.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 3: source=215.0s-218.0s, timeline=6.0s-9.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 4: source=231.0s-234.0s, timeline=9.0s-12.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 5: source=271.0s-277.0s, timeline=12.0s-18.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 6: source=314.0s-317.0s, timeline=18.0s-21.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 7: source=320.0s-323.0s, timeline=21.0s-24.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 8: source=335.0s-338.0s, timeline=24.0s-27.0s
+2025-11-11 16:46:52 - DEBUG -   Chunk 9: source=399.0s-402.0s, timeline=27.0s-30.0s
+2025-11-11 16:46:52 - INFO - Response message: Found and added 9 clip(s) to timeline:
+  1. 90.0s - 93.0s
+  2. 209.0s - 212.0s
+  3. 215.0s - 218.0s
+...
+2025-11-11 16:46:52 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - UPDATING TIMELINE UI
+2025-11-11 16:46:52 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - Timeline chunks to display: 9
+2025-11-11 16:46:52 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - Reloading timeline from file...
+2025-11-11 16:46:52 - INFO - UPDATING CHAT UI
+2025-11-11 16:46:52 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:46:52 - INFO - Timeline loaded: 9 chunks
+2025-11-11 16:46:52 - INFO - Drawing timeline on canvas...
+2025-11-11 16:46:52 - INFO - Timeline canvas updated
+2025-11-11 16:46:52 - INFO - Updating UI button states...
+2025-11-11 16:46:52 - INFO - [VIDSOR] Timeline updated: 9 chunks
+2025-11-11 16:46:52 - INFO - Chat UI update scheduled
+2025-11-11 16:46:52 - INFO - 
+================================================================================
+2025-11-11 16:46:52 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 16:46:52 - INFO - ================================================================================
+2025-11-11 16:46:52 - INFO - Agent thread completed

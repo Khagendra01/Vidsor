@@ -95,3 +95,23 @@ def create_log_file(query: str, output_dir: str = "logs") -> str:
     log_path = Path(output_dir) / log_filename
     return str(log_path)
 
+
+def get_log_helper(logger: Optional[DualLogger] = None, verbose: bool = False):
+    """
+    Get a consistent logging helper function.
+    Returns a function that logs to logger if available, otherwise prints if verbose.
+    
+    Args:
+        logger: Optional DualLogger instance
+        verbose: Whether to print if logger is None
+        
+    Returns:
+        Function that takes a message string and logs/prints it
+    """
+    def log_info(msg: str):
+        if logger:
+            logger.info(msg)
+        elif verbose:
+            print(msg)
+    
+    return log_info

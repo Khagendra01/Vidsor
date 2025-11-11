@@ -15,7 +15,15 @@ from agent.query_analysis import (
 )
 from agent.scoring import score_seconds, group_contiguous_seconds
 from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
-from agent.utils import extract_json, merge_time_ranges
+from agent.utils import merge_time_ranges
+from agent.llm_utils import (
+    create_llm,
+    extract_json_from_response,
+    parse_json_response,
+    invoke_llm_with_json
+)
+from agent.logging_utils import get_log_helper
+from agent.weight_config import configure_weights_with_fallback
 from agent.prompts import (
     PLANNER_SYSTEM_PROMPT,
     SEGMENT_TREE_INSPECTION_PROMPT,
@@ -23,19 +31,6 @@ from agent.prompts import (
     SEARCH_QUERY_GENERATION_PROMPT,
     VIDEO_NARRATION_PROMPT
 )
-
-# Import LLM classes
-try:
-    from langchain_openai import ChatOpenAI
-    HAS_OPENAI = True
-except ImportError:
-    HAS_OPENAI = False
-
-try:
-    from langchain_anthropic import ChatAnthropic
-    HAS_ANTHROPIC = True
-except ImportError:
-    HAS_ANTHROPIC = False
 
 
 def create_video_narrative(content_inspection: dict, query: str, llm, verbose: bool = False, logger=None) -> Optional[dict]:
@@ -56,12 +51,8 @@ def create_video_narrative(content_inspection: dict, query: str, llm, verbose: b
     if not content_inspection:
         return None
     
-    # Helper function to log or print
-    def log_info(msg):
-        if logger:
-            logger.info(msg)
-        elif verbose:
-            print(msg)
+    # Use shared logging helper
+    log_info = get_log_helper(logger, verbose)
     
     # Build context for narration - emphasize actual keywords
     all_keywords = content_inspection['all_keywords'][:100]  # Get more keywords
@@ -93,8 +84,9 @@ Sample descriptions from video:
         elapsed = time.time() - start_time
         
         response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        narrative = json.loads(json_text)
+        narrative = parse_json_response(response_text, fallback=None)
+        if narrative is None:
+            return None
         
         log_info(f"  Video theme: {narrative.get('video_theme', 'N/A')}")
         log_info(f"  Narrative summary: {narrative.get('narrative_summary', 'N/A')[:100]}...")
@@ -127,19 +119,8 @@ Sample descriptions from video:
 def create_planner_agent(model_name: str = "gpt-4o-mini"):
     """Create the planner agent that analyzes queries and retrieves relevant moments."""
     
-    # Try OpenAI first, fallback to Anthropic if needed
-    if HAS_OPENAI:
-        try:
-            llm = ChatOpenAI(model=model_name, temperature=0)
-        except:
-            if HAS_ANTHROPIC:
-                llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-            else:
-                raise ValueError("Need either OpenAI or Anthropic API key configured")
-    elif HAS_ANTHROPIC:
-        llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-    else:
-        raise ValueError("Need either langchain-openai or langchain-anthropic installed")
+    # Use shared LLM creation utility
+    llm = create_llm(model_name)
     
     def planner_node(state: AgentState) -> AgentState:
         """Planner agent: Analyzes user query and retrieves relevant moments using ALL search types."""
@@ -148,12 +129,8 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         verbose = state.get("verbose", False)
         logger = state.get("logger")
         
-        # Helper function to log or print
-        def log_info(msg):
-            if logger:
-                logger.info(msg)
-            elif verbose:
-                print(msg)
+        # Use shared logging helper
+        log_info = get_log_helper(logger, verbose)
         
         # AGENTIC DECISION: Check if we should refine existing results or do new search
         if state.get("previous_time_ranges") and state.get("previous_query"):
@@ -365,33 +342,18 @@ Based on the sample descriptions above, generate semantic queries that match the
         elif verbose:
             print(f"[LLM RESPONSE] {response_text_step1[:300]}...")
         
-        # Extract JSON from response
-        if "```json" in response_text_step1:
-            response_text_step1 = response_text_step1.split("```json")[1].split("```")[0].strip()
-        elif "```" in response_text_step1:
-            response_text_step1 = response_text_step1.split("```")[1].split("```")[0].strip()
-        
-        try:
-            search_plan = json.loads(response_text_step1)
-        except:
-            json_match = re.search(r'\{[^}]+\}', response_text_step1)
-            if json_match:
-                search_plan = json.loads(json_match.group())
-            else:
-                # Fallback: use original query for semantic, extract keywords for hierarchical tree
-                # Extract meaningful keywords (nouns/verbs, at least 3 chars)
-                words = re.findall(r'\b\w+\b', query.lower())
-                meaningful_keywords = [w for w in words if len(w) >= 3]
-                search_plan = {
-                    "semantic_queries": [query],
-                    "hierarchical_keywords": meaningful_keywords[:5],  # Top 5 keywords
-                    "object_classes": [],
-                    "activity_name": "",
-                    "activity_keywords": [],
-                    "evidence_keywords": [],
-                    "is_general_highlight_query": "highlight" in query.lower(),
-                    "needs_clarification": False
-                }
+        # Extract and parse JSON from response
+        fallback_search_plan = {
+            "semantic_queries": [query],
+            "hierarchical_keywords": [w for w in re.findall(r'\b\w+\b', query.lower()) if len(w) >= 3][:5],
+            "object_classes": [],
+            "activity_name": "",
+            "activity_keywords": [],
+            "evidence_keywords": [],
+            "is_general_highlight_query": "highlight" in query.lower(),
+            "needs_clarification": False
+        }
+        search_plan = parse_json_response(response_text_step1, fallback=fallback_search_plan)
         
         log_info("\n[SEARCH PLAN] Generated search queries:")
         if content_inspection:
@@ -456,97 +418,17 @@ Based on the sample descriptions above, generate semantic queries that match the
         
         # NEW: Get all object classes and configure weights (use strategy scoring if available)
         all_object_classes = set(segment_tree.get_all_classes().keys())
-        if strategy.get("scoring"):
-            # Use strategy-based weights
-            strategy_scoring = strategy["scoring"]
-            weights = {
-                "semantic_weight": strategy_scoring.get("weights", {}).get("semantic", 0.4),
-                "activity_weight": strategy_scoring.get("weights", {}).get("activity", 0.3),
-                "hierarchical_weight": strategy_scoring.get("weights", {}).get("hierarchical", 0.1),
-                "object_weight": strategy_scoring.get("weights", {}).get("object", 0.2),  # NEW: Weight for object scores
-                "object_weights": strategy_scoring.get("object_weights", {}),
-                "threshold": max(0.5, strategy_scoring.get("threshold", 0.5))  # Enforce minimum 0.5
-            }
-            # Initialize all object classes with default low weight
-            for class_name in all_object_classes:
-                if class_name not in weights["object_weights"]:
-                    weights["object_weights"][class_name] = 0.1
-            
-            # FIX: Cap hierarchical weight to reasonable maximum (0.3)
-            # Hierarchical weight should not dominate scoring
-            if weights["hierarchical_weight"] > 0.3:
-                if verbose:
-                    log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
-                weights["hierarchical_weight"] = 0.3
-            
-            # FIX: Ensure semantic weight is set if semantic queries were generated
-            has_semantic_queries = bool(search_plan.get("semantic_queries"))
-            if has_semantic_queries and weights["semantic_weight"] == 0.0:
-                # Override: if semantic queries exist, semantic weight should be > 0
-                if weights["hierarchical_weight"] > 0:
-                    # Reduce hierarchical to make room for semantic
-                    weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
-                weights["semantic_weight"] = 0.4  # Set reasonable default
-            
-            # FIX 5: Boost semantic weight for highlight queries
-            if search_plan.get("is_general_highlight_query"):
-                # For highlight queries, prioritize semantic relevance
-                weights["semantic_weight"] = max(weights["semantic_weight"], 0.5)  # Boost to at least 0.5
-                weights["hierarchical_weight"] = min(weights["hierarchical_weight"], 0.1)  # Reduce to max 0.1
-                weights["object_weight"] = min(weights.get("object_weight", 0.2), 0.15)  # Reduce to max 0.15
-                if verbose:
-                    log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights['semantic_weight']:.2f}, "
-                             f"Hierarchical: {weights['hierarchical_weight']:.2f}, "
-                             f"Object: {weights.get('object_weight', 0.2):.2f}")
-        else:
-            # Fallback to old weight configuration
-            weights = configure_weights(query_intent, all_object_classes)
-            # Ensure object_weight is set
-            if "object_weight" not in weights:
-                weights["object_weight"] = 0.2
-            
-            # FIX: Cap hierarchical weight to reasonable maximum (0.3)
-            # Hierarchical weight should not dominate scoring
-            if weights["hierarchical_weight"] > 0.3:
-                if verbose:
-                    log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
-                weights["hierarchical_weight"] = 0.3
-            
-            # FIX: Ensure semantic weight is set if semantic queries were generated
-            has_semantic_queries = bool(search_plan.get("semantic_queries"))
-            if has_semantic_queries and weights["semantic_weight"] == 0.0:
-                # Override: if semantic queries exist, semantic weight should be > 0
-                if weights["hierarchical_weight"] > 0:
-                    # Reduce hierarchical to make room for semantic
-                    weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
-                weights["semantic_weight"] = 0.4  # Set reasonable default
-            
-            # FIX 5: Boost semantic weight for highlight queries (also for fallback path)
-            if search_plan.get("is_general_highlight_query"):
-                # For highlight queries, prioritize semantic relevance
-                weights["semantic_weight"] = max(weights["semantic_weight"], 0.5)  # Boost to at least 0.5
-                weights["hierarchical_weight"] = min(weights["hierarchical_weight"], 0.1)  # Reduce to max 0.1
-                weights["object_weight"] = min(weights.get("object_weight", 0.2), 0.15)  # Reduce to max 0.15
-                if verbose:
-                    log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights['semantic_weight']:.2f}, "
-                             f"Hierarchical: {weights['hierarchical_weight']:.2f}, "
-                             f"Object: {weights.get('object_weight', 0.2):.2f}")
         
-        # FIX: Final safety check - ensure main weights are reasonable
-        # Cap any individual weight to 0.5 maximum to prevent domination
-        max_main_weight = 0.5
-        if weights["semantic_weight"] > max_main_weight:
-            if verbose:
-                log_info(f"  [FIX] Capping semantic weight from {weights['semantic_weight']:.2f} to {max_main_weight:.2f}")
-            weights["semantic_weight"] = max_main_weight
-        if weights["activity_weight"] > max_main_weight:
-            if verbose:
-                log_info(f"  [FIX] Capping activity weight from {weights['activity_weight']:.2f} to {max_main_weight:.2f}")
-            weights["activity_weight"] = max_main_weight
-        if weights["hierarchical_weight"] > max_main_weight:
-            if verbose:
-                log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to {max_main_weight:.2f}")
-            weights["hierarchical_weight"] = max_main_weight
+        # Use shared weight configuration utility
+        weights = configure_weights_with_fallback(
+            strategy=strategy,
+            query_intent=query_intent,
+            all_object_classes=all_object_classes,
+            search_plan=search_plan,
+            configure_weights_fn=configure_weights,
+            verbose=verbose,
+            log_info=log_info
+        )
         
         log_info(f"\n[WEIGHT CONFIGURATION]")
         log_info(f"  Semantic weight: {weights['semantic_weight']:.2f}")
@@ -1096,8 +978,7 @@ Return JSON only:
                                 ])
                                 
                                 validation_text = validation_response.content.strip()
-                                validation_json = extract_json(validation_text)
-                                validation_result = json.loads(validation_json)
+                                validation_result = parse_json_response(validation_text, fallback={"is_valid": True, "reasoning": ""})
                                 
                                 # Default to valid if validation fails or is unclear
                                 is_valid = validation_result.get("is_valid", True)
@@ -1162,13 +1043,13 @@ Return JSON only:
                     elapsed = time.time() - start_time
                     
                     clarification_text = clarification_response.content.strip()
-                    # Extract JSON
-                    if "```json" in clarification_text:
-                        clarification_text = clarification_text.split("```json")[1].split("```")[0].strip()
-                    elif "```" in clarification_text:
-                        clarification_text = clarification_text.split("```")[1].split("```")[0].strip()
-                    
-                    clarification_decision = json.loads(clarification_text)
+                    # Extract and parse JSON
+                    fallback_clarification = {
+                        "needs_clarification": True,
+                        "clarification_question": f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?",
+                        "reasoning": "Fallback due to parsing error"
+                    }
+                    clarification_decision = parse_json_response(clarification_text, fallback=fallback_clarification)
                     needs_clarification = clarification_decision.get("needs_clarification", False)
                     clarification_question = clarification_decision.get("clarification_question", f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?")
                     reasoning = clarification_decision.get("reasoning", "")
