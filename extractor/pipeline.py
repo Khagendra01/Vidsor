@@ -49,7 +49,7 @@ class SegmentTreePipeline:
             config.branching_factor
         ) if config.generate_hierarchical else None
         
-        self.embeddings_generator = EmbeddingsGenerator() if config.generate_embeddings else None
+        self.embeddings_generator = EmbeddingsGenerator(config.embedding_model) if config.generate_embeddings else None
     
     def run(self) -> str:
         """

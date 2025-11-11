@@ -20,9 +20,16 @@ except ImportError:
 class SegmentTreeQuery:
     """Query interface for segment tree JSON files."""
     
-    def __init__(self, json_path: str):
-        """Load and initialize the segment tree from JSON file."""
+    def __init__(self, json_path: str, embedding_model: str = "BAAI/bge-large-en-v1.5"):
+        """
+        Load and initialize the segment tree from JSON file.
+        
+        Args:
+            json_path: Path to segment tree JSON file
+            embedding_model: Name of the sentence transformer model to use for embeddings
+        """
         self.json_path = json_path
+        self.embedding_model_name = embedding_model
         with open(json_path, 'r', encoding='utf-8') as f:
             self.data = json.load(f)
         self.video = self.data.get("video", "")
@@ -39,9 +46,11 @@ class SegmentTreeQuery:
         self._unified_description_embeddings = None
         self._embedding_metadata = None
         
-        # Cache file path for embeddings
+        # Cache file path for embeddings (include model name to avoid conflicts)
         json_path_obj = Path(json_path)
-        self._cache_path = json_path_obj.parent / f"{json_path_obj.stem}_embeddings.npz"
+        # Sanitize model name for filename (replace / with _)
+        model_safe = embedding_model.replace("/", "_").replace("\\", "_")
+        self._cache_path = json_path_obj.parent / f"{json_path_obj.stem}_embeddings_{model_safe}.npz"
         
         # Hierarchical tree (if available)
         self.hierarchical_tree = self.data.get("hierarchical_tree")
@@ -1036,8 +1045,7 @@ class SegmentTreeQuery:
             )
         
         if self._embedding_model is None:
-            # Use a fast, lightweight model
-            self._embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            self._embedding_model = SentenceTransformer(self.embedding_model_name)
         
         return self._embedding_model
     
@@ -1143,9 +1151,11 @@ class SegmentTreeQuery:
                 })
         
         # Compute embeddings in batches
+        model = self._get_embedding_model()
         if verbose:
+            embedding_dim = model.get_sentence_embedding_dimension()
             print(f"[EMBEDDINGS] Computing embeddings for {len(transcription_texts)} transcriptions and {len(unified_texts)} unified descriptions...")
-            print(f"[EMBEDDINGS] Using model: all-MiniLM-L6-v2 (384 dimensions)")
+            print(f"[EMBEDDINGS] Using model: {self.embedding_model_name} ({embedding_dim} dimensions)")
         
         if transcription_texts:
             if verbose:
@@ -1647,17 +1657,18 @@ class SegmentTreeQuery:
         }
 
 
-def load_segment_tree(json_path: str) -> SegmentTreeQuery:
+def load_segment_tree(json_path: str, embedding_model: str = "BAAI/bge-large-en-v1.5") -> SegmentTreeQuery:
     """
     Convenience function to load a segment tree JSON file.
     
     Args:
         json_path: Path to the segment tree JSON file
+        embedding_model: Name of the sentence transformer model to use for embeddings
         
     Returns:
         SegmentTreeQuery instance
     """
-    return SegmentTreeQuery(json_path)
+    return SegmentTreeQuery(json_path, embedding_model=embedding_model)
 
 
 def main():

@@ -43,6 +43,8 @@ def main():
     # Embeddings options
     parser.add_argument("--no-embeddings", action="store_true", default=False,
                        help="Skip embeddings generation (default: enabled)")
+    parser.add_argument("--embedding-model", default="BAAI/bge-large-en-v1.5",
+                       help="Sentence transformer model for embeddings (default: BAAI/bge-large-en-v1.5)")
     
     # Parallel processing
     parser.add_argument("--max-workers", type=int, default=3,
@@ -72,6 +74,7 @@ def main():
         leaf_duration=args.leaf_duration,
         branching_factor=args.branching_factor,
         generate_embeddings=not args.no_embeddings,
+        embedding_model=args.embedding_model,
         blip_model=args.blip_model,
         whisper_model=args.whisper_model,
         yolo_model=args.yolo_model,

@@ -37,6 +37,9 @@ DEFAULT_BLIP_SPLIT = 1  # 1=middle, 2=first+last, 3=first+middle+last
 DEFAULT_LEAF_DURATION = 5.0
 DEFAULT_BRANCHING_FACTOR = 2
 
+# Embedding model configuration
+DEFAULT_EMBEDDING_MODEL = "BAAI/bge-large-en-v1.5"  # High-quality embeddings for visual descriptions
+
 
 @dataclass
 class ExtractorConfig:
@@ -66,6 +69,7 @@ class ExtractorConfig:
     
     # Embeddings
     generate_embeddings: bool = True
+    embedding_model: str = DEFAULT_EMBEDDING_MODEL
     
     # Model paths (optional overrides)
     blip_model: Optional[str] = None
