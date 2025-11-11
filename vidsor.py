@@ -2073,6 +2073,43 @@ class Vidsor:
             timeline_path = os.path.join(self.current_project_path, "timeline.json")
             logger.info(f"Timeline path: {timeline_path}")
             
+            # Check if there's a pending clarification and if this query looks like a follow-up
+            if self.pending_clarification:
+                preserved = self.pending_clarification
+                previous_query = preserved.get("original_query", "")
+                preserved_state = preserved.get("preserved_state", {})
+                previous_time_ranges = preserved_state.get("time_ranges", [])
+                
+                # Simple heuristic: if query contains refinement keywords or numbers, treat as follow-up
+                query_lower = query.lower()
+                refinement_keywords = ["top", "best", "first", "most", "select", "give me", "show me", "only"]
+                has_refinement = any(kw in query_lower for kw in refinement_keywords)
+                has_number = any(char.isdigit() for char in query)
+                
+                if has_refinement or has_number:
+                    logger.info(f"Detected follow-up query to clarification")
+                    logger.info(f"  Previous query: {previous_query}")
+                    logger.info(f"  Current query: {query}")
+                    logger.info(f"  Previous results: {len(previous_time_ranges)} time ranges")
+                    logger.info("  Treating as clarification response - using preserved_state")
+                    
+                    # Use the clarification handler instead
+                    operation = preserved.get("operation")
+                    original_query = preserved.get("original_query")
+                    
+                    # Clear pending clarification
+                    self.pending_clarification = None
+                    
+                    # Run with preserved state
+                    self._run_agent_thread_with_clarification(
+                        query,  # Use current query as clarification response
+                        segment_tree_path,
+                        operation,
+                        preserved_state,
+                        original_query
+                    )
+                    return
+            
             # Check if timeline exists and log current state
             if os.path.exists(timeline_path):
                 try:
@@ -2148,6 +2185,24 @@ class Vidsor:
                     clarification_question = error_msg
                     needs_clarification = True
                     logger.info(f"Detected clarification question in error field: {clarification_question}")
+                    # If we detected clarification but preserved_state wasn't set, try to get it from operation_result
+                    if not preserved_state:
+                        preserved_state = operation_result.get("preserved_state")
+                        if preserved_state:
+                            logger.info(f"Found preserved_state in operation_result: {len(preserved_state.get('time_ranges', []))} time ranges")
+                        else:
+                            logger.warning("Clarification detected but no preserved_state found - follow-up queries may not work correctly")
+                    
+                    # Ensure previous_time_ranges is set for refinement logic to work
+                    if preserved_state and "previous_time_ranges" not in preserved_state:
+                        # If time_ranges exists but previous_time_ranges doesn't, copy it
+                        if "time_ranges" in preserved_state:
+                            preserved_state["previous_time_ranges"] = preserved_state["time_ranges"]
+                            logger.info(f"Set previous_time_ranges from time_ranges: {len(preserved_state['time_ranges'])} ranges")
+                        # Also set previous_query if not set
+                        if "previous_query" not in preserved_state:
+                            preserved_state["previous_query"] = query
+                            logger.info(f"Set previous_query: {query}")
             
             # Generate response based on operation type
             response_parts = []
@@ -2160,6 +2215,13 @@ class Vidsor:
                 # Store preserved state for when user responds
                 if self.root:
                     def store_clarification_state():
+                        # Ensure previous_time_ranges is set for refinement logic
+                        if preserved_state:
+                            if "previous_time_ranges" not in preserved_state and "time_ranges" in preserved_state:
+                                preserved_state["previous_time_ranges"] = preserved_state["time_ranges"]
+                            if "previous_query" not in preserved_state:
+                                preserved_state["previous_query"] = query
+                        
                         self.pending_clarification = {
                             "operation": operation,
                             "preserved_state": preserved_state,
@@ -2168,6 +2230,8 @@ class Vidsor:
                             "timeline_path": timeline_path
                         }
                         logger.info("Clarification state stored")
+                        if preserved_state:
+                            logger.info(f"  Preserved {len(preserved_state.get('time_ranges', preserved_state.get('previous_time_ranges', [])))} time ranges")
                     
                     self.root.after(0, store_clarification_state)
                 
