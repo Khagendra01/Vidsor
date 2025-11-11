@@ -2,7 +2,7 @@
 
 from typing import Optional, Dict, Any
 from agent.state import OrchestratorState
-from agent.orchestrator import create_orchestrator_agent
+from agent.nodes.orchestrator import create_orchestrator_agent
 from agent.timeline_manager import TimelineManager
 from agent.utils.segment_tree_utils import load_segment_tree
 

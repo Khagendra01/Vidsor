@@ -9,7 +9,7 @@ import requests
 from typing import Dict, List, Optional
 from PIL import Image
 
-from agent.prompt import get_llava_prompt
+from agent.prompts.llava_prompts import get_llava_prompt
 from extractor.config import OLLAMA_URL, OLLAMA_MODEL
 
 

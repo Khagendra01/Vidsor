@@ -276,7 +276,7 @@ def handle_find_highlights(
         log.info(f"  Planner found {len(time_ranges)} time ranges")
         
         # MERGE AGENT: Intelligently merge time ranges based on timeline state
-        from agent.merge_agent import create_merge_agent
+        from agent.nodes.merge_agent import create_merge_agent
         from extractor.utils.video_utils import get_video_duration
         
         video_path = state.get("video_path", "")

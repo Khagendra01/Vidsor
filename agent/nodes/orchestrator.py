@@ -12,7 +12,7 @@ from agent.orchestrator_handlers import (
     handle_find_broll,
     handle_trim
 )
-from agent.planner import create_planner_agent
+from agent.nodes.planner import create_planner_agent
 from agent.utils.llm_utils import create_llm
 
 

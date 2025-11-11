@@ -11,9 +11,9 @@ from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage
 
 from agent.state import AgentState
-from agent.planner import create_planner_agent
-from agent.executor import create_execution_agent
-from agent.clarifier import create_clarification_node, should_ask_clarification
+from agent.nodes.planner import create_planner_agent
+from agent.nodes.executor import create_execution_agent
+from agent.nodes.clarifier import create_clarification_node, should_ask_clarification
 from agent.utils.segment_tree_utils import load_segment_tree
 from agent.utils.logging_utils import DualLogger, create_log_file
 
@@ -163,7 +163,7 @@ __all__ = [
 
 # Orchestrator imports
 from agent.state import OrchestratorState
-from agent.orchestrator import create_orchestrator_agent
+from agent.nodes.orchestrator import create_orchestrator_agent
 from agent.orchestrator_runner import run_orchestrator
 
 
