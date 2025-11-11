@@ -7,3 +7,48 @@ future can be duckdb in python
 fine grain editing giving pixel to pixel control so they can feel like its a magic.
 
 hey should we write our own tool or do we have good other python opensource to visualize like a video editor in single spin pip, just dont write code yet
+
+
+
+
+
+B. Redundant semantic search
+Lines 642-671: Three sequential semantic searches with different thresholds
+Could be optimized to a single call with adaptive threshold
+C. Large string concatenations
+Lines 267-347: Building user_message_content with many concatenations
+Could use template or builder pattern
+3. Modularization opportunities
+A. LLM utilities module (agent/llm_utils.py)
+invoke_llm_with_json() - unified LLM invocation + JSON extraction
+extract_json_from_response() - improved JSON extraction with better error handling
+create_llm() - LLM initialization (currently duplicated in create_planner_agent)
+B. Logging utilities (enhance agent/logging_utils.py)
+get_logger() - consistent logger creation
+Already has DualLogger but needs better integration
+C. Weight configuration module (agent/weight_config.py)
+configure_search_weights() - extract weight configuration logic
+validate_weights() - weight validation and capping
+apply_weight_fixes() - highlight query boosts, etc.
+D. Query message builder (agent/query_builder.py)
+build_search_query_message() - extract complex message building logic
+format_content_inspection() - format inspection data for prompts
+format_video_narrative() - format narrative data
+E. Search execution module (agent/search_executor.py)
+execute_hierarchical_search() - hierarchical search logic
+execute_semantic_search() - semantic search with adaptive thresholds
+execute_object_search() - object detection search
+execute_activity_search() - activity pattern matching
+4. Function length
+planner_node function: 1086 lines (lines 144-1229)
+Should be broken into smaller functions:
+_inspect_segment_tree()
+_generate_search_queries()
+_execute_searches()
+_score_and_filter()
+_select_best_results()
+5. Specific inefficiencies
+Lines 459-533: Duplicate weight configuration logic
+Lines 642-671: Three sequential semantic searches (inefficient)
+Lines 1014-1129: Complex auto-reranking logic embedded in planner
+Lines 369-394: JSON extraction with multiple fallbacks (should be utility)

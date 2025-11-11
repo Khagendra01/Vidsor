@@ -4,6 +4,7 @@ import json
 import re
 import time
 from typing import Optional, Set
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
 from agent.feature_extractor import PerSecondFeatureExtractor
@@ -234,16 +235,19 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             else:
                 log_info("  [WARNING] Narrative creation failed, proceeding with raw inspection data")
         
-        log_info("\n[STEP 1] Generating search queries for all modalities...")
+        # PARALLEL LLM CALLS: Query generation and semantic analysis can run in parallel
+        log_info("\n[PARALLEL LLM] Starting parallel query generation and semantic analysis...")
+        overall_start = time.time()
         
-        # STEP 1: Generate search queries/keywords for ALL search types
-        # Use prompts from prompts.py
-        system_prompt_step1 = PLANNER_SYSTEM_PROMPT + "\n\n" + SEARCH_QUERY_GENERATION_PROMPT
-        
-        # Build user message with inspection data if available
-        user_message_content = f"User query: {query}\n\n"
-        if content_inspection:
-            user_message_content += f"""I've inspected the video content. Here's what's available:
+        # Helper function for query generation
+        def generate_search_queries():
+            """Generate search queries for all modalities."""
+            system_prompt_step1 = PLANNER_SYSTEM_PROMPT + "\n\n" + SEARCH_QUERY_GENERATION_PROMPT
+            
+            # Build user message with inspection data if available
+            user_message_content = f"User query: {query}\n\n"
+            if content_inspection:
+                user_message_content += f"""I've inspected the video content. Here's what's available:
 
 {content_inspection['summary']}
 
@@ -252,14 +256,14 @@ Object classes: {', '.join(sorted(content_inspection['object_classes'].keys())[:
 
 CRITICAL: Sample descriptions from the video (analyze their style and vocabulary):
 """
-            # Show more sample descriptions (10 instead of 5) and full text (not truncated)
-            for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
-                desc_type = desc.get('type', 'visual')
-                time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
-                full_desc = desc['description']
-                user_message_content += f"{i}. {time_info} [{desc_type.upper()}] {full_desc}\n"
-            
-            user_message_content += """
+                # Show more sample descriptions (10 instead of 5) and full text (not truncated)
+                for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
+                    desc_type = desc.get('type', 'visual')
+                    time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
+                    full_desc = desc['description']
+                    user_message_content += f"{i}. {time_info} [{desc_type.upper()}] {full_desc}\n"
+                
+                user_message_content += """
 IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:
 1. Vocabulary style: What words/phrases are used? (concrete nouns, action verbs, technical terms)
 2. Sentence structure: How are descriptions phrased?
@@ -269,13 +273,13 @@ IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:
 Generate semantic queries that use SIMILAR vocabulary and structure to these descriptions.
 For example, if descriptions say "person holding fish", generate queries like "person holding fish" not "amazing fishing moment".
 """
-            
-            # Add video narrative understanding if available
-            if video_narrative:
-                narrative_structure = video_narrative.get('narrative_structure', {})
-                highlight_criteria = video_narrative.get('highlight_criteria', {})
                 
-                user_message_content += f"""
+                # Add video narrative understanding if available
+                if video_narrative:
+                    narrative_structure = video_narrative.get('narrative_structure', {})
+                    highlight_criteria = video_narrative.get('highlight_criteria', {})
+                    
+                    user_message_content += f"""
 
 Video Narrative Understanding:
 - Theme: {video_narrative.get('video_theme', 'N/A')}
@@ -283,24 +287,24 @@ Video Narrative Understanding:
 
 Narrative Structure (use keywords from each part):
 """
-                if narrative_structure:
-                    for part_name in ['intro', 'body', 'ending']:
-                        part = narrative_structure.get(part_name, {})
-                        if part:
-                            keywords = part.get('keywords', [])
-                            description = part.get('description', 'N/A')
-                            user_message_content += f"- {part_name.upper()}: {description}\n"
-                            user_message_content += f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}\n"
-                
-                if highlight_criteria:
-                    highlight_keywords = highlight_criteria.get('keywords', [])
-                    highlight_desc = highlight_criteria.get('description', 'N/A')
-                    user_message_content += f"\nHighlight Criteria: {highlight_desc}\n"
-                    user_message_content += f"Highlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
-                
-                user_message_content += f"\nKey Objects: {', '.join(video_narrative.get('key_objects', []))}\n"
-                
-                user_message_content += """
+                    if narrative_structure:
+                        for part_name in ['intro', 'body', 'ending']:
+                            part = narrative_structure.get(part_name, {})
+                            if part:
+                                keywords = part.get('keywords', [])
+                                description = part.get('description', 'N/A')
+                                user_message_content += f"- {part_name.upper()}: {description}\n"
+                                user_message_content += f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}\n"
+                    
+                    if highlight_criteria:
+                        highlight_keywords = highlight_criteria.get('keywords', [])
+                        highlight_desc = highlight_criteria.get('description', 'N/A')
+                        user_message_content += f"\nHighlight Criteria: {highlight_desc}\n"
+                        user_message_content += f"Highlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
+                    
+                    user_message_content += f"\nKey Objects: {', '.join(video_narrative.get('key_objects', []))}\n"
+                    
+                    user_message_content += """
 CRITICAL INSTRUCTIONS FOR SEMANTIC QUERIES:
 1. Analyze the sample descriptions above - they show HOW descriptions are written
 2. Generate semantic queries using the SAME vocabulary and style as those descriptions
@@ -311,8 +315,8 @@ CRITICAL INSTRUCTIONS FOR SEMANTIC QUERIES:
 7. For hierarchical keywords: Use actual keywords from the narrative structure
 8. The goal: Generate queries that would match descriptions through semantic similarity (cosine similarity)
 """
-            else:
-                user_message_content += """
+                else:
+                    user_message_content += """
 Based on the sample descriptions above, generate semantic queries that match their style:
 - Use concrete, factual language from the descriptions
 - Match vocabulary: If descriptions say "person", "fish", "backpack", use those exact terms
@@ -320,40 +324,61 @@ Based on the sample descriptions above, generate semantic queries that match the
 - Avoid abstract concepts: NO "amazing", "exciting", "memorable" - use concrete actions/objects
 - Example: If descriptions say "person holding fish, backpack visible", query should be "person holding fish, backpack visible" (NOT "amazing fishing moment")
 """
+            
+            user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
+            
+            messages_step1 = [
+                SystemMessage(content=system_prompt_step1),
+                HumanMessage(content=user_message_content)
+            ]
+            
+            response = llm.invoke(messages_step1)
+            response_text = response.content.strip()
+            
+            if logger:
+                logger.debug(f"[LLM RESPONSE - Query Gen] {response_text[:300]}...")
+            elif verbose:
+                print(f"[LLM RESPONSE - Query Gen] {response_text[:300]}...")
+            
+            # Extract and parse JSON from response
+            fallback_search_plan = {
+                "semantic_queries": [query],
+                "hierarchical_keywords": [w for w in re.findall(r'\b\w+\b', query.lower()) if len(w) >= 3][:5],
+                "object_classes": [],
+                "activity_name": "",
+                "activity_keywords": [],
+                "evidence_keywords": [],
+                "is_general_highlight_query": "highlight" in query.lower(),
+                "needs_clarification": False
+            }
+            return parse_json_response(response_text, fallback=fallback_search_plan)
         
-        user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
+        # Helper function for semantic analysis
+        def analyze_semantics():
+            """Analyze query semantics."""
+            result = analyze_query_semantics(query, llm)
+            # Ensure semantic_analysis is not None
+            if result is None:
+                result = {
+                    "query_type": "POSITIVE",
+                    "search_intent": "hybrid",
+                    "target_entities": {},
+                    "special_handling": {},
+                    "reasoning": "Default analysis (LLM returned None)"
+                }
+            return result
         
-        messages_step1 = [
-            SystemMessage(content=system_prompt_step1),
-            HumanMessage(content=user_message_content)
-        ]
+        # Execute both in parallel
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            future_query_gen = executor.submit(generate_search_queries)
+            future_semantic = executor.submit(analyze_semantics)
+            
+            # Wait for both to complete
+            search_plan = future_query_gen.result()
+            semantic_analysis = future_semantic.result()
         
-        log_info("[LLM] Calling LLM to generate search queries...")
-        start_time = time.time()
-        
-        response_step1 = llm.invoke(messages_step1)
-        elapsed = time.time() - start_time
-        
-        log_info(f"[LLM] Query generation completed in {elapsed:.2f}s")
-        response_text_step1 = response_step1.content.strip()
-        
-        if logger:
-            logger.debug(f"[LLM RESPONSE] {response_text_step1[:300]}...")
-        elif verbose:
-            print(f"[LLM RESPONSE] {response_text_step1[:300]}...")
-        
-        # Extract and parse JSON from response
-        fallback_search_plan = {
-            "semantic_queries": [query],
-            "hierarchical_keywords": [w for w in re.findall(r'\b\w+\b', query.lower()) if len(w) >= 3][:5],
-            "object_classes": [],
-            "activity_name": "",
-            "activity_keywords": [],
-            "evidence_keywords": [],
-            "is_general_highlight_query": "highlight" in query.lower(),
-            "needs_clarification": False
-        }
-        search_plan = parse_json_response(response_text_step1, fallback=fallback_search_plan)
+        elapsed_parallel = time.time() - overall_start
+        log_info(f"[PARALLEL LLM] Both calls completed in {elapsed_parallel:.2f}s (parallel execution)")
         
         log_info("\n[SEARCH PLAN] Generated search queries:")
         if content_inspection:
@@ -364,26 +389,12 @@ Based on the sample descriptions above, generate semantic queries that match the
         log_info(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
         log_info(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
         
-        # AGENTIC PHASE 1: Semantic Query Analysis
-        log_info("\n[AGENTIC] Phase 1: Semantic Query Analysis...")
-        start_time = time.time()
-        semantic_analysis = analyze_query_semantics(query, llm)
-        elapsed = time.time() - start_time
-        # Ensure semantic_analysis is not None
-        if semantic_analysis is None:
-            semantic_analysis = {
-                "query_type": "POSITIVE",
-                "search_intent": "hybrid",
-                "target_entities": {},
-                "special_handling": {},
-                "reasoning": "Default analysis (LLM returned None)"
-            }
+        log_info("\n[AGENTIC] Phase 1: Semantic Query Analysis (completed in parallel):")
         log_info(f"  Query type: {semantic_analysis.get('query_type', 'POSITIVE')}")
         log_info(f"  Search intent: {semantic_analysis.get('search_intent', 'hybrid')}")
         log_info(f"  Target entities: {semantic_analysis.get('target_entities', {})}")
         log_info(f"  Special handling: {semantic_analysis.get('special_handling', {})}")
         log_info(f"  Reasoning: {semantic_analysis.get('reasoning', 'N/A')}")
-        log_info(f"  Analysis completed in {elapsed:.2f}s")
         
         # AGENTIC PHASE 2: Dynamic Strategy Planning
         log_info("\n[AGENTIC] Phase 2: Dynamic Strategy Planning...")
