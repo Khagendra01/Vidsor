@@ -13,7 +13,7 @@ def run_agent_thread_with_clarification(self, clarification_response: str, segme
                                         operation: str, preserved_state: Dict, original_query: str):
     """Run orchestrator with clarification response, using preserved state to continue."""
     # Create logger for this clarification response
-    log_file = create_log_file(f"{original_query}_clarification_{clarification_response}", output_dir="logs")
+    log_file = create_log_file(f"{original_query}_clarification_{clarification_response}")
     logger = DualLogger(log_file=log_file, verbose=True)
     
     logger.info("=" * 80)
@@ -104,7 +104,7 @@ def run_agent_thread_with_clarification(self, clarification_response: str, segme
 def run_agent_thread(self, query: str, segment_tree_path: str):
     """Run orchestrator agent in background thread."""
     # Create logger for this query
-    log_file = create_log_file(query, output_dir="logs")
+    log_file = create_log_file(query)
     logger = DualLogger(log_file=log_file, verbose=True)
     
     logger.info("=" * 80)

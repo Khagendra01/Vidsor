@@ -74,17 +74,23 @@ class DualLogger:
         self.info(message)
 
 
-def create_log_file(query: str, output_dir: str = "logs") -> str:
+def create_log_file(query: str, output_dir: Optional[str] = None) -> str:
     """
     Create a log file path based on query and timestamp.
     
     Args:
         query: User query (used in filename)
-        output_dir: Directory for log files
+        output_dir: Directory for log files (defaults to ~/Data/logs)
         
     Returns:
         Path to log file
     """
+    # Use home directory for logs if not specified: ~/Data/logs
+    if output_dir is None:
+        home_dir = Path.home()
+        data_dir = home_dir / "Data"
+        output_dir = str(data_dir / "logs")
+    
     # Sanitize query for filename
     safe_query = "".join(c if c.isalnum() or c in (' ', '-', '_') else '_' for c in query)
     safe_query = safe_query[:50].strip().replace(' ', '_')  # Limit length

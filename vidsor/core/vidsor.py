@@ -128,7 +128,10 @@ class Vidsor:
         
         # Project management
         self.current_project_path: Optional[str] = None
-        self.projects_dir = os.path.join(os.getcwd(), "projects")
+        # Use home directory for projects: ~/Data/projects
+        home_dir = Path.home()
+        data_dir = home_dir / "Data"
+        self.projects_dir = str(data_dir / "projects")
         
         # Initialize controllers
         self.project_manager = ProjectManager(self.projects_dir)
