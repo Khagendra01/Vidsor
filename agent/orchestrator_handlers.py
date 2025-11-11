@@ -79,6 +79,13 @@ def handle_find_highlights(
         print("  Calling planner agent to find highlights...")
     
     # Prepare state for planner (ensure all required fields)
+    # Check if we have preserved_state from a previous clarification
+    # This comes from orchestrator_runner when preserved_state is passed
+    previous_time_ranges = state.get("previous_time_ranges")
+    previous_query = state.get("previous_query")
+    previous_scored_seconds = state.get("previous_scored_seconds")
+    previous_search_results = state.get("previous_search_results")
+    
     planner_state = {
         "user_query": state.get("user_query", "find highlights"),
         "video_path": state.get("video_path", ""),
@@ -89,6 +96,11 @@ def handle_find_highlights(
         "time_ranges": None,  # Will be set by planner
         "needs_clarification": False,
         "messages": state.get("messages", []),
+        # Pass previous context for refinement logic
+        "previous_time_ranges": previous_time_ranges,
+        "previous_query": previous_query,
+        "previous_scored_seconds": previous_scored_seconds,
+        "previous_search_results": previous_search_results,
     }
     
     # Call planner agent

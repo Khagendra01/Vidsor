@@ -2020,6 +2020,8 @@ class Vidsor:
                             self._load_timeline()
                             if self.timeline_canvas:
                                 self._draw_timeline()
+                            # Update UI button states (especially play button)
+                            self._update_ui_state()
                         except Exception as e:
                             logger.error(f"Error updating timeline UI: {e}")
                     

@@ -1,7 +1,7 @@
 """Refinement and validation functions for search results."""
 
 import json
-from typing import Dict, List, Any
+from typing import Dict, List, Any, Optional
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
 from agent.utils import extract_json
@@ -29,6 +29,8 @@ def decide_refine_or_research(state: AgentState, llm) -> Dict[str, Any]:
 1. REFINE existing results - select/filter from results you already found
 2. NEW_SEARCH - perform a completely new search
 
+IMPORTANT: If the current response is a clarification or refinement of the previous query (e.g., adding context, specifying details, narrowing down), it should be REFINE, not NEW_SEARCH.
+
 Context:
 - Previous query: "{previous_query}"
 - Previous results: Found {num_results} time ranges
@@ -37,6 +39,8 @@ Context:
 Examples:
 - User said "top 10" after you found 28 results → REFINE (select top 10 from 28)
 - User said "best 5" after you found results → REFINE (select best 5)
+- User said "fishing context" after asking about fish → REFINE (clarifying/narrowing the search)
+- User said "only the big ones" after asking about fish → REFINE (filtering existing results)
 - User said "actually, find cooking moments" → NEW_SEARCH (completely different topic)
 - User said "show me longer clips" → REFINE (filter existing by duration)
 - User said "find moments where they run" → NEW_SEARCH (different activity)
@@ -107,9 +111,13 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     """
     Refine existing results based on user's clarification.
     Selects top N, filters, or applies other refinements.
+    Uses LLM-based ranking when descriptions are available.
     """
     previous_time_ranges = state.get("previous_time_ranges", [])
     previous_scored_seconds = state.get("previous_scored_seconds", [])
+    previous_search_results = state.get("previous_search_results", [])
+    current_query = state.get("user_query", "")
+    previous_query = state.get("previous_query", "")
     extract_number = decision.get("extract_number")
     
     if verbose:
@@ -119,8 +127,52 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
         if extract_number:
             print(f"  Extracting top {extract_number} results")
     
-    # If we have scored seconds, use them to rank
-    if previous_scored_seconds:
+    # If we have search results with descriptions, use LLM-based ranking
+    if previous_search_results and extract_number:
+        # Map time ranges to their descriptions from search_results
+        range_descriptions = {}
+        for result in previous_search_results:
+            result_tr = result.get("time_range", [])
+            if result_tr and len(result_tr) >= 2:
+                tr_key = (result_tr[0], result_tr[1])
+                # Get description (prefer unified_description, fallback to description or text)
+                desc = result.get("unified_description") or result.get("description") or result.get("text", "")
+                if desc:
+                    if tr_key not in range_descriptions:
+                        range_descriptions[tr_key] = []
+                    range_descriptions[tr_key].append(desc)
+        
+        # Match time ranges with their descriptions
+        ranges_with_descriptions = []
+        for tr in previous_time_ranges:
+            tr_key = (tr[0], tr[1])
+            descriptions = range_descriptions.get(tr_key, [])
+            # Combine descriptions or use first one
+            combined_desc = " | ".join(descriptions[:2]) if descriptions else f"Time range {tr[0]:.1f}s-{tr[1]:.1f}s"
+            ranges_with_descriptions.append({
+                "time_range": tr,
+                "description": combined_desc
+            })
+        
+        # Use LLM to rank based on descriptions and user query
+        if len(ranges_with_descriptions) > extract_number:
+            if verbose:
+                print(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
+            
+            ranked_ranges = rank_ranges_with_llm(
+                ranges_with_descriptions,
+                current_query,
+                previous_query,
+                extract_number,
+                state.get("logger"),
+                verbose=verbose
+            )
+            refined_ranges = [r["time_range"] for r in ranked_ranges]
+        else:
+            refined_ranges = previous_time_ranges
+    
+    # If we have scored seconds but no search results, use score-based ranking
+    elif previous_scored_seconds:
         # Build a map: second_index -> score
         second_scores = {}
         for scored_sec in previous_scored_seconds:
@@ -178,6 +230,135 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
         "needs_clarification": False,
         "confidence": state.get("confidence", 0.7)
     }
+
+
+def rank_ranges_with_llm(
+    ranges_with_descriptions: List[Dict],
+    current_query: str,
+    previous_query: str,
+    top_n: int,
+    logger: Optional[Any] = None,
+    verbose: bool = False
+) -> List[Dict]:
+    """
+    Use LLM to intelligently rank time ranges based on descriptions and user query.
+    
+    Args:
+        ranges_with_descriptions: List of dicts with 'time_range' and 'description'
+        current_query: Current user query/clarification
+        previous_query: Original query
+        top_n: Number of top results to return
+        logger: Optional logger
+        verbose: Print debug info
+        
+    Returns:
+        Ranked list of ranges (top N)
+    """
+    try:
+        from langchain_core.messages import HumanMessage, SystemMessage
+        from agent.utils import extract_json
+        import json
+        
+        # Get LLM (try to get from state or create new)
+        try:
+            from langchain_openai import ChatOpenAI
+            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        except:
+            try:
+                from langchain_anthropic import ChatAnthropic
+                llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
+            except:
+                if verbose:
+                    print("  [WARNING] No LLM available, falling back to score-based ranking")
+                # Fallback: just return first N
+                return ranges_with_descriptions[:top_n]
+        
+        # Prepare context for LLM
+        ranges_summary = []
+        for i, r in enumerate(ranges_with_descriptions):
+            tr = r["time_range"]
+            desc = r["description"]
+            ranges_summary.append({
+                "index": i,
+                "time_range": f"{tr[0]:.1f}s - {tr[1]:.1f}s",
+                "description": desc[:200]  # Truncate long descriptions
+            })
+        
+        system_prompt = """You are a video search assistant. Your job is to rank video time ranges based on their descriptions and relevance to the user's query.
+
+Context:
+- Original query: "{previous_query}"
+- User clarification/refinement: "{current_query}"
+- Total results: {total_count}
+- Need to select: top {top_n}
+
+You will receive a list of time ranges with descriptions. Rank them by relevance to the user's query/clarification and return the top {top_n} most relevant ones.
+
+Return JSON array with ranked indices:
+[
+    {{"index": 0, "rank": 1, "reasoning": "why this is relevant"}},
+    {{"index": 5, "rank": 2, "reasoning": "why this is relevant"}},
+    ...
+]
+
+Return exactly {top_n} results, ranked from most relevant (rank 1) to least relevant (rank {top_n})."""
+        
+        prompt = f"""Time ranges to rank:
+{json.dumps(ranges_summary, indent=2)}
+
+Rank these by relevance to: "{current_query}" (clarification of "{previous_query}").
+Return JSON array with top {top_n} ranked results. Return JSON only."""
+        
+        if logger:
+            logger.info(f"  [LLM RANKING] Ranking {len(ranges_with_descriptions)} results to select top {top_n}")
+        elif verbose:
+            print(f"  [LLM RANKING] Ranking {len(ranges_with_descriptions)} results to select top {top_n}")
+        
+        response = llm.invoke([
+            SystemMessage(content=system_prompt.format(
+                previous_query=previous_query,
+                current_query=current_query,
+                total_count=len(ranges_with_descriptions),
+                top_n=top_n
+            )),
+            HumanMessage(content=prompt)
+        ])
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        ranking_results = json.loads(json_text)
+        
+        # Convert to list if single dict
+        if isinstance(ranking_results, dict):
+            ranking_results = [ranking_results]
+        
+        # Sort by rank and extract indices
+        ranking_results.sort(key=lambda x: x.get("rank", 999))
+        ranked_indices = [r["index"] for r in ranking_results[:top_n]]
+        
+        # Return ranked ranges
+        ranked_ranges = [ranges_with_descriptions[i] for i in ranked_indices if 0 <= i < len(ranges_with_descriptions)]
+        
+        if logger:
+            logger.info(f"  [LLM RANKING] Selected top {len(ranked_ranges)} results")
+            for i, r in enumerate(ranking_results[:top_n], 1):
+                idx = r.get("index", -1)
+                reasoning = r.get("reasoning", "No reasoning")
+                if 0 <= idx < len(ranges_with_descriptions):
+                    tr = ranges_with_descriptions[idx]["time_range"]
+                    logger.info(f"    {i}. {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:80]}")
+        elif verbose:
+            print(f"  [LLM RANKING] Selected top {len(ranked_ranges)} results")
+        
+        return ranked_ranges
+        
+    except Exception as e:
+        if logger:
+            logger.warning(f"  [LLM RANKING] Error: {e}, falling back to first {top_n} results")
+        elif verbose:
+            print(f"  [LLM RANKING] Error: {e}, falling back to first {top_n} results")
+        # Fallback: return first N
+        return ranges_with_descriptions[:top_n]
 
 
 def validate_activity_evidence(query: str, activity_result: Dict, llm, verbose: bool = False) -> Dict[str, Any]:

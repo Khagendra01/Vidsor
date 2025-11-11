@@ -1,0 +1,261 @@
+2025-11-10 23:43:49 - INFO - ================================================================================
+2025-11-10 23:43:49 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-10 23:43:49 - INFO - ================================================================================
+2025-11-10 23:43:49 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 23:43:49 - INFO - Log file: logs\agent_find_all_the_moment_when_they_catch_the_fish__20251110_234349.log
+2025-11-10 23:43:49 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-10 23:43:49 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 23:43:49 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 23:43:49 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:43:49 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-10 23:43:49 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 23:43:49 - INFO - CALLING ORCHESTRATOR
+2025-11-10 23:43:49 - INFO - --------------------------------------------------------------------------------
+2025-11-10 23:43:49 - INFO - 
+================================================================================
+2025-11-10 23:43:49 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-10 23:43:49 - INFO - ================================================================================
+2025-11-10 23:43:49 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 23:43:49 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:43:49 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 23:43:49 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 23:43:49 - INFO - [LOADING] Loading segment tree...
+2025-11-10 23:43:49 - INFO -   ✓ Segment tree loaded
+2025-11-10 23:43:50 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-10 23:43:50 - INFO - 
+================================================================================
+2025-11-10 23:43:50 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-10 23:43:50 - INFO - ================================================================================
+2025-11-10 23:43:50 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 23:43:50 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:43:50 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-10 23:43:54 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-10 23:43:54 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-10 23:43:54 - INFO -   Confidence: 1.00
+2025-11-10 23:43:54 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': 'catch the fish', 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-10 23:43:54 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-10 23:43:54 - INFO -   Calling planner agent to find highlights...
+2025-11-10 23:43:54 - INFO - 
+============================================================
+2025-11-10 23:43:54 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-10 23:43:54 - INFO - ============================================================
+2025-11-10 23:43:54 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 23:43:54 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-10 23:43:54 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-10 23:43:59 - INFO - [LLM] Query generation completed in 5.01s
+2025-11-10 23:43:59 - DEBUG - [LLM RESPONSE] {
+    "semantic_queries": [
+        "moments when they catch fish",
+        "scenes of fishing catches",
+        "highlights of fish catching",
+        "all instances of catching fish"
+    ],
+    "hierarchical_keywords": [
+        "catch",
+        "fish",
+        "moment",
+        "scene"
+    ],
+   ...
+2025-11-10 23:43:59 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-10 23:43:59 - INFO -   Semantic queries: ['moments when they catch fish', 'scenes of fishing catches', 'highlights of fish catching', 'all instances of catching fish']
+2025-11-10 23:43:59 - INFO -   Hierarchical keywords: ['catch', 'fish', 'moment', 'scene']
+2025-11-10 23:43:59 - INFO -   Object classes: ['fish', 'fishing rod', 'boat']
+2025-11-10 23:43:59 - INFO -   Activity: fishing
+2025-11-10 23:43:59 - INFO -   Is general highlight query: False
+2025-11-10 23:43:59 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-10 23:44:04 - INFO -   Query type: AGGREGATE
+2025-11-10 23:44:04 - INFO -   Search intent: hybrid
+2025-11-10 23:44:04 - INFO -   Target entities: {'objects': ['fish'], 'activities': ['catching'], 'concepts': []}
+2025-11-10 23:44:04 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-10 23:44:04 - INFO -   Reasoning: The query is asking to find all instances where the activity of catching fish occurs, indicating a need for both object and activity detection. There are no specific constraints or conditions mentioned, making it an aggregate search for all relevant moments.
+2025-11-10 23:44:04 - INFO -   Analysis completed in 4.95s
+2025-11-10 23:44:04 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-10 23:44:07 - INFO -   Strategy operations: 2
+2025-11-10 23:44:07 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-10 23:44:07 - INFO -   Reasoning: This strategy combines object detection for 'fish' and activity detection for 'catching' to effectively aggregate relevant video segments that feature both the target object and activity.
+2025-11-10 23:44:07 - INFO -   Strategy planning completed in 3.65s
+2025-11-10 23:44:07 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-10 23:44:07 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-10 23:44:07 - INFO -   Semantic weight: 0.40
+2025-11-10 23:44:07 - INFO -   Activity weight: 0.50
+2025-11-10 23:44:07 - INFO -   Hierarchical weight: 0.00
+2025-11-10 23:44:07 - INFO -   Threshold: 0.30
+2025-11-10 23:44:07 - INFO -   High priority objects: {'fish': 1.0}
+2025-11-10 23:44:07 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-10 23:44:07 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-10 23:44:07 - INFO -     Keyword: 'catch'
+2025-11-10 23:44:07 - INFO -       Found 0 leaf node matches
+2025-11-10 23:44:07 - INFO -     Keyword: 'fish'
+2025-11-10 23:44:07 - INFO -       Found 14 leaf node matches
+2025-11-10 23:44:07 - INFO -     Keyword: 'moment'
+2025-11-10 23:44:07 - INFO -       Found 6 leaf node matches
+2025-11-10 23:44:07 - INFO -     Keyword: 'scene'
+2025-11-10 23:44:07 - INFO -       Found 20 leaf node matches
+2025-11-10 23:44:07 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-10 23:44:07 - INFO -     Query: 'moments when they catch fish'
+2025-11-10 23:44:08 - INFO -       Found 15 matches (took 1.20s)
+2025-11-10 23:44:08 - INFO -     Query: 'scenes of fishing catches'
+2025-11-10 23:44:08 - INFO -       Found 15 matches (took 0.01s)
+2025-11-10 23:44:08 - INFO -     Query: 'highlights of fish catching'
+2025-11-10 23:44:08 - INFO -       Found 15 matches (took 0.01s)
+2025-11-10 23:44:08 - INFO -     Query: 'all instances of catching fish'
+2025-11-10 23:44:08 - INFO -       Found 15 matches (took 0.01s)
+2025-11-10 23:44:08 - INFO - 
+  [SEARCH TYPE: Object Detection (YOLO)]
+2025-11-10 23:44:08 - INFO -     Class: 'fishing rod'
+2025-11-10 23:44:08 - INFO -       Found 0 detections
+2025-11-10 23:44:08 - INFO -     Class: 'fish'
+2025-11-10 23:44:08 - INFO -       Found 0 detections
+2025-11-10 23:44:08 - INFO -     Class: 'boat'
+2025-11-10 23:44:08 - INFO -       Found 29 detections
+2025-11-10 23:44:08 - INFO - 
+  [SEARCH TYPE: Activity Pattern Matching]
+2025-11-10 23:44:08 - INFO -     Activity: Fish catching (specialized)
+2025-11-10 23:44:08 - INFO -       Evidence scenes before validation: 50
+2025-11-10 23:45:49 - INFO -       Evidence scenes after validation: 50
+2025-11-10 23:45:49 - INFO - 
+[AGGREGATION] Collected results from all search types:
+2025-11-10 23:45:49 - INFO -   Total results: 130
+2025-11-10 23:45:49 - INFO - 
+[STEP 3] Scoring all seconds with weighted features...
+2025-11-10 23:45:49 - INFO -   Total seconds to score: 300
+2025-11-10 23:45:50 - INFO - [STEP 3] Scoring completed in 0.01s
+2025-11-10 23:45:50 - INFO - 
+[FILTERING] Filtered to 89 seconds above threshold 0.30
+2025-11-10 23:45:50 - INFO -   Top 10 scored seconds:
+2025-11-10 23:45:50 - INFO -     1. Second 266: score=1.123 (sem=0.56, act=1.00, obj=0.40)
+2025-11-10 23:45:50 - INFO -     2. Second 131: score=0.922 (sem=0.72, act=1.00, obj=0.13)
+2025-11-10 23:45:50 - INFO -     3. Second 160: score=0.852 (sem=0.63, act=1.00, obj=0.10)
+2025-11-10 23:45:50 - INFO -     4. Second 155: score=0.844 (sem=0.61, act=1.00, obj=0.10)
+2025-11-10 23:45:50 - INFO -     5. Second 214: score=0.836 (sem=0.59, act=1.00, obj=0.10)
+2025-11-10 23:45:50 - INFO -     6. Second 158: score=0.833 (sem=0.58, act=1.00, obj=0.10)
+2025-11-10 23:45:50 - INFO -     7. Second 156: score=0.824 (sem=0.56, act=1.00, obj=0.10)
+2025-11-10 23:45:50 - INFO -     8. Second 265: score=0.800 (sem=0.00, act=1.00, obj=0.30)
+2025-11-10 23:45:50 - INFO -     9. Second 152: score=0.700 (sem=0.00, act=1.00, obj=0.20)
+2025-11-10 23:45:50 - INFO -     10. Second 153: score=0.700 (sem=0.00, act=1.00, obj=0.20)
+2025-11-10 23:45:50 - INFO - 
+[AGENTIC] Phase 3: Self-Validation...
+2025-11-10 23:45:53 - INFO -   [VALIDATION] Issues detected: ['Results do not provide specific moments or instances of catching fish', 'Results seem to focus on scores rather than actual events or data related to fishing']
+2025-11-10 23:45:53 - INFO -   [VALIDATION] Suggestions: ['Include specific instances or timestamps of fish being caught', 'Refine search to include more detailed descriptions or narratives about fishing moments']
+2025-11-10 23:45:53 - INFO - 
+[STEP 4] Grouping contiguous seconds into time ranges...
+2025-11-10 23:45:53 - INFO -   Grouped into 16 time range(s)
+2025-11-10 23:45:53 - INFO -     1. 9.00s - 12.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     2. 126.00s - 134.00s (duration: 8.00s)
+2025-11-10 23:45:53 - INFO -     3. 149.00s - 161.00s (duration: 12.00s)
+2025-11-10 23:45:53 - INFO -     4. 171.00s - 174.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     5. 180.00s - 182.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     6. 185.00s - 191.00s (duration: 6.00s)
+2025-11-10 23:45:53 - INFO -     7. 197.00s - 200.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     8. 203.00s - 205.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     9. 207.00s - 220.00s (duration: 13.00s)
+2025-11-10 23:45:53 - INFO -     10. 223.00s - 226.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     11. 236.00s - 238.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     12. 240.00s - 251.00s (duration: 11.00s)
+2025-11-10 23:45:53 - INFO -     13. 253.00s - 256.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     14. 260.00s - 271.00s (duration: 11.00s)
+2025-11-10 23:45:53 - INFO -     15. 273.00s - 276.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     16. 293.00s - 297.00s (duration: 4.00s)
+2025-11-10 23:45:53 - INFO - 
+[SELECTION] User intent detection:
+2025-11-10 23:45:53 - INFO -   Multiple indicators: True
+2025-11-10 23:45:53 - INFO -   Single indicators: True
+2025-11-10 23:45:53 - INFO -   Plural 'moments': False
+2025-11-10 23:45:53 - INFO -   Singular 'moment': True
+2025-11-10 23:45:53 - INFO -   Decision: MULTIPLE results (multiple indicator detected)
+2025-11-10 23:45:53 - INFO -   [ACTION] Returning all 16 time ranges
+2025-11-10 23:45:53 - INFO - 
+[FINAL SELECTION]
+2025-11-10 23:45:53 - INFO -   Selected 16 time range(s)
+2025-11-10 23:45:53 - INFO -   Confidence: 0.95
+2025-11-10 23:45:53 - INFO -   Time ranges:
+2025-11-10 23:45:53 - INFO -     1. 9.00s - 12.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     2. 126.00s - 134.00s (duration: 8.00s)
+2025-11-10 23:45:53 - INFO -     3. 149.00s - 161.00s (duration: 12.00s)
+2025-11-10 23:45:53 - INFO -     4. 171.00s - 174.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     5. 180.00s - 182.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     6. 185.00s - 191.00s (duration: 6.00s)
+2025-11-10 23:45:53 - INFO -     7. 197.00s - 200.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     8. 203.00s - 205.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     9. 207.00s - 220.00s (duration: 13.00s)
+2025-11-10 23:45:53 - INFO -     10. 223.00s - 226.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     11. 236.00s - 238.00s (duration: 2.00s)
+2025-11-10 23:45:53 - INFO -     12. 240.00s - 251.00s (duration: 11.00s)
+2025-11-10 23:45:53 - INFO -     13. 253.00s - 256.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     14. 260.00s - 271.00s (duration: 11.00s)
+2025-11-10 23:45:53 - INFO -     15. 273.00s - 276.00s (duration: 3.00s)
+2025-11-10 23:45:53 - INFO -     16. 293.00s - 297.00s (duration: 4.00s)
+2025-11-10 23:45:53 - INFO - 
+[CLARIFICATION DECISION] Found 16 results - asking LLM if clarification needed...
+2025-11-10 23:45:55 - INFO -   LLM Decision: Needs clarification (took 1.75s)
+2025-11-10 23:45:55 - INFO -   Reasoning: The query is somewhat vague and does not specify what type of fish or context, which could lead to a variety of results. 16 results may be overwhelming without further details.
+2025-11-10 23:45:55 - INFO -   [WARNING] Too many results (16) - will ask for clarification
+2025-11-10 23:45:55 - INFO - 
+[MERGING] Merging 16 time ranges...
+2025-11-10 23:45:55 - INFO -   Before merge: 16 ranges
+2025-11-10 23:45:55 - INFO -   After merge: 16 non-overlapping ranges
+2025-11-10 23:45:55 - INFO -   Merged ranges with 2.0s padding:
+2025-11-10 23:45:55 - INFO -     Range 1: 7.00s - 14.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 2: 124.00s - 136.00s (duration: 12.00s)
+2025-11-10 23:45:55 - INFO -     Range 3: 147.00s - 163.00s (duration: 16.00s)
+2025-11-10 23:45:55 - INFO -     Range 4: 169.00s - 176.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 5: 178.00s - 184.00s (duration: 6.00s)
+2025-11-10 23:45:55 - INFO -     Range 6: 183.00s - 193.00s (duration: 10.00s)
+2025-11-10 23:45:55 - INFO -     Range 7: 195.00s - 202.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 8: 201.00s - 207.00s (duration: 6.00s)
+2025-11-10 23:45:55 - INFO -     Range 9: 205.00s - 222.00s (duration: 17.00s)
+2025-11-10 23:45:55 - INFO -     Range 10: 221.00s - 228.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 11: 234.00s - 240.00s (duration: 6.00s)
+2025-11-10 23:45:55 - INFO -     Range 12: 238.00s - 253.00s (duration: 15.00s)
+2025-11-10 23:45:55 - INFO -     Range 13: 251.00s - 258.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 14: 258.00s - 273.00s (duration: 15.00s)
+2025-11-10 23:45:55 - INFO -     Range 15: 271.00s - 278.00s (duration: 7.00s)
+2025-11-10 23:45:55 - INFO -     Range 16: 291.00s - 299.00s (duration: 8.00s)
+2025-11-10 23:45:55 - INFO - 
+================================================================================
+2025-11-10 23:45:55 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 23:45:55 - INFO - ================================================================================
+2025-11-10 23:45:55 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 23:45:55 - ERROR - Status: ✗ Failed
+2025-11-10 23:45:55 - ERROR - Error: What specific type of fish or fishing context are you interested in?
+2025-11-10 23:45:55 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 23:45:55 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 23:45:55 - INFO - --------------------------------------------------------------------------------
+2025-11-10 23:45:55 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 23:45:55 - INFO - Success: False
+2025-11-10 23:45:55 - INFO - Timeline chunks after operation: 0
+2025-11-10 23:45:55 - INFO - Operation result keys: ['success', 'error', 'chunks_created', 'needs_clarification', 'clarification_question', 'preserved_state']
+2025-11-10 23:45:55 - INFO -   Chunks created: 0
+2025-11-10 23:45:55 - INFO - Clarification needed: What specific type of fish or fishing context are you interested in?
+2025-11-10 23:45:55 - INFO - Preserving state for continuation
+2025-11-10 23:45:55 - INFO - Response message: ❓ What specific type of fish or fishing context are you interested in?
+
+Please respond to continue....
+2025-11-10 23:45:55 - INFO - Clarification state stored
+2025-11-10 23:45:55 - INFO - Skipping timeline UI update (success=False or no timeline_chunks)
+2025-11-10 23:45:55 - INFO -   Preserved 16 time ranges
+2025-11-10 23:45:55 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 23:45:55 - INFO - UPDATING CHAT UI
+2025-11-10 23:45:55 - INFO - --------------------------------------------------------------------------------
+2025-11-10 23:45:55 - INFO - Chat UI update scheduled
+2025-11-10 23:45:55 - INFO - 
+================================================================================
+2025-11-10 23:45:55 - INFO - QUERY PROCESSING COMPLETED
+2025-11-10 23:45:55 - INFO - ================================================================================
+2025-11-10 23:45:55 - INFO - Agent thread completed

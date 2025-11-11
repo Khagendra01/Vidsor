@@ -1,0 +1,86 @@
+2025-11-10 23:46:20 - INFO - ================================================================================
+2025-11-10 23:46:20 - INFO - VIDSOR: Continuing with Clarification Response
+2025-11-10 23:46:20 - INFO - ================================================================================
+2025-11-10 23:46:20 - INFO - Original query: find all the moment when they catch the fish.
+2025-11-10 23:46:20 - INFO - Clarification response: any top 10 result that are interesting in fishing
+2025-11-10 23:46:20 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 23:46:20 - INFO - Preserved state keys: ['time_ranges', 'search_results', 'previous_time_ranges', 'previous_scored_seconds', 'previous_query', 'previous_search_results']
+2025-11-10 23:46:20 - INFO - Combined query: find all the moment when they catch the fish. (any top 10 result that are interesting in fishing)
+2025-11-10 23:46:20 - INFO - Calling orchestrator with preserved state (planner will refine instead of re-searching)
+2025-11-10 23:46:20 - INFO - Preserved time_ranges: 16
+2025-11-10 23:46:20 - INFO - Preserved search_results: 130
+2025-11-10 23:46:20 - INFO - 
+================================================================================
+2025-11-10 23:46:20 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-10 23:46:20 - INFO - ================================================================================
+2025-11-10 23:46:20 - INFO - Query: find all the moment when they catch the fish. (any top 10 result that are interesting in fishing)
+2025-11-10 23:46:20 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:46:20 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 23:46:20 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 23:46:20 - INFO - [LOADING] Loading segment tree...
+2025-11-10 23:46:20 - INFO -   ✓ Segment tree loaded
+2025-11-10 23:46:20 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-10 23:46:20 - INFO - 
+================================================================================
+2025-11-10 23:46:20 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-10 23:46:20 - INFO - ================================================================================
+2025-11-10 23:46:20 - INFO - Query: find all the moment when they catch the fish. (any top 10 result that are interesting in fishing)
+2025-11-10 23:46:20 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:46:20 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-10 23:46:23 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-10 23:46:23 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-10 23:46:23 - INFO -   Confidence: 1.00
+2025-11-10 23:46:23 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': 'catch the fish', 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-10 23:46:23 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-10 23:46:23 - INFO -   Calling planner agent to find highlights...
+2025-11-10 23:46:23 - INFO - 
+============================================================
+2025-11-10 23:46:23 - INFO - PLANNER AGENT: Context-Aware Decision
+2025-11-10 23:46:23 - INFO - ============================================================
+2025-11-10 23:46:23 - INFO - Previous query: find all the moment when they catch the fish.
+2025-11-10 23:46:23 - INFO - Previous results: 16 time ranges
+2025-11-10 23:46:23 - INFO - Current query: find all the moment when they catch the fish. (any top 10 result that are interesting in fishing)
+2025-11-10 23:46:23 - INFO - 
+[DECISION] Analyzing user intent...
+2025-11-10 23:46:25 - INFO -   Decision: REFINE
+2025-11-10 23:46:25 - INFO -   Reason: User is asking for a selection of the top 10 interesting moments from the previously found results.
+2025-11-10 23:46:25 - INFO -   Extract number: 10
+2025-11-10 23:46:25 - INFO -   [LLM RANKING] Ranking 16 results to select top 10
+2025-11-10 23:46:33 - INFO -   [LLM RANKING] Selected top 10 results
+2025-11-10 23:46:33 - INFO -     1. 183.0s-193.0s: This time range likely captures a significant moment in fishing, as it is positi
+2025-11-10 23:46:33 - INFO -     2. 178.0s-184.0s: This time range is close to the previous one and may also contain a catch moment
+2025-11-10 23:46:33 - INFO -     3. 169.0s-176.0s: This time range is part of the sequence leading to a catch, likely containing in
+2025-11-10 23:46:33 - INFO -     4. 147.0s-163.0s: This time range is earlier in the sequence but still relevant as it may include 
+2025-11-10 23:46:33 - INFO -     5. 124.0s-136.0s: This time range is also part of the earlier sequence, potentially containing mom
+2025-11-10 23:46:33 - INFO -     6. 195.0s-202.0s: This time range follows the previous ones and may capture additional moments of 
+2025-11-10 23:46:33 - INFO -     7. 201.0s-207.0s: This time range continues the sequence and could include moments of catching fis
+2025-11-10 23:46:33 - INFO -     8. 205.0s-222.0s: This time range is longer and may contain multiple moments of interest related t
+2025-11-10 23:46:33 - INFO -     9. 238.0s-253.0s: This time range is later in the video and may capture additional catches or inte
+2025-11-10 23:46:33 - INFO -     10. 258.0s-273.0s: This time range is also later in the video and could include significant moments
+2025-11-10 23:46:33 - INFO -   Found 10 highlight time ranges
+2025-11-10 23:46:33 - INFO -     Created chunk 1: timeline 0.0s - 10.0s (source: 183.0s - 193.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 2: timeline 10.0s - 16.0s (source: 178.0s - 184.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 3: timeline 16.0s - 23.0s (source: 169.0s - 176.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 4: timeline 23.0s - 39.0s (source: 147.0s - 163.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 5: timeline 39.0s - 51.0s (source: 124.0s - 136.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 6: timeline 51.0s - 58.0s (source: 195.0s - 202.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 7: timeline 58.0s - 64.0s (source: 201.0s - 207.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 8: timeline 64.0s - 81.0s (source: 205.0s - 222.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 9: timeline 81.0s - 96.0s (source: 238.0s - 253.0s)
+2025-11-10 23:46:33 - INFO -     Created chunk 10: timeline 96.0s - 111.0s (source: 258.0s - 273.0s)
+2025-11-10 23:46:33 - INFO -   ✓ Created 10 highlight chunks
+2025-11-10 23:46:33 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 23:46:33 - INFO - 
+================================================================================
+2025-11-10 23:46:33 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 23:46:33 - INFO - ================================================================================
+2025-11-10 23:46:33 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 23:46:33 - INFO - Status: ✓ Success
+2025-11-10 23:46:33 - INFO - Chunks created: 10
+2025-11-10 23:46:33 - INFO - Timeline now has 10 chunks
+2025-11-10 23:46:33 - INFO - Total duration: 110.99s
+2025-11-10 23:46:33 - INFO - Clarification processing completed

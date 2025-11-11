@@ -5,14 +5,14 @@
   },
   {
     "role": "assistant",
-    "content": "Error: Found 16 potential moments. Could you narrow down what you're looking for?"
+    "content": "\u2753 What specific type of fish or fishing context are you interested in?\n\nPlease respond to continue."
   },
   {
     "role": "user",
-    "content": "give me top 10"
+    "content": "any top 10 result that are interesting in fishing"
   },
   {
     "role": "assistant",
-    "content": "Found and added 12 clip(s) to timeline:\n  1. 23.0s - 29.0s\n  2. 38.0s - 44.0s\n  3. 61.0s - 68.0s\n  4. 126.0s - 132.0s\n  5. 221.0s - 228.0s\n  6. 234.0s - 240.0s\n  7. 238.0s - 253.0s\n  8. 251.0s - 258.0s\n  9. 258.0s - 273.0s\n  10. 271.0s - 278.0s\n  11. 286.0s - 293.0s\n  12. 291.0s - 300.0s"
+    "content": "Found and added 10 clip(s) to timeline based on your clarification."
   }
 ]
