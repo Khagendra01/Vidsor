@@ -18,5 +18,5 @@ __all__ = ['Vidsor', 'Chunk', 'EditState', 'TimelineManager', 'ChatManager',
            'VideoExporter', 'VideoAnalyzer', 'ProjectManager']
 
 # Import the main Vidsor class from the core module
-from .core.vidsor import Vidsor
+from .core.vidsor_app import Vidsor
 

@@ -4,7 +4,7 @@ Main entry point for Vidsor.
 
 import os
 import argparse
-from .vidsor import Vidsor
+from .vidsor_app import Vidsor
 
 
 def main():

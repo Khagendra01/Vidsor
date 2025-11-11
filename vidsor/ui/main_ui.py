@@ -8,7 +8,7 @@ from tkinter import ttk, messagebox, simpledialog
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..vidsor import Vidsor
+    from ..core.vidsor_app import Vidsor
 
 
 def create_main_ui(vidsor: 'Vidsor'):
