@@ -69,7 +69,12 @@ def handle_find_highlights(
     Returns:
         Result dictionary with success status and created chunks
     """
-    if verbose:
+    logger = state.get("logger")
+    
+    if logger:
+        logger.info("\n[OPERATION] FIND_HIGHLIGHTS")
+        logger.info("  Calling planner agent to find highlights...")
+    elif verbose:
         print("\n[OPERATION] FIND_HIGHLIGHTS")
         print("  Calling planner agent to find highlights...")
     
@@ -80,6 +85,7 @@ def handle_find_highlights(
         "json_path": state.get("json_path", ""),
         "segment_tree": state.get("segment_tree"),
         "verbose": verbose,
+        "logger": logger,  # Pass logger to planner
         "time_ranges": None,  # Will be set by planner
         "needs_clarification": False,
         "messages": state.get("messages", []),
@@ -93,7 +99,17 @@ def handle_find_highlights(
             return {
                 "success": False,
                 "error": planner_result.get("clarification_question", "Clarification needed"),
-                "chunks_created": []
+                "chunks_created": [],
+                "needs_clarification": True,
+                "clarification_question": planner_result.get("clarification_question", "Clarification needed"),
+                "preserved_state": {
+                    "time_ranges": planner_result.get("time_ranges", []),
+                    "search_results": planner_result.get("search_results", []),
+                    "previous_time_ranges": planner_result.get("previous_time_ranges"),
+                    "previous_scored_seconds": planner_result.get("previous_scored_seconds"),
+                    "previous_query": planner_result.get("previous_query"),
+                    "previous_search_results": planner_result.get("previous_search_results")
+                }
             }
         
         time_ranges = planner_result.get("time_ranges", [])
@@ -104,7 +120,9 @@ def handle_find_highlights(
                 "chunks_created": []
             }
         
-        if verbose:
+        if logger:
+            logger.info(f"  Found {len(time_ranges)} highlight time ranges")
+        elif verbose:
             print(f"  Found {len(time_ranges)} highlight time ranges")
         
         # Create timeline chunks from time ranges
@@ -144,14 +162,19 @@ def handle_find_highlights(
             chunks_created.append(chunk)
             current_timeline_time = chunk["end_time"]
             
-            if verbose:
+            if logger:
+                logger.info(f"    Created chunk {i+1}: timeline {chunk['start_time']:.1f}s - {chunk['end_time']:.1f}s "
+                          f"(source: {start_time:.1f}s - {end_time:.1f}s)")
+            elif verbose:
                 print(f"    Created chunk {i+1}: timeline {chunk['start_time']:.1f}s - {chunk['end_time']:.1f}s "
                       f"(source: {start_time:.1f}s - {end_time:.1f}s)")
         
         # Add chunks to timeline
         timeline_manager.chunks.extend(chunks_created)
         
-        if verbose:
+        if logger:
+            logger.info(f"  ✓ Created {len(chunks_created)} highlight chunks")
+        elif verbose:
             print(f"  ✓ Created {len(chunks_created)} highlight chunks")
         
         return {
@@ -315,7 +338,17 @@ def handle_replace(
             return {
                 "success": False,
                 "error": planner_result.get("clarification_question", "Clarification needed"),
-                "chunks_replaced": []
+                "chunks_replaced": [],
+                "needs_clarification": True,
+                "clarification_question": planner_result.get("clarification_question", "Clarification needed"),
+                "preserved_state": {
+                    "time_ranges": planner_result.get("time_ranges", []),
+                    "search_results": planner_result.get("search_results", []),
+                    "previous_time_ranges": planner_result.get("previous_time_ranges"),
+                    "previous_scored_seconds": planner_result.get("previous_scored_seconds"),
+                    "previous_query": planner_result.get("previous_query"),
+                    "previous_search_results": planner_result.get("previous_search_results")
+                }
             }
         
         time_ranges = planner_result.get("time_ranges", [])
@@ -491,7 +524,17 @@ def handle_insert(
             return {
                 "success": False,
                 "error": planner_result.get("clarification_question", "Clarification needed"),
-                "chunks_inserted": []
+                "chunks_inserted": [],
+                "needs_clarification": True,
+                "clarification_question": planner_result.get("clarification_question", "Clarification needed"),
+                "preserved_state": {
+                    "time_ranges": planner_result.get("time_ranges", []),
+                    "search_results": planner_result.get("search_results", []),
+                    "previous_time_ranges": planner_result.get("previous_time_ranges"),
+                    "previous_scored_seconds": planner_result.get("previous_scored_seconds"),
+                    "previous_query": planner_result.get("previous_query"),
+                    "previous_search_results": planner_result.get("previous_search_results")
+                }
             }
         
         time_ranges = planner_result.get("time_ranges", [])
@@ -666,7 +709,17 @@ def handle_find_broll(
             return {
                 "success": False,
                 "error": planner_result.get("clarification_question", "Clarification needed"),
-                "chunks_created": []
+                "chunks_created": [],
+                "needs_clarification": True,
+                "clarification_question": planner_result.get("clarification_question", "Clarification needed"),
+                "preserved_state": {
+                    "time_ranges": planner_result.get("time_ranges", []),
+                    "search_results": planner_result.get("search_results", []),
+                    "previous_time_ranges": planner_result.get("previous_time_ranges"),
+                    "previous_scored_seconds": planner_result.get("previous_scored_seconds"),
+                    "previous_query": planner_result.get("previous_query"),
+                    "previous_search_results": planner_result.get("previous_search_results")
+                }
             }
         
         time_ranges = planner_result.get("time_ranges", [])

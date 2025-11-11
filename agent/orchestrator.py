@@ -61,8 +61,18 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
         query = state.get("user_query", "")
         timeline_path = state.get("timeline_path")
         verbose = state.get("verbose", False)
+        logger = state.get("logger")
         
-        if verbose:
+        # Use logger if available, otherwise use print
+        log = logger if logger else None
+        
+        if log:
+            log.info("\n" + "=" * 80)
+            log.info("ORCHESTRATOR AGENT: Timeline Management")
+            log.info("=" * 80)
+            log.info(f"Query: {query}")
+            log.info(f"Timeline path: {timeline_path}")
+        elif verbose:
             print("\n" + "=" * 60)
             print("ORCHESTRATOR AGENT: Timeline Management")
             print("=" * 60)
@@ -80,11 +90,16 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                 timeline_manager.load()
                 chunk_count = timeline_manager.get_chunk_count()
                 duration = timeline_manager.calculate_timeline_duration()
-                if verbose:
+                if log:
+                    log.info(f"Timeline loaded: {chunk_count} chunks, {duration:.2f}s duration")
+                elif verbose:
                     print(f"Timeline loaded: {chunk_count} chunks, {duration:.2f}s duration")
             except Exception as e:
-                if verbose:
-                    print(f"[ERROR] Failed to load timeline: {e}")
+                error_msg = f"[ERROR] Failed to load timeline: {e}"
+                if log:
+                    log.error(error_msg)
+                elif verbose:
+                    print(error_msg)
         
         # Step 2: Classify operation and extract parameters
         operation_result = None
@@ -119,7 +134,13 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
         current_operation = operation_result.get("operation") if operation_result else None
         operation_params = operation_result.get("parameters", {}) if operation_result else None
         
-        if verbose and operation_result:
+        if log and operation_result:
+            log.info(f"\n[OPERATION CLASSIFICATION]")
+            log.info(f"  Operation: {current_operation}")
+            log.info(f"  Confidence: {operation_result.get('confidence', 0.0):.2f}")
+            if operation_params:
+                log.info(f"  Parameters: {operation_params}")
+        elif verbose and operation_result:
             print(f"\n[OPERATION CLASSIFICATION]")
             print(f"  Operation: {current_operation}")
             print(f"  Confidence: {operation_result.get('confidence', 0.0):.2f}")
@@ -168,14 +189,21 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                 # Save timeline if operation was successful
                 if operation_result_dict and operation_result_dict.get("success"):
                     timeline_manager.save()
-                    if verbose:
+                    if log:
+                        log.info(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
+                    elif verbose:
                         print(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
                 
             except Exception as e:
-                if verbose:
-                    print(f"[ERROR] Operation execution failed: {e}")
-                import traceback
-                traceback.print_exc()
+                error_msg = f"[ERROR] Operation execution failed: {e}"
+                if log:
+                    log.error(error_msg)
+                    import traceback
+                    log.error(traceback.format_exc())
+                elif verbose:
+                    print(error_msg)
+                    import traceback
+                    traceback.print_exc()
                 operation_result_dict = {
                     "success": False,
                     "error": str(e)

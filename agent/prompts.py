@@ -66,3 +66,24 @@ Return JSON with:
 
 Generate comprehensive search terms - be creative and think of synonyms, related terms, and different phrasings. If you inspected the tree, base queries on actual content."""
 
+CLARIFICATION_DECISION_PROMPT = """You are analyzing a video search query that returned many results. Determine if the user wants all results or needs clarification to narrow down.
+
+User Query: "{query}"
+Number of Results Found: {result_count}
+
+Consider:
+- Does the query explicitly request "all", "every", "each", or similar words indicating they want all results?
+- Is the query vague or ambiguous (e.g., "find moments", "show me scenes")?
+- Would returning all {result_count} results be overwhelming or exactly what the user asked for?
+- Does the query have enough specificity that all results are relevant?
+
+Return JSON only:
+{{
+    "needs_clarification": true/false,
+    "reasoning": "brief explanation",
+    "clarification_question": "question to ask user" (only if needs_clarification is true)
+}}
+
+If the user explicitly wants all results (e.g., "find all moments", "show every time"), set needs_clarification to false.
+If the query is vague and {result_count} results seems like too many, set needs_clarification to true and provide a helpful question."""
+

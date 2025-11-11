@@ -135,6 +135,9 @@ class Vidsor:
         self.agent_thread: Optional[threading.Thread] = None
         self.is_agent_running = False
         
+        # Agent state for clarification
+        self.pending_clarification: Optional[Dict] = None  # Stores preserved state when clarification is needed
+        
         # Load video and segment tree if provided
         if self.video_path:
             self._load_video()
@@ -1877,6 +1880,12 @@ class Vidsor:
         if not message:
             return
         
+        # Check if this is a response to a clarification
+        if self.pending_clarification:
+            # User is responding to clarification - continue with preserved state
+            self._continue_with_clarification(message)
+            return
+        
         # Check if project and video are loaded
         if not self.current_project_path:
             messagebox.showwarning("Warning", "Please select a project first.")
@@ -1912,6 +1921,129 @@ class Vidsor:
         )
         self.agent_thread.start()
     
+    def _continue_with_clarification(self, user_response: str):
+        """Continue operation with user's clarification response using preserved state."""
+        if not self.pending_clarification:
+            return
+        
+        # Clear input
+        self.chat_input.delete("1.0", tk.END)
+        
+        # Add user response to history
+        self._add_chat_message("user", user_response)
+        
+        # Get preserved state
+        preserved = self.pending_clarification
+        operation = preserved["operation"]
+        preserved_state = preserved["preserved_state"]
+        original_query = preserved["original_query"]
+        segment_tree_path = preserved["segment_tree_path"]
+        timeline_path = preserved["timeline_path"]
+        
+        # Clear pending clarification
+        self.pending_clarification = None
+        
+        # Run agent thread with clarification response
+        self.is_agent_running = True
+        self.chat_send_btn.config(state=tk.DISABLED)
+        self.chat_status_label.config(text="Processing clarification...", foreground="blue")
+        
+        self.agent_thread = threading.Thread(
+            target=self._run_agent_thread_with_clarification,
+            args=(user_response, segment_tree_path, operation, preserved_state, original_query),
+            daemon=True
+        )
+        self.agent_thread.start()
+    
+    def _run_agent_thread_with_clarification(self, clarification_response: str, segment_tree_path: str,
+                                            operation: str, preserved_state: Dict, original_query: str):
+        """Run orchestrator with clarification response, using preserved state to continue."""
+        # Create logger for this clarification response
+        log_file = create_log_file(f"{original_query}_clarification_{clarification_response}", output_dir="logs")
+        logger = DualLogger(log_file=log_file, verbose=True)
+        
+        logger.info("=" * 80)
+        logger.info("VIDSOR: Continuing with Clarification Response")
+        logger.info("=" * 80)
+        logger.info(f"Original query: {original_query}")
+        logger.info(f"Clarification response: {clarification_response}")
+        logger.info(f"Operation: {operation}")
+        logger.info(f"Preserved state keys: {list(preserved_state.keys()) if preserved_state else []}")
+        
+        try:
+            timeline_path = os.path.join(self.current_project_path, "timeline.json")
+            
+            # Use preserved state to continue - planner will refine results instead of re-searching
+            # Combine original query with clarification response
+            combined_query = f"{original_query} ({clarification_response})"
+            
+            logger.info(f"Combined query: {combined_query}")
+            logger.info("Calling orchestrator with preserved state (planner will refine instead of re-searching)")
+            logger.info(f"Preserved time_ranges: {len(preserved_state.get('time_ranges', []))}")
+            logger.info(f"Preserved search_results: {len(preserved_state.get('search_results', []))}")
+            
+            result = run_orchestrator(
+                query=combined_query,
+                timeline_path=timeline_path,
+                json_path=segment_tree_path,
+                video_path=self.video_path,
+                model_name="gpt-4o-mini",
+                verbose=False,
+                logger=logger,
+                preserved_state=preserved_state  # Pass preserved state so planner can refine
+            )
+            
+            # Process result same as normal flow
+            operation_result = result.get("operation_result", {})
+            success = result.get("success", False)
+            timeline_chunks = result.get("timeline_chunks", [])
+            
+            # Generate response
+            if not success:
+                error_msg = operation_result.get("error", "Operation failed")
+                logger.error(f"Operation failed: {error_msg}")
+                response = f"Error: {error_msg}"
+            elif operation == "FIND_HIGHLIGHTS":
+                chunks_created = operation_result.get("chunks_created", [])
+                if chunks_created:
+                    response = f"Found and added {len(chunks_created)} clip(s) to timeline based on your clarification."
+                else:
+                    response = "No matching clips found based on your clarification."
+            else:
+                response = f"Operation completed based on your clarification."
+            
+            # Update timeline UI if succeeded
+            if success and timeline_chunks is not None:
+                if self.root:
+                    def update_timeline_ui():
+                        try:
+                            self._load_timeline()
+                            if self.timeline_canvas:
+                                self._draw_timeline()
+                        except Exception as e:
+                            logger.error(f"Error updating timeline UI: {e}")
+                    
+                    self.root.after(0, update_timeline_ui)
+            
+            # Update UI
+            if self.root:
+                self.root.after(0, lambda: self._add_chat_message("assistant", response))
+                self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+            
+        except Exception as e:
+            error_msg = f"Error processing clarification: {str(e)}"
+            logger.error(error_msg)
+            import traceback
+            logger.error(traceback.format_exc())
+            if self.root:
+                self.root.after(0, lambda: self._add_chat_message("assistant", error_msg))
+                self.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
+                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+        finally:
+            self.is_agent_running = False
+            logger.info("Clarification processing completed")
+    
     def _run_agent_thread(self, query: str, segment_tree_path: str):
         """Run orchestrator agent in background thread."""
         # Create logger for this query
@@ -1944,10 +2076,20 @@ class Vidsor:
             # Check if timeline exists and log current state
             if os.path.exists(timeline_path):
                 try:
+                    # Check if file is empty or whitespace only
                     with open(timeline_path, 'r') as f:
-                        timeline_data = json.load(f)
-                        chunks_count = len(timeline_data.get("chunks", []))
-                        logger.info(f"Existing timeline loaded: {chunks_count} chunks")
+                        content = f.read().strip()
+                        if not content:
+                            logger.info("Timeline.json is empty - starting with empty timeline")
+                        else:
+                            # Parse JSON
+                            with open(timeline_path, 'r') as f2:
+                                timeline_data = json.load(f2)
+                                chunks_count = len(timeline_data.get("chunks", []))
+                                logger.info(f"Existing timeline loaded: {chunks_count} chunks")
+                except json.JSONDecodeError as e:
+                    logger.warning(f"Timeline.json contains invalid JSON: {e}")
+                    logger.info("Starting with empty timeline")
                 except Exception as e:
                     logger.warning(f"Could not read existing timeline: {e}")
                     logger.info("Starting with empty timeline")
@@ -1964,7 +2106,8 @@ class Vidsor:
                 json_path=segment_tree_path,
                 video_path=self.video_path,
                 model_name="gpt-4o-mini",
-                verbose=False  # Orchestrator has its own logging
+                verbose=False,  # Use logger instead
+                logger=logger  # Pass logger to orchestrator
             )
             
             logger.info("\n" + "-" * 80)
@@ -1992,10 +2135,45 @@ class Vidsor:
                 if "chunks_inserted" in operation_result:
                     logger.info(f"  Chunks inserted: {len(operation_result['chunks_inserted'])}")
             
+            # Check if this is a clarification request (not a real error)
+            needs_clarification = operation_result.get("needs_clarification", False)
+            clarification_question = operation_result.get("clarification_question")
+            preserved_state = operation_result.get("preserved_state")
+            
+            # If clarification_question is in error field but needs_clarification flag is missing, extract it
+            if not clarification_question and not success:
+                error_msg = operation_result.get("error", "")
+                # Check if error message looks like a clarification question
+                if error_msg and ("Could you narrow down" in error_msg or "potential moments" in error_msg.lower() or "Found" in error_msg and "moment" in error_msg.lower()):
+                    clarification_question = error_msg
+                    needs_clarification = True
+                    logger.info(f"Detected clarification question in error field: {clarification_question}")
+            
             # Generate response based on operation type
             response_parts = []
             
-            if not success:
+            if needs_clarification and clarification_question:
+                # This is a clarification request, not an error
+                logger.info(f"Clarification needed: {clarification_question}")
+                logger.info("Preserving state for continuation")
+                
+                # Store preserved state for when user responds
+                if self.root:
+                    def store_clarification_state():
+                        self.pending_clarification = {
+                            "operation": operation,
+                            "preserved_state": preserved_state,
+                            "original_query": query,
+                            "segment_tree_path": segment_tree_path,
+                            "timeline_path": timeline_path
+                        }
+                        logger.info("Clarification state stored")
+                    
+                    self.root.after(0, store_clarification_state)
+                
+                # Show clarification question in chat (without "Error:" prefix)
+                response = f"❓ {clarification_question}\n\nPlease respond to continue."
+            elif not success:
                 error_msg = operation_result.get("error", "Operation failed")
                 logger.error(f"Operation failed: {error_msg}")
                 response = f"Error: {error_msg}"
@@ -2061,6 +2239,10 @@ class Vidsor:
                                 logger.info("Drawing timeline on canvas...")
                                 self._draw_timeline()
                                 logger.info("Timeline canvas updated")
+                            
+                            # Update UI button states (especially play button)
+                            logger.info("Updating UI button states...")
+                            self._update_ui_state()
                             
                             logger.info(f"[VIDSOR] Timeline updated: {len(timeline_chunks)} chunks")
                         except Exception as e:

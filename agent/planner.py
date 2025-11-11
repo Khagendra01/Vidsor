@@ -2,6 +2,7 @@
 
 import json
 import re
+import time
 from typing import Optional, Set
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
@@ -58,25 +59,31 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         query = state["user_query"]
         segment_tree = state["segment_tree"]
         verbose = state.get("verbose", False)
+        logger = state.get("logger")
+        
+        # Helper function to log or print
+        def log_info(msg):
+            if logger:
+                logger.info(msg)
+            elif verbose:
+                print(msg)
         
         # AGENTIC DECISION: Check if we should refine existing results or do new search
         if state.get("previous_time_ranges") and state.get("previous_query"):
-            if verbose:
-                print("\n" + "=" * 60)
-                print("PLANNER AGENT: Context-Aware Decision")
-                print("=" * 60)
-                print(f"Previous query: {state.get('previous_query')}")
-                print(f"Previous results: {len(state.get('previous_time_ranges', []))} time ranges")
-                print(f"Current query: {query}")
-                print("\n[DECISION] Analyzing user intent...")
+            log_info("\n" + "=" * 60)
+            log_info("PLANNER AGENT: Context-Aware Decision")
+            log_info("=" * 60)
+            log_info(f"Previous query: {state.get('previous_query')}")
+            log_info(f"Previous results: {len(state.get('previous_time_ranges', []))} time ranges")
+            log_info(f"Current query: {query}")
+            log_info("\n[DECISION] Analyzing user intent...")
             
             decision = decide_refine_or_research(state, llm)
             
-            if verbose:
-                print(f"  Decision: {decision.get('action')}")
-                print(f"  Reason: {decision.get('reason')}")
-                if decision.get('extract_number'):
-                    print(f"  Extract number: {decision.get('extract_number')}")
+            log_info(f"  Decision: {decision.get('action')}")
+            log_info(f"  Reason: {decision.get('reason')}")
+            if decision.get('extract_number'):
+                log_info(f"  Extract number: {decision.get('extract_number')}")
             
             if decision.get("action") == "REFINE":
                 # Refine existing results
@@ -91,11 +98,10 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         clarification_question = None
         filtered_seconds = []  # For preserving scored seconds
         
-        if verbose:
-            print("\n" + "=" * 60)
-            print("PLANNER AGENT: Multi-Modal Search Strategy")
-            print("=" * 60)
-            print(f"Query: {query}")
+        log_info("\n" + "=" * 60)
+        log_info("PLANNER AGENT: Multi-Modal Search Strategy")
+        log_info("=" * 60)
+        log_info(f"Query: {query}")
         
         # STEP 0: Decide if we need to inspect segment tree content
         # Inspect for abstract queries, highlights, vague queries, etc.
@@ -114,21 +120,20 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         
         content_inspection = None
         if needs_inspection and segment_tree:
-            if verbose:
-                print("\n[INSPECTION] Inspecting segment tree to understand video content...")
+            log_info("\n[INSPECTION] Inspecting segment tree to understand video content...")
             try:
+                start_time = time.time()
                 content_inspection = segment_tree.inspect_content(max_keywords=100, max_sample_descriptions=20)
-                if verbose:
-                    print(f"  Found {content_inspection['keyword_count']} unique keywords")
-                    print(f"  Found {content_inspection['object_class_count']} object classes")
-                    print(f"  Sample keywords: {', '.join(content_inspection['all_keywords'][:15])}...")
+                elapsed = time.time() - start_time
+                log_info(f"  Found {content_inspection['keyword_count']} unique keywords")
+                log_info(f"  Found {content_inspection['object_class_count']} object classes")
+                log_info(f"  Sample keywords: {', '.join(content_inspection['all_keywords'][:15])}...")
+                log_info(f"  Inspection completed in {elapsed:.2f}s")
             except Exception as e:
-                if verbose:
-                    print(f"  [WARNING] Inspection failed: {e}")
+                log_info(f"  [WARNING] Inspection failed: {e}")
                 content_inspection = None
         
-        if verbose:
-            print("\n[STEP 1] Generating search queries for all modalities...")
+        log_info("\n[STEP 1] Generating search queries for all modalities...")
         
         # STEP 1: Generate search queries/keywords for ALL search types
         # Use prompts from prompts.py
@@ -159,13 +164,18 @@ Sample descriptions:
             HumanMessage(content=user_message_content)
         ]
         
-        if verbose:
-            print("[LLM] Calling LLM to generate search queries...")
+        log_info("[LLM] Calling LLM to generate search queries...")
+        start_time = time.time()
         
         response_step1 = llm.invoke(messages_step1)
+        elapsed = time.time() - start_time
+        
+        log_info(f"[LLM] Query generation completed in {elapsed:.2f}s")
         response_text_step1 = response_step1.content.strip()
         
-        if verbose:
+        if logger:
+            logger.debug(f"[LLM RESPONSE] {response_text_step1[:300]}...")
+        elif verbose:
             print(f"[LLM RESPONSE] {response_text_step1[:300]}...")
         
         # Extract JSON from response
@@ -196,35 +206,36 @@ Sample descriptions:
                     "needs_clarification": False
                 }
         
-        if verbose:
-            print("\n[SEARCH PLAN] Generated search queries:")
-            if content_inspection:
-                print(f"  [INSPECTION] Used segment tree inspection: Yes")
-            print(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
-            print(f"  Hierarchical keywords: {search_plan.get('hierarchical_keywords', [])}")
-            print(f"  Object classes: {search_plan.get('object_classes', [])}")
-            print(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
-            print(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
+        log_info("\n[SEARCH PLAN] Generated search queries:")
+        if content_inspection:
+            log_info(f"  [INSPECTION] Used segment tree inspection: Yes")
+        log_info(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
+        log_info(f"  Hierarchical keywords: {search_plan.get('hierarchical_keywords', [])}")
+        log_info(f"  Object classes: {search_plan.get('object_classes', [])}")
+        log_info(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
+        log_info(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
         
         # AGENTIC PHASE 1: Semantic Query Analysis
-        if verbose:
-            print("\n[AGENTIC] Phase 1: Semantic Query Analysis...")
+        log_info("\n[AGENTIC] Phase 1: Semantic Query Analysis...")
+        start_time = time.time()
         semantic_analysis = analyze_query_semantics(query, llm)
-        if verbose:
-            print(f"  Query type: {semantic_analysis.get('query_type', 'POSITIVE')}")
-            print(f"  Search intent: {semantic_analysis.get('search_intent', 'hybrid')}")
-            print(f"  Target entities: {semantic_analysis.get('target_entities', {})}")
-            print(f"  Special handling: {semantic_analysis.get('special_handling', {})}")
-            print(f"  Reasoning: {semantic_analysis.get('reasoning', 'N/A')}")
+        elapsed = time.time() - start_time
+        log_info(f"  Query type: {semantic_analysis.get('query_type', 'POSITIVE')}")
+        log_info(f"  Search intent: {semantic_analysis.get('search_intent', 'hybrid')}")
+        log_info(f"  Target entities: {semantic_analysis.get('target_entities', {})}")
+        log_info(f"  Special handling: {semantic_analysis.get('special_handling', {})}")
+        log_info(f"  Reasoning: {semantic_analysis.get('reasoning', 'N/A')}")
+        log_info(f"  Analysis completed in {elapsed:.2f}s")
         
         # AGENTIC PHASE 2: Dynamic Strategy Planning
-        if verbose:
-            print("\n[AGENTIC] Phase 2: Dynamic Strategy Planning...")
+        log_info("\n[AGENTIC] Phase 2: Dynamic Strategy Planning...")
+        start_time = time.time()
         strategy = plan_search_strategy(semantic_analysis, llm, verbose=verbose)
-        if verbose:
-            print(f"  Strategy operations: {len(strategy.get('search_operations', []))}")
-            print(f"  Post-processing: {strategy.get('post_processing', [])}")
-            print(f"  Reasoning: {strategy.get('reasoning', 'N/A')}")
+        elapsed = time.time() - start_time
+        log_info(f"  Strategy operations: {len(strategy.get('search_operations', []))}")
+        log_info(f"  Post-processing: {strategy.get('post_processing', [])}")
+        log_info(f"  Reasoning: {strategy.get('reasoning', 'N/A')}")
+        log_info(f"  Strategy planning completed in {elapsed:.2f}s")
         
         # Convert strategy to query_intent format for backward compatibility
         query_intent = {
@@ -241,8 +252,7 @@ Sample descriptions:
         }
         
         # Cross-validate with search plan (keep for compatibility)
-        if verbose:
-            print("\n[VALIDATION] Cross-validating with search plan...")
+        log_info("\n[VALIDATION] Cross-validating with search plan...")
         query_intent = validate_and_adjust_intent(query_intent, search_plan, verbose=verbose)
         
         # NEW: Initialize feature extractor
@@ -285,15 +295,14 @@ Sample descriptions:
                     # Reduce hierarchical to make room for semantic
                     weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
                 weights["semantic_weight"] = 0.4  # Set reasonable default
-        if verbose:
-            print(f"\n[WEIGHT CONFIGURATION]")
-            print(f"  Semantic weight: {weights['semantic_weight']:.2f}")
-            print(f"  Activity weight: {weights['activity_weight']:.2f}")
-            print(f"  Hierarchical weight: {weights['hierarchical_weight']:.2f}")
-            print(f"  Threshold: {weights['threshold']:.2f}")
-            high_priority_objects = {k: v for k, v in weights['object_weights'].items() if v > 0.3}
-            if high_priority_objects:
-                print(f"  High priority objects: {high_priority_objects}")
+        log_info(f"\n[WEIGHT CONFIGURATION]")
+        log_info(f"  Semantic weight: {weights['semantic_weight']:.2f}")
+        log_info(f"  Activity weight: {weights['activity_weight']:.2f}")
+        log_info(f"  Hierarchical weight: {weights['hierarchical_weight']:.2f}")
+        log_info(f"  Threshold: {weights['threshold']:.2f}")
+        high_priority_objects = {k: v for k, v in weights['object_weights'].items() if v > 0.3}
+        if high_priority_objects:
+            log_info(f"  High priority objects: {high_priority_objects}")
         
         needs_clarification = search_plan.get("needs_clarification", False)
         clarification_question = search_plan.get("clarification_question")
@@ -308,17 +317,14 @@ Sample descriptions:
         if is_audio_query and has_ambiguous_refs and not needs_clarification:
             needs_clarification = True
             clarification_question = "I notice your query mentions audio/transcription but uses ambiguous references. Could you clarify who or what you're looking for?"
-            if verbose:
-                print("[WARNING] Ambiguous audio query detected - will ask for clarification")
+            log_info("[WARNING] Ambiguous audio query detected - will ask for clarification")
         
         if needs_clarification and not is_audio_query:
-            if verbose:
-                print("[INFO] LLM suggested clarification, but query seems clear enough. Will try searching first.")
+            log_info("[INFO] LLM suggested clarification, but query seems clear enough. Will try searching first.")
             needs_clarification = False
         
         if not needs_clarification:
-            if verbose:
-                print("\n[STEP 2] Executing search with hierarchical tree + semantic search...")
+            log_info("\n[STEP 2] Executing search with hierarchical tree + semantic search...")
             
             # STEP 2: Execute search types and collect results
             all_search_results = []  # Store all results with metadata about search type
@@ -330,8 +336,7 @@ Sample descriptions:
             
             # 0. General highlight detection (using hierarchical tree)
             if is_general_highlight and segment_tree.hierarchical_tree:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: General Highlights (Hierarchical Tree)]")
+                log_info(f"\n  [SEARCH TYPE: General Highlights (Hierarchical Tree)]")
                 # Extract action keywords from query if any
                 hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
                 scored_leaves = segment_tree.hierarchical_score_leaves_for_highlights(
@@ -348,17 +353,14 @@ Sample descriptions:
                             "node_id": leaf.get("node_id"),
                             "keyword_count": leaf.get("keyword_count", 0)
                         })
-                if verbose:
-                    print(f"      Found {len(scored_leaves)} highlight candidates")
+                log_info(f"      Found {len(scored_leaves)} highlight candidates")
             
             # 1. Hierarchical tree keyword search (fast pre-filter)
             hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
             if hierarchical_keywords and segment_tree.hierarchical_tree:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]")
+                log_info(f"\n  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]")
                 for keyword in hierarchical_keywords:
-                    if verbose:
-                        print(f"    Keyword: '{keyword}'")
+                    log_info(f"    Keyword: '{keyword}'")
                     results = segment_tree.hierarchical_keyword_search(
                         [keyword],
                         match_mode="any",
@@ -376,17 +378,15 @@ Sample descriptions:
                                     "node_id": result.get("node_id"),
                                     "matched_keyword": keyword
                                 })
-                    if verbose:
-                        print(f"      Found {len([r for r in results if r.get('level') == 0])} leaf node matches")
+                    log_info(f"      Found {len([r for r in results if r.get('level') == 0])} leaf node matches")
             
             # 2. Semantic search (replaces old visual/audio keyword search)
             semantic_queries = search_plan.get("semantic_queries", [query])
             if semantic_queries:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Semantic Search (Visual + Audio)]")
+                log_info(f"\n  [SEARCH TYPE: Semantic Search (Visual + Audio)]")
                 for sem_query in semantic_queries:
-                    if verbose:
-                        print(f"    Query: '{sem_query}'")
+                    log_info(f"    Query: '{sem_query}'")
+                    start_time = time.time()
                     threshold = 0.45
                     results = segment_tree.semantic_search(
                         sem_query,
@@ -416,13 +416,13 @@ Sample descriptions:
                             search_unified=True,
                             verbose=False
                         )
+                    elapsed = time.time() - start_time
                     
                     for result in results:
                         result["search_type"] = "semantic"
                         result["search_query"] = sem_query
                         all_search_results.append(result)
-                    if verbose:
-                        print(f"      Found {len(results)} matches")
+                    log_info(f"      Found {len(results)} matches (took {elapsed:.2f}s)")
             
             # 3. Object search (with negation handling)
             object_classes = search_plan.get("object_classes", [])
@@ -434,10 +434,9 @@ Sample descriptions:
             is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
             
             if all_object_classes:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Object Detection (YOLO)]")
-                    if is_negative:
-                        print(f"    [NEGATION] Inverting search - finding seconds WITHOUT objects")
+                log_info(f"\n  [SEARCH TYPE: Object Detection (YOLO)]")
+                if is_negative:
+                    log_info(f"    [NEGATION] Inverting search - finding seconds WITHOUT objects")
                 
                 if is_negative:
                     # NEGATIVE QUERY: Find seconds WITHOUT the objects
@@ -456,8 +455,7 @@ Sample descriptions:
                         return int(time_seconds) if 0 <= int(time_seconds) < total_seconds else None
                     
                     for obj_class in all_object_classes:
-                        if verbose:
-                            print(f"    Class: '{obj_class}' (inverted)")
+                        log_info(f"    Class: '{obj_class}' (inverted)")
                         results = segment_tree.find_objects_by_class(obj_class)
                         for result in results:
                             tr = result.get("time_range", [])
@@ -488,49 +486,41 @@ Sample descriptions:
                                         "inverted": True
                                     })
                     
-                    if verbose:
-                        print(f"      Found {total_seconds - len(all_seconds_with_objects)} seconds WITHOUT objects (inverted from {len(all_seconds_with_objects)} with objects)")
+                    log_info(f"      Found {total_seconds - len(all_seconds_with_objects)} seconds WITHOUT objects (inverted from {len(all_seconds_with_objects)} with objects)")
                 else:
                     # POSITIVE QUERY: Normal object detection
                     for obj_class in all_object_classes:
-                        if verbose:
-                            print(f"    Class: '{obj_class}'")
+                        log_info(f"    Class: '{obj_class}'")
                         results = segment_tree.find_objects_by_class(obj_class)
                         for result in results:
                             result["search_type"] = "object"
                             result["object_class"] = obj_class
                             all_search_results.append(result)
-                        if verbose:
-                            print(f"      Found {len(results)} detections")
+                        log_info(f"      Found {len(results)} detections")
             
             # 4. Activity search (keep - pattern matching)
             activity_name = search_plan.get("activity_name", "")
             activity_keywords = search_plan.get("activity_keywords", [])
             evidence_keywords = search_plan.get("evidence_keywords", [])
             if activity_name or activity_keywords:
-                if verbose:
-                    print(f"\n  [SEARCH TYPE: Activity Pattern Matching]")
+                log_info(f"\n  [SEARCH TYPE: Activity Pattern Matching]")
                 if "fish" in query_lower and ("catch" in query_lower or "caught" in query_lower):
-                    if verbose:
-                        print(f"    Activity: Fish catching (specialized)")
+                    log_info(f"    Activity: Fish catching (specialized)")
                     result = segment_tree.check_fish_caught()
                     result["search_type"] = "activity"
                     # Add metadata for validation
                     result["activity_name"] = "fishing"
                     result["evidence_name"] = "fish caught"
                     # Validate evidence descriptions to filter false positives
-                    if verbose:
-                        print(f"      Evidence scenes before validation: {result.get('fish_holding_count', 0)}")
+                    log_info(f"      Evidence scenes before validation: {result.get('fish_holding_count', 0)}")
                     result = validate_activity_evidence(query, result, llm, verbose=verbose)
                     # Update fish-specific fields after validation
                     result["fish_holding_count"] = result.get("evidence_count", 0)
                     result["fish_caught"] = result.get("detected", False)
                     all_search_results.append(result)
-                    if verbose:
-                        print(f"      Evidence scenes after validation: {result.get('fish_holding_count', 0)}")
+                    log_info(f"      Evidence scenes after validation: {result.get('fish_holding_count', 0)}")
                 elif activity_keywords:
-                    if verbose:
-                        print(f"    Activity: {activity_name or 'general'}")
+                    log_info(f"    Activity: {activity_name or 'general'}")
                     result = segment_tree.check_activity(
                         activity_keywords=activity_keywords,
                         evidence_keywords=evidence_keywords or activity_keywords,
@@ -541,20 +531,18 @@ Sample descriptions:
                     result["activity_name"] = activity_name or "activity"
                     result["evidence_name"] = activity_name or "activity"
                     # Validate evidence descriptions to filter false positives
-                    if verbose:
-                        print(f"      Evidence scenes before validation: {result.get('evidence_count', 0)}")
+                    log_info(f"      Evidence scenes before validation: {result.get('evidence_count', 0)}")
                     result = validate_activity_evidence(query, result, llm, verbose=verbose)
                     all_search_results.append(result)
-                    if verbose:
-                        print(f"      Evidence scenes after validation: {result.get('evidence_count', 0)}")
+                    log_info(f"      Evidence scenes after validation: {result.get('evidence_count', 0)}")
             
-            if verbose:
-                print(f"\n[AGGREGATION] Collected results from all search types:")
-                print(f"  Total results: {len(all_search_results)}")
+            log_info(f"\n[AGGREGATION] Collected results from all search types:")
+            log_info(f"  Total results: {len(all_search_results)}")
             
             # NEW STEP 3: Score all seconds using weighted features
-            if verbose:
-                print(f"\n[STEP 3] Scoring all seconds with weighted features...")
+            log_info(f"\n[STEP 3] Scoring all seconds with weighted features...")
+            log_info(f"  Total seconds to score: {len(segment_tree.seconds)}")
+            start_time = time.time()
             
             # Separate results by type for scoring
             semantic_results = [r for r in all_search_results if r.get("search_type") == "semantic"]
@@ -574,8 +562,7 @@ Sample descriptions:
                     if second_idx is not None:
                         negated_second_indices.add(second_idx)
                 
-                if verbose:
-                    print(f"\n[NEGATION] Only scoring {len(negated_second_indices)} seconds identified by negation logic")
+                log_info(f"\n[NEGATION] Only scoring {len(negated_second_indices)} seconds identified by negation logic")
             
             # Score seconds (only negated ones if negative query)
             scored_seconds = score_seconds(
@@ -589,24 +576,24 @@ Sample descriptions:
                 negated_second_indices=negated_second_indices,  # Pass the restricted set
                 verbose=verbose
             )
+            elapsed = time.time() - start_time
+            log_info(f"[STEP 3] Scoring completed in {elapsed:.2f}s")
             
             # Filter by threshold and sort
             threshold = weights["threshold"]
             filtered_seconds = [s for s in scored_seconds if s["score"] >= threshold]
             filtered_seconds.sort(key=lambda x: x["score"], reverse=True)
             
-            if verbose:
-                print(f"\n[FILTERING] Filtered to {len(filtered_seconds)} seconds above threshold {threshold:.2f}")
-                if filtered_seconds:
-                    print(f"  Top 10 scored seconds:")
-                    for i, sec in enumerate(filtered_seconds[:10], 1):
-                        print(f"    {i}. Second {sec['second']}: score={sec['score']:.3f} "
+            log_info(f"\n[FILTERING] Filtered to {len(filtered_seconds)} seconds above threshold {threshold:.2f}")
+            if filtered_seconds:
+                log_info(f"  Top 10 scored seconds:")
+                for i, sec in enumerate(filtered_seconds[:10], 1):
+                    log_info(f"    {i}. Second {sec['second']}: score={sec['score']:.3f} "
                               f"(sem={sec['semantic_score']:.2f}, act={sec['activity_score']:.2f}, "
                               f"obj={sec['object_score']:.2f})")
             
             # AGENTIC PHASE 3: Self-Validation
-            if verbose:
-                print(f"\n[AGENTIC] Phase 3: Self-Validation...")
+            log_info(f"\n[AGENTIC] Phase 3: Self-Validation...")
             
             validation_result = validate_search_results(
                 query=query,
@@ -616,21 +603,19 @@ Sample descriptions:
                 verbose=verbose
             )
             
-            if validation_result.get("needs_refinement", False) and verbose:
-                print(f"  [VALIDATION] Issues detected: {validation_result.get('issues', [])}")
-                print(f"  [VALIDATION] Suggestions: {validation_result.get('suggestions', [])}")
+            if validation_result.get("needs_refinement", False):
+                log_info(f"  [VALIDATION] Issues detected: {validation_result.get('issues', [])}")
+                log_info(f"  [VALIDATION] Suggestions: {validation_result.get('suggestions', [])}")
             
             # NEW STEP 4: Group contiguous seconds into time ranges
-            if verbose:
-                print(f"\n[STEP 4] Grouping contiguous seconds into time ranges...")
+            log_info(f"\n[STEP 4] Grouping contiguous seconds into time ranges...")
             
             time_ranges = group_contiguous_seconds(filtered_seconds, min_duration=1.0, gap_tolerance=2.0)
             
-            if verbose:
-                print(f"  Grouped into {len(time_ranges)} time range(s)")
-                if time_ranges:
-                    for i, (start, end) in enumerate(time_ranges, 1):
-                        print(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+            log_info(f"  Grouped into {len(time_ranges)} time range(s)")
+            if time_ranges:
+                for i, (start, end) in enumerate(time_ranges, 1):
+                    log_info(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
             
             # Determine if user wants one or multiple results
             query_lower = query.lower()
@@ -671,20 +656,18 @@ Sample descriptions:
                 user_wants_one = len(time_ranges) <= 3
                 reason = f"default (found {len(time_ranges)} ranges)"
             
-            if verbose:
-                print(f"\n[SELECTION] User intent detection:")
-                print(f"  Multiple indicators: {has_multiple_indicator}")
-                print(f"  Single indicators: {has_single_indicator}")
-                print(f"  Plural 'moments': {has_plural_moment}")
-                print(f"  Singular 'moment': {has_singular_moment}")
-                print(f"  Decision: {'ONE result' if user_wants_one else 'MULTIPLE results'} ({reason})")
+            log_info(f"\n[SELECTION] User intent detection:")
+            log_info(f"  Multiple indicators: {has_multiple_indicator}")
+            log_info(f"  Single indicators: {has_single_indicator}")
+            log_info(f"  Plural 'moments': {has_plural_moment}")
+            log_info(f"  Singular 'moment': {has_singular_moment}")
+            log_info(f"  Decision: {'ONE result' if user_wants_one else 'MULTIPLE results'} ({reason})")
             
             if user_wants_one and time_ranges:
                 time_ranges = [time_ranges[0]]
-                if verbose:
-                    print(f"  [ACTION] Selecting top match only")
-            elif not user_wants_one and verbose:
-                print(f"  [ACTION] Returning all {len(time_ranges)} time ranges")
+                log_info(f"  [ACTION] Selecting top match only")
+            elif not user_wants_one:
+                log_info(f"  [ACTION] Returning all {len(time_ranges)} time ranges")
             
             # Calculate confidence based on scores
             if filtered_seconds:
@@ -696,46 +679,82 @@ Sample descriptions:
             # Store all search results for reference
             search_results = all_search_results
             
-            if verbose:
-                print(f"\n[FINAL SELECTION]")
-                print(f"  Selected {len(time_ranges)} time range(s)")
-                print(f"  Confidence: {confidence:.2f}")
-                if time_ranges:
-                    print(f"  Time ranges:")
-                    for i, (start, end) in enumerate(time_ranges, 1):
-                        print(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+            log_info(f"\n[FINAL SELECTION]")
+            log_info(f"  Selected {len(time_ranges)} time range(s)")
+            log_info(f"  Confidence: {confidence:.2f}")
+            if time_ranges:
+                log_info(f"  Time ranges:")
+                for i, (start, end) in enumerate(time_ranges, 1):
+                    log_info(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
             
             if not time_ranges:
                 confidence = 0.3
                 needs_clarification = True
                 clarification_question = "No relevant results found. Could you rephrase your query or provide more details?"
-                if verbose:
-                    print("  [WARNING] No results found - will ask for clarification")
+                log_info("  [WARNING] No results found - will ask for clarification")
             elif len(time_ranges) > 15:
-                confidence = 0.6
-                needs_clarification = True
-                clarification_question = f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?"
-                if verbose:
-                    print(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
+                # Use LLM to decide if clarification is needed
+                log_info(f"\n[CLARIFICATION DECISION] Found {len(time_ranges)} results - asking LLM if clarification needed...")
+                
+                from agent.prompts import CLARIFICATION_DECISION_PROMPT
+                clarification_prompt = CLARIFICATION_DECISION_PROMPT.format(
+                    query=query,
+                    result_count=len(time_ranges)
+                )
+                
+                try:
+                    start_time = time.time()
+                    clarification_response = llm.invoke([
+                        SystemMessage(content="You are a helpful assistant that determines if users need clarification for video search queries."),
+                        HumanMessage(content=clarification_prompt)
+                    ])
+                    elapsed = time.time() - start_time
+                    
+                    clarification_text = clarification_response.content.strip()
+                    # Extract JSON
+                    if "```json" in clarification_text:
+                        clarification_text = clarification_text.split("```json")[1].split("```")[0].strip()
+                    elif "```" in clarification_text:
+                        clarification_text = clarification_text.split("```")[1].split("```")[0].strip()
+                    
+                    clarification_decision = json.loads(clarification_text)
+                    needs_clarification = clarification_decision.get("needs_clarification", False)
+                    clarification_question = clarification_decision.get("clarification_question", f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?")
+                    reasoning = clarification_decision.get("reasoning", "")
+                    
+                    log_info(f"  LLM Decision: {'Needs clarification' if needs_clarification else 'Proceed with all results'} (took {elapsed:.2f}s)")
+                    log_info(f"  Reasoning: {reasoning}")
+                    
+                    if needs_clarification:
+                        confidence = 0.6
+                        log_info(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
+                    else:
+                        confidence = min(0.95, max(0.6, confidence))
+                        log_info(f"  [SUCCESS] User wants all results - proceeding with {len(time_ranges)} time range(s)")
+                            
+                except Exception as e:
+                    # Fallback to default behavior if LLM call fails
+                    log_info(f"  [FALLBACK] LLM clarification decision failed: {e}, using default logic")
+                    # Default: ask for clarification if > 15 results
+                    confidence = 0.6
+                    needs_clarification = True
+                    clarification_question = f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?"
+                    log_info(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
             else:
-                if verbose:
-                    print(f"  [SUCCESS] Found {len(time_ranges)} time range(s) - proceeding with extraction")
+                log_info(f"  [SUCCESS] Found {len(time_ranges)} time range(s) - proceeding with extraction")
             
         # Merge overlapping time ranges
         if time_ranges:
             original_count = len(time_ranges)
-            if verbose:
-                print(f"\n[MERGING] Merging {original_count} time ranges...")
-                print(f"  Before merge: {original_count} ranges")
+            log_info(f"\n[MERGING] Merging {original_count} time ranges...")
+            log_info(f"  Before merge: {original_count} ranges")
             time_ranges = merge_time_ranges(time_ranges)
-            if verbose:
-                print(f"  After merge: {len(time_ranges)} non-overlapping ranges")
-                print(f"  Merged ranges with 2.0s padding:")
-                for i, (start, end) in enumerate(time_ranges, 1):
-                    print(f"    Range {i}: {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+            log_info(f"  After merge: {len(time_ranges)} non-overlapping ranges")
+            log_info(f"  Merged ranges with 2.0s padding:")
+            for i, (start, end) in enumerate(time_ranges, 1):
+                log_info(f"    Range {i}: {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
         else:
-            if verbose:
-                print("\n[MERGING] No time ranges to merge")
+            log_info("\n[MERGING] No time ranges to merge")
         
         # Preserve state for potential refinement (preserve even if clarification needed)
         # This allows user to refine results after clarification

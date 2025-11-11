@@ -50,16 +50,65 @@ class TimelineManager:
         if self.verbose:
             print(f"[TIMELINE] Loading timeline from {self.timeline_path}")
         
-        with open(self.timeline_path, 'r', encoding='utf-8') as f:
-            self.timeline_data = json.load(f)
-        
-        # Extract chunks
-        self.chunks = self.timeline_data.get("chunks", [])
-        
-        if self.verbose:
-            print(f"[TIMELINE] Loaded {len(self.chunks)} chunks")
-        
-        return self.timeline_data
+        # Check if file is empty or whitespace only
+        try:
+            with open(self.timeline_path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+                if not content:
+                    # File is empty, create empty timeline
+                    if self.verbose:
+                        print(f"[TIMELINE] File is empty, creating new timeline")
+                    self.timeline_data = {
+                        "version": "1.0",
+                        "created_at": datetime.now().isoformat(),
+                        "updated_at": datetime.now().isoformat(),
+                        "chunks": []
+                    }
+                    self.chunks = []
+                    return self.timeline_data
+            
+            # Parse JSON
+            with open(self.timeline_path, 'r', encoding='utf-8') as f:
+                self.timeline_data = json.load(f)
+            
+            # Validate structure
+            if not isinstance(self.timeline_data, dict):
+                if self.verbose:
+                    print(f"[TIMELINE] Invalid structure, creating new timeline")
+                self.timeline_data = {
+                    "version": "1.0",
+                    "created_at": datetime.now().isoformat(),
+                    "updated_at": datetime.now().isoformat(),
+                    "chunks": []
+                }
+                self.chunks = []
+                return self.timeline_data
+            
+            # Extract chunks
+            self.chunks = self.timeline_data.get("chunks", [])
+            
+            if self.verbose:
+                print(f"[TIMELINE] Loaded {len(self.chunks)} chunks")
+            
+            return self.timeline_data
+            
+        except json.JSONDecodeError as e:
+            # Invalid JSON, create empty timeline
+            if self.verbose:
+                print(f"[TIMELINE] Invalid JSON: {e}, creating new timeline")
+            self.timeline_data = {
+                "version": "1.0",
+                "created_at": datetime.now().isoformat(),
+                "updated_at": datetime.now().isoformat(),
+                "chunks": []
+            }
+            self.chunks = []
+            return self.timeline_data
+        except Exception as e:
+            # Other errors, re-raise
+            if self.verbose:
+                print(f"[TIMELINE] Error loading timeline: {e}")
+            raise
     
     def save(self) -> bool:
         """

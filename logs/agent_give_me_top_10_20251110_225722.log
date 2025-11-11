@@ -1,0 +1,96 @@
+2025-11-10 22:57:22 - INFO - ================================================================================
+2025-11-10 22:57:22 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-10 22:57:22 - INFO - ================================================================================
+2025-11-10 22:57:22 - INFO - Query: give me top 10
+2025-11-10 22:57:22 - INFO - Log file: logs\agent_give_me_top_10_20251110_225722.log
+2025-11-10 22:57:22 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-10 22:57:22 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 22:57:22 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 22:57:22 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:57:22 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-10 22:57:22 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:57:22 - INFO - CALLING ORCHESTRATOR
+2025-11-10 22:57:22 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:57:22 - INFO - 
+================================================================================
+2025-11-10 22:57:22 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-10 22:57:22 - INFO - ================================================================================
+2025-11-10 22:57:22 - INFO - Query: give me top 10
+2025-11-10 22:57:22 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:57:22 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 22:57:22 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 22:57:22 - INFO - [LOADING] Loading segment tree...
+2025-11-10 22:57:22 - INFO -   ✓ Segment tree loaded
+2025-11-10 22:57:22 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-10 22:57:22 - INFO - 
+================================================================================
+2025-11-10 22:57:22 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-10 22:57:22 - INFO - ================================================================================
+2025-11-10 22:57:22 - INFO - Query: give me top 10
+2025-11-10 22:57:22 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:57:22 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-10 22:57:26 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-10 22:57:26 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-10 22:57:26 - INFO -   Confidence: 1.00
+2025-11-10 22:57:26 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': None, 'search_query': 'top 10', 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-10 22:57:44 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:57:44 - INFO - 
+================================================================================
+2025-11-10 22:57:44 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 22:57:44 - INFO - ================================================================================
+2025-11-10 22:57:44 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 22:57:44 - INFO - Status: ✓ Success
+2025-11-10 22:57:44 - INFO - Chunks created: 12
+2025-11-10 22:57:44 - INFO - Timeline now has 12 chunks
+2025-11-10 22:57:44 - INFO - Total duration: 97.99s
+2025-11-10 22:57:44 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 22:57:44 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 22:57:44 - INFO - Success: True
+2025-11-10 22:57:44 - INFO - Timeline chunks after operation: 12
+2025-11-10 22:57:44 - INFO - Operation result keys: ['success', 'chunks_created', 'time_ranges']
+2025-11-10 22:57:44 - INFO -   Chunks created: 12
+2025-11-10 22:57:44 - INFO - FIND_HIGHLIGHTS: Created 12 chunks
+2025-11-10 22:57:44 - DEBUG -   Chunk 1: source=23.0s-29.0s, timeline=0.0s-6.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 2: source=38.0s-44.0s, timeline=6.0s-12.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 3: source=61.0s-68.0s, timeline=12.0s-19.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 4: source=126.0s-132.0s, timeline=19.0s-25.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 5: source=221.0s-228.0s, timeline=25.0s-32.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 6: source=234.0s-240.0s, timeline=32.0s-38.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 7: source=238.0s-253.0s, timeline=38.0s-53.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 8: source=251.0s-258.0s, timeline=53.0s-60.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 9: source=258.0s-273.0s, timeline=60.0s-75.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 10: source=271.0s-278.0s, timeline=75.0s-82.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 11: source=286.0s-293.0s, timeline=82.0s-89.0s
+2025-11-10 22:57:44 - DEBUG -   Chunk 12: source=291.0s-300.0s, timeline=89.0s-98.0s
+2025-11-10 22:57:44 - INFO - Response message: Found and added 12 clip(s) to timeline:
+  1. 23.0s - 29.0s
+  2. 38.0s - 44.0s
+  3. 61.0s - 68.0s
+  4...
+2025-11-10 22:57:44 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - UPDATING TIMELINE UI
+2025-11-10 22:57:44 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - Timeline chunks to display: 12
+2025-11-10 22:57:44 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - Reloading timeline from file...
+2025-11-10 22:57:44 - INFO - UPDATING CHAT UI
+2025-11-10 22:57:44 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:57:44 - INFO - Timeline loaded: 12 chunks
+2025-11-10 22:57:44 - INFO - Drawing timeline on canvas...
+2025-11-10 22:57:44 - INFO - Timeline canvas updated
+2025-11-10 22:57:44 - INFO - [VIDSOR] Timeline updated: 12 chunks
+2025-11-10 22:57:44 - INFO - Chat UI update scheduled
+2025-11-10 22:57:44 - INFO - 
+================================================================================
+2025-11-10 22:57:44 - INFO - QUERY PROCESSING COMPLETED
+2025-11-10 22:57:44 - INFO - ================================================================================
+2025-11-10 22:57:44 - INFO - Agent thread completed

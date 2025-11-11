@@ -1,0 +1,67 @@
+2025-11-10 22:46:05 - INFO - ================================================================================
+2025-11-10 22:46:05 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-10 22:46:05 - INFO - ================================================================================
+2025-11-10 22:46:05 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 22:46:05 - INFO - Log file: logs\agent_find_all_the_moment_when_they_catch_the_fish__20251110_224605.log
+2025-11-10 22:46:05 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-10 22:46:05 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 22:46:05 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 22:46:05 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:46:05 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-10 22:46:05 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:46:05 - INFO - CALLING ORCHESTRATOR
+2025-11-10 22:46:05 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:46:05 - INFO - 
+================================================================================
+2025-11-10 22:46:05 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-10 22:46:05 - INFO - ================================================================================
+2025-11-10 22:46:05 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 22:46:05 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:46:05 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-10 22:46:05 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-10 22:46:05 - INFO - [LOADING] Loading segment tree...
+2025-11-10 22:46:05 - INFO -   ✓ Segment tree loaded
+2025-11-10 22:46:06 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-10 22:46:06 - INFO - 
+================================================================================
+2025-11-10 22:46:06 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-10 22:46:06 - INFO - ================================================================================
+2025-11-10 22:46:06 - INFO - Query: find all the moment when they catch the fish.
+2025-11-10 22:46:06 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-10 22:46:06 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-10 22:46:09 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-10 22:46:09 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-10 22:46:09 - INFO -   Confidence: 1.00
+2025-11-10 22:46:09 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': None, 'search_query': 'catch the fish', 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-10 22:47:50 - INFO - 
+================================================================================
+2025-11-10 22:47:50 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 22:47:50 - INFO - ================================================================================
+2025-11-10 22:47:50 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 22:47:50 - ERROR - Status: ✗ Failed
+2025-11-10 22:47:50 - ERROR - Error: Found 16 potential moments. Could you narrow down what you're looking for?
+2025-11-10 22:47:50 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:47:50 - INFO - ORCHESTRATOR RESULTS
+2025-11-10 22:47:50 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:47:50 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-10 22:47:50 - INFO - Success: False
+2025-11-10 22:47:50 - INFO - Timeline chunks after operation: 0
+2025-11-10 22:47:50 - INFO - Operation result keys: ['success', 'error', 'chunks_created']
+2025-11-10 22:47:50 - INFO -   Chunks created: 0
+2025-11-10 22:47:50 - ERROR - Operation failed: Found 16 potential moments. Could you narrow down what you're looking for?
+2025-11-10 22:47:50 - INFO - Response message: Error: Found 16 potential moments. Could you narrow down what you're looking for?...
+2025-11-10 22:47:50 - INFO - Skipping timeline UI update (success=False or no timeline_chunks)
+2025-11-10 22:47:50 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-10 22:47:50 - INFO - UPDATING CHAT UI
+2025-11-10 22:47:50 - INFO - --------------------------------------------------------------------------------
+2025-11-10 22:47:50 - INFO - Chat UI update scheduled
+2025-11-10 22:47:50 - INFO - 
+================================================================================
+2025-11-10 22:47:50 - INFO - QUERY PROCESSING COMPLETED
+2025-11-10 22:47:50 - INFO - ================================================================================
+2025-11-10 22:47:50 - INFO - Agent thread completed
