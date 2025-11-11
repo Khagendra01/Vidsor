@@ -1,7 +1,7 @@
 """Scoring and grouping functions for video segments."""
 
 from typing import Dict, List, Tuple, Optional, Set
-from agent.feature_extractor import PerSecondFeatureExtractor
+from agent.utils.processing.feature_extractor import PerSecondFeatureExtractor
 
 
 def score_seconds(feature_extractor: PerSecondFeatureExtractor, 

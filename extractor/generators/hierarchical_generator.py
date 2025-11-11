@@ -2,7 +2,7 @@
 Hierarchical tree generation module.
 """
 
-from agent.generate_hierarchical_tree import generate_hierarchical_tree
+from agent.utils.scripts.generate_hierarchical_tree import generate_hierarchical_tree
 
 
 class HierarchicalGenerator:

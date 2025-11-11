@@ -7,15 +7,15 @@ from typing import Optional, Set
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
-from agent.feature_extractor import PerSecondFeatureExtractor
-from agent.query_analysis import (
+from agent.utils.processing.feature_extractor import PerSecondFeatureExtractor
+from agent.utils.search.query_analysis import (
     analyze_query_semantics,
     plan_search_strategy,
     validate_and_adjust_intent,
     configure_weights
 )
-from agent.scoring import score_seconds, group_contiguous_seconds
-from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
+from agent.utils.search.scoring import score_seconds, group_contiguous_seconds
+from agent.utils.processing.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
 from agent.utils.utils import merge_time_ranges
 from agent.utils.llm_utils import (
     create_llm,
@@ -25,11 +25,11 @@ from agent.utils.llm_utils import (
 )
 from agent.utils.logging_utils import get_log_helper
 from agent.utils.weight_config import configure_search_weights
-from agent.query_builder import (
+from agent.utils.search.query_builder import (
     build_search_query_message,
     format_content_inspection_for_narrative
 )
-from agent.search_executor import (
+from agent.utils.search.search_executor import (
     execute_hierarchical_search,
     execute_hierarchical_highlight_search,
     execute_semantic_search,
@@ -550,7 +550,7 @@ def _select_best_results(
     # STEP 4: Select best seconds with semantic prioritization
     log.info(f"\n[STEP 4] Selecting best highlights...")
     
-    from agent.selection import select_best_of
+    from agent.utils.search.selection import select_best_of
     
     # Select best seconds with semantic prioritization
     best_seconds = select_best_of(
@@ -677,7 +677,7 @@ def _select_best_results(
         
         # Use LLM to rerank and filter
         if len(ranges_with_descriptions) > 1:
-            from agent.refinement import rank_ranges_with_llm
+            from agent.utils.processing.refinement import rank_ranges_with_llm
             
             top_n_for_rerank = extract_number if extract_number else len(ranges_with_descriptions)
             

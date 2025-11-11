@@ -2,7 +2,7 @@
 Embeddings generation module.
 """
 
-from agent.generate_embeddings import generate_embeddings
+from agent.utils.scripts.generate_embeddings import generate_embeddings
 
 
 class EmbeddingsGenerator:
