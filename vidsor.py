@@ -42,7 +42,8 @@ except ImportError:
         raise ImportError("MoviePy is required. Install with: pip install moviepy")
 
 from agent.segment_tree_utils import load_segment_tree, SegmentTreeQuery
-from agent import run_agent
+from agent.orchestrator_runner import run_orchestrator
+from agent.logging_utils import DualLogger, create_log_file
 from extractor.pipeline import SegmentTreePipeline
 from extractor.config import ExtractorConfig
 
@@ -232,6 +233,10 @@ class Vidsor:
         
         # Load chat history
         self._load_chat_history()
+        
+        # Display chat history if UI is ready
+        if self.root and self.chat_text:
+            self._display_chat_history()
     
     def upload_video_to_project(self, video_path: str, project_path: str) -> str:
         """
@@ -1908,93 +1913,196 @@ class Vidsor:
         self.agent_thread.start()
     
     def _run_agent_thread(self, query: str, segment_tree_path: str):
-        """Run agent in background thread."""
+        """Run orchestrator agent in background thread."""
+        # Create logger for this query
+        log_file = create_log_file(query, output_dir="logs")
+        logger = DualLogger(log_file=log_file, verbose=True)
+        
+        logger.info("=" * 80)
+        logger.info("VIDSOR: Orchestrator Query Processing")
+        logger.info("=" * 80)
+        logger.info(f"Query: {query}")
+        logger.info(f"Log file: {log_file}")
+        logger.info(f"Project: {self.current_project_path}")
+        logger.info(f"Video: {self.video_path}")
+        logger.info(f"Segment tree: {segment_tree_path}")
+        
         try:
-            # Run agent
-            result = run_agent(
+            # Get timeline path from current project
+            if not self.current_project_path:
+                error_msg = "No project selected. Please select a project first."
+                logger.error(error_msg)
+                if self.root:
+                    self.root.after(0, lambda: self._add_chat_message("assistant", error_msg))
+                    self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                    self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+                return
+            
+            timeline_path = os.path.join(self.current_project_path, "timeline.json")
+            logger.info(f"Timeline path: {timeline_path}")
+            
+            # Check if timeline exists and log current state
+            if os.path.exists(timeline_path):
+                try:
+                    with open(timeline_path, 'r') as f:
+                        timeline_data = json.load(f)
+                        chunks_count = len(timeline_data.get("chunks", []))
+                        logger.info(f"Existing timeline loaded: {chunks_count} chunks")
+                except Exception as e:
+                    logger.warning(f"Could not read existing timeline: {e}")
+                    logger.info("Starting with empty timeline")
+            else:
+                logger.info("Timeline.json does not exist - will be created")
+            
+            # Run orchestrator (it handles timeline.json loading, operations, and saving)
+            logger.info("\n" + "-" * 80)
+            logger.info("CALLING ORCHESTRATOR")
+            logger.info("-" * 80)
+            result = run_orchestrator(
                 query=query,
+                timeline_path=timeline_path,
                 json_path=segment_tree_path,
                 video_path=self.video_path,
                 model_name="gpt-4o-mini",
-                verbose=False
+                verbose=False  # Orchestrator has its own logging
             )
             
-            # Extract response
-            if result.get("needs_clarification"):
-                response = f"Clarification needed: {result.get('clarification_question', 'Please provide more details.')}"
-                if self.root:
-                    self.root.after(0, lambda: self._add_chat_message("assistant", response))
-                    self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
-                    self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
-            else:
-                clips = result.get("output_clips", [])
-                time_ranges = result.get("time_ranges", [])
-                search_results = result.get("search_results", [])
-                confidence = result.get("confidence", 0)
-                
-                response_parts = []
-                if clips:
-                    response_parts.append(f"Found {len(clips)} clip(s):")
-                    for i, clip in enumerate(clips, 1):
-                        clip_name = os.path.basename(clip)
-                        response_parts.append(f"  {i}. {clip_name}")
-                elif time_ranges:
-                    response_parts.append(f"Found {len(time_ranges)} time range(s):")
-                    for i, (start, end) in enumerate(time_ranges, 1):
+            logger.info("\n" + "-" * 80)
+            logger.info("ORCHESTRATOR RESULTS")
+            logger.info("-" * 80)
+            
+            # Extract orchestrator results
+            operation = result.get("operation", "UNKNOWN")
+            operation_result = result.get("operation_result", {})
+            success = result.get("success", False)
+            timeline_chunks = result.get("timeline_chunks", [])
+            
+            logger.info(f"Operation: {operation}")
+            logger.info(f"Success: {success}")
+            logger.info(f"Timeline chunks after operation: {len(timeline_chunks) if timeline_chunks else 0}")
+            
+            if operation_result:
+                logger.info(f"Operation result keys: {list(operation_result.keys())}")
+                if "chunks_created" in operation_result:
+                    logger.info(f"  Chunks created: {len(operation_result['chunks_created'])}")
+                if "chunks_removed" in operation_result:
+                    logger.info(f"  Chunks removed: {len(operation_result['chunks_removed'])}")
+                if "chunks_added" in operation_result:
+                    logger.info(f"  Chunks added: {len(operation_result['chunks_added'])}")
+                if "chunks_inserted" in operation_result:
+                    logger.info(f"  Chunks inserted: {len(operation_result['chunks_inserted'])}")
+            
+            # Generate response based on operation type
+            response_parts = []
+            
+            if not success:
+                error_msg = operation_result.get("error", "Operation failed")
+                logger.error(f"Operation failed: {error_msg}")
+                response = f"Error: {error_msg}"
+            elif operation == "FIND_HIGHLIGHTS":
+                chunks_created = operation_result.get("chunks_created", [])
+                if chunks_created:
+                    logger.info(f"FIND_HIGHLIGHTS: Created {len(chunks_created)} chunks")
+                    response_parts.append(f"Found and added {len(chunks_created)} clip(s) to timeline:")
+                    for i, chunk in enumerate(chunks_created, 1):
+                        start = chunk.get("original_start_time", 0)
+                        end = chunk.get("original_end_time", 0)
+                        timeline_start = chunk.get("start_time", 0)
+                        timeline_end = chunk.get("end_time", 0)
                         response_parts.append(f"  {i}. {start:.1f}s - {end:.1f}s")
+                        logger.debug(f"  Chunk {i}: source={start:.1f}s-{end:.1f}s, timeline={timeline_start:.1f}s-{timeline_end:.1f}s")
                 else:
+                    logger.warning("FIND_HIGHLIGHTS: No chunks created")
                     response_parts.append("No matching clips found.")
-                
-                if confidence is not None:
-                    response_parts.append(f"\nConfidence: {confidence:.2%}")
-                
                 response = "\n".join(response_parts)
+            elif operation == "CUT":
+                chunks_removed = operation_result.get("chunks_removed", [])
+                logger.info(f"CUT: Removed {len(chunks_removed)} chunks")
+                response = f"Removed {len(chunks_removed)} clip(s) from timeline."
+            elif operation == "REPLACE":
+                chunks_added = operation_result.get("chunks_added", [])
+                chunks_removed = operation_result.get("chunks_removed", [])
+                logger.info(f"REPLACE: Removed {len(chunks_removed)}, Added {len(chunks_added)} chunks")
+                response = f"Replaced {len(chunks_removed)} clip(s) with {len(chunks_added)} new clip(s)."
+            elif operation == "INSERT":
+                chunks_inserted = operation_result.get("chunks_inserted", [])
+                logger.info(f"INSERT: Inserted {len(chunks_inserted)} chunks")
+                response = f"Inserted {len(chunks_inserted)} clip(s) into timeline."
+            elif operation == "FIND_BROLL":
+                chunks_created = operation_result.get("chunks_created", [])
+                logger.info(f"FIND_BROLL: Created {len(chunks_created)} B-roll chunks")
+                response = f"Found and added {len(chunks_created)} B-roll clip(s) to timeline."
+            elif operation == "UNKNOWN":
+                logger.warning("Operation classification: UNKNOWN")
+                response = "I couldn't understand what you want to do. Please try rephrasing your query."
+            else:
+                logger.info(f"Operation '{operation}' completed")
+                response = f"Operation '{operation}' completed."
+            
+            logger.info(f"Response message: {response[:100]}...")
+            
+            # Update timeline UI if operation succeeded and timeline changed
+            if success and timeline_chunks is not None:
+                logger.info("\n" + "-" * 80)
+                logger.info("UPDATING TIMELINE UI")
+                logger.info("-" * 80)
+                logger.info(f"Timeline chunks to display: {len(timeline_chunks)}")
                 
-                # Check if this is a highlights query and process clips
-                query_lower = query.lower()
-                is_highlights_query = any(keyword in query_lower for keyword in [
-                    "highlight", "highlights", "best moments", "best parts", 
-                    "interesting moments", "key moments", "important moments",
-                    "find the highlights", "find highlights", "show highlights"
-                ])
-                
-                if is_highlights_query and (clips or time_ranges):
-                    # Process highlights and add to timeline
-                    # Use a proper closure to avoid lambda variable capture issues
-                    if self.root:
-                        def process_highlights_wrapper():
-                            try:
-                                num_items = len(clips) if clips else len(time_ranges) if time_ranges else 0
-                                print(f"[VIDSOR] Processing {num_items} highlights for timeline")
-                                if self.status_label:
-                                    self.status_label.config(text=f"Processing {num_items} highlights and adding to timeline...")
-                                self._process_highlights(result, clips, time_ranges, search_results)
-                                if self.status_label:
-                                    self.status_label.config(text=f"Added {num_items} highlights to timeline")
-                            except Exception as e:
-                                print(f"[VIDSOR] Error processing highlights: {e}")
-                                import traceback
-                                traceback.print_exc()
-                                if self.status_label:
-                                    self.status_label.config(text=f"Error processing highlights: {str(e)}")
-                        
-                        self.root.after(0, process_highlights_wrapper)
-                
-                # Update UI in main thread
                 if self.root:
-                    self.root.after(0, lambda: self._add_chat_message("assistant", response))
-                    self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
-                    self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+                    def update_timeline_ui():
+                        try:
+                            logger.info("Reloading timeline from file...")
+                            # Reload timeline from file (orchestrator already saved it)
+                            self._load_timeline()
+                            logger.info(f"Timeline loaded: {len(self.edit_state.chunks)} chunks")
+                            
+                            # Update timeline display
+                            if self.timeline_canvas:
+                                logger.info("Drawing timeline on canvas...")
+                                self._draw_timeline()
+                                logger.info("Timeline canvas updated")
+                            
+                            logger.info(f"[VIDSOR] Timeline updated: {len(timeline_chunks)} chunks")
+                        except Exception as e:
+                            logger.error(f"Error updating timeline UI: {e}")
+                            import traceback
+                            traceback.print_exc()
+                    
+                    self.root.after(0, update_timeline_ui)
+            else:
+                logger.info("Skipping timeline UI update (success=False or no timeline_chunks)")
+            
+            # Update UI in main thread
+            logger.info("\n" + "-" * 80)
+            logger.info("UPDATING CHAT UI")
+            logger.info("-" * 80)
+            if self.root:
+                self.root.after(0, lambda: self._add_chat_message("assistant", response))
+                self.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
+                logger.info("Chat UI update scheduled")
+            
+            logger.info("\n" + "=" * 80)
+            logger.info("QUERY PROCESSING COMPLETED")
+            logger.info("=" * 80)
             
         except Exception as e:
             error_msg = f"Error processing query: {str(e)}"
+            logger.error("\n" + "=" * 80)
+            logger.error("ERROR OCCURRED")
+            logger.error("=" * 80)
+            logger.error(error_msg)
+            import traceback
+            logger.error(traceback.format_exc())
             print(f"[VIDSOR] {error_msg}")
+            traceback.print_exc()
             if self.root:
                 self.root.after(0, lambda: self._add_chat_message("assistant", error_msg))
                 self.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
                 self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
             self.is_agent_running = False
+            logger.info("Agent thread completed")
     
     def _process_highlights(self, result: Dict, clips: List[str], time_ranges: List[Tuple[float, float]], 
                            search_results: List[Dict]):
@@ -2266,19 +2374,36 @@ class Vidsor:
         timeline_path = os.path.join(self.current_project_path, "timeline.json")
         if os.path.exists(timeline_path):
             try:
+                # Check if file is empty or whitespace only
+                with open(timeline_path, 'r') as f:
+                    content = f.read().strip()
+                    if not content:
+                        print("[VIDSOR] timeline.json is empty, starting with empty timeline")
+                        self.edit_state.chunks = []
+                        return
+                
+                # Parse JSON
                 with open(timeline_path, 'r') as f:
                     timeline_data = json.load(f)
+                
+                # Validate structure
+                if not isinstance(timeline_data, dict):
+                    print("[VIDSOR] timeline.json has invalid structure, starting with empty timeline")
+                    self.edit_state.chunks = []
+                    return
                 
                 # Check if timeline is empty
                 chunks_data = timeline_data.get("chunks", [])
                 if not chunks_data:
-                    print("[VIDSOR] Timeline.json is empty, will be filled with AI-generated clips")
+                    print("[VIDSOR] Timeline.json has no chunks, will be filled with AI-generated clips")
                     self.edit_state.chunks = []
                     return
                 
                 # Load chunks from timeline.json
                 chunks = []
                 for chunk_data in chunks_data:
+                    if not isinstance(chunk_data, dict):
+                        continue  # Skip invalid chunk entries
                     chunk = Chunk(
                         start_time=chunk_data.get("start_time", 0.0),
                         end_time=chunk_data.get("end_time", 0.0),
@@ -2301,10 +2426,11 @@ class Vidsor:
                 if self.root and self.timeline_canvas:
                     self.root.after(0, self._draw_timeline)
                 
+            except json.JSONDecodeError as e:
+                print(f"[VIDSOR] timeline.json contains invalid JSON, starting with empty timeline")
+                self.edit_state.chunks = []
             except Exception as e:
                 print(f"[VIDSOR] Failed to load timeline: {e}")
-                import traceback
-                traceback.print_exc()
                 self.edit_state.chunks = []
         else:
             # Timeline.json doesn't exist, create empty one
@@ -2363,8 +2489,41 @@ class Vidsor:
         chat_history_path = os.path.join(self.current_project_path, "chat_history.json")
         if os.path.exists(chat_history_path):
             try:
+                # Check if file is empty or whitespace only
                 with open(chat_history_path, 'r') as f:
-                    self.chat_history = json.load(f)
+                    content = f.read().strip()
+                    if not content:
+                        print("[VIDSOR] chat_history.json is empty, starting with empty chat history")
+                        self.chat_history = []
+                        return
+                
+                # Parse JSON
+                with open(chat_history_path, 'r') as f:
+                    chat_data = json.load(f)
+                
+                # Validate structure - should be a list
+                if not isinstance(chat_data, list):
+                    print("[VIDSOR] chat_history.json has invalid structure (expected list), starting with empty chat history")
+                    self.chat_history = []
+                    return
+                
+                # Validate each entry is a dict with required keys
+                valid_history = []
+                for msg in chat_data:
+                    if isinstance(msg, dict) and "role" in msg and "content" in msg:
+                        valid_history.append(msg)
+                    else:
+                        print(f"[VIDSOR] Skipping invalid chat history entry: {msg}")
+                
+                self.chat_history = valid_history
+                if len(valid_history) != len(chat_data):
+                    print(f"[VIDSOR] Loaded {len(valid_history)} valid entries from chat_history.json (skipped {len(chat_data) - len(valid_history)} invalid)")
+                elif len(valid_history) > 0:
+                    print(f"[VIDSOR] Loaded {len(valid_history)} chat history entries")
+                
+            except json.JSONDecodeError as e:
+                print(f"[VIDSOR] chat_history.json contains invalid JSON, starting with empty chat history")
+                self.chat_history = []
             except Exception as e:
                 print(f"[VIDSOR] Failed to load chat history: {e}")
                 self.chat_history = []
