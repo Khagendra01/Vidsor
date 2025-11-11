@@ -4,6 +4,50 @@ from typing import Dict, Any, Set, Optional
 from agent.logging_utils import get_log_helper
 
 
+def validate_weights(
+    weights: Dict[str, Any],
+    verbose: bool = False,
+    logger=None
+) -> None:
+    """
+    Validate and cap weights to safe ranges.
+    Modifies weights dict in place.
+    
+    Args:
+        weights: Weights dictionary to validate
+        verbose: Whether to print verbose output
+        logger: Optional logger instance
+    """
+    log = get_log_helper(logger, verbose)
+    
+    # Validation 1: Cap hierarchical weight to reasonable maximum (0.3)
+    if weights.get("hierarchical_weight", 0) > 0.3:
+        if verbose:
+            log.info(f"  [VALIDATION] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
+        weights["hierarchical_weight"] = 0.3
+    
+    # Validation 2: Cap any individual weight to 0.5 maximum (safety check)
+    max_main_weight = 0.5
+    if weights.get("semantic_weight", 0) > max_main_weight:
+        if verbose:
+            log.info(f"  [VALIDATION] Capping semantic weight from {weights['semantic_weight']:.2f} to {max_main_weight:.2f}")
+        weights["semantic_weight"] = max_main_weight
+    if weights.get("activity_weight", 0) > max_main_weight:
+        if verbose:
+            log.info(f"  [VALIDATION] Capping activity weight from {weights['activity_weight']:.2f} to {max_main_weight:.2f}")
+        weights["activity_weight"] = max_main_weight
+    if weights.get("hierarchical_weight", 0) > max_main_weight:
+        if verbose:
+            log.info(f"  [VALIDATION] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to {max_main_weight:.2f}")
+        weights["hierarchical_weight"] = max_main_weight
+    
+    # Validation 3: Ensure threshold is reasonable
+    if weights.get("threshold", 0.5) < 0.3:
+        if verbose:
+            log.info(f"  [VALIDATION] Raising threshold from {weights.get('threshold', 0.5):.2f} to 0.30")
+        weights["threshold"] = 0.3
+
+
 def initialize_weights_from_strategy(
     strategy: Dict[str, Any],
     all_object_classes: Set[str],
@@ -62,8 +106,8 @@ def apply_weight_fixes(
     logger=None
 ) -> None:
     """
-    Apply fixes and adjustments to weights.
-    Modifies weights dict in place.
+    Apply fixes and adjustments to weights based on search plan.
+    Modifies weights dict in place, then validates.
     
     Args:
         weights: Weights dictionary to modify
@@ -79,49 +123,33 @@ def apply_weight_fixes(
     elif not log_info:
         log_info = print if verbose else lambda x: None
     
-    # Fix 1: Cap hierarchical weight to reasonable maximum (0.3)
-    if weights["hierarchical_weight"] > 0.3:
-        if verbose:
-            log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
-        weights["hierarchical_weight"] = 0.3
-    
-    # Fix 2: Ensure semantic weight is set if semantic queries were generated
+    # Fix 1: Ensure semantic weight is set if semantic queries were generated
     has_semantic_queries = bool(search_plan.get("semantic_queries"))
-    if has_semantic_queries and weights["semantic_weight"] == 0.0:
+    if has_semantic_queries and weights.get("semantic_weight", 0) == 0.0:
         # Override: if semantic queries exist, semantic weight should be > 0
-        if weights["hierarchical_weight"] > 0:
+        if weights.get("hierarchical_weight", 0) > 0:
             # Reduce hierarchical to make room for semantic
             weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
         weights["semantic_weight"] = 0.4  # Set reasonable default
+        if verbose:
+            log_info(f"  [FIX] Set semantic weight to 0.4 (semantic queries detected)")
     
-    # Fix 3: Boost semantic weight for highlight queries
+    # Fix 2: Boost semantic weight for highlight queries
     if search_plan.get("is_general_highlight_query"):
         # For highlight queries, prioritize semantic relevance
-        weights["semantic_weight"] = max(weights["semantic_weight"], 0.5)  # Boost to at least 0.5
-        weights["hierarchical_weight"] = min(weights["hierarchical_weight"], 0.1)  # Reduce to max 0.1
+        weights["semantic_weight"] = max(weights.get("semantic_weight", 0.4), 0.5)  # Boost to at least 0.5
+        weights["hierarchical_weight"] = min(weights.get("hierarchical_weight", 0.1), 0.1)  # Reduce to max 0.1
         weights["object_weight"] = min(weights.get("object_weight", 0.2), 0.15)  # Reduce to max 0.15
         if verbose:
-            log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights['semantic_weight']:.2f}, "
-                     f"Hierarchical: {weights['hierarchical_weight']:.2f}, "
+            log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights.get('semantic_weight', 0.4):.2f}, "
+                     f"Hierarchical: {weights.get('hierarchical_weight', 0.1):.2f}, "
                      f"Object: {weights.get('object_weight', 0.2):.2f}")
     
-    # Fix 4: Final safety check - cap any individual weight to 0.5 maximum
-    max_main_weight = 0.5
-    if weights["semantic_weight"] > max_main_weight:
-        if verbose:
-            log_info(f"  [FIX] Capping semantic weight from {weights['semantic_weight']:.2f} to {max_main_weight:.2f}")
-        weights["semantic_weight"] = max_main_weight
-    if weights["activity_weight"] > max_main_weight:
-        if verbose:
-            log_info(f"  [FIX] Capping activity weight from {weights['activity_weight']:.2f} to {max_main_weight:.2f}")
-        weights["activity_weight"] = max_main_weight
-    if weights["hierarchical_weight"] > max_main_weight:
-        if verbose:
-            log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to {max_main_weight:.2f}")
-        weights["hierarchical_weight"] = max_main_weight
+    # Apply validation at the end
+    validate_weights(weights, verbose=verbose, logger=logger)
 
 
-def configure_weights_with_fallback(
+def configure_search_weights(
     strategy: Optional[Dict[str, Any]],
     query_intent: Dict[str, Any],
     all_object_classes: Set[str],
@@ -132,8 +160,10 @@ def configure_weights_with_fallback(
     logger=None
 ) -> Dict[str, Any]:
     """
-    Configure weights using strategy if available, otherwise fallback to configure_weights_fn.
-    Applies all weight fixes consistently.
+    Configure search weights using strategy if available, otherwise fallback to configure_weights_fn.
+    Applies all weight fixes and validation consistently.
+    
+    This is the main entry point for weight configuration.
     
     Args:
         strategy: Optional strategy dict with scoring configuration
@@ -146,7 +176,7 @@ def configure_weights_with_fallback(
         logger: Optional DualLogger instance
         
     Returns:
-        Configured weights dictionary
+        Configured and validated weights dictionary
     """
     # Use get_log_helper if logger provided, otherwise fall back to log_info or print
     if logger is not None:
@@ -171,4 +201,8 @@ def configure_weights_with_fallback(
         apply_weight_fixes(weights, search_plan, verbose=verbose, log_info=log_info, logger=logger)
     
     return weights
+
+
+# Backward compatibility alias
+configure_weights_with_fallback = configure_search_weights
 

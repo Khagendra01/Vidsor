@@ -11,19 +11,11 @@ hey should we write our own tool or do we have good other python opensource to v
 
 
 
-C. Weight configuration module (agent/weight_config.py)
-configure_search_weights() - extract weight configuration logic
-validate_weights() - weight validation and capping
-apply_weight_fixes() - highlight query boosts, etc.
 
-3. Modularization opportunities
-E. Search execution module (agent/search_executor.py)
-execute_hierarchical_search() - hierarchical search logic
-execute_semantic_search() - semantic search with adaptive thresholds
-execute_object_search() - object detection search
-execute_activity_search() - activity pattern matching
+
+
 4. Function length
-planner_node function: 1086 lines (lines 144-1229)
+planner_node function: XXXX lines 
 Should be broken into smaller functions:
 _inspect_segment_tree()
 _generate_search_queries()
@@ -31,7 +23,7 @@ _execute_searches()
 _score_and_filter()
 _select_best_results()
 5. Specific inefficiencies
-Lines 459-533: Duplicate weight configuration logic
-Lines 642-671: Three sequential semantic searches (inefficient)
-Lines 1014-1129: Complex auto-reranking logic embedded in planner
-Lines 369-394: JSON extraction with multiple fallbacks (should be utility)
+Duplicate weight configuration logic
+Three sequential semantic searches (inefficient)
+Complex auto-reranking logic embedded in planner
+JSON extraction with multiple fallbacks (should be utility)

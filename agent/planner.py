@@ -24,10 +24,17 @@ from agent.llm_utils import (
     invoke_llm_with_json
 )
 from agent.logging_utils import get_log_helper
-from agent.weight_config import configure_weights_with_fallback
+from agent.weight_config import configure_search_weights
 from agent.query_builder import (
     build_search_query_message,
     format_content_inspection_for_narrative
+)
+from agent.search_executor import (
+    execute_hierarchical_search,
+    execute_hierarchical_highlight_search,
+    execute_semantic_search,
+    execute_object_search,
+    execute_activity_search
 )
 from agent.prompts.planner_prompts import (
     PLANNER_SYSTEM_PROMPT,
@@ -341,7 +348,7 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         all_object_classes = set(segment_tree.get_all_classes().keys())
         
         # Use shared weight configuration utility
-        weights = configure_weights_with_fallback(
+        weights = configure_search_weights(
             strategy=strategy,
             query_intent=query_intent,
             all_object_classes=all_object_classes,
@@ -391,108 +398,46 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             if "highlight" in query_lower and ("all" in query_lower or "find" in query_lower):
                 is_general_highlight = True
             
+            # Execute all search types using search executor module
             # 0. General highlight detection (using hierarchical tree)
-            if is_general_highlight and segment_tree.hierarchical_tree:
-                log_info(f"\n  [SEARCH TYPE: General Highlights (Hierarchical Tree)]")
-                # Extract action keywords from query if any
+            if is_general_highlight:
                 hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
-                scored_leaves = segment_tree.hierarchical_score_leaves_for_highlights(
+                highlight_results = execute_hierarchical_highlight_search(
+                    segment_tree,
                     action_keywords=hierarchical_keywords if hierarchical_keywords else None,
-                    max_results=20
+                    max_results=20,
+                    logger=logger,
+                    verbose=verbose
                 )
-                for leaf in scored_leaves:
-                    tr = leaf.get("time_range", [])
-                    if tr and len(tr) >= 2:
-                        all_search_results.append({
-                            "search_type": "hierarchical_highlight",
-                            "time_range": tr,
-                            "score": leaf.get("score", 0),
-                            "node_id": leaf.get("node_id"),
-                            "keyword_count": leaf.get("keyword_count", 0)
-                        })
-                log_info(f"      Found {len(scored_leaves)} highlight candidates")
+                all_search_results.extend(highlight_results)
             
             # 1. Hierarchical tree keyword search (fast pre-filter)
             hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
-            if hierarchical_keywords and segment_tree.hierarchical_tree:
-                log_info(f"\n  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]")
-                for keyword in hierarchical_keywords:
-                    log_info(f"    Keyword: '{keyword}'")
-                    results = segment_tree.hierarchical_keyword_search(
-                        [keyword],
-                        match_mode="any",
-                        max_results=20
-                    )
-                    for result in results:
-                        # Prefer leaf nodes
-                        if result.get("level", -1) == 0:
-                            tr = result.get("time_range", [])
-                            if tr and len(tr) >= 2:
-                                all_search_results.append({
-                                    "search_type": "hierarchical",
-                                    "time_range": tr,
-                                    "score": result.get("match_count", 1),
-                                    "node_id": result.get("node_id"),
-                                    "matched_keyword": keyword
-                                })
-                    log_info(f"      Found {len([r for r in results if r.get('level') == 0])} leaf node matches")
+            if hierarchical_keywords:
+                hierarchical_results = execute_hierarchical_search(
+                    segment_tree,
+                    keywords=hierarchical_keywords,
+                    match_mode="any",
+                    max_results=20,
+                    logger=logger,
+                    verbose=verbose
+                )
+                all_search_results.extend(hierarchical_results)
             
             # 2. Semantic search (replaces old visual/audio keyword search)
-            # OPTIMIZED: Single call with adaptive threshold filtering
             semantic_queries = search_plan.get("semantic_queries", [query])
             if semantic_queries:
-                log_info(f"\n  [SEARCH TYPE: Semantic Search (Visual + Audio)]")
-                for sem_query in semantic_queries:
-                    log_info(f"    Query: '{sem_query}'")
-                    start_time = time.time()
-                    
-                    # Call semantic_search once with lowest threshold to get all candidates
-                    # This avoids redundant embedding computation and similarity calculations
-                    all_candidates = segment_tree.semantic_search(
-                        sem_query,
-                        top_k=50,  # Get more candidates for adaptive filtering
-                        threshold=0.4,  # Start with lowest threshold we were using
-                        search_transcriptions=True,
-                        search_unified=True,
-                        verbose=False
-                    )
-                    
-                    # Adaptive threshold filtering based on result quality
-                    if all_candidates:
-                        # Sort by score (highest first)
-                        all_candidates.sort(key=lambda x: x.get("score", 0), reverse=True)
-                        
-                        # Count high-quality results (score >= 0.5)
-                        high_quality = [r for r in all_candidates if r.get("score", 0) >= 0.5]
-                        
-                        # Adaptive selection:
-                        # - If we have many high-quality results, prefer those
-                        # - Otherwise, use all results above 0.4
-                        if len(high_quality) >= 5:
-                            # We have enough high-quality results, use those
-                            results = high_quality[:15]  # Top 15 high-quality
-                            log_info(f"      Using {len(results)} high-quality results (score >= 0.5)")
-                        elif len(high_quality) > 0:
-                            # Mix of high and medium quality
-                            results = high_quality + [r for r in all_candidates if 0.45 <= r.get("score", 0) < 0.5][:10]
-                            results = results[:15]  # Limit to top 15
-                            log_info(f"      Using {len(results)} results (mix of high and medium quality)")
-                        else:
-                            # No high-quality results, use all above 0.4
-                            results = all_candidates[:15]  # Top 15 by score
-                            log_info(f"      Using {len(results)} results (all above threshold 0.4)")
-                    else:
-                        # No results found even with 0.4 threshold
-                        results = []
-                        log_info(f"      No results found (threshold 0.4)")
-                    
-                    elapsed = time.time() - start_time
-                    
-                    for result in results:
-                        result["search_type"] = "semantic"
-                        result["search_query"] = sem_query
-                        all_search_results.append(result)
-                    log_info(f"      Final: {len(results)} matches (took {elapsed:.2f}s, optimized single call)")
+                semantic_results = execute_semantic_search(
+                    segment_tree,
+                    queries=semantic_queries,
+                    threshold=0.4,
+                    top_k=50,
+                    search_transcriptions=True,
+                    search_unified=True,
+                    logger=logger,
+                    verbose=verbose
+                )
+                all_search_results.extend(semantic_results)
             
             # 3. Object search (with negation handling)
             object_classes = search_plan.get("object_classes", [])
@@ -504,114 +449,32 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
             
             if all_object_classes:
-                log_info(f"\n  [SEARCH TYPE: Object Detection (YOLO)]")
-                if is_negative:
-                    log_info(f"    [NEGATION] Inverting search - finding seconds WITHOUT objects")
-                
-                if is_negative:
-                    # NEGATIVE QUERY: Find seconds WITHOUT the objects
-                    # Strategy: Get all seconds, then remove those with object detections
-                    all_seconds_with_objects = set()
-                    total_seconds = len(segment_tree.seconds)
-                    
-                    # Helper to map time to second index
-                    def time_to_second_idx(time_seconds: float) -> Optional[int]:
-                        """Map a time in seconds to the corresponding second index."""
-                        for idx, second_data in enumerate(segment_tree.seconds):
-                            # Skip None values that might be in the seconds list
-                            if second_data is None:
-                                continue
-                            tr = second_data.get("time_range", [])
-                            if tr and len(tr) >= 2 and tr[0] <= time_seconds <= tr[1]:
-                                return idx
-                        # Fallback: approximate by rounding
-                        return int(time_seconds) if 0 <= int(time_seconds) < total_seconds else None
-                    
-                    for obj_class in all_object_classes:
-                        log_info(f"    Class: '{obj_class}' (inverted)")
-                        results = segment_tree.find_objects_by_class(obj_class)
-                        for result in results:
-                            tr = result.get("time_range", [])
-                            if tr and len(tr) >= 2:
-                                # Map time to second index properly
-                                start_idx = time_to_second_idx(tr[0])
-                                end_idx = time_to_second_idx(tr[1])
-                                # Mark all seconds in the range as having the object
-                                if start_idx is not None and end_idx is not None:
-                                    for idx in range(start_idx, end_idx + 1):
-                                        if 0 <= idx < total_seconds:
-                                            all_seconds_with_objects.add(idx)
-                                elif start_idx is not None:
-                                    all_seconds_with_objects.add(start_idx)
-                    
-                    # Create results for seconds WITHOUT objects
-                    for second_idx in range(total_seconds):
-                        if second_idx not in all_seconds_with_objects:
-                            second_data = segment_tree.get_second_by_index(second_idx)
-                            if second_data:
-                                tr = second_data.get("time_range", [])
-                                if tr and len(tr) >= 2:
-                                    all_search_results.append({
-                                        "search_type": "object_negated",
-                                        "object_class": all_object_classes[0],  # Primary class
-                                        "time_range": tr,
-                                        "second": second_idx,
-                                        "inverted": True
-                                    })
-                    
-                    log_info(f"      Found {total_seconds - len(all_seconds_with_objects)} seconds WITHOUT objects (inverted from {len(all_seconds_with_objects)} with objects)")
-                else:
-                    # POSITIVE QUERY: Normal object detection
-                    for obj_class in all_object_classes:
-                        log_info(f"    Class: '{obj_class}'")
-                        results = segment_tree.find_objects_by_class(obj_class)
-                        for result in results:
-                            result["search_type"] = "object"
-                            result["object_class"] = obj_class
-                            all_search_results.append(result)
-                        log_info(f"      Found {len(results)} detections")
+                object_results = execute_object_search(
+                    segment_tree,
+                    object_classes=all_object_classes,
+                    is_negative=is_negative,
+                    logger=logger,
+                    verbose=verbose
+                )
+                all_search_results.extend(object_results)
             
-            # 4. Activity search (keep - pattern matching)
+            # 4. Activity search (pattern matching)
             activity_name = search_plan.get("activity_name", "")
             activity_keywords = search_plan.get("activity_keywords", [])
             evidence_keywords = search_plan.get("evidence_keywords", [])
             if activity_name or activity_keywords:
-                log_info(f"\n  [SEARCH TYPE: Activity Pattern Matching]")
-                if "fish" in query_lower and ("catch" in query_lower or "caught" in query_lower):
-                    log_info(f"    Activity: Fish catching (specialized)")
-                    result = segment_tree.check_fish_caught()
-                    result["search_type"] = "activity"
-                    # Add metadata for validation
-                    result["activity_name"] = "fishing"
-                    result["evidence_name"] = "fish caught"
-                    # Validate evidence descriptions to filter false positives
-                    log_info(f"      Evidence scenes before validation: {result.get('fish_holding_count', 0)}")
-                    validated_result = validate_activity_evidence(query, result, llm, verbose=verbose)
-                    if validated_result is None:
-                        validated_result = result  # Fallback to original if validation returns None
-                    # Update fish-specific fields after validation
-                    validated_result["fish_holding_count"] = validated_result.get("evidence_count", 0)
-                    validated_result["fish_caught"] = validated_result.get("detected", False)
-                    all_search_results.append(validated_result)
-                    log_info(f"      Evidence scenes after validation: {validated_result.get('fish_holding_count', 0)}")
-                elif activity_keywords:
-                    log_info(f"    Activity: {activity_name or 'general'}")
-                    result = segment_tree.check_activity(
-                        activity_keywords=activity_keywords,
-                        evidence_keywords=evidence_keywords or activity_keywords,
-                        activity_name=activity_name or "activity"
-                    )
-                    result["search_type"] = "activity"
-                    # Add metadata for validation
-                    result["activity_name"] = activity_name or "activity"
-                    result["evidence_name"] = activity_name or "activity"
-                    # Validate evidence descriptions to filter false positives
-                    log_info(f"      Evidence scenes before validation: {result.get('evidence_count', 0)}")
-                    validated_result = validate_activity_evidence(query, result, llm, verbose=verbose)
-                    if validated_result is None:
-                        validated_result = result  # Fallback to original if validation returns None
-                    all_search_results.append(validated_result)
-                    log_info(f"      Evidence scenes after validation: {validated_result.get('evidence_count', 0)}")
+                activity_results = execute_activity_search(
+                    segment_tree,
+                    activity_name=activity_name,
+                    activity_keywords=activity_keywords,
+                    evidence_keywords=evidence_keywords,
+                    query=query,
+                    llm=llm,
+                    validate_activity_evidence_fn=validate_activity_evidence,
+                    logger=logger,
+                    verbose=verbose
+                )
+                all_search_results.extend(activity_results)
             
             log_info(f"\n[AGGREGATION] Collected results from all search types:")
             log_info(f"  Total results: {len(all_search_results)}")
