@@ -1,0 +1,264 @@
+2025-11-11 13:26:38 - INFO - ================================================================================
+2025-11-11 13:26:38 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 13:26:38 - INFO - ================================================================================
+2025-11-11 13:26:38 - INFO - Query: nature
+2025-11-11 13:26:38 - INFO - Log file: logs\agent_nature_20251111_132638.log
+2025-11-11 13:26:38 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-11 13:26:38 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 13:26:38 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 13:26:38 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 13:26:38 - INFO - Existing timeline loaded: 8 chunks
+2025-11-11 13:26:38 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 13:26:38 - INFO - CALLING ORCHESTRATOR
+2025-11-11 13:26:38 - INFO - --------------------------------------------------------------------------------
+2025-11-11 13:26:38 - INFO - 
+================================================================================
+2025-11-11 13:26:38 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 13:26:38 - INFO - ================================================================================
+2025-11-11 13:26:38 - INFO - Query: nature
+2025-11-11 13:26:38 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 13:26:38 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 13:26:38 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 13:26:38 - INFO - [LOADING] Loading segment tree...
+2025-11-11 13:26:38 - INFO -   ✓ Segment tree loaded
+2025-11-11 13:26:38 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 13:26:38 - INFO - 
+================================================================================
+2025-11-11 13:26:38 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 13:26:38 - INFO - ================================================================================
+2025-11-11 13:26:38 - INFO - Query: nature
+2025-11-11 13:26:38 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 13:26:38 - INFO - Timeline loaded: 8 chunks, 51.99s duration
+2025-11-11 13:26:41 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 13:26:41 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 13:26:41 - INFO -   Confidence: 0.80
+2025-11-11 13:26:41 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 13:26:41 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 13:26:41 - INFO -   Calling planner agent to find highlights...
+2025-11-11 13:26:41 - INFO - 
+============================================================
+2025-11-11 13:26:41 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-11 13:26:41 - INFO - ============================================================
+2025-11-11 13:26:41 - INFO - Query: nature
+2025-11-11 13:26:41 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-11 13:26:41 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-11 13:26:44 - INFO - [LLM] Query generation completed in 2.38s
+2025-11-11 13:26:44 - DEBUG - [LLM RESPONSE] {
+    "semantic_queries": ["nature scenery", "natural landscapes", "wildlife in nature", "plants and trees in nature", "outdoor nature views"],
+    "hierarchical_keywords": ["nature", "scenery", "landscapes", "wildlife", "plants", "trees"],
+    "object_classes": ["tree", "plant", "animal", "landscap...
+2025-11-11 13:26:44 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-11 13:26:44 - INFO -   Semantic queries: ['nature scenery', 'natural landscapes', 'wildlife in nature', 'plants and trees in nature', 'outdoor nature views']
+2025-11-11 13:26:44 - INFO -   Hierarchical keywords: ['nature', 'scenery', 'landscapes', 'wildlife', 'plants', 'trees']
+2025-11-11 13:26:44 - INFO -   Object classes: ['tree', 'plant', 'animal', 'landscape']
+2025-11-11 13:26:44 - INFO -   Activity: None
+2025-11-11 13:26:44 - INFO -   Is general highlight query: True
+2025-11-11 13:26:44 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-11 13:26:54 - INFO -   Query type: POSITIVE
+2025-11-11 13:26:54 - INFO -   Search intent: semantic
+2025-11-11 13:26:54 - INFO -   Target entities: {'objects': [], 'activities': [], 'concepts': ['nature']}
+2025-11-11 13:26:54 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-11 13:26:54 - INFO -   Reasoning: The query 'nature' is a broad concept that likely seeks content related to the natural world, including landscapes, wildlife, and ecosystems. It does not specify any objects or activities, indicating a focus on the concept of nature itself.
+2025-11-11 13:26:54 - INFO -   Analysis completed in 10.20s
+2025-11-11 13:26:54 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-11 13:27:00 - INFO -   Strategy operations: 1
+2025-11-11 13:27:00 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-11 13:27:00 - INFO -   Reasoning: This strategy focuses solely on semantic search to find content related to the concept of 'nature', as no specific objects or activities are targeted. The high weight on semantic search reflects its importance in this query.
+2025-11-11 13:27:00 - INFO -   Strategy planning completed in 5.74s
+2025-11-11 13:27:00 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-11 13:27:00 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-11 13:27:00 - INFO -   Semantic weight: 0.50
+2025-11-11 13:27:00 - INFO -   Activity weight: 0.00
+2025-11-11 13:27:00 - INFO -   Hierarchical weight: 0.00
+2025-11-11 13:27:00 - INFO -   Threshold: 0.30
+2025-11-11 13:27:00 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-11 13:27:00 - INFO - 
+  [SEARCH TYPE: General Highlights (Hierarchical Tree)]
+2025-11-11 13:27:00 - INFO -       Found 20 highlight candidates
+2025-11-11 13:27:00 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-11 13:27:00 - INFO -     Keyword: 'nature'
+2025-11-11 13:27:00 - INFO -       Found 0 leaf node matches
+2025-11-11 13:27:00 - INFO -     Keyword: 'scenery'
+2025-11-11 13:27:00 - INFO -       Found 1 leaf node matches
+2025-11-11 13:27:00 - INFO -     Keyword: 'landscapes'
+2025-11-11 13:27:00 - INFO -       Found 0 leaf node matches
+2025-11-11 13:27:00 - INFO -     Keyword: 'wildlife'
+2025-11-11 13:27:00 - INFO -       Found 1 leaf node matches
+2025-11-11 13:27:00 - INFO -     Keyword: 'plants'
+2025-11-11 13:27:00 - INFO -       Found 1 leaf node matches
+2025-11-11 13:27:00 - INFO -     Keyword: 'trees'
+2025-11-11 13:27:00 - INFO -       Found 9 leaf node matches
+2025-11-11 13:27:00 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-11 13:27:00 - INFO -     Query: 'nature scenery'
+2025-11-11 13:27:01 - INFO -       Found 10 matches (took 0.82s)
+2025-11-11 13:27:01 - INFO -     Query: 'natural landscapes'
+2025-11-11 13:27:01 - INFO -       Found 4 matches (took 0.02s)
+2025-11-11 13:27:01 - INFO -     Query: 'wildlife in nature'
+2025-11-11 13:27:01 - INFO -       Found 1 matches (took 0.02s)
+2025-11-11 13:27:01 - INFO -     Query: 'plants and trees in nature'
+2025-11-11 13:27:01 - INFO -       Found 1 matches (took 0.02s)
+2025-11-11 13:27:01 - INFO -     Query: 'outdoor nature views'
+2025-11-11 13:27:01 - INFO -       Found 12 matches (took 0.01s)
+2025-11-11 13:27:01 - INFO - 
+  [SEARCH TYPE: Object Detection (YOLO)]
+2025-11-11 13:27:01 - INFO -     Class: 'animal'
+2025-11-11 13:27:01 - INFO -       Found 0 detections
+2025-11-11 13:27:01 - INFO -     Class: 'tree'
+2025-11-11 13:27:01 - INFO -       Found 0 detections
+2025-11-11 13:27:01 - INFO -     Class: 'landscape'
+2025-11-11 13:27:01 - INFO -       Found 0 detections
+2025-11-11 13:27:01 - INFO -     Class: 'plant'
+2025-11-11 13:27:01 - INFO -       Found 0 detections
+2025-11-11 13:27:01 - INFO - 
+[AGGREGATION] Collected results from all search types:
+2025-11-11 13:27:01 - INFO -   Total results: 60
+2025-11-11 13:27:01 - INFO - 
+[STEP 3] Scoring all seconds with weighted features...
+2025-11-11 13:27:01 - INFO -   Total seconds to score: 300
+2025-11-11 13:27:01 - INFO - [STEP 3] Scoring completed in 0.00s
+2025-11-11 13:27:01 - INFO - 
+[FILTERING] Filtered to 54 seconds above threshold 0.30
+2025-11-11 13:27:01 - INFO -   Top 10 scored seconds:
+2025-11-11 13:27:01 - INFO -     1. Second 244: score=0.527 (sem=0.45, act=0.00, obj=0.30)
+2025-11-11 13:27:01 - INFO -     2. Second 269: score=0.467 (sem=0.00, act=0.00, obj=0.47)
+2025-11-11 13:27:01 - INFO -     3. Second 224: score=0.433 (sem=0.00, act=0.00, obj=0.43)
+2025-11-11 13:27:01 - INFO -     4. Second 270: score=0.433 (sem=0.00, act=0.00, obj=0.43)
+2025-11-11 13:27:01 - INFO -     5. Second 55: score=0.423 (sem=0.51, act=0.00, obj=0.17)
+2025-11-11 13:27:01 - INFO -     6. Second 128: score=0.400 (sem=0.00, act=0.00, obj=0.40)
+2025-11-11 13:27:01 - INFO -     7. Second 246: score=0.400 (sem=0.00, act=0.00, obj=0.40)
+2025-11-11 13:27:01 - INFO -     8. Second 247: score=0.400 (sem=0.00, act=0.00, obj=0.40)
+2025-11-11 13:27:01 - INFO -     9. Second 249: score=0.400 (sem=0.00, act=0.00, obj=0.40)
+2025-11-11 13:27:01 - INFO -     10. Second 250: score=0.400 (sem=0.00, act=0.00, obj=0.40)
+2025-11-11 13:27:01 - INFO - 
+[AGENTIC] Phase 3: Self-Validation...
+2025-11-11 13:27:04 - INFO -   [VALIDATION] Issues detected: ['Low semantic relevance in results', 'High number of results with zero semantic score']
+2025-11-11 13:27:04 - INFO -   [VALIDATION] Suggestions: ['Include more context-specific results related to nature', 'Filter out results with low semantic relevance']
+2025-11-11 13:27:04 - INFO - 
+[STEP 4] Grouping contiguous seconds into time ranges...
+2025-11-11 13:27:04 - INFO -   Grouped into 9 time range(s)
+2025-11-11 13:27:04 - INFO -     1. 48.00s - 50.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     2. 128.00s - 130.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     3. 223.00s - 226.00s (duration: 3.00s)
+2025-11-11 13:27:04 - INFO -     4. 236.00s - 238.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     5. 240.00s - 242.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     6. 243.00s - 251.00s (duration: 8.00s)
+2025-11-11 13:27:04 - INFO -     7. 253.00s - 256.00s (duration: 3.00s)
+2025-11-11 13:27:04 - INFO -     8. 260.00s - 271.00s (duration: 11.00s)
+2025-11-11 13:27:04 - INFO -     9. 293.00s - 297.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO - 
+[SELECTION] User intent detection:
+2025-11-11 13:27:04 - INFO -   Multiple indicators: False
+2025-11-11 13:27:04 - INFO -   Single indicators: False
+2025-11-11 13:27:04 - INFO -   Plural 'moments': False
+2025-11-11 13:27:04 - INFO -   Singular 'moment': False
+2025-11-11 13:27:04 - INFO -   Decision: MULTIPLE results (default (found 9 ranges))
+2025-11-11 13:27:04 - INFO -   [ACTION] Returning all 9 time ranges
+2025-11-11 13:27:04 - INFO - 
+[FINAL SELECTION]
+2025-11-11 13:27:04 - INFO -   Selected 9 time range(s)
+2025-11-11 13:27:04 - INFO -   Confidence: 0.53
+2025-11-11 13:27:04 - INFO -   Time ranges:
+2025-11-11 13:27:04 - INFO -     1. 48.00s - 50.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     2. 128.00s - 130.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     3. 223.00s - 226.00s (duration: 3.00s)
+2025-11-11 13:27:04 - INFO -     4. 236.00s - 238.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     5. 240.00s - 242.00s (duration: 2.00s)
+2025-11-11 13:27:04 - INFO -     6. 243.00s - 251.00s (duration: 8.00s)
+2025-11-11 13:27:04 - INFO -     7. 253.00s - 256.00s (duration: 3.00s)
+2025-11-11 13:27:04 - INFO -     8. 260.00s - 271.00s (duration: 11.00s)
+2025-11-11 13:27:04 - INFO -     9. 293.00s - 297.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO -   [SUCCESS] Found 9 time range(s) - proceeding with extraction
+2025-11-11 13:27:04 - INFO - 
+[MERGING] Merging 9 time ranges...
+2025-11-11 13:27:04 - INFO -   Before merge: 9 ranges
+2025-11-11 13:27:04 - INFO -   After merge: 9 non-overlapping ranges
+2025-11-11 13:27:04 - INFO -   Merged ranges with 2.0s padding:
+2025-11-11 13:27:04 - INFO -     Range 1: 47.00s - 51.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO -     Range 2: 127.00s - 131.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO -     Range 3: 222.00s - 227.00s (duration: 5.00s)
+2025-11-11 13:27:04 - INFO -     Range 4: 235.00s - 239.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO -     Range 5: 239.00s - 243.00s (duration: 4.00s)
+2025-11-11 13:27:04 - INFO -     Range 6: 242.00s - 252.00s (duration: 10.00s)
+2025-11-11 13:27:04 - INFO -     Range 7: 252.00s - 257.00s (duration: 5.00s)
+2025-11-11 13:27:04 - INFO -     Range 8: 259.00s - 272.00s (duration: 13.00s)
+2025-11-11 13:27:04 - INFO -     Range 9: 292.00s - 298.00s (duration: 6.00s)
+2025-11-11 13:27:04 - INFO -   Found 9 highlight time ranges
+2025-11-11 13:27:04 - INFO -     Created chunk 1: timeline 52.0s - 56.0s (source: 47.0s - 51.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 2: timeline 56.0s - 60.0s (source: 127.0s - 131.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 3: timeline 60.0s - 65.0s (source: 222.0s - 227.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 4: timeline 65.0s - 69.0s (source: 235.0s - 239.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 5: timeline 69.0s - 73.0s (source: 239.0s - 243.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 6: timeline 73.0s - 83.0s (source: 242.0s - 252.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 7: timeline 83.0s - 88.0s (source: 252.0s - 257.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 8: timeline 88.0s - 101.0s (source: 259.0s - 272.0s)
+2025-11-11 13:27:04 - INFO -     Created chunk 9: timeline 101.0s - 107.0s (source: 292.0s - 298.0s)
+2025-11-11 13:27:04 - INFO -   ✓ Created 9 highlight chunks
+2025-11-11 13:27:04 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 13:27:04 - INFO - 
+================================================================================
+2025-11-11 13:27:04 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 13:27:04 - INFO - ================================================================================
+2025-11-11 13:27:04 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 13:27:04 - INFO - Status: ✓ Success
+2025-11-11 13:27:04 - INFO - Chunks created: 9
+2025-11-11 13:27:04 - INFO - Timeline now has 17 chunks
+2025-11-11 13:27:04 - INFO - Total duration: 106.98s
+2025-11-11 13:27:04 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 13:27:04 - INFO - --------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 13:27:04 - INFO - Success: True
+2025-11-11 13:27:04 - INFO - Timeline chunks after operation: 17
+2025-11-11 13:27:04 - INFO - Operation result keys: ['success', 'chunks_created', 'time_ranges']
+2025-11-11 13:27:04 - INFO -   Chunks created: 9
+2025-11-11 13:27:04 - INFO - FIND_HIGHLIGHTS: Created 9 chunks
+2025-11-11 13:27:04 - DEBUG -   Chunk 1: source=47.0s-51.0s, timeline=52.0s-56.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 2: source=127.0s-131.0s, timeline=56.0s-60.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 3: source=222.0s-227.0s, timeline=60.0s-65.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 4: source=235.0s-239.0s, timeline=65.0s-69.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 5: source=239.0s-243.0s, timeline=69.0s-73.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 6: source=242.0s-252.0s, timeline=73.0s-83.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 7: source=252.0s-257.0s, timeline=83.0s-88.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 8: source=259.0s-272.0s, timeline=88.0s-101.0s
+2025-11-11 13:27:04 - DEBUG -   Chunk 9: source=292.0s-298.0s, timeline=101.0s-107.0s
+2025-11-11 13:27:04 - INFO - Response message: Found and added 9 clip(s) to timeline:
+  1. 47.0s - 51.0s
+  2. 127.0s - 131.0s
+  3. 222.0s - 227.0s
+...
+2025-11-11 13:27:04 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - UPDATING TIMELINE UI
+2025-11-11 13:27:04 - INFO - --------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - Timeline chunks to display: 17
+2025-11-11 13:27:04 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - Reloading timeline from file...
+2025-11-11 13:27:04 - INFO - UPDATING CHAT UI
+2025-11-11 13:27:04 - INFO - --------------------------------------------------------------------------------
+2025-11-11 13:27:04 - INFO - Timeline loaded: 17 chunks
+2025-11-11 13:27:04 - INFO - Drawing timeline on canvas...
+2025-11-11 13:27:04 - INFO - Timeline canvas updated
+2025-11-11 13:27:04 - INFO - Updating UI button states...
+2025-11-11 13:27:04 - INFO - [VIDSOR] Timeline updated: 17 chunks
+2025-11-11 13:27:04 - INFO - Chat UI update scheduled
+2025-11-11 13:27:04 - INFO - 
+================================================================================
+2025-11-11 13:27:04 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 13:27:04 - INFO - ================================================================================
+2025-11-11 13:27:04 - INFO - Agent thread completed

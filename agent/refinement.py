@@ -33,25 +33,31 @@ def decide_refine_or_research(state: AgentState, llm) -> Dict[str, Any]:
 
 IMPORTANT: If the current response is a clarification or refinement of the previous query (e.g., adding context, specifying details, narrowing down), it should be REFINE, not NEW_SEARCH.
 
+CRITICAL: If the user gives you autonomy/control (e.g., "pick the best", "choose the best", "make smart choice", "do what you think is best", "match my clips", "make video engaging"), mark "user_gives_autonomy": true. This means the user trusts you to make the optimal decision yourself.
+
 Context:
 - Previous query: "{previous_query}"
 - Previous results: Found {num_results} time ranges
 - Current user response: "{current_query}"
 
 Examples:
-- User said "top 10" after you found 28 results → REFINE (select top 10 from 28)
-- User said "best 5" after you found results → REFINE (select best 5)
-- User said "fishing context" after asking about fish → REFINE (clarifying/narrowing the search)
-- User said "only the big ones" after asking about fish → REFINE (filtering existing results)
-- User said "actually, find cooking moments" → NEW_SEARCH (completely different topic)
-- User said "show me longer clips" → REFINE (filter existing by duration)
-- User said "find moments where they run" → NEW_SEARCH (different activity)
+- User said "top 10" after you found 28 results → REFINE, extract_number: 10, user_gives_autonomy: false
+- User said "best 5" after you found results → REFINE, extract_number: 5, user_gives_autonomy: false
+- User said "pick the best you can do" → REFINE, extract_number: null, user_gives_autonomy: true
+- User said "choose the best matches" → REFINE, extract_number: null, user_gives_autonomy: true
+- User said "make smart choice" → REFINE, extract_number: null, user_gives_autonomy: true
+- User said "fishing context" after asking about fish → REFINE, extract_number: null, user_gives_autonomy: false
+- User said "only the big ones" after asking about fish → REFINE, extract_number: null, user_gives_autonomy: false
+- User said "actually, find cooking moments" → NEW_SEARCH, extract_number: null, user_gives_autonomy: false
+- User said "show me longer clips" → REFINE, extract_number: null, user_gives_autonomy: false
+- User said "find moments where they run" → NEW_SEARCH, extract_number: null, user_gives_autonomy: false
 
 Return JSON:
 {{
     "action": "REFINE" | "NEW_SEARCH",
     "reason": "brief explanation",
-    "extract_number": null or number  // If action is REFINE and user mentioned a number (e.g., "top 10" → 10)
+    "extract_number": null or number,  // If action is REFINE and user mentioned a number (e.g., "top 10" → 10)
+    "user_gives_autonomy": true/false  // True if user is giving you control to make the best decision
 }}"""
     
     try:
@@ -120,6 +126,9 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     Refine existing results based on user's clarification.
     Selects top N, filters, or applies other refinements.
     Uses LLM-based ranking when descriptions are available.
+    
+    NEW: If user gives autonomy (e.g., "pick the best"), uses LLM to determine
+    optimal number of results and intelligently select the best matches.
     """
     previous_time_ranges = state.get("previous_time_ranges", [])
     previous_scored_seconds = state.get("previous_scored_seconds", [])
@@ -127,16 +136,117 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     current_query = state.get("user_query", "")
     previous_query = state.get("previous_query", "")
     extract_number = decision.get("extract_number")
+    user_gives_autonomy = decision.get("user_gives_autonomy", False)
     
-    if verbose:
+    # Get LLM for autonomous decision-making
+    try:
+        from langchain_openai import ChatOpenAI
+        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+    except:
+        try:
+            from langchain_anthropic import ChatAnthropic
+            llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
+        except:
+            llm = None
+    
+    logger = state.get("logger")
+    log_info = logger.info if logger else (lambda msg: print(msg) if verbose else None)
+    
+    if log_info:
+        log_info("\n[REFINEMENT] Refining existing results...")
+        log_info(f"  Previous results: {len(previous_time_ranges)} time ranges")
+        log_info(f"  User request: {decision.get('reason', 'N/A')}")
+        if extract_number:
+            log_info(f"  Extracting top {extract_number} results")
+        if user_gives_autonomy:
+            log_info(f"  [AUTONOMY] User gave control - will determine optimal selection")
+    elif verbose:
         print("\n[REFINEMENT] Refining existing results...")
         print(f"  Previous results: {len(previous_time_ranges)} time ranges")
         print(f"  User request: {decision.get('reason', 'N/A')}")
         if extract_number:
             print(f"  Extracting top {extract_number} results")
+        if user_gives_autonomy:
+            print(f"  [AUTONOMY] User gave control - will determine optimal selection")
+    
+    # NEW: If user gives autonomy and no extract_number, use LLM to determine optimal number
+    if user_gives_autonomy and not extract_number and llm:
+        log_info = logger.info if logger else (lambda msg: print(msg) if verbose else None)
+        if log_info:
+            log_info(f"\n[AUTONOMY] Determining optimal number of results...")
+        
+        # Prepare context for LLM decision
+        system_prompt = """You are a video editing assistant. The user has given you autonomy to select the best video clips from existing results.
+
+Your task:
+1. Determine the optimal number of clips to select (considering video engagement, variety, and relevance)
+2. Consider the original query context
+3. Think about what makes a video engaging (variety, pacing, relevance)
+
+Guidelines:
+- For B-roll: Typically 3-7 clips work well (enough variety, not overwhelming)
+- For highlights: 5-10 clips is usually good (depends on total video length)
+- Consider the total number of available results
+- More is not always better - quality over quantity
+- Ensure variety and pacing
+
+Return JSON:
+{{
+    "optimal_number": number,  // Optimal number of clips to select (typically 3-10)
+    "reasoning": "brief explanation of why this number"
+}}"""
+        
+        prompt = f"""Original query: "{previous_query}"
+User clarification: "{current_query}"
+Available results: {len(previous_time_ranges)} time ranges
+
+Determine the optimal number of clips to select. Consider:
+- What makes a video engaging
+- Variety and pacing
+- Relevance to the original query
+- The user's intent (B-roll, highlights, etc.)
+
+Return JSON only."""
+        
+        try:
+            from langchain_core.messages import SystemMessage, HumanMessage
+            response = llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=prompt)
+            ])
+            
+            response_text = response.content.strip()
+            json_text = extract_json(response_text)
+            autonomy_decision = json.loads(json_text)
+            
+            extract_number = autonomy_decision.get("optimal_number")
+            reasoning = autonomy_decision.get("reasoning", "No reasoning")
+            
+            # Clamp to reasonable range
+            if extract_number:
+                extract_number = max(1, min(extract_number, len(previous_time_ranges)))
+            
+            if log_info:
+                log_info(f"  [AUTONOMY] Determined optimal number: {extract_number} (reasoning: {reasoning})")
+            elif verbose:
+                print(f"  [AUTONOMY] Determined optimal number: {extract_number} (reasoning: {reasoning})")
+        except Exception as e:
+            # Fallback: use reasonable default based on number of results
+            if len(previous_time_ranges) <= 5:
+                extract_number = len(previous_time_ranges)
+            elif len(previous_time_ranges) <= 10:
+                extract_number = 5
+            else:
+                extract_number = min(7, len(previous_time_ranges) // 2)
+            
+            if log_info:
+                log_info(f"  [AUTONOMY] Fallback: using {extract_number} results (error: {e})")
+            elif verbose:
+                print(f"  [AUTONOMY] Fallback: using {extract_number} results (error: {e})")
     
     # If we have search results with descriptions, use LLM-based ranking
-    if previous_search_results and extract_number:
+    # Also use LLM ranking if user gave autonomy (even without explicit extract_number)
+    if previous_search_results and (extract_number or user_gives_autonomy):
         # Map time ranges to their descriptions from search_results
         range_descriptions = {}
         for result in previous_search_results:
@@ -166,36 +276,46 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
             })
         
         # Use LLM to rank based on descriptions and user query
-        if len(ranges_with_descriptions) > (extract_number or 1):
-            if verbose:
+        # For autonomy cases, always use LLM ranking even if we have fewer results
+        target_number = extract_number if extract_number else (min(7, len(ranges_with_descriptions)) if user_gives_autonomy else len(ranges_with_descriptions))
+        
+        if len(ranges_with_descriptions) > 1:  # Always rank if we have multiple results
+            if log_info:
+                log_info(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
+            elif verbose:
                 print(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
             
             ranked_ranges = rank_ranges_with_llm(
                 ranges_with_descriptions,
                 current_query,
                 previous_query,
-                extract_number or len(ranges_with_descriptions),
+                target_number,
                 state.get("logger"),
                 verbose=verbose
             )
             
             # Filter out false positives after ranking
-            if ranked_ranges and extract_number:
-                if verbose:
+            # For autonomy cases, be more lenient (user trusts our judgment)
+            should_validate = extract_number and not user_gives_autonomy
+            
+            if ranked_ranges and should_validate:
+                if log_info:
+                    log_info(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
+                elif verbose:
                     print(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
                 
                 # Get LLM for validation
                 try:
                     from langchain_openai import ChatOpenAI
-                    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+                    validation_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
                 except:
                     try:
                         from langchain_anthropic import ChatAnthropic
-                        llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
+                        validation_llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
                     except:
-                        llm = None
+                        validation_llm = None
                 
-                if llm:
+                if validation_llm:
                     from langchain_core.messages import HumanMessage, SystemMessage
                     from agent.utils import extract_json
                     import json
@@ -215,7 +335,7 @@ Return JSON only:
 {{"is_valid": true/false, "reasoning": "brief explanation"}}"""
                         
                         try:
-                            validation_response = llm.invoke([
+                            validation_response = validation_llm.invoke([
                                 SystemMessage(content="You are a video search validator. Determine if a clip description actually matches the user's query. Filter out false positives."),
                                 HumanMessage(content=validation_prompt)
                             ])
@@ -238,22 +358,31 @@ Return JSON only:
                     
                     if validated_ranges:
                         refined_ranges = validated_ranges
-                        if verbose:
+                        if log_info:
+                            log_info(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
+                        elif verbose:
                             print(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
                     else:
                         # Fallback: keep ranked results even if all filtered
                         refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
-                        if verbose:
+                        if log_info:
+                            log_info(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
+                        elif verbose:
                             print(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
                 else:
                     # No LLM available, just use ranked results
-                    refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
+                    refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number] if extract_number else ranked_ranges]
             else:
-                refined_ranges = [r["time_range"] for r in ranked_ranges]
+                # For autonomy cases or when validation is skipped, take top N from ranked results
+                if extract_number:
+                    refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
+                else:
+                    refined_ranges = [r["time_range"] for r in ranked_ranges]
         else:
             refined_ranges = previous_time_ranges
     
     # If we have scored seconds but no search results, use score-based ranking
+    # For autonomy cases, still try to use LLM if we can get descriptions from segment tree
     elif previous_scored_seconds:
         # Build a map: second_index -> score
         second_scores = {}
@@ -290,7 +419,10 @@ Return JSON only:
         # Extract top N if specified
         if extract_number:
             scored_ranges = scored_ranges[:extract_number]
-            if verbose:
+            if log_info:
+                log_info(f"  Selected top {extract_number} by score")
+                log_info(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
+            elif verbose:
                 print(f"  Selected top {extract_number} by score")
                 print(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
         
@@ -303,14 +435,18 @@ Return JSON only:
         else:
             refined_ranges = previous_time_ranges
     
-    if verbose:
+    if log_info:
+        log_info(f"  Refined to {len(refined_ranges)} time ranges")
+    elif verbose:
         print(f"  Refined to {len(refined_ranges)} time ranges")
     
+    # CRITICAL: When user gives autonomy, NEVER ask for clarification again
+    # Set needs_clarification to False explicitly
     return {
         **state,
         "time_ranges": refined_ranges,
-        "needs_clarification": False,
-        "confidence": state.get("confidence", 0.7)
+        "needs_clarification": False,  # Always False after refinement (user gave autonomy or explicit instruction)
+        "confidence": min(0.95, max(0.7, state.get("confidence", 0.7))) if user_gives_autonomy else state.get("confidence", 0.7)
     }
 
 
