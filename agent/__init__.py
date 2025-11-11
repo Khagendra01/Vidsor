@@ -162,7 +162,7 @@ __all__ = [
 ]
 
 # Orchestrator imports
-from agent.orchestrator_state import OrchestratorState
+from agent.state import OrchestratorState
 from agent.orchestrator import create_orchestrator_agent
 from agent.orchestrator_runner import run_orchestrator
 

@@ -1,7 +1,7 @@
 """Orchestrator agent for managing timeline editing operations."""
 
 from typing import Dict, Any
-from agent.orchestrator_state import OrchestratorState
+from agent.state import OrchestratorState
 from agent.timeline_manager import TimelineManager
 from agent.orchestrator_operations import classify_operation, validate_operation_params
 from agent.orchestrator_handlers import (

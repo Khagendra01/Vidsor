@@ -1,7 +1,7 @@
 """Extended state for orchestrator agent with timeline management."""
 
 from typing import Dict, List, Optional, Tuple, Annotated, TypedDict, Any
-from agent.state import AgentState
+from agent.state.state import AgentState
 
 
 class OrchestratorState(AgentState):
