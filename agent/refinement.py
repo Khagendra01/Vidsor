@@ -526,11 +526,11 @@ Return JSON array with validation results:
     ...
 ]"""
     
-    def validate_batch(batch_info):
-        """Validate a single batch of evidence descriptions."""
-        start_idx, batch_evidence = batch_info
-        try:
-            validation_prompt = f"""
+        def validate_batch(batch_info):
+            """Validate a single batch of evidence descriptions."""
+            start_idx, batch_evidence = batch_info
+            try:
+                validation_prompt = f"""
 Query: {query}
 
 Evidence descriptions to validate:
@@ -539,182 +539,182 @@ Evidence descriptions to validate:
 For each description, determine if it truly matches the query "{query}".
 Return JSON array with validation results. Return JSON only.
 """
-            
-            response = llm.invoke([
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=validation_prompt)
-            ])
-            
-            response_text = response.content.strip()
-            json_text = extract_json(response_text)
-            
-            # Parse JSON response
-            batch_results = []
-            try:
-                batch_results = json.loads(json_text)
-            except json.JSONDecodeError:
-                # Try to extract JSON array pattern
-                array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
-                if array_match:
-                    try:
-                        batch_results = json.loads(array_match.group())
-                    except:
-                        pass
-            
-            # Adjust indices to match original evidence list
-            # LLM returns indices relative to the batch (0-9), we need to map to absolute indices
-            adjusted_results = []
-            if isinstance(batch_results, list):
-                for i, val_result in enumerate(batch_results):
-                    # Use index from LLM if provided and valid, otherwise use position in batch
-                    original_idx = val_result.get("index")
-                    if original_idx is not None and 0 <= original_idx < len(batch_evidence):
-                        # Adjust index to match position in full evidence list
-                        adjusted_results.append({
-                            "index": start_idx + original_idx,
-                            "is_valid": val_result.get("is_valid", True),
-                            "reasoning": val_result.get("reasoning", "")
-                        })
+                
+                response = llm.invoke([
+                    SystemMessage(content=system_prompt),
+                    HumanMessage(content=validation_prompt)
+                ])
+                
+                response_text = response.content.strip()
+                json_text = extract_json(response_text)
+                
+                # Parse JSON response
+                batch_results = []
+                try:
+                    batch_results = json.loads(json_text)
+                except json.JSONDecodeError:
+                    # Try to extract JSON array pattern
+                    array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
+                    if array_match:
+                        try:
+                            batch_results = json.loads(array_match.group())
+                        except:
+                            pass
+                
+                # Adjust indices to match original evidence list
+                # LLM returns indices relative to the batch (0-9), we need to map to absolute indices
+                adjusted_results = []
+                if isinstance(batch_results, list):
+                    for i, val_result in enumerate(batch_results):
+                        # Use index from LLM if provided and valid, otherwise use position in batch
+                        original_idx = val_result.get("index")
+                        if original_idx is not None and 0 <= original_idx < len(batch_evidence):
+                            # Adjust index to match position in full evidence list
+                            adjusted_results.append({
+                                "index": start_idx + original_idx,
+                                "is_valid": val_result.get("is_valid", True),
+                                "reasoning": val_result.get("reasoning", "")
+                            })
+                        else:
+                            # Fallback: use position in batch
+                            adjusted_results.append({
+                                "index": start_idx + i,
+                                "is_valid": val_result.get("is_valid", True),
+                                "reasoning": val_result.get("reasoning", "")
+                            })
+                elif isinstance(batch_results, dict):
+                    # Handle single result or dict format
+                    if "results" in batch_results:
+                        for i, val_result in enumerate(batch_results["results"]):
+                            adjusted_results.append({
+                                "index": start_idx + i,
+                                "is_valid": val_result.get("is_valid", True),
+                                "reasoning": val_result.get("reasoning", "")
+                            })
                     else:
-                        # Fallback: use position in batch
+                        # Single result - assume it's for first item in batch
                         adjusted_results.append({
-                            "index": start_idx + i,
-                            "is_valid": val_result.get("is_valid", True),
-                            "reasoning": val_result.get("reasoning", "")
+                            "index": start_idx,
+                            "is_valid": batch_results.get("is_valid", True),
+                            "reasoning": batch_results.get("reasoning", "")
                         })
-            elif isinstance(batch_results, dict):
-                # Handle single result or dict format
-                if "results" in batch_results:
-                    for i, val_result in enumerate(batch_results["results"]):
-                        adjusted_results.append({
-                            "index": start_idx + i,
-                            "is_valid": val_result.get("is_valid", True),
-                            "reasoning": val_result.get("reasoning", "")
-                        })
-                else:
-                    # Single result - assume it's for first item in batch
-                    adjusted_results.append({
-                        "index": start_idx,
-                        "is_valid": batch_results.get("is_valid", True),
-                        "reasoning": batch_results.get("reasoning", "")
-                    })
-            
-            return adjusted_results
+                
+                return adjusted_results
+            except Exception as e:
+                if verbose:
+                    print(f"  [VALIDATION] Error validating batch starting at index {start_idx}: {e}")
+                # On error, return all as valid (don't filter)
+                return [{"index": start_idx + i, "is_valid": True, "reasoning": "validation error"} 
+                        for i in range(len(batch_evidence))]
+        
+        # Process batches in parallel
+        all_validation_results = []
+        try:
+            with ThreadPoolExecutor(max_workers=min(len(batches), 5)) as executor:
+                # Submit all batches
+                future_to_batch = {executor.submit(validate_batch, batch): batch for batch in batches}
+                
+                # Collect results as they complete
+                for future in as_completed(future_to_batch):
+                    batch_info = future_to_batch[future]
+                    try:
+                        batch_results = future.result()
+                        all_validation_results.extend(batch_results)
+                        if verbose:
+                            start_idx, batch_evidence = batch_info
+                            print(f"  [VALIDATION] Completed batch {start_idx//batch_size + 1}/{len(batches)} ({len(batch_evidence)} items)")
+                    except Exception as e:
+                        if verbose:
+                            print(f"  [VALIDATION] Batch failed: {e}")
+                        # On error, mark all in batch as valid
+                        start_idx, batch_evidence = batch_info
+                        all_validation_results.extend([
+                            {"index": start_idx + i, "is_valid": True, "reasoning": "batch error"}
+                            for i in range(len(batch_evidence))
+                        ])
         except Exception as e:
             if verbose:
-                print(f"  [VALIDATION] Error validating batch starting at index {start_idx}: {e}")
-            # On error, return all as valid (don't filter)
-            return [{"index": start_idx + i, "is_valid": True, "reasoning": "validation error"} 
-                    for i in range(len(batch_evidence))]
-    
-    # Process batches in parallel
-    all_validation_results = []
-    try:
-        with ThreadPoolExecutor(max_workers=min(len(batches), 5)) as executor:
-            # Submit all batches
-            future_to_batch = {executor.submit(validate_batch, batch): batch for batch in batches}
+                print(f"  [VALIDATION] Error in parallel processing: {e}, falling back to sequential")
+            # Fallback to sequential processing
+            for batch_info in batches:
+                batch_results = validate_batch(batch_info)
+                all_validation_results.extend(batch_results)
             
-            # Collect results as they complete
-            for future in as_completed(future_to_batch):
-                batch_info = future_to_batch[future]
-                try:
-                    batch_results = future.result()
-                    all_validation_results.extend(batch_results)
-                    if verbose:
-                        start_idx, batch_evidence = batch_info
-                        print(f"  [VALIDATION] Completed batch {start_idx//batch_size + 1}/{len(batches)} ({len(batch_evidence)} items)")
-                except Exception as e:
-                    if verbose:
-                        print(f"  [VALIDATION] Batch failed: {e}")
-                    # On error, mark all in batch as valid
-                    start_idx, batch_evidence = batch_info
-                    all_validation_results.extend([
-                        {"index": start_idx + i, "is_valid": True, "reasoning": "batch error"}
-                        for i in range(len(batch_evidence))
-                    ])
-    except Exception as e:
-        if verbose:
-            print(f"  [VALIDATION] Error in parallel processing: {e}, falling back to sequential")
-        # Fallback to sequential processing
-        for batch_info in batches:
-            batch_results = validate_batch(batch_info)
-            all_validation_results.extend(batch_results)
-        
-        # Convert to dict for easier lookup
-        validation_map = {}
-        for val_result in all_validation_results:
-            idx = val_result.get("index")
-            if idx is not None:
-                validation_map[idx] = val_result
-        
-        # Filter evidence based on validation
-        validated_evidence = []
-        validated_evidence_scenes = []
-        filtered_count = 0
-        
-        # Build a set of valid evidence keys (second + description) for matching
-        valid_evidence_keys = set()
-        
-        for i, ev in enumerate(evidence_list):
-            val_result = validation_map.get(i, {})
-            is_valid = val_result.get("is_valid", True)  # Default to valid if validation failed
+            # Convert to dict for easier lookup
+            validation_map = {}
+            for val_result in all_validation_results:
+                idx = val_result.get("index")
+                if idx is not None:
+                    validation_map[idx] = val_result
             
-            if is_valid:
-                validated_evidence.append(ev)
-                # Create key for matching evidence_scenes
-                ev_key = (ev.get("second"), ev.get("description", ""))
-                valid_evidence_keys.add(ev_key)
+            # Filter evidence based on validation
+            validated_evidence = []
+            validated_evidence_scenes = []
+            filtered_count = 0
+            
+            # Build a set of valid evidence keys (second + description) for matching
+            valid_evidence_keys = set()
+            
+            for i, ev in enumerate(evidence_list):
+                val_result = validation_map.get(i, {})
+                is_valid = val_result.get("is_valid", True)  # Default to valid if validation failed
+                
+                if is_valid:
+                    validated_evidence.append(ev)
+                    # Create key for matching evidence_scenes
+                    ev_key = (ev.get("second"), ev.get("description", ""))
+                    valid_evidence_keys.add(ev_key)
+                else:
+                    filtered_count += 1
+                    if verbose:
+                        reasoning = val_result.get("reasoning", "No reasoning provided")
+                        desc_preview = ev.get("description", "")[:50]
+                        print(f"    Filtered out second {ev.get('second')} ({desc_preview}...): {reasoning}")
+            
+            # Filter evidence_scenes to match validated evidence
+            # Handle both standard format (evidence_scenes) and fish-specific format (fish_holding_scenes)
+            evidence_scenes = activity_result.get("evidence_scenes", [])
+            fish_holding_scenes = activity_result.get("fish_holding_scenes", [])
+            
+            validated_evidence_scenes = []
+            validated_fish_holding_scenes = []
+            
+            # Filter evidence_scenes (standard format)
+            for scene in evidence_scenes:
+                scene_key = (scene.get("second"), scene.get("description", ""))
+                if scene_key in valid_evidence_keys:
+                    validated_evidence_scenes.append(scene)
+            
+            # Filter fish_holding_scenes (fish-specific format)
+            for scene in fish_holding_scenes:
+                scene_key = (scene.get("second"), scene.get("description", ""))
+                if scene_key in valid_evidence_keys:
+                    validated_fish_holding_scenes.append(scene)
+            
+            if verbose:
+                print(f"  [VALIDATION] Kept {len(validated_evidence)}/{len(evidence_list)} evidence (filtered {filtered_count})")
+            
+            # Update activity result with filtered evidence
+            updated_result = activity_result.copy()
+            updated_result["evidence"] = validated_evidence
+            updated_result["evidence_count"] = len(validated_evidence)
+            updated_result["detected"] = len(validated_evidence) > 0
+            
+            # Update both formats if they exist in original result
+            if "evidence_scenes" in activity_result:
+                updated_result["evidence_scenes"] = validated_evidence_scenes
+            if "fish_holding_scenes" in activity_result:
+                updated_result["fish_holding_scenes"] = validated_fish_holding_scenes
+            
+            # Update summary
+            if len(validated_evidence) > 0:
+                evidence_name = activity_result.get("evidence_name", "evidence")
+                updated_result["summary"] = f"YES - {evidence_name.capitalize()} detected! Found {len(validated_evidence)} scene(s) with validated evidence."
             else:
-                filtered_count += 1
-                if verbose:
-                    reasoning = val_result.get("reasoning", "No reasoning provided")
-                    desc_preview = ev.get("description", "")[:50]
-                    print(f"    Filtered out second {ev.get('second')} ({desc_preview}...): {reasoning}")
-        
-        # Filter evidence_scenes to match validated evidence
-        # Handle both standard format (evidence_scenes) and fish-specific format (fish_holding_scenes)
-        evidence_scenes = activity_result.get("evidence_scenes", [])
-        fish_holding_scenes = activity_result.get("fish_holding_scenes", [])
-        
-        validated_evidence_scenes = []
-        validated_fish_holding_scenes = []
-        
-        # Filter evidence_scenes (standard format)
-        for scene in evidence_scenes:
-            scene_key = (scene.get("second"), scene.get("description", ""))
-            if scene_key in valid_evidence_keys:
-                validated_evidence_scenes.append(scene)
-        
-        # Filter fish_holding_scenes (fish-specific format)
-        for scene in fish_holding_scenes:
-            scene_key = (scene.get("second"), scene.get("description", ""))
-            if scene_key in valid_evidence_keys:
-                validated_fish_holding_scenes.append(scene)
-        
-        if verbose:
-            print(f"  [VALIDATION] Kept {len(validated_evidence)}/{len(evidence_list)} evidence (filtered {filtered_count})")
-        
-        # Update activity result with filtered evidence
-        updated_result = activity_result.copy()
-        updated_result["evidence"] = validated_evidence
-        updated_result["evidence_count"] = len(validated_evidence)
-        updated_result["detected"] = len(validated_evidence) > 0
-        
-        # Update both formats if they exist in original result
-        if "evidence_scenes" in activity_result:
-            updated_result["evidence_scenes"] = validated_evidence_scenes
-        if "fish_holding_scenes" in activity_result:
-            updated_result["fish_holding_scenes"] = validated_fish_holding_scenes
-        
-        # Update summary
-        if len(validated_evidence) > 0:
-            evidence_name = activity_result.get("evidence_name", "evidence")
-            updated_result["summary"] = f"YES - {evidence_name.capitalize()} detected! Found {len(validated_evidence)} scene(s) with validated evidence."
-        else:
-            activity_name = activity_result.get("activity_name", "activity")
-            updated_result["summary"] = f"NO - No validated {activity_name} evidence found after filtering false positives."
-        
-        return updated_result
+                activity_name = activity_result.get("activity_name", "activity")
+                updated_result["summary"] = f"NO - No validated {activity_name} evidence found after filtering false positives."
+            
+            return updated_result
     
     except Exception as e:
         if verbose:
