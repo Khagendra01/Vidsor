@@ -1,7 +1,9 @@
 """Refinement and validation functions for search results."""
 
 import json
+import re
 from typing import Dict, List, Any, Optional
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
 from agent.utils import extract_json
@@ -483,8 +485,19 @@ def validate_activity_evidence(query: str, activity_result: Dict, llm, verbose: 
     if not evidence_to_validate:
         return activity_result
     
-    # Batch validate descriptions (process in chunks to avoid token limits)
-    system_prompt = """You are a video activity validator. Your job is to check if video descriptions actually match the user's query intent.
+    try:
+        # Split into batches of 10 for parallel processing
+        batch_size = 10
+        batches = []
+        for i in range(0, len(evidence_to_validate), batch_size):
+            batch = evidence_to_validate[i:i + batch_size]
+            batches.append((i, batch))  # Store starting index and batch
+        
+        if verbose:
+            print(f"  [VALIDATION] Split into {len(batches)} batches of up to {batch_size} items each")
+        
+        # System prompt for validation
+        system_prompt = """You are a video activity validator. Your job is to check if video descriptions actually match the user's query intent.
 
 You will receive:
 - User's query (what they're looking for)
@@ -513,63 +526,126 @@ Return JSON array with validation results:
     ...
 ]"""
     
-    validation_prompt = f"""
+    def validate_batch(batch_info):
+        """Validate a single batch of evidence descriptions."""
+        start_idx, batch_evidence = batch_info
+        try:
+            validation_prompt = f"""
 Query: {query}
 
 Evidence descriptions to validate:
-{json.dumps(evidence_to_validate, indent=2)}
+{json.dumps(batch_evidence, indent=2)}
 
 For each description, determine if it truly matches the query "{query}".
 Return JSON array with validation results. Return JSON only.
 """
-    
-    try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=validation_prompt)
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        
-        # FIX: Handle cases where JSON might have extra data or multiple objects
-        validation_results = []
-        try:
-            validation_results = json.loads(json_text)
-        except json.JSONDecodeError as e:
-            # Try to extract first valid JSON object
+            
+            response = llm.invoke([
+                SystemMessage(content=system_prompt),
+                HumanMessage(content=validation_prompt)
+            ])
+            
+            response_text = response.content.strip()
+            json_text = extract_json(response_text)
+            
+            # Parse JSON response
+            batch_results = []
+            try:
+                batch_results = json.loads(json_text)
+            except json.JSONDecodeError:
+                # Try to extract JSON array pattern
+                array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
+                if array_match:
+                    try:
+                        batch_results = json.loads(array_match.group())
+                    except:
+                        pass
+            
+            # Adjust indices to match original evidence list
+            # LLM returns indices relative to the batch (0-9), we need to map to absolute indices
+            adjusted_results = []
+            if isinstance(batch_results, list):
+                for i, val_result in enumerate(batch_results):
+                    # Use index from LLM if provided and valid, otherwise use position in batch
+                    original_idx = val_result.get("index")
+                    if original_idx is not None and 0 <= original_idx < len(batch_evidence):
+                        # Adjust index to match position in full evidence list
+                        adjusted_results.append({
+                            "index": start_idx + original_idx,
+                            "is_valid": val_result.get("is_valid", True),
+                            "reasoning": val_result.get("reasoning", "")
+                        })
+                    else:
+                        # Fallback: use position in batch
+                        adjusted_results.append({
+                            "index": start_idx + i,
+                            "is_valid": val_result.get("is_valid", True),
+                            "reasoning": val_result.get("reasoning", "")
+                        })
+            elif isinstance(batch_results, dict):
+                # Handle single result or dict format
+                if "results" in batch_results:
+                    for i, val_result in enumerate(batch_results["results"]):
+                        adjusted_results.append({
+                            "index": start_idx + i,
+                            "is_valid": val_result.get("is_valid", True),
+                            "reasoning": val_result.get("reasoning", "")
+                        })
+                else:
+                    # Single result - assume it's for first item in batch
+                    adjusted_results.append({
+                        "index": start_idx,
+                        "is_valid": batch_results.get("is_valid", True),
+                        "reasoning": batch_results.get("reasoning", "")
+                    })
+            
+            return adjusted_results
+        except Exception as e:
             if verbose:
-                print(f"  [VALIDATION] JSON parsing error: {e}, attempting recovery...")
-            # Try to find first complete JSON array/object
-            import re
-            # Look for JSON array pattern
-            array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
-            if array_match:
+                print(f"  [VALIDATION] Error validating batch starting at index {start_idx}: {e}")
+            # On error, return all as valid (don't filter)
+            return [{"index": start_idx + i, "is_valid": True, "reasoning": "validation error"} 
+                    for i in range(len(batch_evidence))]
+    
+    # Process batches in parallel
+    all_validation_results = []
+    try:
+        with ThreadPoolExecutor(max_workers=min(len(batches), 5)) as executor:
+            # Submit all batches
+            future_to_batch = {executor.submit(validate_batch, batch): batch for batch in batches}
+            
+            # Collect results as they complete
+            for future in as_completed(future_to_batch):
+                batch_info = future_to_batch[future]
                 try:
-                    validation_results = json.loads(array_match.group())
-                except:
-                    pass
-            # If still fails, use empty list (will keep all evidence)
-            if not validation_results:
-                if verbose:
-                    print(f"  [VALIDATION] Could not parse JSON, using all evidence")
-                validation_results = []
+                    batch_results = future.result()
+                    all_validation_results.extend(batch_results)
+                    if verbose:
+                        start_idx, batch_evidence = batch_info
+                        print(f"  [VALIDATION] Completed batch {start_idx//batch_size + 1}/{len(batches)} ({len(batch_evidence)} items)")
+                except Exception as e:
+                    if verbose:
+                        print(f"  [VALIDATION] Batch failed: {e}")
+                    # On error, mark all in batch as valid
+                    start_idx, batch_evidence = batch_info
+                    all_validation_results.extend([
+                        {"index": start_idx + i, "is_valid": True, "reasoning": "batch error"}
+                        for i in range(len(batch_evidence))
+                    ])
+    except Exception as e:
+        if verbose:
+            print(f"  [VALIDATION] Error in parallel processing: {e}, falling back to sequential")
+        # Fallback to sequential processing
+        for batch_info in batches:
+            batch_results = validate_batch(batch_info)
+            all_validation_results.extend(batch_results)
         
         # Convert to dict for easier lookup
         validation_map = {}
-        if isinstance(validation_results, list):
-            for val_result in validation_results:
-                idx = val_result.get("index")
-                if idx is not None:
-                    validation_map[idx] = val_result
-        elif isinstance(validation_results, dict):
-            # Handle case where LLM returns dict with list
-            if "results" in validation_results:
-                for i, val_result in enumerate(validation_results["results"]):
-                    validation_map[i] = val_result
-            else:
-                # Single result
-                validation_map[0] = validation_results
+        for val_result in all_validation_results:
+            idx = val_result.get("index")
+            if idx is not None:
+                validation_map[idx] = val_result
         
         # Filter evidence based on validation
         validated_evidence = []
@@ -639,7 +715,7 @@ Return JSON array with validation results. Return JSON only.
             updated_result["summary"] = f"NO - No validated {activity_name} evidence found after filtering false positives."
         
         return updated_result
-        
+    
     except Exception as e:
         if verbose:
             print(f"  [VALIDATION] Error validating evidence: {str(e)}, keeping all evidence")
