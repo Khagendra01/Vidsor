@@ -53,6 +53,11 @@ from .utils import format_time, format_time_detailed, get_chunk_color
 from .timeline_manager import TimelineManager
 from .chat_manager import ChatManager
 from .export import VideoExporter
+from .project_manager import ProjectManager
+from .video_analyzer import VideoAnalyzer
+from .playback_controller import PlaybackController
+from .timeline_controller import TimelineController
+from .agent_integration import AgentIntegration
 from .ui.main_ui import (
     create_main_ui, update_project_list, on_new_project, 
     on_project_selected, update_ui_state, update_playback_controls
@@ -82,17 +87,19 @@ class Vidsor:
         self.video_path = video_path
         self.segment_tree_path = segment_tree_path
         self.video_clip: Optional[VideoFileClip] = None
-        self.preview_clip: Optional[VideoFileClip] = None  # Rendered preview from timeline
-        self.playback_thread: Optional[threading.Thread] = None  # Thread for video playback
-        self.audio_thread: Optional[threading.Thread] = None  # Thread for audio playback
-        self.audio_clip = None  # Audio clip for playback
         self.segment_tree: Optional[SegmentTreeQuery] = None
         self.edit_state = EditState(chunks=[])
         
         # Project management
         self.current_project_path: Optional[str] = None
         self.projects_dir = os.path.join(os.getcwd(), "projects")
-        self._ensure_projects_dir()
+        
+        # Initialize controllers
+        self.project_manager = ProjectManager(self.projects_dir)
+        self.video_analyzer = VideoAnalyzer()
+        self.playback_controller = PlaybackController(self)
+        self.timeline_controller = TimelineController(self)
+        self.agent_integration = AgentIntegration(self)
         
         # UI components
         self.root: Optional[tk.Tk] = None
@@ -110,17 +117,9 @@ class Vidsor:
         self.extraction_thread: Optional[threading.Thread] = None
         self.is_extracting = False
         
-        # Chat interface components
-        self.chat_history: List[Dict[str, str]] = []  # List of {"role": "user"/"assistant", "content": "..."}
-        self.chat_text: Optional[tk.Text] = None
-        self.chat_input: Optional[tk.Text] = None
-        self.chat_send_btn: Optional[ttk.Button] = None
-        self.chat_status_label: Optional[ttk.Label] = None
-        self.agent_thread: Optional[threading.Thread] = None
-        self.is_agent_running = False
-        
-        # Agent state for clarification
-        self.pending_clarification: Optional[Dict] = None  # Stores preserved state when clarification is needed
+        # Sync video analyzer state
+        self.video_analyzer.video_path = self.video_path
+        self.video_analyzer.segment_tree_path = self.segment_tree_path
         
         # Load video and segment tree if provided
         if self.video_path:
@@ -130,49 +129,11 @@ class Vidsor:
     
     def _ensure_projects_dir(self):
         """Ensure projects directory exists."""
-        if not os.path.exists(self.projects_dir):
-            os.makedirs(self.projects_dir)
+        self.project_manager._ensure_projects_dir()
     
     def create_new_project(self, project_name: str) -> str:
-        """
-        Create a new project folder structure.
-        
-        Args:
-            project_name: Name of the project
-            
-        Returns:
-            Path to the created project folder
-        """
-        # Sanitize project name
-        safe_name = "".join(c for c in project_name if c.isalnum() or c in (' ', '-', '_')).strip()
-        safe_name = safe_name.replace(' ', '_')
-        
-        if not safe_name:
-            raise ValueError("Invalid project name")
-        
-        project_path = os.path.join(self.projects_dir, safe_name)
-        
-        if os.path.exists(project_path):
-            raise ValueError(f"Project '{safe_name}' already exists")
-        
-        # Create project structure
-        os.makedirs(project_path)
-        os.makedirs(os.path.join(project_path, "video"))
-        
-        # Create project config
-        config = {
-            "project_name": safe_name,
-            "created_at": datetime.now().isoformat(),
-            "video_filename": None,
-            "segment_tree_path": None
-        }
-        
-        config_path = os.path.join(project_path, "project_config.json")
-        with open(config_path, 'w') as f:
-            json.dump(config, f, indent=2)
-        
-        print(f"[VIDSOR] Created project: {project_path}")
-        return project_path
+        """Create a new project folder structure."""
+        return self.project_manager.create_new_project(project_name)
     
     def set_current_project(self, project_path: str):
         """Set the current active project."""
@@ -226,6 +187,8 @@ class Vidsor:
             self._display_chat_history()
     
     def upload_video_to_project(self, video_path: str, project_path: str) -> str:
+        """Copy video to project folder."""
+        return self.project_manager.upload_video_to_project(video_path, project_path)
         """
         Copy video to project folder.
         
