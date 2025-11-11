@@ -527,48 +527,61 @@ Based on the sample descriptions above, generate semantic queries that match the
                     log_info(f"      Found {len([r for r in results if r.get('level') == 0])} leaf node matches")
             
             # 2. Semantic search (replaces old visual/audio keyword search)
+            # OPTIMIZED: Single call with adaptive threshold filtering
             semantic_queries = search_plan.get("semantic_queries", [query])
             if semantic_queries:
                 log_info(f"\n  [SEARCH TYPE: Semantic Search (Visual + Audio)]")
                 for sem_query in semantic_queries:
                     log_info(f"    Query: '{sem_query}'")
                     start_time = time.time()
-                    threshold = 0.5
-                    results = segment_tree.semantic_search(
+                    
+                    # Call semantic_search once with lowest threshold to get all candidates
+                    # This avoids redundant embedding computation and similarity calculations
+                    all_candidates = segment_tree.semantic_search(
                         sem_query,
-                        top_k=15,
-                        threshold=threshold,
+                        top_k=50,  # Get more candidates for adaptive filtering
+                        threshold=0.4,  # Start with lowest threshold we were using
                         search_transcriptions=True,
                         search_unified=True,
                         verbose=False
                     )
-                    if not results:
-                        threshold = 0.45
-                        results = segment_tree.semantic_search(
-                            sem_query,
-                            top_k=15,
-                            threshold=threshold,
-                            search_transcriptions=True,
-                            search_unified=True,
-                            verbose=False
-                        )
-                    if not results:
-                        threshold = 0.4
-                        results = segment_tree.semantic_search(
-                            sem_query,
-                            top_k=15,
-                            threshold=threshold,
-                            search_transcriptions=True,
-                            search_unified=True,
-                            verbose=False
-                        )
+                    
+                    # Adaptive threshold filtering based on result quality
+                    if all_candidates:
+                        # Sort by score (highest first)
+                        all_candidates.sort(key=lambda x: x.get("score", 0), reverse=True)
+                        
+                        # Count high-quality results (score >= 0.5)
+                        high_quality = [r for r in all_candidates if r.get("score", 0) >= 0.5]
+                        
+                        # Adaptive selection:
+                        # - If we have many high-quality results, prefer those
+                        # - Otherwise, use all results above 0.4
+                        if len(high_quality) >= 5:
+                            # We have enough high-quality results, use those
+                            results = high_quality[:15]  # Top 15 high-quality
+                            log_info(f"      Using {len(results)} high-quality results (score >= 0.5)")
+                        elif len(high_quality) > 0:
+                            # Mix of high and medium quality
+                            results = high_quality + [r for r in all_candidates if 0.45 <= r.get("score", 0) < 0.5][:10]
+                            results = results[:15]  # Limit to top 15
+                            log_info(f"      Using {len(results)} results (mix of high and medium quality)")
+                        else:
+                            # No high-quality results, use all above 0.4
+                            results = all_candidates[:15]  # Top 15 by score
+                            log_info(f"      Using {len(results)} results (all above threshold 0.4)")
+                    else:
+                        # No results found even with 0.4 threshold
+                        results = []
+                        log_info(f"      No results found (threshold 0.4)")
+                    
                     elapsed = time.time() - start_time
                     
                     for result in results:
                         result["search_type"] = "semantic"
                         result["search_query"] = sem_query
                         all_search_results.append(result)
-                    log_info(f"      Found {len(results)} matches (took {elapsed:.2f}s)")
+                    log_info(f"      Final: {len(results)} matches (took {elapsed:.2f}s, optimized single call)")
             
             # 3. Object search (with negation handling)
             object_classes = search_plan.get("object_classes", [])
