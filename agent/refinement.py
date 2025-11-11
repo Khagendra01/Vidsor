@@ -371,7 +371,7 @@ Return JSON only:
                             print(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
                 else:
                     # No LLM available, just use ranked results
-                    refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number] if extract_number else ranked_ranges]
+                    refined_ranges = [r["time_range"] for r in (ranked_ranges[:extract_number] if extract_number else ranked_ranges)]
             else:
                 # For autonomy cases or when validation is skipped, take top N from ranked results
                 if extract_number:

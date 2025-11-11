@@ -1575,20 +1575,23 @@ class SegmentTreeQuery:
     def inspect_content(self, max_keywords: int = 100, max_sample_descriptions: int = 20) -> Dict[str, Any]:
         """
         Inspect and summarize the content available in the video.
-        Returns keywords, objects, and sample descriptions to help understand what's in the video.
+        Returns keywords, objects, and sample descriptions (both visual and audio) to help understand what's in the video.
         
         Args:
             max_keywords: Maximum number of unique keywords to return
-            max_sample_descriptions: Maximum number of sample descriptions to return
+            max_sample_descriptions: Maximum number of sample descriptions to return (mix of ~60% visual, ~40% audio)
             
         Returns:
             Dictionary with:
-            - all_keywords: List of unique keywords found in the video
+            - all_keywords: List of unique keywords found in the video (from hierarchical tree or extracted from descriptions/transcriptions)
             - object_classes: Dictionary of object classes and their counts
-            - sample_descriptions: Sample unified descriptions from the video
+            - sample_descriptions: Sample descriptions from the video, each with:
+                - type: "visual" (unified descriptions) or "audio" (transcriptions)
+                - description: The actual text content
+                - time_range or second: Time information
             - hierarchical_available: Whether hierarchical tree is available
             - total_seconds: Total video duration in seconds
-            - summary: Text summary of available content
+            - summary: Text summary of available content (includes audio transcription count)
         """
         all_keywords = set()
         object_classes = self.get_all_classes()
@@ -1610,22 +1613,54 @@ class SegmentTreeQuery:
                     keywords = [w.strip('.,!?;:()[]{}') for w in words if len(w.strip('.,!?;:()[]{}')) >= 3]
                     all_keywords.update(keywords)
         
-        # Collect sample descriptions
+        # Collect sample descriptions (mix of visual and audio)
         descriptions_collected = 0
+        visual_collected = 0
+        audio_collected = 0
+        
+        # Target: ~60% visual, ~40% audio for balanced representation
+        max_visual = int(max_sample_descriptions * 0.6)
+        max_audio = max_sample_descriptions - max_visual
+        
+        # Collect visual descriptions (unified descriptions)
         for second_data in self.seconds:
             # Skip None values that might be in the seconds list
             if second_data is None:
                 continue
-            if descriptions_collected >= max_sample_descriptions:
+            if visual_collected >= max_visual:
                 break
             unified_desc = second_data.get("unified_description", "")
             if unified_desc and unified_desc.lower() != "0":
                 sample_descriptions.append({
+                    "type": "visual",
                     "second": second_data.get("second", 0),
                     "time_range": second_data.get("time_range", []),
                     "description": unified_desc
                 })
+                visual_collected += 1
                 descriptions_collected += 1
+        
+        # Collect audio transcriptions
+        if self.transcriptions:
+            for transcription in self.transcriptions:
+                if audio_collected >= max_audio:
+                    break
+                trans_text = transcription.get("transcription", "").strip()
+                if trans_text:
+                    tr_time_range = transcription.get("time_range", [])
+                    sample_descriptions.append({
+                        "type": "audio",
+                        "time_range": tr_time_range,
+                        "description": trans_text,
+                        "transcription_id": transcription.get("id")
+                    })
+                    audio_collected += 1
+                    descriptions_collected += 1
+        
+        # Sort sample descriptions by time_range for chronological order
+        sample_descriptions.sort(key=lambda x: (
+            x.get("time_range", [0])[0] if x.get("time_range") else x.get("second", 0)
+        ))
         
         # Sort keywords (most common first if we have frequency data, otherwise alphabetically)
         all_keywords_list = sorted(list(all_keywords))[:max_keywords]
@@ -1638,9 +1673,15 @@ class SegmentTreeQuery:
             f"Unique keywords: {len(all_keywords_list)}",
         ]
         if self.hierarchical_tree:
-            summary_parts.append("Hierarchical tree: Available")
+            summary_parts.append("Hierarchical tree: Available (includes visual + audio keywords)")
         else:
             summary_parts.append("Hierarchical tree: Not available")
+        
+        # Add audio/visual info
+        if self.transcriptions:
+            transcription_count = len([t for t in self.transcriptions if t.get("transcription", "").strip()])
+            summary_parts.append(f"Audio transcriptions: {transcription_count} available")
+        summary_parts.append(f"Sample descriptions: {visual_collected} visual, {audio_collected} audio")
         
         summary = "\n".join(summary_parts)
         

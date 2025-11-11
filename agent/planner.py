@@ -75,7 +75,9 @@ Object classes detected: {', '.join(sorted(content_inspection['object_classes'].
 Sample descriptions from video:
 """
     for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
-        context += f"{i}. [{desc['second']}s] {desc['description'][:150]}\n"
+        desc_type = desc.get('type', 'visual')
+        time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
+        context += f"{i}. {time_info} [{desc_type.upper()}] {desc['description'][:150]}\n"
     
     context += f"\nUser Query: {query}\n"
     context += "\nCRITICAL: Create a narrative structure (intro, body, ending) using ONLY keywords from the list above. "
@@ -220,6 +222,20 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
                 log_info(f"  Found {content_inspection['keyword_count']} unique keywords")
                 log_info(f"  Found {content_inspection['object_class_count']} object classes")
                 log_info(f"  Sample keywords: {', '.join(content_inspection['all_keywords'][:15])}...")
+                
+                # Log sample descriptions (visual + audio mix)
+                sample_descriptions = content_inspection.get('sample_descriptions', [])
+                if sample_descriptions:
+                    visual_count = sum(1 for d in sample_descriptions if d.get('type') == 'visual')
+                    audio_count = sum(1 for d in sample_descriptions if d.get('type') == 'audio')
+                    log_info(f"  Sample descriptions: {len(sample_descriptions)} total ({visual_count} visual, {audio_count} audio)")
+                    log_info(f"  Sample descriptions preview:")
+                    for i, desc in enumerate(sample_descriptions[:10], 1):
+                        desc_type = desc.get('type', 'visual')
+                        time_info = f"{desc.get('second', desc.get('time_range', [0])[0]):.1f}s"
+                        desc_text = desc.get('description', '')[:100]
+                        log_info(f"    {i}. [{time_info}] [{desc_type.upper()}] {desc_text}...")
+                
                 log_info(f"  Inspection completed in {elapsed:.2f}s")
             except Exception as e:
                 log_info(f"  [WARNING] Inspection failed: {e}")
@@ -256,8 +272,10 @@ CRITICAL: Sample descriptions from the video (analyze their style and vocabulary
 """
             # Show more sample descriptions (10 instead of 5) and full text (not truncated)
             for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
+                desc_type = desc.get('type', 'visual')
+                time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
                 full_desc = desc['description']
-                user_message_content += f"{i}. [{desc['second']}s] {full_desc}\n"
+                user_message_content += f"{i}. {time_info} [{desc_type.upper()}] {full_desc}\n"
             
             user_message_content += """
 IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:

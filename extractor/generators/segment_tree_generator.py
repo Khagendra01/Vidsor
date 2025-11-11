@@ -210,9 +210,9 @@ class SegmentTreeGenerator:
         frames_data = tracking_data["frames"]
         video_path = tracking_data.get("video", self.video_path)
         
-        # Load models
+        # Load BLIP model (needed for visual processing)
         self.blip_loader.load()
-        self.whisper_loader.load()
+        # Note: Whisper will be loaded lazily when needed for transcription
         
         # Calculate number of seconds
         video_duration = self.video_utils.get_duration()
@@ -266,6 +266,10 @@ class SegmentTreeGenerator:
         
         # Generate transcriptions
         print("\nGenerating audio transcriptions with 1-second overlap...")
+        # Load Whisper model now (only when needed, after BLIP processing is done)
+        if video_duration:
+            self.whisper_loader.load()
+        
         transcriptions = []
         if video_duration and self.whisper_loader.is_loaded():
             step = AUDIO_SEGMENT_DURATION - AUDIO_OVERLAP

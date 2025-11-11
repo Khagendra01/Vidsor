@@ -10,6 +10,7 @@
 *.3gp
 *.mpg
 *.mpeg
+.env
 
 # Audio files (often extracted from videos)
 *.m4a
