@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 from agent.timeline_manager import TimelineManager
 from agent.orchestrator_state import OrchestratorState
+from agent.logging_utils import get_log_helper
 from extractor.utils.video_utils import get_video_duration
 
 
@@ -42,7 +43,7 @@ def _apply_duration_constraints(
     filtered = []
     total_duration = 0.0
     last_end = -min_gap  # Track last end time for gap checking
-    log = logger.info if logger else (print if verbose else lambda x: None)
+    log = get_log_helper(logger, verbose)
     
     for start, end in sorted_ranges:
         duration = end - start
@@ -50,7 +51,7 @@ def _apply_duration_constraints(
         # SOFT limit: Prefer shorter clips, but allow longer if they're important
         # Only skip if extremely long (>2x max_clip_duration)
         if duration > max_clip_duration * 2:
-            log(f"  Skipping very long clip: {duration:.1f}s > {max_clip_duration * 2:.1f}s")
+            log.info(f"  Skipping very long clip: {duration:.1f}s > {max_clip_duration * 2:.1f}s")
             continue
         
         # SOFT gap: Prefer spacing, but don't skip if clips are close
@@ -194,13 +195,10 @@ def handle_find_highlights(
         Result dictionary with success status and created chunks
     """
     logger = state.get("logger")
+    log = get_log_helper(logger, verbose)
     
-    if logger:
-        logger.info("\n[OPERATION] FIND_HIGHLIGHTS")
-        logger.info("  Calling planner agent to find highlights...")
-    elif verbose:
-        print("\n[OPERATION] FIND_HIGHLIGHTS")
-        print("  Calling planner agent to find highlights...")
+    log.info("\n[OPERATION] FIND_HIGHLIGHTS")
+    log.info("  Calling planner agent to find highlights...")
     
     # Prepare state for planner (ensure all required fields)
     # Check if we have preserved_state from a previous clarification
@@ -234,10 +232,7 @@ def handle_find_highlights(
         # Check if planner_result is None or not a dictionary
         if planner_result is None:
             error_msg = "Planner agent returned None - this may indicate an error in the planner"
-            if logger:
-                logger.error(f"  ✗ {error_msg}")
-            elif verbose:
-                print(f"  ✗ {error_msg}")
+            log.error(f"  ✗ {error_msg}")
             return {
                 "success": False,
                 "error": error_msg,
@@ -246,10 +241,7 @@ def handle_find_highlights(
         
         if not isinstance(planner_result, dict):
             error_msg = f"Planner agent returned invalid type: {type(planner_result).__name__}, expected dict"
-            if logger:
-                logger.error(f"  ✗ {error_msg}")
-            elif verbose:
-                print(f"  ✗ {error_msg}")
+            log.error(f"  ✗ {error_msg}")
             return {
                 "success": False,
                 "error": error_msg,
@@ -281,10 +273,7 @@ def handle_find_highlights(
                 "chunks_created": []
             }
         
-        if logger:
-            logger.info(f"  Planner found {len(time_ranges)} time ranges")
-        elif verbose:
-            print(f"  Planner found {len(time_ranges)} time ranges")
+        log.info(f"  Planner found {len(time_ranges)} time ranges")
         
         # MERGE AGENT: Intelligently merge time ranges based on timeline state
         from agent.merge_agent import create_merge_agent
@@ -331,14 +320,9 @@ def handle_find_highlights(
                 verbose=verbose
             )
         
-        if logger:
-            logger.info(f"  After merging: {len(merged_ranges)} time ranges")
-            total_duration = sum(end - start for start, end in merged_ranges)
-            logger.info(f"  Total highlight duration: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video)")
-        elif verbose:
-            print(f"  After merging: {len(merged_ranges)} time ranges")
-            total_duration = sum(end - start for start, end in merged_ranges)
-            print(f"  Total highlight duration: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video)")
+        log.info(f"  After merging: {len(merged_ranges)} time ranges")
+        total_duration = sum(end - start for start, end in merged_ranges)
+        log.info(f"  Total highlight duration: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video)")
         
         # Create timeline chunks from merged time ranges
         chunks_created = []
@@ -380,20 +364,13 @@ def handle_find_highlights(
             chunks_created.append(chunk)
             current_timeline_time = chunk["end_time"]
             
-            if logger:
-                logger.info(f"    Created chunk {i+1}: timeline {chunk['start_time']:.1f}s - {chunk['end_time']:.1f}s "
-                          f"(source: {start_time:.1f}s - {end_time:.1f}s)")
-            elif verbose:
-                print(f"    Created chunk {i+1}: timeline {chunk['start_time']:.1f}s - {chunk['end_time']:.1f}s "
-                      f"(source: {start_time:.1f}s - {end_time:.1f}s)")
+            log.info(f"    Created chunk {i+1}: timeline {chunk['start_time']:.1f}s - {chunk['end_time']:.1f}s "
+                     f"(source: {start_time:.1f}s - {end_time:.1f}s)")
         
         # Add chunks to timeline
         timeline_manager.chunks.extend(chunks_created)
         
-        if logger:
-            logger.info(f"  ✓ Created {len(chunks_created)} highlight chunks")
-        elif verbose:
-            print(f"  ✓ Created {len(chunks_created)} highlight chunks")
+        log.info(f"  ✓ Created {len(chunks_created)} highlight chunks")
         
         return {
             "success": True,

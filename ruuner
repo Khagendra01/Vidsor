@@ -12,20 +12,8 @@ hey should we write our own tool or do we have good other python opensource to v
 
 
 
-B. Redundant semantic search
-Lines 642-671: Three sequential semantic searches with different thresholds
-Could be optimized to a single call with adaptive threshold
-C. Large string concatenations
-Lines 267-347: Building user_message_content with many concatenations
-Could use template or builder pattern
+
 3. Modularization opportunities
-A. LLM utilities module (agent/llm_utils.py)
-invoke_llm_with_json() - unified LLM invocation + JSON extraction
-extract_json_from_response() - improved JSON extraction with better error handling
-create_llm() - LLM initialization (currently duplicated in create_planner_agent)
-B. Logging utilities (enhance agent/logging_utils.py)
-get_logger() - consistent logger creation
-Already has DualLogger but needs better integration
 C. Weight configuration module (agent/weight_config.py)
 configure_search_weights() - extract weight configuration logic
 validate_weights() - weight validation and capping

@@ -510,7 +510,8 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             search_plan=search_plan,
             configure_weights_fn=configure_weights,
             verbose=verbose,
-            log_info=log_info
+            log_info=log_info,
+            logger=logger
         )
         
         log_info(f"\n[WEIGHT CONFIGURATION]")

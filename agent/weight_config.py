@@ -1,6 +1,7 @@
 """Weight configuration utilities for search scoring."""
 
 from typing import Dict, Any, Set, Optional
+from agent.logging_utils import get_log_helper
 
 
 def initialize_weights_from_strategy(
@@ -8,7 +9,8 @@ def initialize_weights_from_strategy(
     all_object_classes: Set[str],
     search_plan: Dict[str, Any],
     verbose: bool = False,
-    log_info=None
+    log_info=None,
+    logger=None
 ) -> Dict[str, Any]:
     """
     Initialize weights from strategy scoring configuration.
@@ -18,12 +20,17 @@ def initialize_weights_from_strategy(
         all_object_classes: Set of all object class names
         search_plan: Search plan dict (for checking semantic queries, highlight queries)
         verbose: Whether to print verbose output
-        log_info: Optional logging function
+        log_info: Optional logging function (deprecated, use logger instead)
+        logger: Optional DualLogger instance
         
     Returns:
         Weights dictionary
     """
-    if not log_info:
+    # Use get_log_helper if logger provided, otherwise fall back to log_info or print
+    if logger is not None:
+        log = get_log_helper(logger, verbose)
+        log_info = log.info
+    elif not log_info:
         log_info = print if verbose else lambda x: None
     
     strategy_scoring = strategy.get("scoring", {})
@@ -42,7 +49,7 @@ def initialize_weights_from_strategy(
             weights["object_weights"][class_name] = 0.1
     
     # Apply weight fixes
-    apply_weight_fixes(weights, search_plan, verbose=verbose, log_info=log_info)
+    apply_weight_fixes(weights, search_plan, verbose=verbose, log_info=log_info, logger=logger)
     
     return weights
 
@@ -51,7 +58,8 @@ def apply_weight_fixes(
     weights: Dict[str, Any],
     search_plan: Dict[str, Any],
     verbose: bool = False,
-    log_info=None
+    log_info=None,
+    logger=None
 ) -> None:
     """
     Apply fixes and adjustments to weights.
@@ -61,9 +69,14 @@ def apply_weight_fixes(
         weights: Weights dictionary to modify
         search_plan: Search plan dict (for checking semantic queries, highlight queries)
         verbose: Whether to print verbose output
-        log_info: Optional logging function
+        log_info: Optional logging function (deprecated, use logger instead)
+        logger: Optional DualLogger instance
     """
-    if not log_info:
+    # Use get_log_helper if logger provided, otherwise fall back to log_info or print
+    if logger is not None:
+        log = get_log_helper(logger, verbose)
+        log_info = log.info
+    elif not log_info:
         log_info = print if verbose else lambda x: None
     
     # Fix 1: Cap hierarchical weight to reasonable maximum (0.3)
@@ -115,7 +128,8 @@ def configure_weights_with_fallback(
     search_plan: Dict[str, Any],
     configure_weights_fn,
     verbose: bool = False,
-    log_info=None
+    log_info=None,
+    logger=None
 ) -> Dict[str, Any]:
     """
     Configure weights using strategy if available, otherwise fallback to configure_weights_fn.
@@ -128,18 +142,23 @@ def configure_weights_with_fallback(
         search_plan: Search plan dict
         configure_weights_fn: Fallback function to configure weights (from query_analysis)
         verbose: Whether to print verbose output
-        log_info: Optional logging function
+        log_info: Optional logging function (deprecated, use logger instead)
+        logger: Optional DualLogger instance
         
     Returns:
         Configured weights dictionary
     """
-    if not log_info:
+    # Use get_log_helper if logger provided, otherwise fall back to log_info or print
+    if logger is not None:
+        log = get_log_helper(logger, verbose)
+        log_info = log.info
+    elif not log_info:
         log_info = print if verbose else lambda x: None
     
     if strategy and strategy.get("scoring"):
         # Use strategy-based weights
         weights = initialize_weights_from_strategy(
-            strategy, all_object_classes, search_plan, verbose=verbose, log_info=log_info
+            strategy, all_object_classes, search_plan, verbose=verbose, log_info=log_info, logger=logger
         )
     else:
         # Fallback to old weight configuration
@@ -149,7 +168,7 @@ def configure_weights_with_fallback(
             weights["object_weight"] = 0.2
         
         # Apply same fixes to fallback weights
-        apply_weight_fixes(weights, search_plan, verbose=verbose, log_info=log_info)
+        apply_weight_fixes(weights, search_plan, verbose=verbose, log_info=log_info, logger=logger)
     
     return weights
 

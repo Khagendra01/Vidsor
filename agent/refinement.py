@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
 from agent.llm_utils import parse_json_response, invoke_llm_with_json, create_llm
+from agent.logging_utils import get_log_helper
 
 
 def decide_refine_or_research(state: AgentState, llm) -> Dict[str, Any]:
@@ -151,30 +152,19 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
         llm = None
     
     logger = state.get("logger")
-    log_info = logger.info if logger else (lambda msg: print(msg) if verbose else None)
+    log = get_log_helper(logger, verbose)
     
-    if log_info:
-        log_info("\n[REFINEMENT] Refining existing results...")
-        log_info(f"  Previous results: {len(previous_time_ranges)} time ranges")
-        log_info(f"  User request: {decision.get('reason', 'N/A')}")
-        if extract_number:
-            log_info(f"  Extracting top {extract_number} results")
-        if user_gives_autonomy:
-            log_info(f"  [AUTONOMY] User gave control - will determine optimal selection")
-    elif verbose:
-        print("\n[REFINEMENT] Refining existing results...")
-        print(f"  Previous results: {len(previous_time_ranges)} time ranges")
-        print(f"  User request: {decision.get('reason', 'N/A')}")
-        if extract_number:
-            print(f"  Extracting top {extract_number} results")
-        if user_gives_autonomy:
-            print(f"  [AUTONOMY] User gave control - will determine optimal selection")
+    log("\n[REFINEMENT] Refining existing results...")
+    log.info(f"  Previous results: {len(previous_time_ranges)} time ranges")
+    log.info(f"  User request: {decision.get('reason', 'N/A')}")
+    if extract_number:
+        log.info(f"  Extracting top {extract_number} results")
+    if user_gives_autonomy:
+        log.info(f"  [AUTONOMY] User gave control - will determine optimal selection")
     
     # NEW: If user gives autonomy and no extract_number, use LLM to determine optimal number
     if user_gives_autonomy and not extract_number and llm:
-        log_info = logger.info if logger else (lambda msg: print(msg) if verbose else None)
-        if log_info:
-            log_info(f"\n[AUTONOMY] Determining optimal number of results...")
+        log.info(f"\n[AUTONOMY] Determining optimal number of results...")
         
         # Prepare context for LLM decision
         system_prompt = """You are a video editing assistant. The user has given you autonomy to select the best video clips from existing results.

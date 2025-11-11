@@ -96,22 +96,81 @@ def create_log_file(query: str, output_dir: str = "logs") -> str:
     return str(log_path)
 
 
+def get_logger(
+    log_file: Optional[str] = None,
+    verbose: bool = True,
+    query: Optional[str] = None
+) -> DualLogger:
+    """
+    Create a DualLogger instance consistently.
+    Provides a standard way to get a logger across all modules.
+    
+    Args:
+        log_file: Optional path to log file (if None and query provided, auto-generates)
+        verbose: Whether to print to console
+        query: Optional query string (used to auto-generate log file if log_file is None)
+        
+    Returns:
+        DualLogger instance
+    """
+    # Auto-generate log file if query provided but no log_file
+    if query and not log_file:
+        log_file = create_log_file(query)
+    
+    return DualLogger(log_file=log_file, verbose=verbose)
+
+
 def get_log_helper(logger: Optional[DualLogger] = None, verbose: bool = False):
     """
     Get a consistent logging helper function.
     Returns a function that logs to logger if available, otherwise prints if verbose.
+    
+    Enhanced version that supports multiple log levels.
     
     Args:
         logger: Optional DualLogger instance
         verbose: Whether to print if logger is None
         
     Returns:
-        Function that takes a message string and logs/prints it
+        Object with methods: info(), error(), warning(), debug()
     """
-    def log_info(msg: str):
-        if logger:
-            logger.info(msg)
-        elif verbose:
-            print(msg)
+    class LogHelper:
+        """Helper class for consistent logging across modules."""
+        
+        def __init__(self, logger: Optional[DualLogger], verbose: bool):
+            self.logger = logger
+            self.verbose = verbose
+        
+        def info(self, msg: str):
+            """Log info message."""
+            if self.logger:
+                self.logger.info(msg)
+            elif self.verbose:
+                print(msg)
+        
+        def error(self, msg: str):
+            """Log error message."""
+            if self.logger:
+                self.logger.error(msg)
+            elif self.verbose:
+                print(f"[ERROR] {msg}")
+        
+        def warning(self, msg: str):
+            """Log warning message."""
+            if self.logger:
+                self.logger.warning(msg)
+            elif self.verbose:
+                print(f"[WARNING] {msg}")
+        
+        def debug(self, msg: str):
+            """Log debug message."""
+            if self.logger:
+                self.logger.debug(msg)
+            elif self.verbose:
+                print(f"[DEBUG] {msg}")
+        
+        def __call__(self, msg: str):
+            """Allow calling directly (defaults to info)."""
+            self.info(msg)
     
-    return log_info
+    return LogHelper(logger, verbose)
