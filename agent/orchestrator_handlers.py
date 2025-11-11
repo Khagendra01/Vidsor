@@ -8,162 +8,14 @@ from agent.timeline_manager import TimelineManager
 from agent.state import OrchestratorState
 from agent.utils.logging_utils import get_log_helper
 from extractor.utils.video_utils import get_video_duration
-
-
-# ============================================================================
-# Helper Functions for Common Patterns
-# ============================================================================
-
-def _recalculate_timeline_times(timeline_manager: TimelineManager) -> None:
-    """
-    Recalculate timeline start/end times for all chunks.
-    Ensures timeline times are sequential and correct.
-    
-    Args:
-        timeline_manager: Timeline manager instance
-    """
-    current_time = 0.0
-    for chunk in timeline_manager.chunks:
-        duration = chunk["end_time"] - chunk["start_time"]
-        chunk["start_time"] = current_time
-        chunk["end_time"] = current_time + duration
-        current_time = chunk["end_time"]
-
-
-def _validate_planner_result(planner_result: Any, verbose: bool = False) -> Tuple[bool, Optional[str]]:
-    """
-    Validate planner agent result.
-    
-    Args:
-        planner_result: Result from planner agent
-        verbose: Whether to print verbose output
-        
-    Returns:
-        Tuple of (is_valid, error_message)
-    """
-    if planner_result is None:
-        error_msg = "Planner agent returned None - this may indicate an error in the planner"
-        if verbose:
-            print(f"  ✗ {error_msg}")
-        return False, error_msg
-    
-    if not isinstance(planner_result, dict):
-        error_msg = f"Planner agent returned invalid type: {type(planner_result).__name__}, expected dict"
-        if verbose:
-            print(f"  ✗ {error_msg}")
-        return False, error_msg
-    
-    return True, None
-
-
-def _create_clarification_response(planner_result: Dict, error_key: str = "chunks_created") -> Dict[str, Any]:
-    """
-    Create standardized clarification response from planner result.
-    
-    Args:
-        planner_result: Planner result dictionary
-        error_key: Key to use for empty list in error response
-        
-    Returns:
-        Clarification response dictionary
-    """
-    return {
-        "success": False,
-        "error": planner_result.get("clarification_question", "Clarification needed"),
-        error_key: [],
-        "needs_clarification": True,
-        "clarification_question": planner_result.get("clarification_question", "Clarification needed"),
-        "preserved_state": {
-            "time_ranges": planner_result.get("time_ranges", []),
-            "search_results": planner_result.get("search_results", []),
-            "previous_time_ranges": planner_result.get("previous_time_ranges"),
-            "previous_scored_seconds": planner_result.get("previous_scored_seconds"),
-            "previous_query": planner_result.get("previous_query"),
-            "previous_search_results": planner_result.get("previous_search_results")
-        }
-    }
-
-
-def _match_search_result_to_time_range(
-    search_results: List[Dict],
-    start_time: float,
-    default_description: str = ""
-) -> Tuple[str, str, str]:
-    """
-    Match a time range to a search result and extract descriptions.
-    
-    Args:
-        search_results: List of search result dictionaries
-        start_time: Start time to match
-        default_description: Default description if no match found
-        
-    Returns:
-        Tuple of (description, unified_description, audio_description)
-    """
-    description = default_description
-    unified_description = default_description
-    audio_description = ""
-    
-    for result in search_results:
-        if result is None:
-            continue
-        result_tr = result.get("time_range", [])
-        if result_tr and len(result_tr) >= 2:
-            if abs(result_tr[0] - start_time) < 1.0:  # Close match
-                description = result.get("description", default_description)
-                unified_description = result.get("unified_description", description)
-                audio_description = result.get("audio_description", "")
-                break
-    
-    return description, unified_description, audio_description
-
-
-def _create_chunks_from_time_ranges(
-    time_ranges: List[Tuple[float, float]],
-    search_results: List[Dict],
-    timeline_start: float,
-    chunk_type: str = "highlight",
-    default_score: float = 0.7,
-    name_prefix: str = "Clip"
-) -> List[Dict]:
-    """
-    Create timeline chunks from time ranges with descriptions from search results.
-    
-    Args:
-        time_ranges: List of (start, end) time tuples
-        search_results: List of search result dictionaries
-        timeline_start: Starting timeline time
-        chunk_type: Type of chunk (highlight, broll, etc.)
-        default_score: Default relevance score
-        name_prefix: Prefix for default descriptions
-        
-    Returns:
-        List of created chunk dictionaries
-    """
-    chunks = []
-    current_timeline_time = timeline_start
-    
-    for i, (start_time, end_time) in enumerate(time_ranges):
-        default_desc = f"{name_prefix} {i+1}: {start_time:.1f}s - {end_time:.1f}s"
-        description, unified_description, audio_description = _match_search_result_to_time_range(
-            search_results, start_time, default_desc
-        )
-        
-        chunk = create_timeline_chunk(
-            original_start=start_time,
-            original_end=end_time,
-            timeline_start=current_timeline_time,
-            chunk_type=chunk_type,
-            description=description,
-            unified_description=unified_description,
-            audio_description=audio_description,
-            score=default_score
-        )
-        
-        chunks.append(chunk)
-        current_timeline_time = chunk["end_time"]
-    
-    return chunks
+from agent.helpers.orchestrator_helpers import (
+    recalculate_timeline_times,
+    validate_planner_result,
+    create_clarification_response,
+    match_search_result_to_time_range,
+    create_timeline_chunk,
+    create_chunks_from_time_ranges,
+)
 
 
 # ============================================================================
@@ -291,50 +143,6 @@ def _apply_duration_constraints_with_neighbors(
     return filtered
 
 
-def create_timeline_chunk(
-    original_start: float,
-    original_end: float,
-    timeline_start: float,
-    chunk_type: str = "highlight",
-    description: str = "",
-    unified_description: str = "",
-    audio_description: str = "",
-    score: float = 1.0,
-    clip_path: Optional[str] = None
-) -> Dict:
-    """
-    Create a timeline chunk dictionary.
-    
-    Args:
-        original_start: Start time in source video
-        original_end: End time in source video
-        timeline_start: Start time in timeline
-        chunk_type: Type of chunk (highlight, broll, etc.)
-        description: Visual description
-        unified_description: Unified visual description
-        audio_description: Audio description
-        score: Relevance score
-        clip_path: Path to extracted clip file
-        
-    Returns:
-        Chunk dictionary
-    """
-    duration = original_end - original_start
-    return {
-        "start_time": timeline_start,
-        "end_time": timeline_start + duration,
-        "chunk_type": chunk_type,
-        "speed": 1.0,
-        "description": description or f"Clip from {original_start:.1f}s to {original_end:.1f}s",
-        "score": score,
-        "original_start_time": original_start,
-        "original_end_time": original_end,
-        "unified_description": unified_description or description,
-        "audio_description": audio_description or "",
-        "clip_path": clip_path
-    }
-
-
 def handle_find_highlights(
     state: OrchestratorState,
     timeline_manager: TimelineManager,
@@ -390,7 +198,7 @@ def handle_find_highlights(
         planner_result = planner_agent(planner_state)
         
         # Validate planner result
-        is_valid, error_msg = _validate_planner_result(planner_result, verbose)
+        is_valid, error_msg = validate_planner_result(planner_result, verbose)
         if not is_valid:
             log.error(f"  ✗ {error_msg}")
             return {
@@ -400,7 +208,7 @@ def handle_find_highlights(
             }
         
         if planner_result.get("needs_clarification"):
-            return _create_clarification_response(planner_result, "chunks_created")
+            return create_clarification_response(planner_result, "chunks_created")
         
         time_ranges = planner_result.get("time_ranges", [])
         if not time_ranges:
@@ -464,7 +272,7 @@ def handle_find_highlights(
         current_timeline_time = timeline_manager.calculate_timeline_duration()
         search_results = planner_result.get("search_results", [])
         
-        chunks_created = _create_chunks_from_time_ranges(
+        chunks_created = create_chunks_from_time_ranges(
             time_ranges=merged_ranges,
             search_results=search_results,
             timeline_start=current_timeline_time,
@@ -748,7 +556,7 @@ def handle_cut(
                 print(f"  Removed chunk at index {idx}")
     
     # Recalculate timeline start_times for remaining chunks
-    _recalculate_timeline_times(timeline_manager)
+    recalculate_timeline_times(timeline_manager)
     
     if verbose:
         print(f"  ✓ Removed {len(removed_chunks)} chunk(s)")
@@ -850,7 +658,7 @@ def handle_replace(
         planner_result = planner_agent(planner_state)
         
         # Validate planner result
-        is_valid, error_msg = _validate_planner_result(planner_result, verbose)
+        is_valid, error_msg = validate_planner_result(planner_result, verbose)
         if not is_valid:
             return {
                 "success": False,
@@ -859,7 +667,7 @@ def handle_replace(
             }
         
         if planner_result.get("needs_clarification"):
-            return _create_clarification_response(planner_result, "chunks_replaced")
+            return create_clarification_response(planner_result, "chunks_replaced")
         
         time_ranges = planner_result.get("time_ranges", [])
         if not time_ranges:
@@ -890,7 +698,7 @@ def handle_replace(
         current_timeline_time = timeline_manager.chunks[insert_position - 1]["end_time"] if insert_position > 0 else 0.0
         search_results = planner_result.get("search_results", [])
         
-        new_chunks = _create_chunks_from_time_ranges(
+        new_chunks = create_chunks_from_time_ranges(
             time_ranges=time_ranges,
             search_results=search_results,
             timeline_start=current_timeline_time,
@@ -904,7 +712,7 @@ def handle_replace(
             timeline_manager.chunks.insert(insert_position + i, chunk)
         
         # Recalculate timeline start_times
-        _recalculate_timeline_times(timeline_manager)
+        recalculate_timeline_times(timeline_manager)
         
         if verbose:
             print(f"  ✓ Replaced {len(removed_chunks)} chunk(s) with {len(new_chunks)} new chunk(s)")
@@ -1003,7 +811,7 @@ def handle_insert(
         planner_result = planner_agent(planner_state)
         
         # Validate planner result
-        is_valid, error_msg = _validate_planner_result(planner_result, verbose)
+        is_valid, error_msg = validate_planner_result(planner_result, verbose)
         if not is_valid:
             return {
                 "success": False,
@@ -1012,7 +820,7 @@ def handle_insert(
             }
         
         if planner_result.get("needs_clarification"):
-            return _create_clarification_response(planner_result, "chunks_inserted")
+            return create_clarification_response(planner_result, "chunks_inserted")
         
         time_ranges = planner_result.get("time_ranges", [])
         if not time_ranges:
@@ -1027,7 +835,7 @@ def handle_insert(
         search_results = planner_result.get("search_results", [])
         
         # Create chunks from planner results
-        new_chunks = _create_chunks_from_time_ranges(
+        new_chunks = create_chunks_from_time_ranges(
             time_ranges=time_ranges,
             search_results=search_results,
             timeline_start=timeline_start,
@@ -1041,7 +849,7 @@ def handle_insert(
             timeline_manager.chunks.insert(insert_position + i, chunk)
         
         # Recalculate timeline start_times for all chunks after insertion
-        _recalculate_timeline_times(timeline_manager)
+        recalculate_timeline_times(timeline_manager)
         
         if verbose:
             print(f"  ✓ Inserted {len(new_chunks)} chunk(s) at position {insert_position}")
@@ -1231,7 +1039,7 @@ def handle_find_broll(
         planner_result = planner_agent(planner_state)
         
         # Validate planner result
-        is_valid, error_msg = _validate_planner_result(planner_result, verbose)
+        is_valid, error_msg = validate_planner_result(planner_result, verbose)
         if not is_valid:
             return {
                 "success": False,
@@ -1240,7 +1048,7 @@ def handle_find_broll(
             }
         
         if planner_result.get("needs_clarification"):
-            return _create_clarification_response(planner_result, "chunks_created")
+            return create_clarification_response(planner_result, "chunks_created")
         
         time_ranges = planner_result.get("time_ranges", [])
         if not time_ranges:
@@ -1276,7 +1084,7 @@ def handle_find_broll(
             
             # Get description and score from search results
             default_desc = f"B-roll: {tr_start:.1f}s - {tr_end:.1f}s"
-            description, unified_description, audio_description = _match_search_result_to_time_range(
+            description, unified_description, audio_description = match_search_result_to_time_range(
                 search_results, tr_start, default_desc
             )
             relevance_score = 0.7  # Default
@@ -1437,7 +1245,7 @@ def handle_find_broll(
             timeline_manager.chunks.insert(insert_position + i, chunk)
         
         # Recalculate timeline start_times
-        _recalculate_timeline_times(timeline_manager)
+        recalculate_timeline_times(timeline_manager)
         
         if verbose:
             total_broll_duration = sum(r["duration"] for r in adjusted_ranges)
