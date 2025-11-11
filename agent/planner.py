@@ -426,6 +426,13 @@ CRITICAL INSTRUCTIONS:
                 if class_name not in weights["object_weights"]:
                     weights["object_weights"][class_name] = 0.1
             
+            # FIX: Cap hierarchical weight to reasonable maximum (0.3)
+            # Hierarchical weight should not dominate scoring
+            if weights["hierarchical_weight"] > 0.3:
+                if verbose:
+                    log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
+                weights["hierarchical_weight"] = 0.3
+            
             # FIX: Ensure semantic weight is set if semantic queries were generated
             has_semantic_queries = bool(search_plan.get("semantic_queries"))
             if has_semantic_queries and weights["semantic_weight"] == 0.0:
@@ -438,6 +445,13 @@ CRITICAL INSTRUCTIONS:
             # Fallback to old weight configuration
             weights = configure_weights(query_intent, all_object_classes)
             
+            # FIX: Cap hierarchical weight to reasonable maximum (0.3)
+            # Hierarchical weight should not dominate scoring
+            if weights["hierarchical_weight"] > 0.3:
+                if verbose:
+                    log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to 0.30")
+                weights["hierarchical_weight"] = 0.3
+            
             # FIX: Ensure semantic weight is set if semantic queries were generated
             has_semantic_queries = bool(search_plan.get("semantic_queries"))
             if has_semantic_queries and weights["semantic_weight"] == 0.0:
@@ -446,6 +460,23 @@ CRITICAL INSTRUCTIONS:
                     # Reduce hierarchical to make room for semantic
                     weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
                 weights["semantic_weight"] = 0.4  # Set reasonable default
+        
+        # FIX: Final safety check - ensure main weights are reasonable
+        # Cap any individual weight to 0.5 maximum to prevent domination
+        max_main_weight = 0.5
+        if weights["semantic_weight"] > max_main_weight:
+            if verbose:
+                log_info(f"  [FIX] Capping semantic weight from {weights['semantic_weight']:.2f} to {max_main_weight:.2f}")
+            weights["semantic_weight"] = max_main_weight
+        if weights["activity_weight"] > max_main_weight:
+            if verbose:
+                log_info(f"  [FIX] Capping activity weight from {weights['activity_weight']:.2f} to {max_main_weight:.2f}")
+            weights["activity_weight"] = max_main_weight
+        if weights["hierarchical_weight"] > max_main_weight:
+            if verbose:
+                log_info(f"  [FIX] Capping hierarchical weight from {weights['hierarchical_weight']:.2f} to {max_main_weight:.2f}")
+            weights["hierarchical_weight"] = max_main_weight
+        
         log_info(f"\n[WEIGHT CONFIGURATION]")
         log_info(f"  Semantic weight: {weights['semantic_weight']:.2f}")
         log_info(f"  Activity weight: {weights['activity_weight']:.2f}")
