@@ -47,32 +47,12 @@ from agent.utils.logging_utils import DualLogger, create_log_file
 from extractor.pipeline import SegmentTreePipeline
 from extractor.config import ExtractorConfig
 
-
-@dataclass
-class Chunk:
-    """Represents a video chunk with metadata."""
-    start_time: float
-    end_time: float
-    chunk_type: str  # "normal", "fast_forward", "highlight"
-    speed: float = 1.0  # Playback speed (1.0 = normal, 2.0 = 2x speed)
-    description: str = ""
-    score: float = 0.0  # Interest score
-    # Metadata for agent-extracted clips
-    original_start_time: Optional[float] = None  # Original timing in source video
-    original_end_time: Optional[float] = None
-    unified_description: Optional[str] = None  # Visual description
-    audio_description: Optional[str] = None  # Audio transcription
-    clip_path: Optional[str] = None  # Path to extracted clip file
-
-
-@dataclass
-class EditState:
-    """Current editing state."""
-    chunks: List[Chunk]
-    selected_chunk: Optional[int] = None
-    preview_time: float = 0.0
-    is_playing: bool = False
-    has_started_playback: bool = False  # Track if playback has started (for resume button)
+# Import from organized modules
+from vidsor.models import Chunk, EditState
+from vidsor.utils import format_time, format_time_detailed, get_chunk_color
+from vidsor.timeline_manager import TimelineManager
+from vidsor.chat_manager import ChatManager
+from vidsor.export import VideoExporter
 
 
 class Vidsor:
@@ -1610,43 +1590,18 @@ class Vidsor:
     
     def _format_time(self, seconds: float) -> str:
         """Format time in MM:SS format."""
-        minutes = int(seconds // 60)
-        secs = int(seconds % 60)
-        return f"{minutes:02d}:{secs:02d}"
+        return format_time(seconds)
     
     def _format_time_detailed(self, seconds: float) -> str:
         """Format time in MM:SS.mmm format for precise display."""
-        minutes = int(seconds // 60)
-        secs = int(seconds % 60)
-        millis = int((seconds % 1) * 1000)
-        return f"{minutes:02d}:{secs:02d}.{millis:03d}"
+        return format_time_detailed(seconds)
     
     def _get_chunk_color(self, chunk_type: str, is_hovered: bool = False, is_selected: bool = False) -> tuple:
         """
         Get professional color scheme for chunks.
         Returns (fill_color, outline_color, gradient_color) tuple.
         """
-        if is_selected:
-            if chunk_type == "highlight":
-                return ("#FFD700", "#FFA500", "#FFE55C")  # Gold gradient
-            elif chunk_type == "fast_forward":
-                return ("#4A90E2", "#2E5C8A", "#6BA3E8")  # Blue gradient
-            else:
-                return ("#50C878", "#2E7D4E", "#6FD88F")  # Green gradient
-        elif is_hovered:
-            if chunk_type == "highlight":
-                return ("#FFE55C", "#FFD700", "#FFF080")  # Lighter gold
-            elif chunk_type == "fast_forward":
-                return ("#6BA3E8", "#4A90E2", "#8BB5F0")  # Lighter blue
-            else:
-                return ("#6FD88F", "#50C878", "#8FE5A8")  # Lighter green
-        else:
-            if chunk_type == "highlight":
-                return ("#FFA500", "#FF8C00", "#FFB84D")  # Orange gradient
-            elif chunk_type == "fast_forward":
-                return ("#5B9BD5", "#3D6FA5", "#7AB3E0")  # Blue gradient
-            else:
-                return ("#4ECDC4", "#2E9B94", "#6EDDD5")  # Teal gradient
+        return get_chunk_color(chunk_type, is_hovered, is_selected)
     
     def _on_timeline_click(self, event):
         """Handle timeline click for chunk selection or playhead dragging."""
@@ -1998,47 +1953,7 @@ class Vidsor:
         Args:
             output_path: Path to save output video
         """
-        if not self.video_clip or not self.edit_state.chunks:
-            raise Exception("No video or chunks to export")
-        
-        clips = []
-        
-        for chunk in self.edit_state.chunks:
-            # Use original timing to extract from source video
-            # If original timing is not available, fall back to start_time/end_time
-            extract_start = chunk.original_start_time if chunk.original_start_time is not None else chunk.start_time
-            extract_end = chunk.original_end_time if chunk.original_end_time is not None else chunk.end_time
-            
-            # Extract subclip from source video using original timing
-            subclip = self.video_clip.subclipped(extract_start, extract_end)
-            
-            # Apply speed if needed
-            if chunk.speed != 1.0:
-                # Adjust speed by changing FPS and duration
-                original_fps = subclip.fps
-                original_duration = subclip.duration
-                subclip = subclip.set_fps(original_fps * chunk.speed)
-                subclip = subclip.set_duration(original_duration / chunk.speed)
-            
-            clips.append(subclip)
-        
-        # Concatenate all clips
-        final_clip = concatenate_videoclips(clips)
-        
-        # Write to file
-        final_clip.write_videofile(
-            output_path,
-            codec='libx264',
-            audio_codec='aac',
-            remove_temp=True
-        )
-        
-        # Cleanup
-        final_clip.close()
-        for clip in clips:
-            clip.close()
-        
-        print(f"[VIDSOR] Video exported to: {output_path}")
+        VideoExporter.export_video(self.video_clip, self.edit_state, output_path)
     
     def _create_chat_ui(self, parent_frame):
         """Create chat interface UI components."""
@@ -2847,180 +2762,24 @@ class Vidsor:
     
     def _save_chat_history(self):
         """Save chat history to project folder."""
-        if not self.current_project_path:
-            return
-        
-        chat_history_path = os.path.join(self.current_project_path, "chat_history.json")
-        try:
-            with open(chat_history_path, 'w') as f:
-                json.dump(self.chat_history, f, indent=2)
-        except Exception as e:
-            print(f"[VIDSOR] Failed to save chat history: {e}")
+        ChatManager.save_chat_history(self.current_project_path, self.chat_history)
     
     def _load_timeline(self):
         """Load timeline from timeline.json in project folder."""
-        if not self.current_project_path:
-            self.edit_state.chunks = []
-            return
+        chunks = TimelineManager.load_timeline(self.current_project_path)
+        self.edit_state.chunks = chunks
         
-        timeline_path = os.path.join(self.current_project_path, "timeline.json")
-        if os.path.exists(timeline_path):
-            try:
-                # Check if file is empty or whitespace only
-                with open(timeline_path, 'r') as f:
-                    content = f.read().strip()
-                    if not content:
-                        print("[VIDSOR] timeline.json is empty, starting with empty timeline")
-                        self.edit_state.chunks = []
-                        return
-                
-                # Parse JSON
-                with open(timeline_path, 'r') as f:
-                    timeline_data = json.load(f)
-                
-                # Validate structure
-                if not isinstance(timeline_data, dict):
-                    print("[VIDSOR] timeline.json has invalid structure, starting with empty timeline")
-                    self.edit_state.chunks = []
-                    return
-                
-                # Check if timeline is empty
-                chunks_data = timeline_data.get("chunks", [])
-                if not chunks_data:
-                    print("[VIDSOR] Timeline.json has no chunks, will be filled with AI-generated clips")
-                    self.edit_state.chunks = []
-                    return
-                
-                # Load chunks from timeline.json
-                chunks = []
-                for chunk_data in chunks_data:
-                    if not isinstance(chunk_data, dict):
-                        continue  # Skip invalid chunk entries
-                    chunk = Chunk(
-                        start_time=chunk_data.get("start_time", 0.0),
-                        end_time=chunk_data.get("end_time", 0.0),
-                        chunk_type=chunk_data.get("chunk_type", "normal"),
-                        speed=chunk_data.get("speed", 1.0),
-                        description=chunk_data.get("description", ""),
-                        score=chunk_data.get("score", 0.0),
-                        original_start_time=chunk_data.get("original_start_time"),
-                        original_end_time=chunk_data.get("original_end_time"),
-                        unified_description=chunk_data.get("unified_description"),
-                        audio_description=chunk_data.get("audio_description"),
-                        clip_path=chunk_data.get("clip_path")
-                    )
-                    chunks.append(chunk)
-                
-                self.edit_state.chunks = chunks
-                print(f"[VIDSOR] Loaded {len(chunks)} chunks from timeline.json")
-                
-                # Update timeline display if UI is ready
-                if self.root and self.timeline_canvas:
-                    self.root.after(0, self._draw_timeline)
-                
-            except json.JSONDecodeError as e:
-                print(f"[VIDSOR] timeline.json contains invalid JSON, starting with empty timeline")
-                self.edit_state.chunks = []
-            except Exception as e:
-                print(f"[VIDSOR] Failed to load timeline: {e}")
-                self.edit_state.chunks = []
-        else:
-            # Timeline.json doesn't exist, create empty one
-            print("[VIDSOR] timeline.json not found, will be created when clips are added")
-            self.edit_state.chunks = []
-            self._save_timeline()  # Create empty timeline.json
+        # Update timeline display if UI is ready
+        if self.root and self.timeline_canvas:
+            self.root.after(0, self._draw_timeline)
     
     def _save_timeline(self):
         """Save timeline to timeline.json in project folder."""
-        if not self.current_project_path:
-            return
-        
-        timeline_path = os.path.join(self.current_project_path, "timeline.json")
-        try:
-            # Convert chunks to JSON-serializable format
-            chunks_data = []
-            for chunk in self.edit_state.chunks:
-                chunk_dict = {
-                    "start_time": chunk.start_time,
-                    "end_time": chunk.end_time,
-                    "chunk_type": chunk.chunk_type,
-                    "speed": chunk.speed,
-                    "description": chunk.description,
-                    "score": chunk.score,
-                    "original_start_time": chunk.original_start_time,
-                    "original_end_time": chunk.original_end_time,
-                    "unified_description": chunk.unified_description,
-                    "audio_description": chunk.audio_description,
-                    "clip_path": chunk.clip_path
-                }
-                chunks_data.append(chunk_dict)
-            
-            timeline_data = {
-                "version": "1.0",
-                "created_at": datetime.now().isoformat(),
-                "updated_at": datetime.now().isoformat(),
-                "chunks": chunks_data
-            }
-            
-            with open(timeline_path, 'w') as f:
-                json.dump(timeline_data, f, indent=2)
-            
-            print(f"[VIDSOR] Saved {len(chunks_data)} chunks to timeline.json")
-            
-        except Exception as e:
-            print(f"[VIDSOR] Failed to save timeline: {e}")
-            import traceback
-            traceback.print_exc()
+        TimelineManager.save_timeline(self.current_project_path, self.edit_state.chunks)
     
     def _load_chat_history(self):
         """Load chat history from project folder."""
-        if not self.current_project_path:
-            self.chat_history = []
-            return
-        
-        chat_history_path = os.path.join(self.current_project_path, "chat_history.json")
-        if os.path.exists(chat_history_path):
-            try:
-                # Check if file is empty or whitespace only
-                with open(chat_history_path, 'r') as f:
-                    content = f.read().strip()
-                    if not content:
-                        print("[VIDSOR] chat_history.json is empty, starting with empty chat history")
-                        self.chat_history = []
-                        return
-                
-                # Parse JSON
-                with open(chat_history_path, 'r') as f:
-                    chat_data = json.load(f)
-                
-                # Validate structure - should be a list
-                if not isinstance(chat_data, list):
-                    print("[VIDSOR] chat_history.json has invalid structure (expected list), starting with empty chat history")
-                    self.chat_history = []
-                    return
-                
-                # Validate each entry is a dict with required keys
-                valid_history = []
-                for msg in chat_data:
-                    if isinstance(msg, dict) and "role" in msg and "content" in msg:
-                        valid_history.append(msg)
-                    else:
-                        print(f"[VIDSOR] Skipping invalid chat history entry: {msg}")
-                
-                self.chat_history = valid_history
-                if len(valid_history) != len(chat_data):
-                    print(f"[VIDSOR] Loaded {len(valid_history)} valid entries from chat_history.json (skipped {len(chat_data) - len(valid_history)} invalid)")
-                elif len(valid_history) > 0:
-                    print(f"[VIDSOR] Loaded {len(valid_history)} chat history entries")
-                
-            except json.JSONDecodeError as e:
-                print(f"[VIDSOR] chat_history.json contains invalid JSON, starting with empty chat history")
-                self.chat_history = []
-            except Exception as e:
-                print(f"[VIDSOR] Failed to load chat history: {e}")
-                self.chat_history = []
-        else:
-            self.chat_history = []
+        self.chat_history = ChatManager.load_chat_history(self.current_project_path)
     
     def _display_chat_history(self):
         """Display all chat history in the chat text widget."""
