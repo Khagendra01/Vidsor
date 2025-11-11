@@ -660,9 +660,10 @@ class Vidsor:
         
         self.timeline_canvas = tk.Canvas(
             canvas_frame,
-            height=150,
-            bg="white",
-            scrollregion=(0, 0, 1000, 150)
+            height=220,
+            bg="#1a1a1a",
+            scrollregion=(0, 0, 1000, 220),
+            highlightthickness=0
         )
         self.timeline_canvas.grid(row=0, column=0, sticky=(tk.W, tk.E))
         
@@ -706,8 +707,14 @@ class Vidsor:
         main_frame.columnconfigure(0, weight=1)
         main_frame.rowconfigure(0, weight=1)
         
-        # Bind timeline click
+        # Bind timeline interactions
         self.timeline_canvas.bind("<Button-1>", self._on_timeline_click)
+        self.timeline_canvas.bind("<Motion>", self._on_timeline_motion)
+        self.timeline_canvas.bind("<Leave>", self._on_timeline_leave)
+        
+        # Track hover state
+        self.timeline_hover_chunk = None
+        self.timeline_update_counter = 0  # Counter for throttling timeline updates
         
         # Initialize UI state
         self._update_ui_state()
@@ -1000,7 +1007,18 @@ class Vidsor:
         timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
         
         try:
-            while self.edit_state.is_playing and self.edit_state.preview_time < timeline_duration:
+            while self.edit_state.preview_time < timeline_duration:
+                # Check if paused - wait for resume
+                if not self.edit_state.is_playing:
+                    # Paused - wait in a loop until resumed
+                    while not self.edit_state.is_playing:
+                        time.sleep(0.1)  # Check every 100ms
+                        # If we're no longer supposed to be playing (e.g., stopped), exit
+                        if not self.edit_state.has_started_playback:
+                            return
+                    # Resumed - continue playback
+                    continue
+                
                 start_time = time.time()
                 
                 # Find which chunk we're currently in
@@ -1068,15 +1086,19 @@ class Vidsor:
                 # Advance timeline time
                 self.edit_state.preview_time += frame_duration
                 
+                # Update timeline playhead in main thread (throttled to ~10fps for smooth animation)
+                # Update every 3 frames (roughly 10 times per second at 30fps)
+                if self.root:
+                    self.timeline_update_counter += 1
+                    if self.timeline_update_counter >= 3:
+                        self.timeline_update_counter = 0
+                        self.root.after(0, self._draw_timeline)
+                
                 # Sleep to maintain frame rate
                 elapsed = time.time() - start_time
                 sleep_time = max(0, frame_duration - elapsed)
                 if sleep_time > 0:
                     time.sleep(sleep_time)
-                
-                # Check if we should stop
-                if not self.edit_state.is_playing:
-                    break
             
             # Playback finished
             if self.root:
@@ -1085,6 +1107,8 @@ class Vidsor:
                     text=f"Preview finished ({timeline_duration:.1f}s)"
                 ))
                 self.root.after(0, self._update_playback_controls)
+                # Update timeline to show final playhead position
+                self.root.after(0, self._draw_timeline)
                 
         except Exception as e:
             print(f"[VIDSOR] Playback error: {e}")
@@ -1165,22 +1189,48 @@ class Vidsor:
             pygame.mixer.music.play()
             
             # Wait for playback to finish or stop
-            while pygame.mixer.music.get_busy():
+            # Use a flag to track if we should continue playing
+            audio_playing = True
+            while audio_playing:
+                # Check if music is still playing
+                is_busy = pygame.mixer.music.get_busy()
+                
                 # Check if paused or stopped
                 if not self.edit_state.is_playing:
                     # If paused, wait for resume
                     while not self.edit_state.is_playing:
                         time.sleep(0.1)
-                        if not pygame.mixer.music.get_busy():
+                        # Check if we should stop (e.g., user clicked stop)
+                        if not self.edit_state.has_started_playback:
+                            audio_playing = False
                             break
-                    # If resumed, unpause
-                    if self.edit_state.is_playing:
+                        # Note: Don't break if music stops being busy while paused
+                        # The music should stay "busy" when paused, but if it doesn't,
+                        # we'll handle it when resuming
+                    
+                    # If resumed, try to unpause
+                    if self.edit_state.is_playing and audio_playing:
                         try:
-                            pygame.mixer.music.unpause()
-                        except:
-                            pass
+                            # Check if music is still playing/busy
+                            if pygame.mixer.music.get_busy():
+                                # Music is still active - unpause it
+                                pygame.mixer.music.unpause()
+                            else:
+                                # Music stopped while paused - can't resume from same position
+                                # This shouldn't normally happen, but if it does, exit
+                                print("[VIDSOR] Warning: Audio stopped while paused, cannot resume")
+                                audio_playing = False
+                        except Exception as e:
+                            print(f"[VIDSOR] Audio unpause error: {e}")
+                            # If unpause fails, the music might have stopped
+                            audio_playing = False
                 else:
-                    time.sleep(0.1)
+                    # Playing normally
+                    if not is_busy:
+                        # Music finished playing
+                        audio_playing = False
+                    else:
+                        time.sleep(0.1)
             
             # Cleanup
             try:
@@ -1301,12 +1351,38 @@ class Vidsor:
             timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks) if self.edit_state.chunks else 0
             self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
             
-            # Resume audio
-            if HAS_PYGAME:
-                try:
-                    pygame.mixer.music.unpause()
-                except:
-                    pass
+            # Check if playback thread is still alive - if not, restart it
+            if not self.playback_thread or not self.playback_thread.is_alive():
+                # Thread has exited (maybe due to error or completion) - restart it
+                if self.video_clip and self.edit_state.chunks:
+                    self.playback_thread = threading.Thread(
+                        target=self._playback_loop_from_timeline,
+                        daemon=True
+                    )
+                    self.playback_thread.start()
+            
+            # Check if audio thread is still alive - if not, restart it
+            if self.audio_clip and HAS_PYGAME:
+                if not self.audio_thread or not self.audio_thread.is_alive():
+                    # Audio thread has exited - restart it
+                    self.audio_thread = threading.Thread(
+                        target=self._audio_playback_loop,
+                        daemon=True
+                    )
+                    self.audio_thread.start()
+                else:
+                    # Audio thread is alive - just unpause
+                    try:
+                        pygame.mixer.music.unpause()
+                    except Exception as e:
+                        print(f"[VIDSOR] Audio unpause error on resume: {e}")
+                        # If unpause fails, restart audio thread
+                        if self.audio_thread:
+                            self.audio_thread = threading.Thread(
+                                target=self._audio_playback_loop,
+                                daemon=True
+                            )
+                            self.audio_thread.start()
             
             # Update playback controls - this will set Pause button correctly
             self._update_playback_controls()
@@ -1332,6 +1408,9 @@ class Vidsor:
         if self.preview_canvas:
             self.preview_canvas.delete("all")
             self.preview_canvas.pack_forget()
+        
+        # Update timeline to show playhead at start
+        self._draw_timeline()
         
         if self.preview_label:
             if has_video := self.video_clip is not None:
@@ -1374,103 +1453,291 @@ class Vidsor:
                 messagebox.showerror("Error", f"Export failed: {str(e)}")
                 self.status_label.config(text="Export failed")
     
+    def _format_time(self, seconds: float) -> str:
+        """Format time in MM:SS format."""
+        minutes = int(seconds // 60)
+        secs = int(seconds % 60)
+        return f"{minutes:02d}:{secs:02d}"
+    
+    def _format_time_detailed(self, seconds: float) -> str:
+        """Format time in MM:SS.mmm format for precise display."""
+        minutes = int(seconds // 60)
+        secs = int(seconds % 60)
+        millis = int((seconds % 1) * 1000)
+        return f"{minutes:02d}:{secs:02d}.{millis:03d}"
+    
+    def _get_chunk_color(self, chunk_type: str, is_hovered: bool = False, is_selected: bool = False) -> tuple:
+        """
+        Get professional color scheme for chunks.
+        Returns (fill_color, outline_color, gradient_color) tuple.
+        """
+        if is_selected:
+            if chunk_type == "highlight":
+                return ("#FFD700", "#FFA500", "#FFE55C")  # Gold gradient
+            elif chunk_type == "fast_forward":
+                return ("#4A90E2", "#2E5C8A", "#6BA3E8")  # Blue gradient
+            else:
+                return ("#50C878", "#2E7D4E", "#6FD88F")  # Green gradient
+        elif is_hovered:
+            if chunk_type == "highlight":
+                return ("#FFE55C", "#FFD700", "#FFF080")  # Lighter gold
+            elif chunk_type == "fast_forward":
+                return ("#6BA3E8", "#4A90E2", "#8BB5F0")  # Lighter blue
+            else:
+                return ("#6FD88F", "#50C878", "#8FE5A8")  # Lighter green
+        else:
+            if chunk_type == "highlight":
+                return ("#FFA500", "#FF8C00", "#FFB84D")  # Orange gradient
+            elif chunk_type == "fast_forward":
+                return ("#5B9BD5", "#3D6FA5", "#7AB3E0")  # Blue gradient
+            else:
+                return ("#4ECDC4", "#2E9B94", "#6EDDD5")  # Teal gradient
+    
     def _on_timeline_click(self, event):
         """Handle timeline click for chunk selection."""
         # TODO: Implement chunk selection and trimming
         pass
     
-    def _draw_timeline(self):
-        """Draw timeline with chunks."""
-        print(f"[VIDSOR] _draw_timeline called - canvas: {self.timeline_canvas is not None}, chunks: {len(self.edit_state.chunks) if self.edit_state.chunks else 0}, video: {self.video_clip is not None}")
-        
-        if not self.timeline_canvas:
-            print("[VIDSOR] Timeline canvas not available")
+    def _on_timeline_motion(self, event):
+        """Handle mouse motion over timeline for hover effects."""
+        if not self.edit_state.chunks or not self.timeline_canvas:
             return
         
-        if not self.edit_state.chunks:
-            print("[VIDSOR] No chunks to draw")
-            # Still draw empty timeline with time markers
-            if not self.video_clip:
-                return
-            self.timeline_canvas.delete("all")
-            duration = self.video_clip.duration
-            canvas_width = self.timeline_canvas.winfo_width() or 1000
-            scale = canvas_width / duration
-            # Draw time markers only
-            y_start = 20
-            for t in range(0, int(duration) + 1, 10):
-                x = t * scale
-                self.timeline_canvas.create_line(x, 0, x, y_start, fill="gray")
-                self.timeline_canvas.create_text(x, y_start/2, text=f"{t}s", font=("Arial", 8))
-            self.timeline_canvas.configure(scrollregion=(0, 0, duration * scale, 150))
+        # Get canvas coordinates
+        canvas_x = self.timeline_canvas.canvasx(event.x)
+        
+        # Calculate timeline duration and scale
+        timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        canvas_width = self.timeline_canvas.winfo_width() or 1000
+        scale = canvas_width / timeline_duration
+        
+        # Find which chunk is being hovered
+        hovered_chunk_idx = None
+        for i, chunk in enumerate(self.edit_state.chunks):
+            x_start = chunk.start_time * scale
+            x_end = chunk.end_time * scale
+            if x_start <= canvas_x <= x_end:
+                hovered_chunk_idx = i
+                break
+        
+        # Update hover state and redraw if changed
+        if hovered_chunk_idx != self.timeline_hover_chunk:
+            self.timeline_hover_chunk = hovered_chunk_idx
+            self._draw_timeline()
+    
+    def _on_timeline_leave(self, event):
+        """Handle mouse leaving timeline."""
+        if self.timeline_hover_chunk is not None:
+            self.timeline_hover_chunk = None
+            self._draw_timeline()
+    
+    def _draw_timeline(self):
+        """Draw professional timeline with chunks, playhead, and modern styling."""
+        if not self.timeline_canvas:
             return
         
         self.timeline_canvas.delete("all")
         
-        if not self.video_clip:
-            print("[VIDSOR] No video clip available for timeline")
-            return
+        # Timeline dimensions
+        TIMELINE_HEIGHT = 220
+        RULER_HEIGHT = 35
+        CHUNK_AREA_TOP = RULER_HEIGHT
+        CHUNK_AREA_HEIGHT = 140
+        CHUNK_AREA_BOTTOM = CHUNK_AREA_TOP + CHUNK_AREA_HEIGHT
+        TIME_MARKER_HEIGHT = 12
         
-        # Calculate timeline duration (sum of all chunks in edited timeline)
-        if self.edit_state.chunks:
-            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        # Calculate timeline duration
+        if not self.edit_state.chunks:
+            if not self.video_clip:
+                return
+            timeline_duration = self.video_clip.duration
         else:
-            timeline_duration = self.video_clip.duration if self.video_clip else 100
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
         
         canvas_width = self.timeline_canvas.winfo_width() or 1000
-        scale = canvas_width / timeline_duration
-        print(f"[VIDSOR] Drawing timeline - timeline_duration: {timeline_duration}s, canvas_width: {canvas_width}, scale: {scale}")
+        if canvas_width <= 1:
+            canvas_width = 1000
+        scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
         
-        # Draw chunks
-        y_start = 20
-        y_height = 100
+        # Draw background
+        self.timeline_canvas.create_rectangle(
+            0, 0, canvas_width, TIMELINE_HEIGHT,
+            fill="#1a1a1a", outline="", tags="background"
+        )
         
-        for i, chunk in enumerate(self.edit_state.chunks):
-            x_start = chunk.start_time * scale
-            x_end = chunk.end_time * scale
-            width = x_end - x_start
-            print(f"[VIDSOR] Drawing chunk {i}: {chunk.chunk_type} at {chunk.start_time:.1f}s-{chunk.end_time:.1f}s (x: {x_start:.1f}-{x_end:.1f})")
-            
-            # Color based on chunk type
-            if chunk.chunk_type == "highlight":
-                color = "yellow"
-            elif chunk.chunk_type == "fast_forward":
-                color = "lightblue"
-            else:
-                color = "lightgreen"
-            
-            # Draw chunk rectangle
-            self.timeline_canvas.create_rectangle(
-                x_start, y_start, x_end, y_start + y_height,
-                fill=color, outline="black", width=2, tags=f"chunk_{i}"
-            )
-            
-            # Draw label
-            if chunk.chunk_type == "highlight" and chunk.original_start_time is not None:
-                # Show original timing and description for highlights
-                label = f"Highlight\n{chunk.original_start_time:.1f}s-{chunk.original_end_time:.1f}s"
-                if chunk.description:
-                    # Truncate description if too long
-                    desc = chunk.description[:40] + "..." if len(chunk.description) > 40 else chunk.description
-                    label += f"\n{desc}"
-            else:
-                label = f"{chunk.chunk_type}\n{chunk.start_time:.1f}s-{chunk.end_time:.1f}s"
-                if chunk.speed != 1.0:
-                    label += f"\n{chunk.speed}x"
-            
-            self.timeline_canvas.create_text(
-                x_start + width/2, y_start + y_height/2,
-                text=label, font=("Arial", 8), tags=f"chunk_{i}"
-            )
+        # Draw ruler background (darker)
+        self.timeline_canvas.create_rectangle(
+            0, 0, canvas_width, RULER_HEIGHT,
+            fill="#0f0f0f", outline="", tags="ruler_bg"
+        )
         
-        # Draw time markers based on timeline duration
+        # Draw time markers with professional styling
+        # Major markers every 10 seconds
         for t in range(0, int(timeline_duration) + 1, 10):
             x = t * scale
-            self.timeline_canvas.create_line(x, 0, x, y_start, fill="gray")
-            self.timeline_canvas.create_text(x, y_start/2, text=f"{t}s", font=("Arial", 8))
+            if x > canvas_width:
+                break
+            
+            # Major tick line
+            self.timeline_canvas.create_line(
+                x, RULER_HEIGHT - TIME_MARKER_HEIGHT, x, RULER_HEIGHT,
+                fill="#666666", width=2, tags="time_marker"
+            )
+            
+            # Time label
+            time_str = self._format_time(t)
+            self.timeline_canvas.create_text(
+                x, RULER_HEIGHT - TIME_MARKER_HEIGHT - 8,
+                text=time_str, font=("Segoe UI", 9, "normal"),
+                fill="#cccccc", anchor="s", tags="time_label"
+            )
+        
+        # Minor markers every 5 seconds (between major markers)
+        for t in range(5, int(timeline_duration) + 1, 10):
+            x = t * scale
+            if x > canvas_width:
+                break
+            self.timeline_canvas.create_line(
+                x, RULER_HEIGHT - TIME_MARKER_HEIGHT // 2, x, RULER_HEIGHT,
+                fill="#444444", width=1, tags="time_marker_minor"
+            )
+        
+        # Draw chunks with professional styling
+        if self.edit_state.chunks:
+            for i, chunk in enumerate(self.edit_state.chunks):
+                x_start = chunk.start_time * scale
+                x_end = chunk.end_time * scale
+                width = max(x_end - x_start, 2)  # Minimum width
+                
+                if x_end < 0 or x_start > canvas_width:
+                    continue  # Skip chunks outside visible area
+                
+                # Determine if this chunk is hovered or selected
+                is_hovered = (self.timeline_hover_chunk == i)
+                is_selected = (self.edit_state.selected_chunk == i)
+                
+                # Get colors
+                fill_color, outline_color, gradient_color = self._get_chunk_color(
+                    chunk.chunk_type, is_hovered, is_selected
+                )
+                
+                # Draw chunk with gradient effect (simulated with multiple rectangles)
+                chunk_y_top = CHUNK_AREA_TOP + 5
+                chunk_y_bottom = CHUNK_AREA_BOTTOM - 5
+                chunk_height = chunk_y_bottom - chunk_y_top
+                
+                # Main chunk rectangle with rounded corners effect (using polygon)
+                # Draw shadow first (darker rectangle for depth effect)
+                shadow_offset = 2
+                self.timeline_canvas.create_rectangle(
+                    x_start + shadow_offset, chunk_y_top + shadow_offset,
+                    x_end + shadow_offset, chunk_y_bottom + shadow_offset,
+                    fill="#0a0a0a", outline="", tags=f"chunk_shadow_{i}"
+                )
+                
+                # Main chunk body
+                self.timeline_canvas.create_rectangle(
+                    x_start, chunk_y_top, x_end, chunk_y_bottom,
+                    fill=fill_color, outline=outline_color, width=2,
+                    tags=f"chunk_{i}"
+                )
+                
+                # Gradient effect (top lighter, bottom darker)
+                gradient_height = chunk_height // 3
+                self.timeline_canvas.create_rectangle(
+                    x_start, chunk_y_top, x_end, chunk_y_top + gradient_height,
+                    fill=gradient_color, outline="", tags=f"chunk_gradient_{i}"
+                )
+                
+                # Draw chunk label with better typography
+                if width > 60:  # Only draw label if chunk is wide enough
+                    # Chunk type label
+                    type_label = chunk.chunk_type.replace("_", " ").title()
+                    if chunk.chunk_type == "highlight":
+                        type_label = "★ Highlight"
+                    
+                    self.timeline_canvas.create_text(
+                        x_start + width/2, chunk_y_top + 20,
+                        text=type_label, font=("Segoe UI", 10, "bold"),
+                        fill="#ffffff", tags=f"chunk_label_{i}"
+                    )
+                    
+                    # Time range
+                    time_range = f"{self._format_time(chunk.start_time)} - {self._format_time(chunk.end_time)}"
+                    self.timeline_canvas.create_text(
+                        x_start + width/2, chunk_y_top + 40,
+                        text=time_range, font=("Segoe UI", 8),
+                        fill="#ffffff", tags=f"chunk_time_{i}"
+                    )
+                    
+                    # Duration
+                    duration = chunk.end_time - chunk.start_time
+                    duration_str = f"{duration:.1f}s"
+                    if chunk.speed != 1.0:
+                        duration_str += f" @ {chunk.speed}x"
+                    self.timeline_canvas.create_text(
+                        x_start + width/2, chunk_y_top + 55,
+                        text=duration_str, font=("Segoe UI", 8),
+                        fill="#dddddd", tags=f"chunk_duration_{i}"
+                    )
+                    
+                    # Description (truncated if too long)
+                    if chunk.description and width > 100:
+                        desc = chunk.description
+                        max_chars = int(width / 6)  # Approximate chars that fit
+                        if len(desc) > max_chars:
+                            desc = desc[:max_chars-3] + "..."
+                        self.timeline_canvas.create_text(
+                            x_start + width/2, chunk_y_top + 75,
+                            text=desc, font=("Segoe UI", 7),
+                            fill="#cccccc", width=int(width - 10),
+                            tags=f"chunk_desc_{i}"
+                        )
+                else:
+                    # Very narrow chunk - just show type icon
+                    if chunk.chunk_type == "highlight":
+                        self.timeline_canvas.create_text(
+                            x_start + width/2, chunk_y_top + chunk_height/2,
+                            text="★", font=("Segoe UI", 14),
+                            fill="#ffffff", tags=f"chunk_icon_{i}"
+                        )
+        
+        # Draw playhead indicator (red line showing current playback position)
+        if self.edit_state.preview_time >= 0:
+            playhead_x = self.edit_state.preview_time * scale
+            if 0 <= playhead_x <= canvas_width:
+                # Playhead line
+                self.timeline_canvas.create_line(
+                    playhead_x, 0, playhead_x, TIMELINE_HEIGHT,
+                    fill="#ff0000", width=2, tags="playhead"
+                )
+                
+                # Playhead triangle at top
+                triangle_size = 8
+                self.timeline_canvas.create_polygon(
+                    playhead_x, 0,
+                    playhead_x - triangle_size, triangle_size,
+                    playhead_x + triangle_size, triangle_size,
+                    fill="#ff0000", outline="#cc0000", width=1, tags="playhead_triangle"
+                )
+                
+                # Current time label above playhead
+                current_time_str = self._format_time(self.edit_state.preview_time)
+                self.timeline_canvas.create_text(
+                    playhead_x, triangle_size + 5,
+                    text=current_time_str, font=("Segoe UI", 9, "bold"),
+                    fill="#ff0000", anchor="n", tags="playhead_time"
+                )
+        
+        # Draw separator line between ruler and chunks
+        self.timeline_canvas.create_line(
+            0, RULER_HEIGHT, canvas_width, RULER_HEIGHT,
+            fill="#333333", width=1, tags="separator"
+        )
         
         # Update scroll region
-        self.timeline_canvas.configure(scrollregion=(0, 0, timeline_duration * scale, 150))
+        timeline_width = max(canvas_width, timeline_duration * scale)
+        self.timeline_canvas.configure(scrollregion=(0, 0, timeline_width, TIMELINE_HEIGHT))
     
     def export_video(self, output_path: str):
         """
