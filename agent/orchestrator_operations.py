@@ -4,7 +4,7 @@ import json
 import re
 from typing import Dict, List, Optional, Tuple, Any
 from langchain_core.messages import SystemMessage, HumanMessage
-from agent.utils import extract_json
+from agent.llm_utils import parse_json_response, invoke_llm_with_json
 
 
 def classify_operation(query: str, chunk_count: int, duration: float, llm, verbose: bool = False) -> Dict[str, Any]:
@@ -36,15 +36,20 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
         duration=duration
     )
     
+    fallback_result = {
+        "operation": "UNKNOWN",
+        "confidence": 0.0,
+        "parameters": {},
+        "reasoning": "Fallback due to parsing error"
+    }
+    
     try:
-        response = llm.invoke([
-            SystemMessage(content=ORCHESTRATOR_SYSTEM_PROMPT),
-            HumanMessage(content=user_message)
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        result = json.loads(json_text)
+        result = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=ORCHESTRATOR_SYSTEM_PROMPT,
+            user_message=user_message,
+            fallback=fallback_result
+        )
         
         if verbose:
             print(f"  Operation: {result.get('operation')}")

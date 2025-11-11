@@ -6,7 +6,7 @@ from typing import Dict, List, Any, Optional
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.state import AgentState
-from agent.utils import extract_json
+from agent.llm_utils import parse_json_response, invoke_llm_with_json, create_llm
 
 
 def decide_refine_or_research(state: AgentState, llm) -> Dict[str, Any]:
@@ -60,19 +60,25 @@ Return JSON:
     "user_gives_autonomy": true/false  // True if user is giving you control to make the best decision
 }}"""
     
+    # Fallback decision
+    fallback_decision = {
+        "action": "REFINE",
+        "reason": "Fallback due to parsing error",
+        "extract_number": None,
+        "user_gives_autonomy": False
+    }
+    
     try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt.format(
+        decision = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=system_prompt.format(
                 previous_query=previous_query,
                 num_results=len(previous_time_ranges),
                 current_query=current_query
-            )),
-            HumanMessage(content=f"Analyze the user's intent and decide. Return JSON only.")
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        decision = json.loads(json_text)
+            ),
+            user_message="Analyze the user's intent and decide. Return JSON only.",
+            fallback=fallback_decision
+        )
         
         return decision
     except Exception as e:
@@ -138,16 +144,11 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
     extract_number = decision.get("extract_number")
     user_gives_autonomy = decision.get("user_gives_autonomy", False)
     
-    # Get LLM for autonomous decision-making
+    # Get LLM for autonomous decision-making using shared utility
     try:
-        from langchain_openai import ChatOpenAI
-        llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+        llm = create_llm("gpt-4o-mini")
     except:
-        try:
-            from langchain_anthropic import ChatAnthropic
-            llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-        except:
-            llm = None
+        llm = None
     
     logger = state.get("logger")
     log_info = logger.info if logger else (lambda msg: print(msg) if verbose else None)
@@ -210,14 +211,16 @@ Return JSON only."""
         
         try:
             from langchain_core.messages import SystemMessage, HumanMessage
-            response = llm.invoke([
-                SystemMessage(content=system_prompt),
-                HumanMessage(content=prompt)
-            ])
-            
-            response_text = response.content.strip()
-            json_text = extract_json(response_text)
-            autonomy_decision = json.loads(json_text)
+            fallback_autonomy = {
+                "optimal_number": None,
+                "reasoning": "Fallback due to parsing error"
+            }
+            autonomy_decision = invoke_llm_with_json(
+                llm=llm,
+                system_prompt=system_prompt,
+                user_message=prompt,
+                fallback=fallback_autonomy
+            )
             
             extract_number = autonomy_decision.get("optimal_number")
             reasoning = autonomy_decision.get("reasoning", "No reasoning")
@@ -304,21 +307,14 @@ Return JSON only."""
                 elif verbose:
                     print(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
                 
-                # Get LLM for validation
+                # Get LLM for validation using shared utility
                 try:
-                    from langchain_openai import ChatOpenAI
-                    validation_llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+                    validation_llm = create_llm("gpt-4o-mini")
                 except:
-                    try:
-                        from langchain_anthropic import ChatAnthropic
-                        validation_llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-                    except:
-                        validation_llm = None
+                    validation_llm = None
                 
                 if validation_llm:
                     from langchain_core.messages import HumanMessage, SystemMessage
-                    from agent.utils import extract_json
-                    import json
                     
                     validated_ranges = []
                     for r in ranked_ranges[:extract_number]:  # Only validate the top N we need
@@ -343,14 +339,13 @@ Return JSON only:
 {{"is_valid": true/false, "reasoning": "brief explanation"}}"""
                         
                         try:
-                            validation_response = validation_llm.invoke([
-                                SystemMessage(content="You are a lenient video search validator. Only filter out OBVIOUS false positives. When unsure, keep the result. Be especially lenient for highlight queries."),
-                                HumanMessage(content=validation_prompt)
-                            ])
-                            
-                            validation_text = validation_response.content.strip()
-                            validation_json = extract_json(validation_text)
-                            validation_result = json.loads(validation_json)
+                            fallback_validation = {"is_valid": True, "reasoning": "Fallback due to parsing error"}
+                            validation_result = invoke_llm_with_json(
+                                llm=validation_llm,
+                                system_prompt="You are a lenient video search validator. Only filter out OBVIOUS false positives. When unsure, keep the result. Be especially lenient for highlight queries.",
+                                user_message=validation_prompt,
+                                fallback=fallback_validation
+                            )
                             
                             # Default to valid if validation fails or is unclear
                             is_valid = validation_result.get("is_valid", True)
@@ -489,22 +484,15 @@ def rank_ranges_with_llm(
     """
     try:
         from langchain_core.messages import HumanMessage, SystemMessage
-        from agent.utils import extract_json
-        import json
         
-        # Get LLM (try to get from state or create new)
+        # Get LLM using shared utility
         try:
-            from langchain_openai import ChatOpenAI
-            llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+            llm = create_llm("gpt-4o-mini")
         except:
-            try:
-                from langchain_anthropic import ChatAnthropic
-                llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-            except:
-                if verbose:
-                    print("  [WARNING] No LLM available, falling back to score-based ranking")
-                # Fallback: just return first N
-                return ranges_with_descriptions[:top_n]
+            if verbose:
+                print("  [WARNING] No LLM available, falling back to score-based ranking")
+            # Fallback: just return first N
+            return ranges_with_descriptions[:top_n]
         
         # Prepare context for LLM
         ranges_summary = []
@@ -550,19 +538,18 @@ Return JSON array with top {top_n} ranked results. Return JSON only."""
         elif verbose:
             print(f"  [LLM RANKING] Ranking {len(ranges_with_descriptions)} results to select top {top_n}")
         
-        response = llm.invoke([
-            SystemMessage(content=system_prompt.format(
+        fallback_ranking = []
+        ranking_results = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=system_prompt.format(
                 previous_query=previous_query,
                 current_query=current_query,
                 total_count=len(ranges_with_descriptions),
                 top_n=top_n
-            )),
-            HumanMessage(content=prompt)
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        ranking_results = json.loads(json_text)
+            ),
+            user_message=prompt,
+            fallback=fallback_ranking
+        )
         
         # Convert to list if single dict
         if isinstance(ranking_results, dict):
@@ -694,26 +681,20 @@ For each description, determine if it truly matches the query "{query}".
 Return JSON array with validation results. Return JSON only.
 """
                 
-                response = llm.invoke([
-                    SystemMessage(content=system_prompt),
-                    HumanMessage(content=validation_prompt)
-                ])
-                
-                response_text = response.content.strip()
-                json_text = extract_json(response_text)
-                
-                # Parse JSON response
-                batch_results = []
+                # Parse JSON response (expects array)
+                fallback_batch = []
                 try:
-                    batch_results = json.loads(json_text)
-                except json.JSONDecodeError:
-                    # Try to extract JSON array pattern
-                    array_match = re.search(r'\[.*?\]', json_text, re.DOTALL)
-                    if array_match:
-                        try:
-                            batch_results = json.loads(array_match.group())
-                        except:
-                            pass
+                    response = llm.invoke([
+                        SystemMessage(content=system_prompt),
+                        HumanMessage(content=validation_prompt)
+                    ])
+                    response_text = response.content.strip()
+                    batch_results = parse_json_response(response_text, fallback=fallback_batch)
+                    # Ensure it's a list
+                    if not isinstance(batch_results, list):
+                        batch_results = [batch_results] if isinstance(batch_results, dict) else fallback_batch
+                except Exception:
+                    batch_results = fallback_batch
                 
                 # Adjust indices to match original evidence list
                 # LLM returns indices relative to the batch (0-9), we need to map to absolute indices
@@ -934,15 +915,19 @@ Top 10 results summary: {json.dumps(top_results_summary, indent=2)}
 Validate if these results make sense for the query. Return JSON only.
 """
     
+    fallback_validation = {
+        "is_valid": True,
+        "confidence": 0.5,
+        "reasoning": "Fallback due to parsing error"
+    }
+    
     try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=validation_prompt)
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        result = json.loads(json_text)
+        result = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=system_prompt,
+            user_message=validation_prompt,
+            fallback=fallback_validation
+        )
         
         if verbose:
             print(f"  Validation confidence: {result.get('confidence', 0.7):.2f}")

@@ -13,19 +13,7 @@ from agent.orchestrator_handlers import (
     handle_trim
 )
 from agent.planner import create_planner_agent
-
-# Import LLM classes
-try:
-    from langchain_openai import ChatOpenAI
-    HAS_OPENAI = True
-except ImportError:
-    HAS_OPENAI = False
-
-try:
-    from langchain_anthropic import ChatAnthropic
-    HAS_ANTHROPIC = True
-except ImportError:
-    HAS_ANTHROPIC = False
+from agent.llm_utils import create_llm
 
 
 def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
@@ -39,19 +27,8 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
         Orchestrator node function
     """
     
-    # Initialize LLM
-    if HAS_OPENAI:
-        try:
-            llm = ChatOpenAI(model=model_name, temperature=0)
-        except:
-            if HAS_ANTHROPIC:
-                llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-            else:
-                raise ValueError("Need either OpenAI or Anthropic API key configured")
-    elif HAS_ANTHROPIC:
-        llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
-    else:
-        raise ValueError("Need either langchain-openai or langchain-anthropic installed")
+    # Initialize LLM using shared utility
+    llm = create_llm(model_name)
     
     def orchestrator_node(state: OrchestratorState) -> OrchestratorState:
         """

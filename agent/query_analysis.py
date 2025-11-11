@@ -3,7 +3,7 @@
 import json
 from typing import Dict, Any, Set, Optional
 from langchain_core.messages import HumanMessage, SystemMessage
-from agent.utils import extract_json
+from agent.llm_utils import parse_json_response, invoke_llm_with_json
 
 
 def analyze_query_semantics(query: str, llm) -> Dict[str, Any]:
@@ -84,15 +84,25 @@ Return JSON:
     "reasoning": "brief explanation of your analysis"
 }"""
     
+    # Fallback dict with default values
+    fallback_result = {
+        "query_type": "POSITIVE",
+        "target_entities": {"objects": [], "activities": [], "concepts": []},
+        "constraints": {},
+        "modalities": {},
+        "special_handling": {},
+        "object_priority": {},
+        "confidence": 0.5,
+        "reasoning": "Fallback due to parsing error"
+    }
+    
     try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=f"Query: {query}\n\nPerform deep semantic analysis. Understand the true meaning, not just keywords. Return JSON only.")
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        result = json.loads(json_text)
+        result = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=system_prompt,
+            user_message=f"Query: {query}\n\nPerform deep semantic analysis. Understand the true meaning, not just keywords. Return JSON only.",
+            fallback=fallback_result
+        )
         
         # Ensure all required fields exist with defaults
         if "confidence" not in result:
@@ -317,15 +327,21 @@ Special Handling: {special_handling}
 Modalities Needed: {modalities}
 """
     
+    # Fallback strategy
+    fallback_strategy = {
+        "search_operations": [],
+        "scoring": {},
+        "post_processing": [],
+        "reasoning": "Fallback strategy due to parsing error"
+    }
+    
     try:
-        response = llm.invoke([
-            SystemMessage(content=system_prompt),
-            HumanMessage(content=f"Semantic Analysis:\n{analysis_summary}\n\nGenerate a search strategy that handles this query type. Return JSON only.")
-        ])
-        
-        response_text = response.content.strip()
-        json_text = extract_json(response_text)
-        strategy = json.loads(json_text)
+        strategy = invoke_llm_with_json(
+            llm=llm,
+            system_prompt=system_prompt,
+            user_message=f"Semantic Analysis:\n{analysis_summary}\n\nGenerate a search strategy that handles this query type. Return JSON only.",
+            fallback=fallback_strategy
+        )
         
         # Validate and set defaults
         if "search_operations" not in strategy:
