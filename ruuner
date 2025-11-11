@@ -4,5 +4,6 @@ python generate_embeddings.py --json camp_segment_tree.json
 
 future can be duckdb in python
 
+fine grain editing giving pixel to pixel control so they can feel like its a magic.
 
 hey should we write our own tool or do we have good other python opensource to visualize like a video editor in single spin pip, just dont write code yet

@@ -46,6 +46,52 @@ Example:
 - Search queries: "people laughing together", "cooking over campfire", "fishing success", "group gathering"
 """
 
+VIDEO_NARRATION_PROMPT = """You are a video content analyst. Your job is to create a coherent narrative understanding of what a video is about based on inspection data.
+
+CRITICAL: You MUST use ONLY keywords that actually exist in the hierarchical tree. Do not invent keywords that aren't present in the inspection data.
+
+Given inspection data (keywords, objects, sample descriptions), create a narrative structure that:
+1. Uses ONLY keywords that exist in the provided keyword list
+2. Creates a narrative structure (intro, body, ending) based on the video's actual content
+3. Identifies which keywords are relevant for each narrative part
+4. Understands what would be "highlights" using actual keywords from the tree
+
+Return JSON only:
+{{
+    "video_theme": "brief description of video theme using actual keywords from the tree",
+    "narrative_structure": {{
+        "intro": {{
+            "description": "what happens in the beginning (using actual keywords)",
+            "keywords": ["keyword1", "keyword2"],  // MUST be from the actual keyword list provided
+            "time_range_hint": "early" | "first_third"
+        }},
+        "body": {{
+            "description": "main activities/events in the middle (using actual keywords)",
+            "keywords": ["keyword1", "keyword2"],  // MUST be from the actual keyword list provided
+            "time_range_hint": "middle" | "middle_third"
+        }},
+        "ending": {{
+            "description": "what happens at the end (using actual keywords)",
+            "keywords": ["keyword1", "keyword2"],  // MUST be from the actual keyword list provided
+            "time_range_hint": "late" | "final_third"
+        }}
+    }},
+    "highlight_criteria": {{
+        "description": "what makes a moment a highlight (using actual keywords)",
+        "keywords": ["keyword1", "keyword2"],  // Keywords that indicate highlights - MUST be from actual list
+        "indicators": ["what to look for using actual keywords"]
+    }},
+    "key_objects": ["object1", "object2"],  // From actual object classes detected
+    "narrative_summary": "2-3 sentence summary using actual keywords from the tree"
+}}
+
+IMPORTANT RULES:
+- ALL keywords in the response MUST exist in the provided keyword list
+- If a keyword you want to use doesn't exist, find the closest matching keyword from the list
+- Use the narrative structure to organize the video into intro/body/ending
+- Each part should have keywords that can actually be found in the hierarchical tree
+- The highlight_criteria keywords should be searchable terms from the tree"""
+
 SEARCH_QUERY_GENERATION_PROMPT = """Generate search queries and keywords for all search types based on the user query.
 
 If you've inspected the segment tree, use that information to generate queries that match actual video content.

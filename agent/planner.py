@@ -20,7 +20,8 @@ from agent.prompts import (
     PLANNER_SYSTEM_PROMPT,
     SEGMENT_TREE_INSPECTION_PROMPT,
     QUERY_REASONING_PROMPT,
-    SEARCH_QUERY_GENERATION_PROMPT
+    SEARCH_QUERY_GENERATION_PROMPT,
+    VIDEO_NARRATION_PROMPT
 )
 
 # Import LLM classes
@@ -35,6 +36,90 @@ try:
     HAS_ANTHROPIC = True
 except ImportError:
     HAS_ANTHROPIC = False
+
+
+def create_video_narrative(content_inspection: dict, query: str, llm, verbose: bool = False, logger=None) -> Optional[dict]:
+    """
+    Create a coherent narrative understanding of the video content.
+    This helps generate better search queries by understanding context, not just keywords.
+    
+    Args:
+        content_inspection: Dictionary from segment_tree.inspect_content()
+        query: User query string
+        llm: Language model instance
+        verbose: Whether to print verbose output
+        logger: Optional logger instance
+        
+    Returns:
+        Dictionary with video narrative understanding or None if failed
+    """
+    if not content_inspection:
+        return None
+    
+    # Helper function to log or print
+    def log_info(msg):
+        if logger:
+            logger.info(msg)
+        elif verbose:
+            print(msg)
+    
+    # Build context for narration - emphasize actual keywords
+    all_keywords = content_inspection['all_keywords'][:100]  # Get more keywords
+    context = f"""Video Content Inspection:
+
+AVAILABLE KEYWORDS (use ONLY these keywords - do not invent new ones):
+{', '.join(all_keywords)}
+
+Object classes detected: {', '.join(sorted(content_inspection['object_classes'].keys())[:20])}
+
+Sample descriptions from video:
+"""
+    for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
+        context += f"{i}. [{desc['second']}s] {desc['description'][:150]}\n"
+    
+    context += f"\nUser Query: {query}\n"
+    context += "\nCRITICAL: Create a narrative structure (intro, body, ending) using ONLY keywords from the list above. "
+    context += "Each narrative part should have keywords that actually exist in the hierarchical tree. "
+    context += "What would be considered highlights using these actual keywords?"
+    
+    try:
+        start_time = time.time()
+        response = llm.invoke([
+            SystemMessage(content=VIDEO_NARRATION_PROMPT),
+            HumanMessage(content=context)
+        ])
+        elapsed = time.time() - start_time
+        
+        response_text = response.content.strip()
+        json_text = extract_json(response_text)
+        narrative = json.loads(json_text)
+        
+        log_info(f"  Video theme: {narrative.get('video_theme', 'N/A')}")
+        log_info(f"  Narrative summary: {narrative.get('narrative_summary', 'N/A')[:100]}...")
+        
+        # Log narrative structure if available
+        narrative_structure = narrative.get('narrative_structure', {})
+        if narrative_structure:
+            log_info(f"  Narrative structure:")
+            for part_name in ['intro', 'body', 'ending']:
+                part = narrative_structure.get(part_name, {})
+                if part:
+                    keywords = part.get('keywords', [])
+                    log_info(f"    {part_name.upper()}: {', '.join(keywords[:5]) if keywords else 'N/A'}")
+        
+        highlight_criteria = narrative.get('highlight_criteria', {})
+        if isinstance(highlight_criteria, dict):
+            highlight_keywords = highlight_criteria.get('keywords', [])
+            log_info(f"  Highlight keywords: {', '.join(highlight_keywords[:5]) if highlight_keywords else 'N/A'}")
+        else:
+            log_info(f"  Highlight criteria: {highlight_criteria}")
+        
+        log_info(f"  Narrative creation completed in {elapsed:.2f}s")
+        
+        return narrative
+    except Exception as e:
+        log_info(f"  [WARNING] Narrative creation failed: {e}")
+        return None
 
 
 def create_planner_agent(model_name: str = "gpt-4o-mini"):
@@ -140,6 +225,17 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
                 log_info(f"  [WARNING] Inspection failed: {e}")
                 content_inspection = None
         
+        # NEW STEP: Create video narrative understanding
+        video_narrative = None
+        if content_inspection and needs_inspection:
+            log_info("\n[NARRATION] Creating video narrative understanding...")
+            video_narrative = create_video_narrative(content_inspection, query, llm, verbose=verbose, logger=logger)
+            if video_narrative:
+                # Logging is handled inside create_video_narrative
+                pass
+            else:
+                log_info("  [WARNING] Narrative creation failed, proceeding with raw inspection data")
+        
         log_info("\n[STEP 1] Generating search queries for all modalities...")
         
         # STEP 1: Generate search queries/keywords for ALL search types
@@ -161,8 +257,47 @@ Sample descriptions:
             for i, desc in enumerate(content_inspection['sample_descriptions'][:5], 1):
                 user_message_content += f"{i}. [{desc['second']}s] {desc['description'][:100]}\n"
             
-            user_message_content += "\nBased on this actual video content, generate search queries that target concrete elements, not abstract concepts.\n"
-            user_message_content += "For example, if the query is 'highlights' and the video contains 'camping', 'fishing', 'cooking', generate queries like 'people cooking together', 'fishing success', 'group activities'.\n\n"
+            # Add video narrative understanding if available
+            if video_narrative:
+                narrative_structure = video_narrative.get('narrative_structure', {})
+                highlight_criteria = video_narrative.get('highlight_criteria', {})
+                
+                user_message_content += f"""
+
+Video Narrative Understanding:
+- Theme: {video_narrative.get('video_theme', 'N/A')}
+- Summary: {video_narrative.get('narrative_summary', 'N/A')}
+
+Narrative Structure (use keywords from each part):
+"""
+                if narrative_structure:
+                    for part_name in ['intro', 'body', 'ending']:
+                        part = narrative_structure.get(part_name, {})
+                        if part:
+                            keywords = part.get('keywords', [])
+                            description = part.get('description', 'N/A')
+                            user_message_content += f"- {part_name.upper()}: {description}\n"
+                            user_message_content += f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}\n"
+                
+                if highlight_criteria:
+                    highlight_keywords = highlight_criteria.get('keywords', [])
+                    highlight_desc = highlight_criteria.get('description', 'N/A')
+                    user_message_content += f"\nHighlight Criteria: {highlight_desc}\n"
+                    user_message_content += f"Highlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
+                
+                user_message_content += f"\nKey Objects: {', '.join(video_narrative.get('key_objects', []))}\n"
+                
+                user_message_content += """
+CRITICAL INSTRUCTIONS:
+1. Use ONLY the keywords provided in the narrative structure above - these are actual keywords from the hierarchical tree
+2. Generate search queries that use these actual keywords, not abstract concepts
+3. Create queries for each narrative part (intro, body, ending) using their specific keywords
+4. For highlights, use the highlight_criteria keywords which are searchable in the tree
+5. Do NOT invent keywords that aren't in the narrative structure - use only what's provided
+"""
+            else:
+                user_message_content += "\nBased on this actual video content, generate search queries that target concrete elements, not abstract concepts.\n"
+                user_message_content += "For example, if the query is 'highlights' and the video contains 'camping', 'fishing', 'cooking', generate queries like 'people cooking together', 'fishing success', 'group activities'.\n\n"
         
         user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
         

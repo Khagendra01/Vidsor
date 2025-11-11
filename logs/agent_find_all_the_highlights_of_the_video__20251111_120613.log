@@ -1,0 +1,184 @@
+2025-11-11 12:06:13 - INFO - ================================================================================
+2025-11-11 12:06:13 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 12:06:13 - INFO - ================================================================================
+2025-11-11 12:06:13 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:06:13 - INFO - Log file: logs\agent_find_all_the_highlights_of_the_video__20251111_120613.log
+2025-11-11 12:06:13 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-11 12:06:13 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 12:06:13 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 12:06:13 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:06:13 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-11 12:06:13 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 12:06:13 - INFO - CALLING ORCHESTRATOR
+2025-11-11 12:06:13 - INFO - --------------------------------------------------------------------------------
+2025-11-11 12:06:13 - INFO - 
+================================================================================
+2025-11-11 12:06:13 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 12:06:13 - INFO - ================================================================================
+2025-11-11 12:06:13 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:06:13 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:06:13 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 12:06:13 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 12:06:13 - INFO - [LOADING] Loading segment tree...
+2025-11-11 12:06:13 - INFO -   ✓ Segment tree loaded
+2025-11-11 12:06:14 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 12:06:14 - INFO - 
+================================================================================
+2025-11-11 12:06:14 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 12:06:14 - INFO - ================================================================================
+2025-11-11 12:06:14 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:06:14 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:06:14 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-11 12:06:21 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 12:06:21 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 12:06:21 - INFO -   Confidence: 1.00
+2025-11-11 12:06:21 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 12:06:21 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 12:06:21 - INFO -   Calling planner agent to find highlights...
+2025-11-11 12:06:21 - INFO - 
+============================================================
+2025-11-11 12:06:21 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-11 12:06:21 - INFO - ============================================================
+2025-11-11 12:06:21 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:06:21 - INFO - 
+[INSPECTION] Inspecting segment tree to understand video content...
+2025-11-11 12:06:21 - INFO -   Found 100 unique keywords
+2025-11-11 12:06:21 - INFO -   Found 31 object classes
+2025-11-11 12:06:21 - INFO -   Sample keywords: 0x000001f7517d9960, 0x000001f7517d9a80, 0x000001f7517d9ae0, 0x000001f7517d9b40, 0x000001f7517d9bd0, 0x000001f7517da710, 0x000001f7517dae30, 0x000001f7517dafe0, 0x000001f7517db250, 0x000001f7517db2b0, 0x000001f7517db340, 0x000001f7517dbdf0, 0x000001f7518a4310, 0x000001f7518a4d00, 10...
+2025-11-11 12:06:21 - INFO -   Inspection completed in 0.00s
+2025-11-11 12:06:21 - INFO - 
+[NARRATION] Creating video narrative understanding...
+2025-11-11 12:06:29 - INFO -   Video theme: error analysis of HTTP connection issues
+2025-11-11 12:06:29 - INFO -   Narrative summary: The video presents a detailed analysis of connection errors, highlighting repeated messages that ind...
+2025-11-11 12:06:29 - INFO -   Narrative structure:
+2025-11-11 12:06:29 - INFO -     INTRO: error, connection, issues
+2025-11-11 12:06:29 - INFO -     BODY: error, max retries, exceeded
+2025-11-11 12:06:29 - INFO -     ENDING: error, connection, problem
+2025-11-11 12:06:29 - INFO -   Highlight keywords: error, max retries, exceeded
+2025-11-11 12:06:29 - INFO -   Narrative creation completed in 8.52s
+2025-11-11 12:06:29 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-11 12:06:29 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-11 12:06:35 - INFO - [LLM] Query generation completed in 5.77s
+2025-11-11 12:06:35 - DEBUG - [LLM RESPONSE] ```json
+{
+    "semantic_queries": [
+        "find highlights related to error messages",
+        "search for moments with connection issues",
+        "retrieve key moments of max retries exceeded"
+    ],
+    "hierarchical_keywords": [
+        "error",
+        "connection",
+        "issues",
+        ...
+2025-11-11 12:06:35 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-11 12:06:35 - INFO -   [INSPECTION] Used segment tree inspection: Yes
+2025-11-11 12:06:35 - INFO -   Semantic queries: ['find highlights related to error messages', 'search for moments with connection issues', 'retrieve key moments of max retries exceeded']
+2025-11-11 12:06:35 - INFO -   Hierarchical keywords: ['error', 'connection', 'issues', 'max retries', 'exceeded', 'problem']
+2025-11-11 12:06:35 - INFO -   Object classes: []
+2025-11-11 12:06:35 - INFO -   Activity: 
+2025-11-11 12:06:35 - INFO -   Is general highlight query: True
+2025-11-11 12:06:35 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-11 12:06:43 - INFO -   Query type: AGGREGATE
+2025-11-11 12:06:43 - INFO -   Search intent: semantic
+2025-11-11 12:06:43 - INFO -   Target entities: {'objects': [], 'activities': [], 'concepts': []}
+2025-11-11 12:06:43 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-11 12:06:43 - INFO -   Reasoning: The query is asking for a collection of highlights from the video, which indicates a desire to aggregate all significant moments without specific conditions or filters. The focus is on retrieving all relevant content, hence the aggregate type. There are no specific objects or activities mentioned, and the request does not imply any negation or temporal conditions.
+2025-11-11 12:06:43 - INFO -   Analysis completed in 8.14s
+2025-11-11 12:06:43 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-11 12:06:49 - INFO -   Strategy operations: 1
+2025-11-11 12:06:49 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-11 12:06:49 - INFO -   Reasoning: This strategy focuses solely on hierarchical search as the query type is aggregate and does not require any object or activity detection. The absence of target entities means the search will rely on keyword-based tree lookup to find relevant information.
+2025-11-11 12:06:49 - INFO -   Strategy planning completed in 6.18s
+2025-11-11 12:06:49 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-11 12:06:49 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-11 12:06:49 - INFO -   Semantic weight: 0.40
+2025-11-11 12:06:49 - INFO -   Activity weight: 0.00
+2025-11-11 12:06:49 - INFO -   Hierarchical weight: 0.50
+2025-11-11 12:06:49 - INFO -   Threshold: 0.30
+2025-11-11 12:06:49 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-11 12:06:49 - INFO - 
+  [SEARCH TYPE: General Highlights (Hierarchical Tree)]
+2025-11-11 12:06:49 - INFO -       Found 20 highlight candidates
+2025-11-11 12:06:49 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-11 12:06:49 - INFO -     Keyword: 'error'
+2025-11-11 12:06:49 - INFO -       Found 3 leaf node matches
+2025-11-11 12:06:49 - INFO -     Keyword: 'connection'
+2025-11-11 12:06:49 - INFO -       Found 3 leaf node matches
+2025-11-11 12:06:49 - INFO -     Keyword: 'issues'
+2025-11-11 12:06:49 - INFO -       Found 0 leaf node matches
+2025-11-11 12:06:49 - INFO -     Keyword: 'max retries'
+2025-11-11 12:06:49 - INFO -       Found 0 leaf node matches
+2025-11-11 12:06:49 - INFO -     Keyword: 'exceeded'
+2025-11-11 12:06:49 - INFO -       Found 3 leaf node matches
+2025-11-11 12:06:49 - INFO -     Keyword: 'problem'
+2025-11-11 12:06:49 - INFO -       Found 0 leaf node matches
+2025-11-11 12:06:49 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-11 12:06:49 - INFO -     Query: 'find highlights related to error messages'
+2025-11-11 12:06:51 - INFO -       Found 0 matches (took 1.42s)
+2025-11-11 12:06:51 - INFO -     Query: 'search for moments with connection issues'
+2025-11-11 12:06:51 - INFO -       Found 0 matches (took 0.02s)
+2025-11-11 12:06:51 - INFO -     Query: 'retrieve key moments of max retries exceeded'
+2025-11-11 12:06:51 - INFO -       Found 0 matches (took 0.02s)
+2025-11-11 12:06:51 - INFO - 
+[AGGREGATION] Collected results from all search types:
+2025-11-11 12:06:51 - INFO -   Total results: 29
+2025-11-11 12:06:51 - INFO - 
+[STEP 3] Scoring all seconds with weighted features...
+2025-11-11 12:06:51 - INFO -   Total seconds to score: 300
+2025-11-11 12:06:51 - INFO - [STEP 3] Scoring completed in 0.00s
+2025-11-11 12:06:51 - INFO - 
+[FILTERING] Filtered to 62 seconds above threshold 0.30
+2025-11-11 12:06:51 - INFO -   Top 10 scored seconds:
+2025-11-11 12:06:51 - INFO -     1. Second 160: score=48.100 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     2. Second 20: score=47.600 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     3. Second 170: score=45.100 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     4. Second 30: score=44.667 (sem=0.00, act=0.00, obj=0.17)
+2025-11-11 12:06:51 - INFO -     5. Second 65: score=44.233 (sem=0.00, act=0.00, obj=0.23)
+2025-11-11 12:06:51 - INFO -     6. Second 205: score=44.100 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     7. Second 40: score=44.067 (sem=0.00, act=0.00, obj=0.07)
+2025-11-11 12:06:51 - INFO -     8. Second 75: score=43.600 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     9. Second 150: score=42.600 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 12:06:51 - INFO -     10. Second 25: score=41.233 (sem=0.00, act=0.00, obj=0.23)
+2025-11-11 12:06:51 - INFO - 
+[AGENTIC] Phase 3: Self-Validation...
+2025-11-11 12:06:53 - INFO -   [VALIDATION] Issues detected: ['Results do not provide highlights of the video; they only list timestamps without context or content description.', "Low semantic scores indicate a lack of relevance to the user's request."]
+2025-11-11 12:06:53 - INFO -   [VALIDATION] Suggestions: ['Include results that summarize key moments or provide descriptions of the highlights.', 'Refine the search to focus on video highlight summaries or analyses.']
+2025-11-11 12:06:53 - INFO - 
+[STEP 4] Grouping contiguous seconds into time ranges...
+2025-11-11 12:06:53 - INFO -   Grouped into 9 time range(s)
+2025-11-11 12:06:53 - INFO -     1. 25.00s - 27.00s (duration: 2.00s)
+2025-11-11 12:06:53 - INFO -     2. 128.00s - 130.00s (duration: 2.00s)
+2025-11-11 12:06:53 - INFO -     3. 223.00s - 226.00s (duration: 3.00s)
+2025-11-11 12:06:53 - INFO -     4. 236.00s - 238.00s (duration: 2.00s)
+2025-11-11 12:06:53 - INFO -     5. 240.00s - 242.00s (duration: 2.00s)
+2025-11-11 12:06:53 - INFO -     6. 243.00s - 251.00s (duration: 8.00s)
+2025-11-11 12:06:53 - INFO -     7. 253.00s - 256.00s (duration: 3.00s)
+2025-11-11 12:06:53 - INFO -     8. 260.00s - 271.00s (duration: 11.00s)
+2025-11-11 12:06:53 - INFO -     9. 293.00s - 297.00s (duration: 4.00s)
+2025-11-11 12:06:53 - INFO - 
+[SELECTION] User intent detection:
+2025-11-11 12:06:53 - INFO -   Multiple indicators: True
+2025-11-11 12:06:53 - INFO -   Single indicators: False
+2025-11-11 12:06:53 - INFO -   Plural 'moments': False
+2025-11-11 12:06:53 - INFO -   Singular 'moment': False
+2025-11-11 12:06:53 - INFO -   Decision: MULTIPLE results (multiple indicator detected)
+2025-11-11 12:06:53 - INFO -   [ACTION] Returning all 9 time ranges
+2025-11-11 12:06:53 - INFO - 
+[AUTO-RERANK] Detected 'all/every' in query - will automatically rerank and filter false positives
+2025-11-11 12:06:53 - INFO - 
+[AUTO-RERANK] Automatically reranking and filtering 9 results...
+2025-11-11 12:06:53 - INFO -   [LLM RANKING] Ranking 9 results to select top 9

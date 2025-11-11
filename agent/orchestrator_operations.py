@@ -311,29 +311,74 @@ def _extract_search_query(query: str) -> Optional[str]:
     """
     query_lower = query.lower()
     
+    # Helper function to check if extracted query is a general highlight query
+    def is_general_highlight_query(text: str) -> bool:
+        """Check if text is just a general highlight query without specific content."""
+        text_lower = text.lower().strip()
+        highlight_keywords = ["highlight", "highlights", "best moment", "best moments", 
+                            "important moment", "important moments", "key moment", "key moments"]
+        highlight_words = ["highlight", "highlights", "moment", "moments", "best", "important", "key"]
+        
+        # Check if it contains highlight keywords/phrases
+        has_highlight_kw = any(kw in text_lower for kw in highlight_keywords)
+        if not has_highlight_kw:
+            return False
+        
+        # Check if there's specific content mentioned (e.g., "highlights of fishing" has "fishing")
+        # Remove common filler words and highlight-related words
+        text_clean = re.sub(r'\b(all|the|of|in|video|clip|clips|moments?|scenes?|highlight|highlights|best|important|key)\b', '', text_lower).strip()
+        
+        # If after removing fillers and highlight words, there's nothing left or only very short words, it's general
+        # Also check for patterns like "highlights of X" or "best moments with X" - these have specific content
+        has_specific_content = bool(re.search(r'(?:highlight|moment).*?(?:of|with|featuring|showing)\s+\w+', text_lower))
+        if has_specific_content:
+            return False  # Has specific content, not general
+        
+        # If text_clean is empty or only has very short words (< 3 chars), it's a general highlight query
+        remaining_words = [w for w in text_clean.split() if len(w) >= 3]
+        return len(remaining_words) == 0
+    
     # Pattern 1: "replace ... with [query]"
     replace_match = re.search(r'replace.*?with\s+(.+)', query_lower)
     if replace_match:
-        return replace_match.group(1).strip()
+        extracted = replace_match.group(1).strip()
+        if not is_general_highlight_query(extracted):
+            return extracted
     
     # Pattern 2: "find [query]"
     find_match = re.search(r'find\s+(.+)', query_lower)
     if find_match:
-        return find_match.group(1).strip()
+        extracted = find_match.group(1).strip()
+        # Check if it's a general highlight query
+        if is_general_highlight_query(extracted):
+            # Check if there's specific content mentioned (e.g., "highlights of fishing")
+            specific_match = re.search(r'(?:highlight|moment).*?(?:of|with|featuring|showing)\s+(.+)', extracted)
+            if specific_match:
+                return specific_match.group(1).strip()
+            else:
+                # General highlight query - return None
+                return None
+        return extracted
     
     # Pattern 3: "add [query]"
     add_match = re.search(r'add\s+(?:a\s+)?(?:clip\s+of\s+)?(.+)', query_lower)
     if add_match:
-        return add_match.group(1).strip()
+        extracted = add_match.group(1).strip()
+        if not is_general_highlight_query(extracted):
+            return extracted
     
     # Pattern 4: "show me [query]"
     show_match = re.search(r'show\s+me\s+(.+)', query_lower)
     if show_match:
-        return show_match.group(1).strip()
-    
-    # If query contains "highlight" or similar, return the full query
-    if any(kw in query_lower for kw in ["highlight", "best", "moment"]):
-        return query
+        extracted = show_match.group(1).strip()
+        if is_general_highlight_query(extracted):
+            # Check for specific content
+            specific_match = re.search(r'(?:highlight|moment).*?(?:of|with|featuring|showing)\s+(.+)', extracted)
+            if specific_match:
+                return specific_match.group(1).strip()
+            else:
+                return None
+        return extracted
     
     return None
 

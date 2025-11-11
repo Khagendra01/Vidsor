@@ -52,7 +52,7 @@ Classify the operation and extract parameters. Return JSON only:
         "insert_before_index": 1,  // For INSERT (if before/after)
         "insert_after_index": 1,  // For INSERT (if after)
         "insert_between_indices": [1, 2],  // For INSERT (if between)
-        "search_query": "highlights",  // Core search query (e.g., "helicopter clips", "cooking moments")
+        "search_query": null or "helicopter clips",  // Core search query (e.g., "helicopter clips", "cooking moments"). Set to null for general highlight queries like "find highlights" or "show me best moments"
         "temporal_constraint": "when they were in helicopter",  // Temporal/conditional constraint if present (e.g., "when X", "before Y", "during Z")
         "temporal_type": "when" | "before" | "after" | "during" | null,  // Type of temporal constraint
         "reorder_from_index": 3,  // For REORDER
@@ -75,6 +75,8 @@ Guidelines:
 
 CRITICAL for search_query and temporal_constraint:
 - Extract the core search term in "search_query" (e.g., "helicopter clips", "cooking moments")
+- For general highlight queries like "find highlights", "show me best moments", "find all the highlights" → set search_query to null (not "highlights")
+- Only set search_query to a value if there's specific content mentioned (e.g., "highlights of fishing" → "fishing")
 - Extract temporal/conditional phrases in "temporal_constraint" (e.g., "when they were in helicopter", "before sunset", "during the fight")
 - If query is "replace X with clips when they were in helicopter":
   - search_query: "helicopter clips"
