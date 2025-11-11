@@ -97,7 +97,7 @@ def run_agent_thread_with_clarification(self, clarification_response: str, segme
             self.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
             self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
     finally:
-        self.is_agent_running = False
+        self.agent_integration.is_agent_running = False
         logger.info("Clarification processing completed")
 
 
@@ -131,8 +131,8 @@ def run_agent_thread(self, query: str, segment_tree_path: str):
         logger.info(f"Timeline path: {timeline_path}")
         
         # Check if there's a pending clarification and if this query looks like a follow-up
-        if self.pending_clarification:
-            preserved = self.pending_clarification
+        if self.agent_integration.pending_clarification:
+            preserved = self.agent_integration.pending_clarification
             previous_query = preserved.get("original_query", "")
             preserved_state = preserved.get("preserved_state", {})
             previous_time_ranges = preserved_state.get("time_ranges", [])
@@ -155,7 +155,7 @@ def run_agent_thread(self, query: str, segment_tree_path: str):
                 original_query = preserved.get("original_query")
                 
                 # Clear pending clarification
-                self.pending_clarification = None
+                self.agent_integration.pending_clarification = None
                 
                 # Run with preserved state
                 self._run_agent_thread_with_clarification(
@@ -279,7 +279,7 @@ def run_agent_thread(self, query: str, segment_tree_path: str):
                         if "previous_query" not in preserved_state:
                             preserved_state["previous_query"] = query
                     
-                    self.pending_clarification = {
+                    self.agent_integration.pending_clarification = {
                         "operation": operation,
                         "preserved_state": preserved_state,
                         "original_query": query,
@@ -404,6 +404,6 @@ def run_agent_thread(self, query: str, segment_tree_path: str):
             self.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
             self.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
     finally:
-        self.is_agent_running = False
+        self.agent_integration.is_agent_running = False
         logger.info("Agent thread completed")
 

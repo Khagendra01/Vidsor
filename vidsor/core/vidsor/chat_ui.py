@@ -91,7 +91,7 @@ def on_chat_input_return(self, event):
 def on_send_message(self):
     """Handle send message button click."""
     self.agent_integration.on_send_message()
-    if self.is_agent_running:
+    if self.agent_integration.is_agent_running:
         messagebox.showwarning("Warning", "Agent is already processing a query. Please wait.")
         return
     
@@ -101,7 +101,7 @@ def on_send_message(self):
         return
     
     # Check if this is a response to a clarification
-    if self.pending_clarification:
+    if self.agent_integration.pending_clarification:
         # User is responding to clarification - continue with preserved state
         self._continue_with_clarification(message)
         return
@@ -130,21 +130,21 @@ def on_send_message(self):
     self._add_chat_message("user", message)
     
     # Run agent in background thread
-    self.is_agent_running = True
+    self.agent_integration.is_agent_running = True
     self.chat_send_btn.config(state=tk.DISABLED)
     self.chat_status_label.config(text="Processing query...", foreground="blue")
     
-    self.agent_thread = threading.Thread(
+    self.agent_integration.agent_thread = threading.Thread(
         target=self._run_agent_thread,
         args=(message, segment_tree_path),
         daemon=True
     )
-    self.agent_thread.start()
+    self.agent_integration.agent_thread.start()
 
 
 def continue_with_clarification(self, user_response: str):
     """Continue operation with user's clarification response using preserved state."""
-    if not self.pending_clarification:
+    if not self.agent_integration.pending_clarification:
         return
     
     # Clear input
@@ -154,7 +154,7 @@ def continue_with_clarification(self, user_response: str):
     self._add_chat_message("user", user_response)
     
     # Get preserved state
-    preserved = self.pending_clarification
+    preserved = self.agent_integration.pending_clarification
     operation = preserved["operation"]
     preserved_state = preserved["preserved_state"]
     original_query = preserved["original_query"]
@@ -162,17 +162,17 @@ def continue_with_clarification(self, user_response: str):
     timeline_path = preserved["timeline_path"]
     
     # Clear pending clarification
-    self.pending_clarification = None
+    self.agent_integration.pending_clarification = None
     
     # Run agent thread with clarification response
-    self.is_agent_running = True
+    self.agent_integration.is_agent_running = True
     self.chat_send_btn.config(state=tk.DISABLED)
     self.chat_status_label.config(text="Processing clarification...", foreground="blue")
     
-    self.agent_thread = threading.Thread(
+    self.agent_integration.agent_thread = threading.Thread(
         target=self._run_agent_thread_with_clarification,
         args=(user_response, segment_tree_path, operation, preserved_state, original_query),
         daemon=True
     )
-    self.agent_thread.start()
+    self.agent_integration.agent_thread.start()
 

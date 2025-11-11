@@ -554,7 +554,7 @@ class Vidsor:
         if hasattr(self, 'chat_send_btn') and self.chat_send_btn:
             has_project = self.current_project_path is not None
             has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path) if self.segment_tree_path else False
-            is_agent_running = hasattr(self, 'is_agent_running') and self.is_agent_running
+            is_agent_running = hasattr(self, 'agent_integration') and hasattr(self.agent_integration, 'is_agent_running') and self.agent_integration.is_agent_running
             self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree and not is_agent_running) else tk.DISABLED)
         
         # Update preview label with timeline info
