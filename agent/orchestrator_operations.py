@@ -21,7 +21,7 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
     Returns:
         Dictionary with operation classification and parameters
     """
-    from agent.orchestrator_prompts import ORCHESTRATOR_SYSTEM_PROMPT, OPERATION_CLASSIFICATION_PROMPT
+    from agent.prompts.orchestrator_prompts import ORCHESTRATOR_SYSTEM_PROMPT, OPERATION_CLASSIFICATION_PROMPT
     
     if verbose:
         print("\n[CLASSIFICATION] Analyzing user query...")

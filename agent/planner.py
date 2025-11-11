@@ -25,13 +25,161 @@ from agent.llm_utils import (
 )
 from agent.logging_utils import get_log_helper
 from agent.weight_config import configure_weights_with_fallback
-from agent.prompts import (
+from agent.prompts.planner_prompts import (
     PLANNER_SYSTEM_PROMPT,
     SEGMENT_TREE_INSPECTION_PROMPT,
     QUERY_REASONING_PROMPT,
     SEARCH_QUERY_GENERATION_PROMPT,
     VIDEO_NARRATION_PROMPT
 )
+
+
+def _build_search_query_message(
+    query: str,
+    content_inspection: Optional[dict] = None,
+    video_narrative: Optional[dict] = None
+) -> str:
+    """
+    Build search query message using template pattern.
+    Replaces multiple string concatenations with structured template.
+    
+    Args:
+        query: User query string
+        content_inspection: Optional content inspection data
+        video_narrative: Optional video narrative data
+        
+    Returns:
+        Formatted message string
+    """
+    # Base template
+    template_parts = ["User query: {query}\n"]
+    
+    if content_inspection:
+        # Format sample descriptions
+        sample_descriptions_text = []
+        for i, desc in enumerate(content_inspection.get('sample_descriptions', [])[:10], 1):
+            desc_type = desc.get('type', 'visual')
+            time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
+            full_desc = desc['description']
+            sample_descriptions_text.append(f"{i}. {time_info} [{desc_type.upper()}] {full_desc}")
+        
+        # Content inspection section
+        template_parts.append("""I've inspected the video content. Here's what's available:
+
+{summary}
+
+Sample keywords from video: {keywords}
+Object classes: {object_classes}
+
+CRITICAL: Sample descriptions from the video (analyze their style and vocabulary):
+{sample_descriptions}
+
+IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:
+1. Vocabulary style: What words/phrases are used? (concrete nouns, action verbs, technical terms)
+2. Sentence structure: How are descriptions phrased?
+3. Common patterns: What patterns repeat? (e.g., "person doing X", "object visible", "camera perspective")
+4. Content focus: What aspects are described? (objects, actions, locations, camera details)
+
+Generate semantic queries that use SIMILAR vocabulary and structure to these descriptions.
+For example, if descriptions say "person holding fish", generate queries like "person holding fish" not "amazing fishing moment".
+""")
+        
+        # Add narrative section if available
+        if video_narrative:
+            narrative_structure = video_narrative.get('narrative_structure', {})
+            highlight_criteria = video_narrative.get('highlight_criteria', {})
+            
+            # Build narrative structure text
+            narrative_parts = []
+            for part_name in ['intro', 'body', 'ending']:
+                part = narrative_structure.get(part_name, {})
+                if part:
+                    keywords = part.get('keywords', [])
+                    description = part.get('description', 'N/A')
+                    narrative_parts.append(f"- {part_name.upper()}: {description}")
+                    narrative_parts.append(f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}")
+            
+            highlight_text = ""
+            if highlight_criteria:
+                highlight_keywords = highlight_criteria.get('keywords', [])
+                highlight_desc = highlight_criteria.get('description', 'N/A')
+                highlight_text = f"\nHighlight Criteria: {highlight_desc}\nHighlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
+            
+            template_parts.append("""
+Video Narrative Understanding:
+- Theme: {narrative_theme}
+- Summary: {narrative_summary}
+
+Narrative Structure (use keywords from each part):
+{narrative_structure}
+{highlight_criteria}
+Key Objects: {key_objects}
+
+CRITICAL INSTRUCTIONS FOR SEMANTIC QUERIES:
+1. Analyze the sample descriptions above - they show HOW descriptions are written
+2. Generate semantic queries using the SAME vocabulary and style as those descriptions
+3. Use concrete, factual language: "person doing X", "object visible", "location Y"
+4. Avoid abstract concepts: NO "amazing", "exciting", "memorable", "adventure" - use concrete actions/objects
+5. Match description patterns: If descriptions say "person holding fish", query should say "person holding fish"
+6. Include objects, actions, and locations that appear in the sample descriptions
+7. For hierarchical keywords: Use actual keywords from the narrative structure
+8. The goal: Generate queries that would match descriptions through semantic similarity (cosine similarity)
+""")
+        else:
+            template_parts.append("""
+Based on the sample descriptions above, generate semantic queries that match their style:
+- Use concrete, factual language from the descriptions
+- Match vocabulary: If descriptions say "person", "fish", "backpack", use those exact terms
+- Match structure: If descriptions say "person holding X", use "person holding X" in queries
+- Avoid abstract concepts: NO "amazing", "exciting", "memorable" - use concrete actions/objects
+- Example: If descriptions say "person holding fish, backpack visible", query should be "person holding fish, backpack visible" (NOT "amazing fishing moment")
+""")
+    
+    template_parts.append("Generate search queries and keywords for ALL search types. Return JSON only.")
+    
+    # Combine and format template
+    full_template = "\n".join(template_parts)
+    
+    # Format with data
+    if content_inspection:
+        format_dict = {
+            "query": query,
+            "summary": content_inspection.get('summary', ''),
+            "keywords": ', '.join(content_inspection.get('all_keywords', [])[:30]),
+            "object_classes": ', '.join(sorted(content_inspection.get('object_classes', {}).keys())[:20]),
+            "sample_descriptions": "\n".join(sample_descriptions_text)
+        }
+        
+        if video_narrative:
+            narrative_structure = video_narrative.get('narrative_structure', {})
+            narrative_parts = []
+            for part_name in ['intro', 'body', 'ending']:
+                part = narrative_structure.get(part_name, {})
+                if part:
+                    keywords = part.get('keywords', [])
+                    description = part.get('description', 'N/A')
+                    narrative_parts.append(f"- {part_name.upper()}: {description}")
+                    narrative_parts.append(f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}")
+            
+            highlight_criteria = video_narrative.get('highlight_criteria', {})
+            highlight_text = ""
+            if highlight_criteria:
+                highlight_keywords = highlight_criteria.get('keywords', [])
+                highlight_desc = highlight_criteria.get('description', 'N/A')
+                highlight_text = f"\nHighlight Criteria: {highlight_desc}\nHighlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
+            
+            format_dict.update({
+                "narrative_theme": video_narrative.get('video_theme', 'N/A'),
+                "narrative_summary": video_narrative.get('narrative_summary', 'N/A'),
+                "narrative_structure": "\n".join(narrative_parts),
+                "highlight_criteria": highlight_text,
+                "key_objects": ', '.join(video_narrative.get('key_objects', []))
+            })
+        
+        return full_template.format(**format_dict)
+    else:
+        # Simple case without inspection
+        return full_template.format(query=query)
 
 
 def create_video_narrative(content_inspection: dict, query: str, llm, verbose: bool = False, logger=None) -> Optional[dict]:
@@ -244,88 +392,12 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
             """Generate search queries for all modalities."""
             system_prompt_step1 = PLANNER_SYSTEM_PROMPT + "\n\n" + SEARCH_QUERY_GENERATION_PROMPT
             
-            # Build user message with inspection data if available
-            user_message_content = f"User query: {query}\n\n"
-            if content_inspection:
-                user_message_content += f"""I've inspected the video content. Here's what's available:
-
-{content_inspection['summary']}
-
-Sample keywords from video: {', '.join(content_inspection['all_keywords'][:30])}
-Object classes: {', '.join(sorted(content_inspection['object_classes'].keys())[:20])}
-
-CRITICAL: Sample descriptions from the video (analyze their style and vocabulary):
-"""
-                # Show more sample descriptions (10 instead of 5) and full text (not truncated)
-                for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
-                    desc_type = desc.get('type', 'visual')
-                    time_info = f"[{desc.get('second', desc.get('time_range', [0])[0]):.1f}s]"
-                    full_desc = desc['description']
-                    user_message_content += f"{i}. {time_info} [{desc_type.upper()}] {full_desc}\n"
-                
-                user_message_content += """
-IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:
-1. Vocabulary style: What words/phrases are used? (concrete nouns, action verbs, technical terms)
-2. Sentence structure: How are descriptions phrased?
-3. Common patterns: What patterns repeat? (e.g., "person doing X", "object visible", "camera perspective")
-4. Content focus: What aspects are described? (objects, actions, locations, camera details)
-
-Generate semantic queries that use SIMILAR vocabulary and structure to these descriptions.
-For example, if descriptions say "person holding fish", generate queries like "person holding fish" not "amazing fishing moment".
-"""
-                
-                # Add video narrative understanding if available
-                if video_narrative:
-                    narrative_structure = video_narrative.get('narrative_structure', {})
-                    highlight_criteria = video_narrative.get('highlight_criteria', {})
-                    
-                    user_message_content += f"""
-
-Video Narrative Understanding:
-- Theme: {video_narrative.get('video_theme', 'N/A')}
-- Summary: {video_narrative.get('narrative_summary', 'N/A')}
-
-Narrative Structure (use keywords from each part):
-"""
-                    if narrative_structure:
-                        for part_name in ['intro', 'body', 'ending']:
-                            part = narrative_structure.get(part_name, {})
-                            if part:
-                                keywords = part.get('keywords', [])
-                                description = part.get('description', 'N/A')
-                                user_message_content += f"- {part_name.upper()}: {description}\n"
-                                user_message_content += f"  Keywords: {', '.join(keywords) if keywords else 'N/A'}\n"
-                    
-                    if highlight_criteria:
-                        highlight_keywords = highlight_criteria.get('keywords', [])
-                        highlight_desc = highlight_criteria.get('description', 'N/A')
-                        user_message_content += f"\nHighlight Criteria: {highlight_desc}\n"
-                        user_message_content += f"Highlight Keywords: {', '.join(highlight_keywords) if highlight_keywords else 'N/A'}\n"
-                    
-                    user_message_content += f"\nKey Objects: {', '.join(video_narrative.get('key_objects', []))}\n"
-                    
-                    user_message_content += """
-CRITICAL INSTRUCTIONS FOR SEMANTIC QUERIES:
-1. Analyze the sample descriptions above - they show HOW descriptions are written
-2. Generate semantic queries using the SAME vocabulary and style as those descriptions
-3. Use concrete, factual language: "person doing X", "object visible", "location Y"
-4. Avoid abstract concepts: NO "amazing", "exciting", "memorable", "adventure" - use concrete actions/objects
-5. Match description patterns: If descriptions say "person holding fish", query should say "person holding fish"
-6. Include objects, actions, and locations that appear in the sample descriptions
-7. For hierarchical keywords: Use actual keywords from the narrative structure
-8. The goal: Generate queries that would match descriptions through semantic similarity (cosine similarity)
-"""
-                else:
-                    user_message_content += """
-Based on the sample descriptions above, generate semantic queries that match their style:
-- Use concrete, factual language from the descriptions
-- Match vocabulary: If descriptions say "person", "fish", "backpack", use those exact terms
-- Match structure: If descriptions say "person holding X", use "person holding X" in queries
-- Avoid abstract concepts: NO "amazing", "exciting", "memorable" - use concrete actions/objects
-- Example: If descriptions say "person holding fish, backpack visible", query should be "person holding fish, backpack visible" (NOT "amazing fishing moment")
-"""
-            
-            user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
+            # Build user message using template pattern (replaces multiple string concatenations)
+            user_message_content = _build_search_query_message(
+                query=query,
+                content_inspection=content_inspection,
+                video_narrative=video_narrative
+            )
             
             messages_step1 = [
                 SystemMessage(content=system_prompt_step1),
@@ -1052,7 +1124,7 @@ Return JSON only:
                 # Use LLM to decide if clarification is needed
                 log_info(f"\n[CLARIFICATION DECISION] Found {len(time_ranges)} results - asking LLM if clarification needed...")
                 
-                from agent.prompts import CLARIFICATION_DECISION_PROMPT
+                from agent.prompts.planner_prompts import CLARIFICATION_DECISION_PROMPT
                 clarification_prompt = CLARIFICATION_DECISION_PROMPT.format(
                     query=query,
                     result_count=len(time_ranges)
