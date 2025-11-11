@@ -5,6 +5,6 @@
   },
   {
     "role": "assistant",
-    "content": "Error: 'NoneType' object has no attribute 'get'"
+    "content": "Found and added 6 clip(s) to timeline:\n  1. 126.0s - 131.0s\n  2. 221.0s - 227.0s\n  3. 239.0s - 243.0s\n  4. 242.0s - 252.0s\n  5. 252.0s - 257.0s\n  6. 259.0s - 272.0s"
   }
 ]

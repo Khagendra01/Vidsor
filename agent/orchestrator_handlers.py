@@ -109,6 +109,19 @@ def handle_find_highlights(
     try:
         planner_result = planner_agent(planner_state)
         
+        # Check if planner_result is None
+        if planner_result is None:
+            error_msg = "Planner agent returned None - this may indicate an error in the planner"
+            if logger:
+                logger.error(f"  ✗ {error_msg}")
+            elif verbose:
+                print(f"  ✗ {error_msg}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "chunks_created": []
+            }
+        
         if planner_result.get("needs_clarification"):
             return {
                 "success": False,
@@ -562,6 +575,17 @@ def handle_replace(
     try:
         planner_result = planner_agent(planner_state)
         
+        # Check if planner_result is None
+        if planner_result is None:
+            error_msg = "Planner agent returned None - this may indicate an error in the planner"
+            if verbose:
+                print(f"  ✗ {error_msg}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "chunks_replaced": []
+            }
+        
         if planner_result.get("needs_clarification"):
             return {
                 "success": False,
@@ -747,6 +771,17 @@ def handle_insert(
     
     try:
         planner_result = planner_agent(planner_state)
+        
+        # Check if planner_result is None
+        if planner_result is None:
+            error_msg = "Planner agent returned None - this may indicate an error in the planner"
+            if verbose:
+                print(f"  ✗ {error_msg}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "chunks_inserted": []
+            }
         
         if planner_result.get("needs_clarification"):
             return {
@@ -962,6 +997,17 @@ def handle_find_broll(
     
     try:
         planner_result = planner_agent(planner_state)
+        
+        # Check if planner_result is None
+        if planner_result is None:
+            error_msg = "Planner agent returned None - this may indicate an error in the planner"
+            if verbose:
+                print(f"  ✗ {error_msg}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "chunks_created": []
+            }
         
         if planner_result.get("needs_clarification"):
             return {
