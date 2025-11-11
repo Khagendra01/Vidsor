@@ -53,6 +53,10 @@ from .utils import format_time, format_time_detailed, get_chunk_color
 from .timeline_manager import TimelineManager
 from .chat_manager import ChatManager
 from .export import VideoExporter
+from .ui.main_ui import (
+    create_main_ui, update_project_list, on_new_project, 
+    on_project_selected, update_ui_state, update_playback_controls
+)
 
 
 class Vidsor:
@@ -560,215 +564,19 @@ class Vidsor:
     
     def create_ui(self):
         """Create Tkinter UI for video editing."""
-        self.root = tk.Tk()
-        self.root.title("Vidsor - Video Editor")
-        self.root.geometry("1600x900")
-        
-        # Main container with paned window for resizable split
-        main_paned = ttk.PanedWindow(self.root, orient=tk.HORIZONTAL)
-        main_paned.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
-        
-        # Left panel - Video editor
-        left_frame = ttk.Frame(main_paned, padding="10")
-        main_paned.add(left_frame, weight=2)
-        
-        # Right panel - Chat interface
-        right_frame = ttk.Frame(main_paned, padding="10")
-        main_paned.add(right_frame, weight=1)
-        
-        # Main container (for left panel)
-        main_frame = ttk.Frame(left_frame, padding="10")
-        main_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-        left_frame.columnconfigure(0, weight=1)
-        left_frame.rowconfigure(0, weight=1)
-        
-        # Project management frame
-        project_frame = ttk.LabelFrame(main_frame, text="Project", padding="15")
-        project_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        project_frame.columnconfigure(0, weight=1)
-        
-        # New Project button - first row with generous spacing
-        new_project_btn = ttk.Button(project_frame, text="New Project", command=self._on_new_project)
-        new_project_btn.grid(row=0, column=0, sticky=tk.W, padx=5, pady=(5, 15))
-        
-        # Project selection row - second row
-        ttk.Label(project_frame, text="Project:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
-        self.project_combo = ttk.Combobox(project_frame, state="readonly", width=30)
-        self.project_combo.grid(row=1, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
-        self.project_combo.bind("<<ComboboxSelected>>", self._on_project_selected)
-        
-        self.project_label = ttk.Label(project_frame, text="No project selected")
-        self.project_label.grid(row=1, column=2, padx=5, pady=5, sticky=tk.W)
-        
-        project_frame.columnconfigure(1, weight=1)
-        
-        # Update project list
-        self._update_project_list()
-        
-        # Preview area
-        preview_frame = ttk.LabelFrame(main_frame, text="Preview", padding="10")
-        preview_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
-        
-        # Preview label with fixed minimum size to prevent collapsing
-        # Use a Canvas for better image display control
-        self.preview_canvas = tk.Canvas(
-            preview_frame,
-            bg="black",
-            highlightthickness=0
-        )
-        # Canvas initially hidden, will be shown when playing
-        
-        # Also keep label for text display
-        self.preview_label = tk.Label(
-            preview_frame,
-            text="No project selected\n\nCreate a new project and upload a video to get started",
-            bg="black",
-            fg="white",
-            font=("Arial", 12),
-            anchor="center",
-            justify="center"
-        )
-        self.preview_label.pack(fill=tk.BOTH, expand=True)
-        
-        # Set minimum size for preview to prevent collapsing
-        preview_frame.grid_rowconfigure(0, weight=1, minsize=450)
-        preview_frame.grid_columnconfigure(0, weight=1, minsize=800)
-        
-        # Timeline
-        timeline_frame = ttk.LabelFrame(main_frame, text="Timeline", padding="10")
-        timeline_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        timeline_frame.columnconfigure(0, weight=1)
-        
-        # Canvas for timeline
-        canvas_frame = ttk.Frame(timeline_frame)
-        canvas_frame.grid(row=0, column=0, sticky=(tk.W, tk.E))
-        canvas_frame.columnconfigure(0, weight=1)
-        
-        self.timeline_canvas = tk.Canvas(
-            canvas_frame,
-            height=220,
-            bg="#1a1a1a",
-            scrollregion=(0, 0, 1000, 220),
-            highlightthickness=0
-        )
-        self.timeline_canvas.grid(row=0, column=0, sticky=(tk.W, tk.E))
-        
-        # Scrollbar for timeline
-        timeline_scroll = ttk.Scrollbar(canvas_frame, orient=tk.HORIZONTAL, command=self.timeline_canvas.xview)
-        timeline_scroll.grid(row=1, column=0, sticky=(tk.W, tk.E))
-        self.timeline_canvas.configure(xscrollcommand=timeline_scroll.set)
-        
-        # Controls
-        controls_frame = ttk.Frame(main_frame)
-        controls_frame.grid(row=3, column=0, columnspan=2, pady=10)
-        
-        # Buttons
-        self.load_video_btn = ttk.Button(controls_frame, text="Upload Video", command=self._on_load_video)
-        self.load_video_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.play_btn = ttk.Button(controls_frame, text="Play Preview", command=self._on_play, state=tk.DISABLED)
-        self.play_btn.pack(side=tk.LEFT, padx=5)
-        
-        self.pause_btn = ttk.Button(controls_frame, text="Pause", command=self._on_pause, state=tk.DISABLED)
-        self.pause_btn.pack(side=tk.LEFT, padx=5)
-        
-        ttk.Button(controls_frame, text="Stop", command=self._on_stop).pack(side=tk.LEFT, padx=5)
-        
-        self.export_btn = ttk.Button(controls_frame, text="Export", command=self._on_export, state=tk.DISABLED)
-        self.export_btn.pack(side=tk.LEFT, padx=5)
-        
-        # Progress bar
-        progress_frame = ttk.Frame(main_frame)
-        progress_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
-        progress_frame.columnconfigure(0, weight=1)
-        
-        self.progress_bar = ttk.Progressbar(progress_frame, mode='determinate', length=400)
-        self.progress_bar.grid(row=0, column=0, sticky=(tk.W, tk.E))
-        
-        # Status
-        self.status_label = ttk.Label(main_frame, text="Ready - No project selected")
-        self.status_label.grid(row=5, column=0, columnspan=2, pady=5)
-        
-        # Configure grid weights
-        main_frame.columnconfigure(0, weight=1)
-        main_frame.rowconfigure(0, weight=1)
-        
-        # Bind timeline interactions
-        self.timeline_canvas.bind("<Button-1>", self._on_timeline_click)
-        self.timeline_canvas.bind("<B1-Motion>", self._on_timeline_drag)
-        self.timeline_canvas.bind("<ButtonRelease-1>", self._on_timeline_release)
-        self.timeline_canvas.bind("<Motion>", self._on_timeline_motion)
-        self.timeline_canvas.bind("<Leave>", self._on_timeline_leave)
-        
-        # Track hover state and dragging
-        self.timeline_hover_chunk = None
-        self.is_dragging_playhead = False
-        self.timeline_update_counter = 0  # Counter for throttling timeline updates
-        self.audio_needs_restart = False  # Flag to indicate audio needs to restart from new position
-        
-        # Initialize UI state
-        self._update_ui_state()
-        
-        # Create chat interface
-        self._create_chat_ui(right_frame)
+        create_main_ui(self)
     
     def _update_project_list(self):
         """Update the project dropdown list."""
-        if self.project_combo:
-            projects = self.get_available_projects()
-            self.project_combo['values'] = projects
-            
-            # Select current project if any
-            if self.current_project_path:
-                project_name = os.path.basename(self.current_project_path)
-                if project_name in projects:
-                    self.project_combo.set(project_name)
-                    self.project_label.config(text=f"Active: {project_name}")
-                else:
-                    self.project_label.config(text="No project selected")
-            else:
-                self.project_combo.set("")
-                self.project_label.config(text="No project selected")
+        update_project_list(self)
     
     def _on_new_project(self):
         """Handle new project button click."""
-        project_name = simpledialog.askstring(
-            "New Project",
-            "Enter project name:",
-            parent=self.root
-        )
-        
-        if not project_name:
-            return
-        
-        try:
-            project_path = self.create_new_project(project_name)
-            self.set_current_project(project_path)
-            self._update_project_list()
-            messagebox.showinfo("Success", f"Project '{project_name}' created successfully!")
-        except ValueError as e:
-            messagebox.showerror("Error", str(e))
+        on_new_project(self)
     
     def _on_project_selected(self, event=None):
         """Handle project selection from dropdown."""
-        selected = self.project_combo.get()
-        if not selected:
-            return
-        
-        project_path = os.path.join(self.projects_dir, selected)
-        if os.path.exists(project_path):
-            self.set_current_project(project_path)
-            self._update_project_list()
-            self._update_ui_state()
-            # Update status
-            if self.status_label:
-                project_name = os.path.basename(project_path)
-                self.status_label.config(text=f"Project '{project_name}' selected")
-            # Reload chat history for the new project
-            self._load_chat_history()
-            self._display_chat_history()
+        on_project_selected(self, event)
     
     def _on_load_video(self):
         """Load video button handler."""
