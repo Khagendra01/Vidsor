@@ -11,19 +11,3 @@ hey should we write our own tool or do we have good other python opensource to v
 
 
 
-
-
-
-4. Function length
-planner_node function: XXXX lines 
-Should be broken into smaller functions:
-_inspect_segment_tree()
-_generate_search_queries()
-_execute_searches()
-_score_and_filter()
-_select_best_results()
-5. Specific inefficiencies
-Duplicate weight configuration logic
-Three sequential semantic searches (inefficient)
-Complex auto-reranking logic embedded in planner
-JSON extraction with multiple fallbacks (should be utility)
