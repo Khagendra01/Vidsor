@@ -252,10 +252,23 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
 Sample keywords from video: {', '.join(content_inspection['all_keywords'][:30])}
 Object classes: {', '.join(sorted(content_inspection['object_classes'].keys())[:20])}
 
-Sample descriptions:
+CRITICAL: Sample descriptions from the video (analyze their style and vocabulary):
 """
-            for i, desc in enumerate(content_inspection['sample_descriptions'][:5], 1):
-                user_message_content += f"{i}. [{desc['second']}s] {desc['description'][:100]}\n"
+            # Show more sample descriptions (10 instead of 5) and full text (not truncated)
+            for i, desc in enumerate(content_inspection['sample_descriptions'][:10], 1):
+                full_desc = desc['description']
+                user_message_content += f"{i}. [{desc['second']}s] {full_desc}\n"
+            
+            user_message_content += """
+IMPORTANT: These are ACTUAL descriptions that will be searched. Analyze:
+1. Vocabulary style: What words/phrases are used? (concrete nouns, action verbs, technical terms)
+2. Sentence structure: How are descriptions phrased?
+3. Common patterns: What patterns repeat? (e.g., "person doing X", "object visible", "camera perspective")
+4. Content focus: What aspects are described? (objects, actions, locations, camera details)
+
+Generate semantic queries that use SIMILAR vocabulary and structure to these descriptions.
+For example, if descriptions say "person holding fish", generate queries like "person holding fish" not "amazing fishing moment".
+"""
             
             # Add video narrative understanding if available
             if video_narrative:
@@ -288,16 +301,25 @@ Narrative Structure (use keywords from each part):
                 user_message_content += f"\nKey Objects: {', '.join(video_narrative.get('key_objects', []))}\n"
                 
                 user_message_content += """
-CRITICAL INSTRUCTIONS:
-1. Use ONLY the keywords provided in the narrative structure above - these are actual keywords from the hierarchical tree
-2. Generate search queries that use these actual keywords, not abstract concepts
-3. Create queries for each narrative part (intro, body, ending) using their specific keywords
-4. For highlights, use the highlight_criteria keywords which are searchable in the tree
-5. Do NOT invent keywords that aren't in the narrative structure - use only what's provided
+CRITICAL INSTRUCTIONS FOR SEMANTIC QUERIES:
+1. Analyze the sample descriptions above - they show HOW descriptions are written
+2. Generate semantic queries using the SAME vocabulary and style as those descriptions
+3. Use concrete, factual language: "person doing X", "object visible", "location Y"
+4. Avoid abstract concepts: NO "amazing", "exciting", "memorable", "adventure" - use concrete actions/objects
+5. Match description patterns: If descriptions say "person holding fish", query should say "person holding fish"
+6. Include objects, actions, and locations that appear in the sample descriptions
+7. For hierarchical keywords: Use actual keywords from the narrative structure
+8. The goal: Generate queries that would match descriptions through semantic similarity (cosine similarity)
 """
             else:
-                user_message_content += "\nBased on this actual video content, generate search queries that target concrete elements, not abstract concepts.\n"
-                user_message_content += "For example, if the query is 'highlights' and the video contains 'camping', 'fishing', 'cooking', generate queries like 'people cooking together', 'fishing success', 'group activities'.\n\n"
+                user_message_content += """
+Based on the sample descriptions above, generate semantic queries that match their style:
+- Use concrete, factual language from the descriptions
+- Match vocabulary: If descriptions say "person", "fish", "backpack", use those exact terms
+- Match structure: If descriptions say "person holding X", use "person holding X" in queries
+- Avoid abstract concepts: NO "amazing", "exciting", "memorable" - use concrete actions/objects
+- Example: If descriptions say "person holding fish, backpack visible", query should be "person holding fish, backpack visible" (NOT "amazing fishing moment")
+"""
         
         user_message_content += "Generate search queries and keywords for ALL search types. Return JSON only."
         

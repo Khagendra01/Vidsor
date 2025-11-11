@@ -94,11 +94,23 @@ IMPORTANT RULES:
 
 SEARCH_QUERY_GENERATION_PROMPT = """Generate search queries and keywords for all search types based on the user query.
 
-If you've inspected the segment tree, use that information to generate queries that match actual video content.
+CRITICAL FOR SEMANTIC SEARCH: If sample descriptions are provided, analyze their style, vocabulary, and structure. Generate semantic queries that match HOW descriptions are written, not abstract concepts.
+
+Description Style Analysis:
+- Look at the sample descriptions provided
+- Note the vocabulary used (concrete nouns, action verbs, technical terms)
+- Note the sentence structure and phrasing
+- Identify common patterns (e.g., "person doing X", "object visible", "camera perspective")
+- Generate queries using SIMILAR vocabulary and structure
+
+Example:
+- If descriptions say: "First-person POV camera showing person holding fish, backpack visible, natural outdoor lighting"
+- Generate query: "person holding fish, backpack visible, outdoor" (NOT "amazing fishing moment" or "exciting catch")
+- Match the factual, concrete style of descriptions
 
 Return JSON with:
 {{
-    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search (based on actual video content if inspected)
+    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search - MUST match description style/vocabulary if samples provided
     "hierarchical_keywords": ["keyword1", "keyword2"],  // Key nouns/verbs for fast tree lookup
     "object_classes": ["class1", "class2"],  // If objects are mentioned
     "activity_name": "activity",  // If activity is mentioned
@@ -110,7 +122,12 @@ Return JSON with:
     "used_inspection": true/false  // Whether you used segment tree inspection
 }}
 
-Generate comprehensive search terms - be creative and think of synonyms, related terms, and different phrasings. If you inspected the tree, base queries on actual content."""
+For semantic_queries:
+- Use concrete, factual language matching description style
+- Include objects, actions, and locations mentioned in descriptions
+- Avoid abstract concepts, emotions, or marketing language
+- If descriptions mention "person doing X", use "person doing X" in queries
+- Match the vocabulary and phrasing patterns from sample descriptions"""
 
 CLARIFICATION_DECISION_PROMPT = """You are analyzing a video search query that returned many results. Determine if the user wants all results or needs clarification to narrow down.
 
