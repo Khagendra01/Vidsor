@@ -11,7 +11,7 @@
 *.mpg
 *.mpeg
 .env
-
+.cursorrules
 # Audio files (often extracted from videos)
 *.m4a
 *.aac
