@@ -299,9 +299,9 @@ Generate a strategy JSON:
             "semantic": 0.4,
             "activity": 0.3,
             "hierarchical": 0.1,
-            "object": 0.2
+            "object": 0.2  # Weight for object scores (not per-class)
         },
-        "threshold": 0.3,
+        "threshold": 0.5,  # Increased default threshold
         "object_weights": {"person": 1.0}  // Per-class weights
     },
     "post_processing": [
@@ -386,9 +386,9 @@ Modalities Needed: {modalities}
                 "semantic": 0.4 if modalities.get("semantic_search") else 0.0,
                 "activity": 0.3 if modalities.get("activity_detection") else 0.0,
                 "hierarchical": 0.1 if modalities.get("hierarchical_search") else 0.0,
-                "object": 0.2 if modalities.get("object_detection") else 0.0
+                "object": 0.2 if modalities.get("object_detection") else 0.0  # Weight for object scores
             },
-            "threshold": 0.3,
+            "threshold": 0.5,  # Increased default threshold
             "object_weights": semantic_analysis.get("object_priority", {})
         }
         
@@ -422,8 +422,9 @@ def configure_weights(query_intent: Dict, all_object_classes: Set[str]) -> Dict[
         "semantic_weight": 0.0,
         "activity_weight": 0.0,
         "hierarchical_weight": 0.0,
+        "object_weight": 0.2,  # NEW: Weight for object scores (not per-class)
         "object_weights": {},
-        "threshold": 0.3
+        "threshold": 0.5  # Increased from 0.3 to be more selective
     }
     
     # Initialize all object classes with default low weight
@@ -436,8 +437,8 @@ def configure_weights(query_intent: Dict, all_object_classes: Set[str]) -> Dict[
         for class_name, priority in query_intent.get("object_priority", {}).items():
             weights["object_weights"][class_name] = priority
         
-        # Lower threshold for pure object queries
-        weights["threshold"] = 0.1
+        # Lower threshold for pure object queries (but still higher than before)
+        weights["threshold"] = 0.3  # Increased from 0.1
         weights["semantic_weight"] = 0.0
         weights["activity_weight"] = 0.0
         weights["hierarchical_weight"] = 0.0

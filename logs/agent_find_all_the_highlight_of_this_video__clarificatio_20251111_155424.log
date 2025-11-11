@@ -1,0 +1,89 @@
+2025-11-11 15:54:24 - INFO - ================================================================================
+2025-11-11 15:54:24 - INFO - VIDSOR: Continuing with Clarification Response
+2025-11-11 15:54:24 - INFO - ================================================================================
+2025-11-11 15:54:24 - INFO - Original query: find all the highlight of this video.
+2025-11-11 15:54:24 - INFO - Clarification response: key moments
+2025-11-11 15:54:24 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 15:54:24 - INFO - Preserved state keys: ['time_ranges', 'search_results', 'previous_time_ranges', 'previous_scored_seconds', 'previous_query', 'previous_search_results']
+2025-11-11 15:54:24 - INFO - Combined query: find all the highlight of this video. (key moments)
+2025-11-11 15:54:24 - INFO - Calling orchestrator with preserved state (planner will refine instead of re-searching)
+2025-11-11 15:54:24 - INFO - Preserved time_ranges: 21
+2025-11-11 15:54:24 - INFO - Preserved search_results: 358
+2025-11-11 15:54:24 - INFO - 
+================================================================================
+2025-11-11 15:54:24 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 15:54:24 - INFO - ================================================================================
+2025-11-11 15:54:24 - INFO - Query: find all the highlight of this video. (key moments)
+2025-11-11 15:54:24 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:54:24 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\bg\segment_tree.json
+2025-11-11 15:54:24 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\bg\video\pegblog_10min.mp4
+2025-11-11 15:54:24 - INFO - [LOADING] Loading segment tree...
+2025-11-11 15:54:24 - INFO -   ✓ Segment tree loaded
+2025-11-11 15:54:24 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 15:54:24 - INFO - 
+================================================================================
+2025-11-11 15:54:24 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 15:54:24 - INFO - ================================================================================
+2025-11-11 15:54:24 - INFO - Query: find all the highlight of this video. (key moments)
+2025-11-11 15:54:24 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:54:24 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-11 15:54:27 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 15:54:27 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 15:54:27 - INFO -   Confidence: 1.00
+2025-11-11 15:54:27 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 15:54:27 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 15:54:27 - INFO -   Calling planner agent to find highlights...
+2025-11-11 15:54:27 - INFO - 
+============================================================
+2025-11-11 15:54:27 - INFO - PLANNER AGENT: Context-Aware Decision
+2025-11-11 15:54:27 - INFO - ============================================================
+2025-11-11 15:54:27 - INFO - Previous query: find all the highlight of this video.
+2025-11-11 15:54:27 - INFO - Previous results: 21 time ranges
+2025-11-11 15:54:27 - INFO - Current query: find all the highlight of this video. (key moments)
+2025-11-11 15:54:27 - INFO - 
+[DECISION] Analyzing user intent...
+2025-11-11 15:54:28 - INFO -   Decision: REFINE
+2025-11-11 15:54:28 - INFO -   Reason: User is asking for highlights with a specific focus on key moments, which is a refinement of the previous request.
+2025-11-11 15:54:28 - INFO - 
+[REFINEMENT] Refining existing results...
+2025-11-11 15:54:28 - INFO -   Previous results: 21 time ranges
+2025-11-11 15:54:28 - INFO -   User request: User is asking for highlights with a specific focus on key moments, which is a refinement of the previous request.
+2025-11-11 15:54:28 - INFO -   Refined to 21 time ranges
+2025-11-11 15:54:28 - INFO -   Found 21 highlight time ranges
+2025-11-11 15:54:28 - INFO -     Created chunk 1: timeline 0.0s - 5.0s (source: 454.0s - 459.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 2: timeline 5.0s - 79.0s (source: 281.0s - 355.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 3: timeline 79.0s - 117.0s (source: 389.0s - 427.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 4: timeline 117.0s - 173.0s (source: 226.0s - 282.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 5: timeline 173.0s - 284.0s (source: 0.0s - 111.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 6: timeline 284.0s - 296.0s (source: 461.0s - 473.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 7: timeline 296.0s - 314.0s (source: 205.0s - 223.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 8: timeline 314.0s - 347.0s (source: 356.0s - 389.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 9: timeline 347.0s - 353.0s (source: 191.0s - 197.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 10: timeline 353.0s - 369.0s (source: 126.0s - 142.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 11: timeline 369.0s - 392.0s (source: 145.0s - 168.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 12: timeline 392.0s - 396.0s (source: 173.0s - 177.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 13: timeline 396.0s - 410.0s (source: 110.0s - 124.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 14: timeline 410.0s - 416.0s (source: 426.0s - 432.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 15: timeline 416.0s - 440.0s (source: 431.0s - 455.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 16: timeline 440.0s - 456.0s (source: 176.0s - 192.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 17: timeline 456.0s - 460.0s (source: 168.0s - 172.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 18: timeline 460.0s - 464.0s (source: 458.0s - 462.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 19: timeline 464.0s - 473.0s (source: 472.0s - 481.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 20: timeline 473.0s - 481.0s (source: 196.0s - 204.0s)
+2025-11-11 15:54:28 - INFO -     Created chunk 21: timeline 481.0s - 485.0s (source: 123.0s - 127.0s)
+2025-11-11 15:54:28 - INFO -   ✓ Created 21 highlight chunks
+2025-11-11 15:54:28 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:54:28 - INFO - 
+================================================================================
+2025-11-11 15:54:28 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 15:54:28 - INFO - ================================================================================
+2025-11-11 15:54:28 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 15:54:28 - INFO - Status: ✓ Success
+2025-11-11 15:54:28 - INFO - Chunks created: 21
+2025-11-11 15:54:28 - INFO - Timeline now has 21 chunks
+2025-11-11 15:54:28 - INFO - Total duration: 484.98s
+2025-11-11 15:54:29 - INFO - Clarification processing completed

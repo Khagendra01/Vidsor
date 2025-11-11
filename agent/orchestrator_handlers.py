@@ -9,6 +9,127 @@ from agent.orchestrator_state import OrchestratorState
 from extractor.utils.video_utils import get_video_duration
 
 
+def _apply_duration_constraints(
+    time_ranges: List[Tuple[float, float]],
+    max_total_duration: float,
+    max_clip_duration: float = 20.0,
+    min_gap: float = 3.0,
+    logger=None,
+    verbose: bool = False
+) -> List[Tuple[float, float]]:
+    """
+    Apply duration constraints to time ranges.
+    
+    Args:
+        time_ranges: List of (start, end) tuples
+        max_total_duration: Maximum total duration allowed
+        max_clip_duration: Maximum duration per clip
+        min_gap: Minimum gap between clips
+        logger: Logger instance
+        verbose: Whether to print verbose output
+        
+    Returns:
+        Filtered and constrained time ranges
+    """
+    if not time_ranges:
+        return []
+    
+    # Sort by start time
+    sorted_ranges = sorted(time_ranges, key=lambda x: x[0])
+    
+    # Filter by max_clip_duration and accumulate until max_total_duration
+    # Use SOFT limits: prefer shorter clips but don't hard-cut important long scenes
+    filtered = []
+    total_duration = 0.0
+    last_end = -min_gap  # Track last end time for gap checking
+    log = logger.info if logger else (print if verbose else lambda x: None)
+    
+    for start, end in sorted_ranges:
+        duration = end - start
+        
+        # SOFT limit: Prefer shorter clips, but allow longer if they're important
+        # Only skip if extremely long (>2x max_clip_duration)
+        if duration > max_clip_duration * 2:
+            log(f"  Skipping very long clip: {duration:.1f}s > {max_clip_duration * 2:.1f}s")
+            continue
+        
+        # SOFT gap: Prefer spacing, but don't skip if clips are close
+        # Only skip if overlapping or extremely close (<1s gap)
+        gap = start - last_end
+        if gap < 1.0 and gap >= 0:  # Overlapping or very close
+            # Merge with previous if they're very close
+            if filtered:
+                prev_start, prev_end = filtered[-1]
+                filtered[-1] = (prev_start, max(prev_end, end))
+                total_duration = sum(e - s for s, e in filtered)
+                last_end = max(prev_end, end)
+                continue
+        
+        # SOFT total duration: Prefer staying under limit, but allow 20% over for important content
+        if total_duration + duration > max_total_duration * 1.2:
+            # Hard stop if way over
+            break
+        elif total_duration + duration > max_total_duration:
+            # Over limit but within 20% - still add if high quality (check score if available)
+            # For now, add it but log warning
+            log(f"  [WARNING] Exceeding target duration: {total_duration + duration:.1f}s > {max_total_duration:.1f}s")
+        
+        filtered.append((start, end))
+        total_duration += duration
+        last_end = end
+    if len(filtered) < len(time_ranges):
+        log(f"  [DURATION] Filtered from {len(time_ranges)} to {len(filtered)} ranges "
+            f"(total: {total_duration:.1f}s / {max_total_duration:.1f}s target)")
+    elif total_duration > max_total_duration:
+        log(f"  [DURATION] Total duration {total_duration:.1f}s exceeds target {max_total_duration:.1f}s (soft limit)")
+    
+    return filtered
+
+
+def _apply_duration_constraints_with_neighbors(
+    time_ranges: List[Tuple[float, float]],
+    existing_chunks: List[Dict],
+    max_clip_duration: float = 15.0,
+    min_gap: float = 2.0,
+    logger=None,
+    verbose: bool = False
+) -> List[Tuple[float, float]]:
+    """
+    Apply duration constraints considering existing timeline chunks.
+    Analyzes neighbors to determine appropriate clip lengths.
+    """
+    if not time_ranges:
+        return []
+    
+    # For now, use same logic as empty timeline but with stricter constraints
+    # TODO: Analyze neighbors, find gaps, fit content appropriately
+    sorted_ranges = sorted(time_ranges, key=lambda x: x[0])
+    
+    filtered = []
+    last_end = -min_gap
+    
+    for start, end in sorted_ranges:
+        duration = end - start
+        
+        # SOFT limits: prefer shorter but allow longer if needed
+        if duration > max_clip_duration * 2:
+            continue
+        
+        # SOFT gap: prefer spacing but don't skip close clips
+        gap = start - last_end
+        if gap < 1.0 and gap >= 0:  # Overlapping or very close - merge
+            if filtered:
+                prev_start, prev_end = filtered[-1]
+                filtered[-1] = (prev_start, max(prev_end, end))
+                last_end = max(prev_end, end)
+                continue
+        
+        filtered.append((start, end))
+        last_end = end
+    
+    return filtered
+
+
 def create_timeline_chunk(
     original_start: float,
     original_end: float,
@@ -161,18 +282,72 @@ def handle_find_highlights(
             }
         
         if logger:
-            logger.info(f"  Found {len(time_ranges)} highlight time ranges")
+            logger.info(f"  Planner found {len(time_ranges)} time ranges")
         elif verbose:
-            print(f"  Found {len(time_ranges)} highlight time ranges")
+            print(f"  Planner found {len(time_ranges)} time ranges")
         
-        # Create timeline chunks from time ranges
+        # MERGE AGENT: Intelligently merge time ranges based on timeline state
+        from agent.merge_agent import create_merge_agent
+        from extractor.utils.video_utils import get_video_duration
+        
+        video_path = state.get("video_path", "")
+        video_duration = get_video_duration(video_path) if video_path else 600.0
+        
+        merge_state = {
+            "time_ranges": time_ranges,
+            "timeline_manager": timeline_manager,
+            "operation_type": "FIND_HIGHLIGHTS",
+            "video_duration": video_duration,
+            "query": state.get("user_query", "")
+        }
+        
+        merge_agent = create_merge_agent()
+        merge_result = merge_agent(merge_state)
+        merged_ranges = merge_result.get("merged_ranges", time_ranges)
+        
+        # Apply duration constraints based on timeline state
+        is_empty_timeline = len(timeline_manager.chunks) == 0 if timeline_manager else True
+        existing_duration = timeline_manager.calculate_timeline_duration() if timeline_manager else 0.0
+        
+        if is_empty_timeline:
+            # New timeline: limit to 12-15% of video
+            max_total_duration = video_duration * 0.15
+            merged_ranges = _apply_duration_constraints(
+                merged_ranges,
+                max_total_duration=max_total_duration,
+                max_clip_duration=20.0,
+                min_gap=3.0,
+                logger=logger,
+                verbose=verbose
+            )
+        else:
+            # Existing timeline: consider neighbors and available space
+            merged_ranges = _apply_duration_constraints_with_neighbors(
+                merged_ranges,
+                existing_chunks=timeline_manager.chunks,
+                max_clip_duration=15.0,
+                min_gap=2.0,
+                logger=logger,
+                verbose=verbose
+            )
+        
+        if logger:
+            logger.info(f"  After merging: {len(merged_ranges)} time ranges")
+            total_duration = sum(end - start for start, end in merged_ranges)
+            logger.info(f"  Total highlight duration: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video)")
+        elif verbose:
+            print(f"  After merging: {len(merged_ranges)} time ranges")
+            total_duration = sum(end - start for start, end in merged_ranges)
+            print(f"  Total highlight duration: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video)")
+        
+        # Create timeline chunks from merged time ranges
         chunks_created = []
         current_timeline_time = timeline_manager.calculate_timeline_duration()
         
         # Get search results for descriptions
         search_results = planner_result.get("search_results", [])
         
-        for i, (start_time, end_time) in enumerate(time_ranges):
+        for i, (start_time, end_time) in enumerate(merged_ranges):
             # Try to get description from search results
             description = f"Highlight {i+1}: {start_time:.1f}s - {end_time:.1f}s"
             unified_description = description

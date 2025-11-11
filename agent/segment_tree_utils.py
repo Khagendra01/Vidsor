@@ -1324,6 +1324,111 @@ class SegmentTreeQuery:
         
         return results[:top_k]
     
+    def get_semantic_scores_for_all_seconds(self, queries: List[str], 
+                                             threshold: float = 0.5,
+                                             search_transcriptions: bool = True,
+                                             search_unified: bool = True,
+                                             verbose: bool = False) -> Dict[int, float]:
+        """
+        Calculate semantic similarity scores for ALL seconds across multiple queries.
+        Returns a dict mapping second_idx -> max_semantic_score.
+        
+        This is the proper way to get semantic scores for scoring phase, not just top_k results.
+        
+        Args:
+            queries: List of query strings to search for
+            threshold: Minimum similarity score to consider
+            search_transcriptions: Whether to search in transcriptions
+            search_unified: Whether to search in unified descriptions
+            
+        Returns:
+            Dict mapping second_idx -> max_semantic_score (0.0 if below threshold)
+        """
+        if not HAS_SENTENCE_TRANSFORMERS:
+            return {}
+        
+        # Compute embeddings if not already done
+        self._compute_embeddings(verbose=verbose)
+        model = self._get_embedding_model()
+        
+        # Map to store max score per second: second_idx -> max_score
+        second_scores = {}
+        
+        # Helper to map time_range to second indices
+        def time_range_to_second_indices(tr: List[float]) -> List[int]:
+            """Convert time_range to list of second indices."""
+            if not tr or len(tr) < 2:
+                return []
+            start_time, end_time = tr[0], tr[1]
+            indices = []
+            for idx, second_data in enumerate(self.seconds):
+                if second_data is None:
+                    continue
+                sec_tr = second_data.get("time_range", [])
+                if sec_tr and len(sec_tr) >= 2:
+                    sec_start, sec_end = sec_tr[0], sec_tr[1]
+                    # Check if this second overlaps with the time range
+                    if sec_start <= end_time and sec_end >= start_time:
+                        indices.append(idx)
+            return indices
+        
+        # Process each query
+        for query in queries:
+            if verbose:
+                print(f"[SEMANTIC SCORES] Processing query: '{query}'")
+            
+            # Embed the query
+            query_embedding = model.encode([query], convert_to_numpy=True)[0]
+            
+            # Search transcriptions
+            if search_transcriptions and self._transcription_embeddings is not None:
+                similarities = np.dot(
+                    self._transcription_embeddings,
+                    query_embedding
+                ) / (
+                    np.linalg.norm(self._transcription_embeddings, axis=1) *
+                    np.linalg.norm(query_embedding)
+                )
+                
+                # Map scores to seconds
+                for idx, similarity in enumerate(similarities):
+                    if similarity >= threshold:
+                        metadata = self._embedding_metadata["transcriptions"][idx]
+                        tr = metadata.get("time_range", [])
+                        if tr:
+                            second_indices = time_range_to_second_indices(tr)
+                            for sec_idx in second_indices:
+                                # Take max score across all queries
+                                second_scores[sec_idx] = max(second_scores.get(sec_idx, 0.0), float(similarity))
+            
+            # Search unified descriptions
+            if search_unified and self._unified_description_embeddings is not None:
+                similarities = np.dot(
+                    self._unified_description_embeddings,
+                    query_embedding
+                ) / (
+                    np.linalg.norm(self._unified_description_embeddings, axis=1) *
+                    np.linalg.norm(query_embedding)
+                )
+                
+                # Map scores to seconds
+                for idx, similarity in enumerate(similarities):
+                    if similarity >= threshold:
+                        metadata = self._embedding_metadata["unified"][idx]
+                        second_num = metadata.get("second", -1)
+                        if 0 <= second_num < len(self.seconds):
+                            # Take max score across all queries
+                            second_scores[second_num] = max(second_scores.get(second_num, 0.0), float(similarity))
+        
+        if verbose:
+            scored_count = len([s for s in second_scores.values() if s > 0])
+            print(f"[SEMANTIC SCORES] Calculated scores for {scored_count} seconds (out of {len(self.seconds)})")
+            if second_scores:
+                max_score = max(second_scores.values())
+                print(f"[SEMANTIC SCORES] Max score: {max_score:.3f}")
+        
+        return second_scores
+    
     def get_transcription_statistics(self) -> Dict[str, Any]:
         """
         Get statistics about the audio transcriptions.
@@ -1614,6 +1719,7 @@ class SegmentTreeQuery:
                     all_keywords.update(keywords)
         
         # Collect sample descriptions (mix of visual and audio)
+        # Use DISTRIBUTED SAMPLING across entire video, not just early seconds
         descriptions_collected = 0
         visual_collected = 0
         audio_collected = 0
@@ -1622,40 +1728,134 @@ class SegmentTreeQuery:
         max_visual = int(max_sample_descriptions * 0.6)
         max_audio = max_sample_descriptions - max_visual
         
-        # Collect visual descriptions (unified descriptions)
-        for second_data in self.seconds:
-            # Skip None values that might be in the seconds list
-            if second_data is None:
-                continue
-            if visual_collected >= max_visual:
-                break
-            unified_desc = second_data.get("unified_description", "")
-            if unified_desc and unified_desc.lower() != "0":
-                sample_descriptions.append({
-                    "type": "visual",
-                    "second": second_data.get("second", 0),
-                    "time_range": second_data.get("time_range", []),
-                    "description": unified_desc
-                })
-                visual_collected += 1
-                descriptions_collected += 1
-        
-        # Collect audio transcriptions
-        if self.transcriptions:
-            for transcription in self.transcriptions:
-                if audio_collected >= max_audio:
-                    break
-                trans_text = transcription.get("transcription", "").strip()
-                if trans_text:
-                    tr_time_range = transcription.get("time_range", [])
-                    sample_descriptions.append({
-                        "type": "audio",
-                        "time_range": tr_time_range,
-                        "description": trans_text,
-                        "transcription_id": transcription.get("id")
+        # DISTRIBUTED SAMPLING: Sample visual descriptions from across the video
+        # Strategy: Sample from beginning (0-20%), middle (40-60%), end (80-100%)
+        total_seconds_count = len([s for s in self.seconds if s is not None])
+        if total_seconds_count > 0:
+            # Calculate sampling ranges
+            begin_end = int(total_seconds_count * 0.2)  # First 20%
+            middle_start = int(total_seconds_count * 0.4)  # 40%
+            middle_end = int(total_seconds_count * 0.6)  # 60%
+            end_start = int(total_seconds_count * 0.8)  # 80%
+            
+            # Sample from each region
+            samples_per_region = max(1, max_visual // 3)  # Divide samples across 3 regions
+            
+            visual_candidates = []
+            for second_data in self.seconds:
+                if second_data is None:
+                    continue
+                unified_desc = second_data.get("unified_description", "")
+                if unified_desc and unified_desc.lower() != "0":
+                    second_idx = second_data.get("second", 0)
+                    visual_candidates.append({
+                        "type": "visual",
+                        "second": second_idx,
+                        "time_range": second_data.get("time_range", []),
+                        "description": unified_desc,
+                        "region": (
+                            "beginning" if second_idx < begin_end else
+                            "middle" if middle_start <= second_idx < middle_end else
+                            "end" if second_idx >= end_start else "other"
+                        )
                     })
-                    audio_collected += 1
-                    descriptions_collected += 1
+            
+            # Sample evenly from each region
+            regions = {"beginning": [], "middle": [], "end": []}
+            for candidate in visual_candidates:
+                region = candidate.get("region")
+                if region in regions:
+                    regions[region].append(candidate)
+            
+            # Take samples from each region
+            for region_name in ["beginning", "middle", "end"]:
+                region_samples = regions[region_name]
+                if region_samples and visual_collected < max_visual:
+                    # Take evenly spaced samples from this region
+                    step = max(1, len(region_samples) // samples_per_region)
+                    for i in range(0, len(region_samples), step):
+                        if visual_collected >= max_visual:
+                            break
+                        sample_descriptions.append(region_samples[i])
+                        visual_collected += 1
+                        descriptions_collected += 1
+        
+        # DISTRIBUTED SAMPLING: Sample audio transcriptions from across the video
+        if self.transcriptions:
+            # Sort transcriptions by time_range start
+            sorted_transcriptions = sorted(
+                [t for t in self.transcriptions if t.get("transcription", "").strip()],
+                key=lambda x: x.get("time_range", [0])[0] if x.get("time_range") else 0
+            )
+            
+            if sorted_transcriptions:
+                total_transcriptions = len(sorted_transcriptions)
+                # Sample from beginning, middle, and end
+                transcription_regions = {
+                    "beginning": sorted_transcriptions[:total_transcriptions // 3],
+                    "middle": sorted_transcriptions[total_transcriptions // 3:2 * total_transcriptions // 3],
+                    "end": sorted_transcriptions[2 * total_transcriptions // 3:]
+                }
+                
+                # Prioritize transcriptions with important keywords (hospital, birth, pregnancy, etc.)
+                important_keywords = ["hospital", "birth", "pregnancy", "pregnant", "ultrasound", "checkup", "health", "doctor", "medical", "induction"]
+                
+                # First, collect transcriptions with important keywords
+                prioritized = []
+                regular = []
+                
+                for transcription in sorted_transcriptions:
+                    if audio_collected >= max_audio:
+                        break
+                    trans_text = transcription.get("transcription", "").strip()
+                    if trans_text:
+                        trans_lower = trans_text.lower()
+                        if any(keyword in trans_lower for keyword in important_keywords):
+                            prioritized.append(transcription)
+                        else:
+                            regular.append(transcription)
+                
+                # Add prioritized transcriptions first
+                for transcription in prioritized:
+                    if audio_collected >= max_audio:
+                        break
+                    trans_text = transcription.get("transcription", "").strip()
+                    if trans_text:
+                        tr_time_range = transcription.get("time_range", [])
+                        sample_descriptions.append({
+                            "type": "audio",
+                            "time_range": tr_time_range,
+                            "description": trans_text,
+                            "transcription_id": transcription.get("id")
+                        })
+                        audio_collected += 1
+                        descriptions_collected += 1
+                
+                # Then add regular transcriptions from across regions
+                samples_per_region = max(1, (max_audio - audio_collected) // 3)
+                for region_name in ["beginning", "middle", "end"]:
+                    if audio_collected >= max_audio:
+                        break
+                    region_transcriptions = transcription_regions[region_name]
+                    # Filter out already added prioritized ones
+                    region_transcriptions = [t for t in region_transcriptions if t not in prioritized]
+                    if region_transcriptions:
+                        step = max(1, len(region_transcriptions) // samples_per_region)
+                        for i in range(0, len(region_transcriptions), step):
+                            if audio_collected >= max_audio:
+                                break
+                            transcription = region_transcriptions[i]
+                            trans_text = transcription.get("transcription", "").strip()
+                            if trans_text:
+                                tr_time_range = transcription.get("time_range", [])
+                                sample_descriptions.append({
+                                    "type": "audio",
+                                    "time_range": tr_time_range,
+                                    "description": trans_text,
+                                    "transcription_id": transcription.get("id")
+                                })
+                                audio_collected += 1
+                                descriptions_collected += 1
         
         # Sort sample descriptions by time_range for chronological order
         sample_descriptions.sort(key=lambda x: (

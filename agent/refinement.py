@@ -325,18 +325,26 @@ Return JSON only."""
                         tr = r["time_range"]
                         desc = r["description"]
                         
-                        validation_prompt = f"""Does this video clip match the query?
+                        # More lenient validation prompt - only filter OBVIOUS false positives
+                        validation_prompt = f"""You are validating video search results. Be LENIENT - only filter out OBVIOUS false positives.
 
-Query: "{previous_query}"
+User query: "{previous_query}"
 User refinement: "{current_query}"
-Clip description: "{desc[:200]}"
+Clip time: {tr[0]:.1f}s - {tr[1]:.1f}s
+Clip description: "{desc[:300]}"
+
+Instructions:
+- If the clip is REMOTELY related to the query, mark it as VALID
+- Only filter if it's CLEARLY unrelated (e.g., completely different topic)
+- When in doubt, KEEP the result
+- For "find highlights" queries, be very lenient - most results should be valid
 
 Return JSON only:
 {{"is_valid": true/false, "reasoning": "brief explanation"}}"""
                         
                         try:
                             validation_response = validation_llm.invoke([
-                                SystemMessage(content="You are a video search validator. Determine if a clip description actually matches the user's query. Filter out false positives."),
+                                SystemMessage(content="You are a lenient video search validator. Only filter out OBVIOUS false positives. When unsure, keep the result. Be especially lenient for highlight queries."),
                                 HumanMessage(content=validation_prompt)
                             ])
                             
@@ -344,12 +352,19 @@ Return JSON only:
                             validation_json = extract_json(validation_text)
                             validation_result = json.loads(validation_json)
                             
-                            if validation_result.get("is_valid", True):
+                            # Default to valid if validation fails or is unclear
+                            is_valid = validation_result.get("is_valid", True)
+                            reasoning = validation_result.get("reasoning", "")
+                            
+                            # Extra safety: if reasoning suggests uncertainty, keep it
+                            if not is_valid and any(word in reasoning.lower() for word in ["might", "could", "possibly", "maybe", "uncertain"]):
+                                is_valid = True
+                            
+                            if is_valid:
                                 validated_ranges.append(tr)
                             else:
-                                reasoning = validation_result.get("reasoning", "No reasoning")
                                 if verbose:
-                                    print(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:60]}")
+                                    print(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:80]}")
                         except Exception as e:
                             # On validation error, keep the result
                             validated_ranges.append(tr)

@@ -229,12 +229,17 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
                     visual_count = sum(1 for d in sample_descriptions if d.get('type') == 'visual')
                     audio_count = sum(1 for d in sample_descriptions if d.get('type') == 'audio')
                     log_info(f"  Sample descriptions: {len(sample_descriptions)} total ({visual_count} visual, {audio_count} audio)")
-                    log_info(f"  Sample descriptions preview:")
-                    for i, desc in enumerate(sample_descriptions[:10], 1):
+                    log_info(f"  Sample descriptions (full, sorted chronologically):")
+                    for i, desc in enumerate(sample_descriptions, 1):
                         desc_type = desc.get('type', 'visual')
-                        time_info = f"{desc.get('second', desc.get('time_range', [0])[0]):.1f}s"
-                        desc_text = desc.get('description', '')[:100]
-                        log_info(f"    {i}. [{time_info}] [{desc_type.upper()}] {desc_text}...")
+                        # Get time info - prefer time_range start, fallback to second
+                        if desc.get('time_range'):
+                            time_info = f"{desc['time_range'][0]:.1f}s"
+                        else:
+                            time_info = f"{desc.get('second', 0):.1f}s"
+                        desc_text = desc.get('description', '').strip()
+                        # Show full description (no truncation)
+                        log_info(f"    {i}. [{time_info}] [{desc_type.upper()}] {desc_text}")
                 
                 log_info(f"  Inspection completed in {elapsed:.2f}s")
             except Exception as e:
@@ -458,8 +463,9 @@ Based on the sample descriptions above, generate semantic queries that match the
                 "semantic_weight": strategy_scoring.get("weights", {}).get("semantic", 0.4),
                 "activity_weight": strategy_scoring.get("weights", {}).get("activity", 0.3),
                 "hierarchical_weight": strategy_scoring.get("weights", {}).get("hierarchical", 0.1),
+                "object_weight": strategy_scoring.get("weights", {}).get("object", 0.2),  # NEW: Weight for object scores
                 "object_weights": strategy_scoring.get("object_weights", {}),
-                "threshold": strategy_scoring.get("threshold", 0.3)
+                "threshold": max(0.5, strategy_scoring.get("threshold", 0.5))  # Enforce minimum 0.5
             }
             # Initialize all object classes with default low weight
             for class_name in all_object_classes:
@@ -481,9 +487,23 @@ Based on the sample descriptions above, generate semantic queries that match the
                     # Reduce hierarchical to make room for semantic
                     weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
                 weights["semantic_weight"] = 0.4  # Set reasonable default
+            
+            # FIX 5: Boost semantic weight for highlight queries
+            if search_plan.get("is_general_highlight_query"):
+                # For highlight queries, prioritize semantic relevance
+                weights["semantic_weight"] = max(weights["semantic_weight"], 0.5)  # Boost to at least 0.5
+                weights["hierarchical_weight"] = min(weights["hierarchical_weight"], 0.1)  # Reduce to max 0.1
+                weights["object_weight"] = min(weights.get("object_weight", 0.2), 0.15)  # Reduce to max 0.15
+                if verbose:
+                    log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights['semantic_weight']:.2f}, "
+                             f"Hierarchical: {weights['hierarchical_weight']:.2f}, "
+                             f"Object: {weights.get('object_weight', 0.2):.2f}")
         else:
             # Fallback to old weight configuration
             weights = configure_weights(query_intent, all_object_classes)
+            # Ensure object_weight is set
+            if "object_weight" not in weights:
+                weights["object_weight"] = 0.2
             
             # FIX: Cap hierarchical weight to reasonable maximum (0.3)
             # Hierarchical weight should not dominate scoring
@@ -500,6 +520,17 @@ Based on the sample descriptions above, generate semantic queries that match the
                     # Reduce hierarchical to make room for semantic
                     weights["hierarchical_weight"] = max(0.05, weights["hierarchical_weight"] * 0.5)
                 weights["semantic_weight"] = 0.4  # Set reasonable default
+            
+            # FIX 5: Boost semantic weight for highlight queries (also for fallback path)
+            if search_plan.get("is_general_highlight_query"):
+                # For highlight queries, prioritize semantic relevance
+                weights["semantic_weight"] = max(weights["semantic_weight"], 0.5)  # Boost to at least 0.5
+                weights["hierarchical_weight"] = min(weights["hierarchical_weight"], 0.1)  # Reduce to max 0.1
+                weights["object_weight"] = min(weights.get("object_weight", 0.2), 0.15)  # Reduce to max 0.15
+                if verbose:
+                    log_info(f"  [HIGHLIGHT BOOST] Semantic weight: {weights['semantic_weight']:.2f}, "
+                             f"Hierarchical: {weights['hierarchical_weight']:.2f}, "
+                             f"Object: {weights.get('object_weight', 0.2):.2f}")
         
         # FIX: Final safety check - ensure main weights are reasonable
         # Cap any individual weight to 0.5 maximum to prevent domination
@@ -619,7 +650,7 @@ Based on the sample descriptions above, generate semantic queries that match the
                         verbose=False
                     )
                     if not results:
-                        threshold = 0.4
+                        threshold = 0.45
                         results = segment_tree.semantic_search(
                             sem_query,
                             top_k=15,
@@ -629,7 +660,7 @@ Based on the sample descriptions above, generate semantic queries that match the
                             verbose=False
                         )
                     if not results:
-                        threshold = 0.35
+                        threshold = 0.4
                         results = segment_tree.semantic_search(
                             sem_query,
                             top_k=15,
@@ -811,18 +842,51 @@ Based on the sample descriptions above, generate semantic queries that match the
             elapsed = time.time() - start_time
             log_info(f"[STEP 3] Scoring completed in {elapsed:.2f}s")
             
-            # Filter by threshold and sort
-            threshold = weights["threshold"]
-            filtered_seconds = [s for s in scored_seconds if s["score"] >= threshold]
+            # STRATEGY 1: Adaptive threshold (percentile-based)
+            # Calculate score distribution and use top percentile as threshold
+            if scored_seconds:
+                all_scores = [s["score"] for s in scored_seconds]
+                all_scores.sort(reverse=True)
+                
+                # Use top 12% of video as target (conservative but adaptive)
+                video_duration = len(segment_tree.seconds) if segment_tree else 600
+                target_seconds = max(30, int(video_duration * 0.12))  # At least 30 seconds, or 12% of video
+                
+                if len(all_scores) >= target_seconds:
+                    # Use score at target_seconds position as threshold
+                    adaptive_threshold = all_scores[target_seconds - 1]
+                else:
+                    # Not enough scores, use fixed threshold as fallback
+                    adaptive_threshold = weights["threshold"]
+                
+                # Ensure threshold is not too low (minimum 0.35) or too high (maximum 0.65)
+                adaptive_threshold = max(0.35, min(0.65, adaptive_threshold))
+                
+                # Also respect minimum threshold from weights (but allow going lower if distribution suggests)
+                min_threshold = weights["threshold"]
+                adaptive_threshold = max(min_threshold * 0.7, adaptive_threshold)  # Allow 30% below min if needed
+                
+                log_info(f"\n[ADAPTIVE THRESHOLD] Score distribution analysis:")
+                log_info(f"  Total seconds scored: {len(scored_seconds)}")
+                log_info(f"  Target: top {target_seconds} seconds ({target_seconds/video_duration*100:.1f}% of video)")
+                log_info(f"  Score range: {all_scores[-1]:.3f} - {all_scores[0]:.3f}")
+                log_info(f"  Score at position {target_seconds}: {adaptive_threshold:.3f}")
+                log_info(f"  Using adaptive threshold: {adaptive_threshold:.3f} (min from weights: {min_threshold:.3f})")
+            else:
+                adaptive_threshold = weights["threshold"]
+                log_info(f"\n[FILTERING] No scores to analyze, using fixed threshold: {adaptive_threshold:.2f}")
+            
+            # Filter by adaptive threshold and sort
+            filtered_seconds = [s for s in scored_seconds if s["score"] >= adaptive_threshold]
             filtered_seconds.sort(key=lambda x: x["score"], reverse=True)
             
-            log_info(f"\n[FILTERING] Filtered to {len(filtered_seconds)} seconds above threshold {threshold:.2f}")
+            log_info(f"\n[FILTERING] Filtered to {len(filtered_seconds)} seconds above adaptive threshold {adaptive_threshold:.3f}")
             if filtered_seconds:
                 log_info(f"  Top 10 scored seconds:")
                 for i, sec in enumerate(filtered_seconds[:10], 1):
                     log_info(f"    {i}. Second {sec['second']}: score={sec['score']:.3f} "
                               f"(sem={sec['semantic_score']:.2f}, act={sec['activity_score']:.2f}, "
-                              f"obj={sec['object_score']:.2f})")
+                              f"obj={sec['object_score']:.2f}, hier={sec.get('hierarchical_score', 0):.2f})")
             
             # AGENTIC PHASE 3: Self-Validation
             log_info(f"\n[AGENTIC] Phase 3: Self-Validation...")
@@ -839,15 +903,36 @@ Based on the sample descriptions above, generate semantic queries that match the
                 log_info(f"  [VALIDATION] Issues detected: {validation_result.get('issues', [])}")
                 log_info(f"  [VALIDATION] Suggestions: {validation_result.get('suggestions', [])}")
             
-            # NEW STEP 4: Group contiguous seconds into time ranges
-            log_info(f"\n[STEP 4] Grouping contiguous seconds into time ranges...")
+            # STEP 4: Select best seconds with semantic prioritization (no diversity filter)
+            log_info(f"\n[STEP 4] Selecting best highlights...")
             
-            time_ranges = group_contiguous_seconds(filtered_seconds, min_duration=1.0, gap_tolerance=1.0)
+            from agent.selection import select_best_of
             
-            log_info(f"  Grouped into {len(time_ranges)} time range(s)")
-            if time_ranges:
-                for i, (start, end) in enumerate(time_ranges, 1):
-                    log_info(f"    {i}. {start:.2f}s - {end:.2f}s (duration: {end-start:.2f}s)")
+            # Select best seconds with semantic prioritization
+            best_seconds = select_best_of(
+                filtered_seconds,
+                top_k=None,  # No limit, will be handled by orchestrator duration constraints
+                min_score=adaptive_threshold,
+                prioritize_semantic=True,
+                verbose=verbose
+            )
+            
+            log_info(f"  Selected {len(best_seconds)} best seconds (from {len(filtered_seconds)} above threshold)")
+            if best_seconds:
+                log_info(f"  Top 10 selected seconds:")
+                for i, sec in enumerate(best_seconds[:10], 1):
+                    tr = sec.get("time_range", [])
+                    time_str = f"{tr[0]:.1f}s" if tr else "N/A"
+                    log_info(f"    {i}. Second {sec['second']} ({time_str}): score={sec['score']:.3f} "
+                              f"(sem={sec['semantic_score']:.2f})")
+            
+            # Convert seconds to time ranges (single-second ranges for now, merging will be done by merge agent)
+            time_ranges = []
+            for sec in best_seconds:
+                tr = sec.get("time_range", [])
+                if tr and len(tr) >= 2:
+                    # Each second becomes its own time range (no grouping)
+                    time_ranges.append((tr[0], tr[1]))
             
             # Determine if user wants one or multiple results
             query_lower = query.lower()
@@ -978,22 +1063,35 @@ Based on the sample descriptions above, generate semantic queries that match the
                         log_info(f"  [AUTO-FILTER] Validating {len(reranked_time_ranges)} results to remove false positives...")
                         validated_ranges = []
                         
+                        # Get video narrative for context (if available)
+                        video_narrative = state.get("video_narrative", {})
+                        narrative_summary = video_narrative.get("summary", "")
+                        narrative_theme = video_narrative.get("theme", "")
+                        
                         for r in ranked_ranges:
                             tr = r["time_range"]
                             desc = r["description"]
                             
-                            # Quick validation prompt
-                            validation_prompt = f"""Does this video clip match the query?
+                            # More lenient validation prompt - only filter OBVIOUS false positives
+                            validation_prompt = f"""You are validating video search results. Be LENIENT - only filter out OBVIOUS false positives.
 
-Query: "{query}"
-Clip description: "{desc[:200]}"
+Video context: {narrative_theme or "General video content"}
+User query: "{query}"
+Clip time: {tr[0]:.1f}s - {tr[1]:.1f}s
+Clip description: "{desc[:300]}"
+
+Instructions:
+- If the clip is REMOTELY related to the query, mark it as VALID
+- Only filter if it's CLEARLY unrelated (e.g., completely different topic)
+- When in doubt, KEEP the result
+- For "find highlights" queries, be very lenient - most results should be valid
 
 Return JSON only:
 {{"is_valid": true/false, "reasoning": "brief explanation"}}"""
                             
                             try:
                                 validation_response = llm.invoke([
-                                    SystemMessage(content="You are a video search validator. Determine if a clip description actually matches the user's query. Filter out false positives."),
+                                    SystemMessage(content="You are a lenient video search validator. Only filter out OBVIOUS false positives. When unsure, keep the result. Be especially lenient for highlight queries."),
                                     HumanMessage(content=validation_prompt)
                                 ])
                                 
@@ -1001,11 +1099,18 @@ Return JSON only:
                                 validation_json = extract_json(validation_text)
                                 validation_result = json.loads(validation_json)
                                 
-                                if validation_result.get("is_valid", True):  # Default to valid if validation fails
+                                # Default to valid if validation fails or is unclear
+                                is_valid = validation_result.get("is_valid", True)
+                                reasoning = validation_result.get("reasoning", "")
+                                
+                                # Extra safety: if reasoning suggests uncertainty, keep it
+                                if not is_valid and any(word in reasoning.lower() for word in ["might", "could", "possibly", "maybe", "uncertain"]):
+                                    is_valid = True
+                                
+                                if is_valid:
                                     validated_ranges.append(tr)
                                 else:
-                                    reasoning = validation_result.get("reasoning", "No reasoning")
-                                    log_info(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:60]}")
+                                    log_info(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:80]}")
                             except Exception as e:
                                 # On validation error, keep the result (don't filter)
                                 validated_ranges.append(tr)

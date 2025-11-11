@@ -1,0 +1,362 @@
+2025-11-11 15:18:39 - INFO - ================================================================================
+2025-11-11 15:18:39 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 15:18:39 - INFO - ================================================================================
+2025-11-11 15:18:39 - INFO - Query: find all the highlight of this video.
+2025-11-11 15:18:39 - INFO - Log file: logs\agent_find_all_the_highlight_of_this_video__20251111_151839.log
+2025-11-11 15:18:39 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\bg
+2025-11-11 15:18:39 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\bg\video\pegblog_10min.mp4
+2025-11-11 15:18:39 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\bg\segment_tree.json
+2025-11-11 15:18:39 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:18:39 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-11 15:18:39 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 15:18:39 - INFO - CALLING ORCHESTRATOR
+2025-11-11 15:18:39 - INFO - --------------------------------------------------------------------------------
+2025-11-11 15:18:39 - INFO - 
+================================================================================
+2025-11-11 15:18:39 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 15:18:39 - INFO - ================================================================================
+2025-11-11 15:18:39 - INFO - Query: find all the highlight of this video.
+2025-11-11 15:18:39 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:18:39 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\bg\segment_tree.json
+2025-11-11 15:18:39 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\bg\video\pegblog_10min.mp4
+2025-11-11 15:18:39 - INFO - [LOADING] Loading segment tree...
+2025-11-11 15:18:39 - INFO -   ✓ Segment tree loaded
+2025-11-11 15:18:40 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 15:18:40 - INFO - 
+================================================================================
+2025-11-11 15:18:40 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 15:18:40 - INFO - ================================================================================
+2025-11-11 15:18:40 - INFO - Query: find all the highlight of this video.
+2025-11-11 15:18:40 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:18:40 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-11 15:18:45 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 15:18:45 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 15:18:45 - INFO -   Confidence: 1.00
+2025-11-11 15:18:45 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 15:18:45 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 15:18:45 - INFO -   Calling planner agent to find highlights...
+2025-11-11 15:18:45 - INFO - 
+============================================================
+2025-11-11 15:18:45 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-11 15:18:45 - INFO - ============================================================
+2025-11-11 15:18:45 - INFO - Query: find all the highlight of this video.
+2025-11-11 15:18:45 - INFO - 
+[INSPECTION] Inspecting segment tree to understand video content...
+2025-11-11 15:18:45 - INFO -   Found 100 unique keywords
+2025-11-11 15:18:45 - INFO -   Found 33 object classes
+2025-11-11 15:18:45 - INFO -   Sample keywords: 01t, 04, 10, 100, 12, 13, 1st, 20, 2015, 205, 21, 24, 29, 2d, 2nd...
+2025-11-11 15:18:45 - INFO -   Sample descriptions: 20 total (12 visual, 8 audio)
+2025-11-11 15:18:45 - INFO -   Sample descriptions preview:
+2025-11-11 15:18:45 - INFO -     1. [0.0s] [VISUAL] 
+A Unified Detailed Description of a 1-second scene...
+2025-11-11 15:18:45 - INFO -     2. [0.0s] [AUDIO] How are we late to giving birth?...
+2025-11-11 15:18:45 - INFO -     3. [1.0s] [VISUAL] 
+
+1st Person - The man is in the driver's seat with the woman sitting next to him. A camera is mount...
+2025-11-11 15:18:45 - INFO -     4. [2.0s] [VISUAL] 2 people inside of a vehicle, captured with a shaky camera....
+2025-11-11 15:18:45 - INFO -     5. [3.0s] [VISUAL] 
+The image captures two people inside a car, driving through an outdoor setting. The camera is mount...
+2025-11-11 15:18:45 - INFO -     6. [4.0s] [VISUAL] 3D camera perspective giving the viewers the feeling of "being there"....
+2025-11-11 15:18:45 - INFO -     7. [4.0s] [AUDIO] We are five minutes late to our...
+2025-11-11 15:18:45 - INFO -     8. [5.0s] [VISUAL] 3rd person camera perspective looking over someone's shoulder at a car with two people in it....
+2025-11-11 15:18:45 - INFO -     9. [7.0s] [VISUAL] 
+
+From the top left to the bottom right, the image captures three individuals in a vehicle. The firs...
+2025-11-11 15:18:45 - INFO -     10. [8.0s] [VISUAL] 1-second scene that includes a man and woman in a car...
+2025-11-11 15:18:45 - INFO -   Inspection completed in 0.00s
+2025-11-11 15:18:45 - INFO - 
+[NARRATION] Creating video narrative understanding...
+2025-11-11 15:18:52 - INFO -   Video theme: A car journey with two people capturing their experience
+2025-11-11 15:18:52 - INFO -   Narrative summary: The video captures a light-hearted car journey with two individuals, highlighting their interactions...
+2025-11-11 15:18:52 - INFO -   Narrative structure:
+2025-11-11 15:18:52 - INFO -     INTRO: arrival, action
+2025-11-11 15:18:52 - INFO -     BODY: activities, 3d, car
+2025-11-11 15:18:52 - INFO -     ENDING: appears, actual
+2025-11-11 15:18:52 - INFO -   Highlight keywords: action, activities
+2025-11-11 15:18:52 - INFO -   Narrative creation completed in 7.03s
+2025-11-11 15:18:52 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-11 15:18:52 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-11 15:18:56 - INFO - [LLM] Query generation completed in 4.61s
+2025-11-11 15:18:56 - DEBUG - [LLM RESPONSE] ```json
+{
+    "semantic_queries": [
+        "two people inside a car driving through an outdoor setting",
+        "man and woman in a car with a 3D camera perspective",
+        "camera mounted on the roof capturing the moment in the car",
+        "individuals in a vehicle with outdoor scenery visibl...
+2025-11-11 15:18:56 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-11 15:18:56 - INFO -   [INSPECTION] Used segment tree inspection: Yes
+2025-11-11 15:18:56 - INFO -   Semantic queries: ['two people inside a car driving through an outdoor setting', 'man and woman in a car with a 3D camera perspective', 'camera mounted on the roof capturing the moment in the car', 'individuals in a vehicle with outdoor scenery visible', 'backpack and handbag visible in the car scene']
+2025-11-11 15:18:56 - INFO -   Hierarchical keywords: ['car', 'people', 'driving', 'outdoor', 'camera', 'backpack', 'handbag']
+2025-11-11 15:18:56 - INFO -   Object classes: ['car', 'cell phone', 'backpack', 'handbag']
+2025-11-11 15:18:56 - INFO -   Activity: driving
+2025-11-11 15:18:56 - INFO -   Is general highlight query: True
+2025-11-11 15:18:56 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-11 15:19:01 - INFO -   Query type: AGGREGATE
+2025-11-11 15:19:01 - INFO -   Search intent: semantic
+2025-11-11 15:19:01 - INFO -   Target entities: {'objects': [], 'activities': [], 'concepts': []}
+2025-11-11 15:19:01 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-11 15:19:01 - INFO -   Reasoning: The query is asking for all highlights from a video, which implies a request for a comprehensive collection of significant moments without specific conditions or filters. This indicates an aggregate search intent, focusing on retrieving all relevant highlights rather than specific objects or activities.
+2025-11-11 15:19:01 - INFO -   Analysis completed in 4.29s
+2025-11-11 15:19:01 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-11 15:19:05 - INFO -   Strategy operations: 1
+2025-11-11 15:19:05 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-11 15:19:05 - INFO -   Reasoning: This strategy focuses on hierarchical search as the primary operation since the query does not specify any target objects or activities, and relies on keyword-based lookup to aggregate relevant content.
+2025-11-11 15:19:05 - INFO -   Strategy planning completed in 4.23s
+2025-11-11 15:19:05 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-11 15:19:05 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-11 15:19:05 - INFO -   Semantic weight: 0.40
+2025-11-11 15:19:05 - INFO -   Activity weight: 0.30
+2025-11-11 15:19:05 - INFO -   Hierarchical weight: 0.10
+2025-11-11 15:19:05 - INFO -   Threshold: 0.30
+2025-11-11 15:19:05 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-11 15:19:05 - INFO - 
+  [SEARCH TYPE: General Highlights (Hierarchical Tree)]
+2025-11-11 15:19:05 - INFO -       Found 20 highlight candidates
+2025-11-11 15:19:05 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-11 15:19:05 - INFO -     Keyword: 'car'
+2025-11-11 15:19:05 - INFO -       Found 19 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'people'
+2025-11-11 15:19:05 - INFO -       Found 20 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'driving'
+2025-11-11 15:19:05 - INFO -       Found 8 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'outdoor'
+2025-11-11 15:19:05 - INFO -       Found 20 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'camera'
+2025-11-11 15:19:05 - INFO -       Found 20 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'backpack'
+2025-11-11 15:19:05 - INFO -       Found 20 leaf node matches
+2025-11-11 15:19:05 - INFO -     Keyword: 'handbag'
+2025-11-11 15:19:05 - INFO -       Found 5 leaf node matches
+2025-11-11 15:19:05 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-11 15:19:05 - INFO -     Query: 'two people inside a car driving through an outdoor setting'
+2025-11-11 15:19:08 - INFO -       Found 15 matches (took 3.06s)
+2025-11-11 15:19:08 - INFO -     Query: 'man and woman in a car with a 3D camera perspective'
+2025-11-11 15:19:08 - INFO -       Found 15 matches (took 0.03s)
+2025-11-11 15:19:08 - INFO -     Query: 'camera mounted on the roof capturing the moment in the car'
+2025-11-11 15:19:08 - INFO -       Found 15 matches (took 0.04s)
+2025-11-11 15:19:08 - INFO -     Query: 'individuals in a vehicle with outdoor scenery visible'
+2025-11-11 15:19:08 - INFO -       Found 15 matches (took 0.03s)
+2025-11-11 15:19:08 - INFO -     Query: 'backpack and handbag visible in the car scene'
+2025-11-11 15:19:08 - INFO -       Found 15 matches (took 0.04s)
+2025-11-11 15:19:08 - INFO - 
+  [SEARCH TYPE: Object Detection (YOLO)]
+2025-11-11 15:19:08 - INFO -     Class: 'handbag'
+2025-11-11 15:19:08 - INFO -       Found 15 detections
+2025-11-11 15:19:08 - INFO -     Class: 'backpack'
+2025-11-11 15:19:08 - INFO -       Found 0 detections
+2025-11-11 15:19:08 - INFO -     Class: 'car'
+2025-11-11 15:19:08 - INFO -       Found 35 detections
+2025-11-11 15:19:08 - INFO -     Class: 'cell phone'
+2025-11-11 15:19:08 - INFO -       Found 8 detections
+2025-11-11 15:19:08 - INFO - 
+  [SEARCH TYPE: Activity Pattern Matching]
+2025-11-11 15:19:08 - INFO -     Activity: driving
+2025-11-11 15:19:08 - INFO -       Evidence scenes before validation: 3
+2025-11-11 15:19:11 - INFO -       Evidence scenes after validation: 3
+2025-11-11 15:19:11 - INFO - 
+[AGGREGATION] Collected results from all search types:
+2025-11-11 15:19:11 - INFO -   Total results: 266
+2025-11-11 15:19:11 - INFO - 
+[STEP 3] Scoring all seconds with weighted features...
+2025-11-11 15:19:11 - INFO -   Total seconds to score: 600
+2025-11-11 15:19:11 - INFO - [STEP 3] Scoring completed in 0.01s
+2025-11-11 15:19:11 - INFO - 
+[FILTERING] Filtered to 174 seconds above threshold 0.30
+2025-11-11 15:19:11 - INFO -   Top 10 scored seconds:
+2025-11-11 15:19:11 - INFO -     1. Second 455: score=11.400 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 15:19:11 - INFO -     2. Second 155: score=9.767 (sem=0.00, act=0.00, obj=0.17)
+2025-11-11 15:19:11 - INFO -     3. Second 180: score=9.600 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 15:19:11 - INFO -     4. Second 470: score=9.300 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 15:19:11 - INFO -     5. Second 405: score=9.100 (sem=0.00, act=0.00, obj=0.10)
+2025-11-11 15:19:11 - INFO -     6. Second 31: score=0.804 (sem=0.76, act=1.00, obj=0.20)
+2025-11-11 15:19:11 - INFO -     7. Second 65: score=0.800 (sem=0.83, act=0.00, obj=0.37)
+2025-11-11 15:19:11 - INFO -     8. Second 3: score=0.738 (sem=0.85, act=1.00, obj=0.10)
+2025-11-11 15:19:11 - INFO -     9. Second 94: score=0.688 (sem=0.72, act=0.00, obj=0.40)
+2025-11-11 15:19:11 - INFO -     10. Second 75: score=0.632 (sem=0.83, act=0.00, obj=0.20)
+2025-11-11 15:19:11 - INFO - 
+[AGENTIC] Phase 3: Self-Validation...
+2025-11-11 15:19:29 - INFO -   [VALIDATION] Issues detected: ['Results do not provide a clear summary or highlights of the video', 'Many results have low semantic relevance scores', 'Results are primarily timestamps without context or explanation']
+2025-11-11 15:19:29 - INFO -   [VALIDATION] Suggestions: ['Include a summary or description of the highlights', 'Filter results to show only those with higher semantic relevance', 'Provide context for each timestamp listed']
+2025-11-11 15:19:29 - INFO - 
+[STEP 4] Grouping contiguous seconds into time ranges...
+2025-11-11 15:19:29 - INFO -   Grouped into 28 time range(s)
+2025-11-11 15:19:29 - INFO -     1. 2.00s - 4.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     2. 7.00s - 9.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     3. 20.00s - 23.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     4. 24.00s - 27.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     5. 30.00s - 34.00s (duration: 4.00s)
+2025-11-11 15:19:29 - INFO -     6. 37.00s - 40.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     7. 43.00s - 45.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     8. 49.00s - 51.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     9. 59.00s - 61.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     10. 62.00s - 69.00s (duration: 7.00s)
+2025-11-11 15:19:29 - INFO -     11. 70.00s - 78.00s (duration: 8.00s)
+2025-11-11 15:19:29 - INFO -     12. 79.00s - 87.00s (duration: 8.00s)
+2025-11-11 15:19:29 - INFO -     13. 88.00s - 96.00s (duration: 8.00s)
+2025-11-11 15:19:29 - INFO -     14. 193.00s - 196.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     15. 218.00s - 222.00s (duration: 4.00s)
+2025-11-11 15:19:29 - INFO -     16. 229.00s - 231.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     17. 238.00s - 262.00s (duration: 24.00s)
+2025-11-11 15:19:29 - INFO -     18. 268.00s - 273.00s (duration: 5.00s)
+2025-11-11 15:19:29 - INFO -     19. 274.00s - 277.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     20. 284.00s - 286.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     21. 295.00s - 297.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     22. 314.00s - 336.00s (duration: 22.00s)
+2025-11-11 15:19:29 - INFO -     23. 340.00s - 342.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO -     24. 350.00s - 354.00s (duration: 4.00s)
+2025-11-11 15:19:29 - INFO -     25. 358.00s - 362.00s (duration: 4.00s)
+2025-11-11 15:19:29 - INFO -     26. 364.00s - 374.00s (duration: 10.00s)
+2025-11-11 15:19:29 - INFO -     27. 375.00s - 378.00s (duration: 3.00s)
+2025-11-11 15:19:29 - INFO -     28. 401.00s - 403.00s (duration: 2.00s)
+2025-11-11 15:19:29 - INFO - 
+[SELECTION] User intent detection:
+2025-11-11 15:19:29 - INFO -   Multiple indicators: True
+2025-11-11 15:19:29 - INFO -   Single indicators: False
+2025-11-11 15:19:29 - INFO -   Plural 'moments': False
+2025-11-11 15:19:29 - INFO -   Singular 'moment': False
+2025-11-11 15:19:29 - INFO -   Decision: MULTIPLE results (multiple indicator detected)
+2025-11-11 15:19:29 - INFO -   [ACTION] Returning all 28 time ranges
+2025-11-11 15:19:29 - INFO - 
+[AUTO-RERANK] Detected 'all/every' in query - will automatically rerank and filter false positives
+2025-11-11 15:19:29 - INFO - 
+[AUTO-RERANK] Automatically reranking and filtering 28 results...
+2025-11-11 15:19:29 - INFO -   [LLM RANKING] Ranking 28 results to select top 28
+2025-11-11 15:19:38 - INFO -   [LLM RANKING] Selected top 11 results
+2025-11-11 15:19:38 - INFO -     1. 2.0s-4.0s: This time range is the beginning of the video and likely contains important intr
+2025-11-11 15:19:38 - INFO -     2. 7.0s-9.0s: This time range follows the introduction and may contain key highlights that bui
+2025-11-11 15:19:38 - INFO -     3. 20.0s-23.0s: This time range likely includes significant moments that are essential to the vi
+2025-11-11 15:19:38 - INFO -     4. 37.0s-40.0s: This time range may contain critical highlights that contribute to the main them
+2025-11-11 15:19:38 - INFO -     5. 62.0s-69.0s: This time range is longer and may encapsulate multiple highlights or a significa
+2025-11-11 15:19:38 - INFO -     6. 70.0s-78.0s: This time range likely includes important highlights as it covers a substantial 
+2025-11-11 15:19:38 - INFO -     7. 79.0s-87.0s: This time range may contain key highlights that are pivotal to understanding the
+2025-11-11 15:19:38 - INFO -     8. 88.0s-96.0s: This time range is likely to include significant highlights as it covers a later
+2025-11-11 15:19:38 - INFO -     9. 238.0s-262.0s: This time range is extensive and likely contains multiple highlights or a critic
+2025-11-11 15:19:38 - INFO -     10. 314.0s-336.0s: This time range covers a significant portion of the video and is likely to inclu
+2025-11-11 15:19:38 - INFO -     11. 364.0s-374.0s: This time range may contain highlights as it is towards the end of the video, su
+2025-11-11 15:19:38 - INFO -   [AUTO-FILTER] Validating 11 results to remove false positives...
+2025-11-11 15:19:40 - INFO -     Filtered out 2.0s-4.0s: The clip description only specifies a time range and does no
+2025-11-11 15:19:41 - INFO -     Filtered out 7.0s-9.0s: The clip description only provides a specific time range and
+2025-11-11 15:19:42 - INFO -     Filtered out 20.0s-23.0s: The clip description only provides a specific time range and
+2025-11-11 15:19:43 - INFO -     Filtered out 37.0s-40.0s: The clip description only provides a specific time range and
+2025-11-11 15:19:44 - INFO -     Filtered out 62.0s-69.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:46 - INFO -     Filtered out 70.0s-78.0s: The clip description only provides a specific time range and
+2025-11-11 15:19:46 - INFO -     Filtered out 79.0s-87.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:47 - INFO -     Filtered out 88.0s-96.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:48 - INFO -     Filtered out 238.0s-262.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:49 - INFO -     Filtered out 314.0s-336.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:50 - INFO -     Filtered out 364.0s-374.0s: The clip description only provides a specific time range wit
+2025-11-11 15:19:50 - INFO -   [AUTO-RERANK] Warning: All results filtered out, keeping original top results
+2025-11-11 15:19:50 - INFO - 
+[FINAL SELECTION]
+2025-11-11 15:19:50 - INFO -   Selected 10 time range(s)
+2025-11-11 15:19:50 - INFO -   Confidence: 0.95
+2025-11-11 15:19:50 - INFO -   Time ranges:
+2025-11-11 15:19:50 - INFO -     1. 2.00s - 4.00s (duration: 2.00s)
+2025-11-11 15:19:50 - INFO -     2. 7.00s - 9.00s (duration: 2.00s)
+2025-11-11 15:19:50 - INFO -     3. 20.00s - 23.00s (duration: 3.00s)
+2025-11-11 15:19:50 - INFO -     4. 37.00s - 40.00s (duration: 3.00s)
+2025-11-11 15:19:50 - INFO -     5. 62.00s - 69.00s (duration: 7.00s)
+2025-11-11 15:19:50 - INFO -     6. 70.00s - 78.00s (duration: 8.00s)
+2025-11-11 15:19:50 - INFO -     7. 79.00s - 87.00s (duration: 8.00s)
+2025-11-11 15:19:50 - INFO -     8. 88.00s - 96.00s (duration: 8.00s)
+2025-11-11 15:19:50 - INFO -     9. 238.00s - 262.00s (duration: 24.00s)
+2025-11-11 15:19:50 - INFO -     10. 314.00s - 336.00s (duration: 22.00s)
+2025-11-11 15:19:50 - INFO -   [SUCCESS] Found 10 time range(s) - proceeding with extraction
+2025-11-11 15:19:50 - INFO - 
+[MERGING] Merging 10 time ranges...
+2025-11-11 15:19:50 - INFO -   Before merge: 10 ranges
+2025-11-11 15:19:50 - INFO -   After merge: 10 non-overlapping ranges
+2025-11-11 15:19:50 - INFO -   Merged ranges with 2.0s padding:
+2025-11-11 15:19:50 - INFO -     Range 1: 1.00s - 5.00s (duration: 4.00s)
+2025-11-11 15:19:50 - INFO -     Range 2: 6.00s - 10.00s (duration: 4.00s)
+2025-11-11 15:19:50 - INFO -     Range 3: 19.00s - 24.00s (duration: 5.00s)
+2025-11-11 15:19:50 - INFO -     Range 4: 36.00s - 41.00s (duration: 5.00s)
+2025-11-11 15:19:50 - INFO -     Range 5: 61.00s - 70.00s (duration: 9.00s)
+2025-11-11 15:19:50 - INFO -     Range 6: 69.00s - 79.00s (duration: 10.00s)
+2025-11-11 15:19:50 - INFO -     Range 7: 78.00s - 88.00s (duration: 10.00s)
+2025-11-11 15:19:50 - INFO -     Range 8: 87.00s - 97.00s (duration: 10.00s)
+2025-11-11 15:19:50 - INFO -     Range 9: 237.00s - 263.00s (duration: 26.00s)
+2025-11-11 15:19:50 - INFO -     Range 10: 313.00s - 337.00s (duration: 24.00s)
+2025-11-11 15:19:50 - INFO -   Found 10 highlight time ranges
+2025-11-11 15:19:50 - INFO -     Created chunk 1: timeline 0.0s - 4.0s (source: 1.0s - 5.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 2: timeline 4.0s - 8.0s (source: 6.0s - 10.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 3: timeline 8.0s - 13.0s (source: 19.0s - 24.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 4: timeline 13.0s - 18.0s (source: 36.0s - 41.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 5: timeline 18.0s - 27.0s (source: 61.0s - 70.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 6: timeline 27.0s - 37.0s (source: 69.0s - 79.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 7: timeline 37.0s - 47.0s (source: 78.0s - 88.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 8: timeline 47.0s - 57.0s (source: 87.0s - 97.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 9: timeline 57.0s - 83.0s (source: 237.0s - 263.0s)
+2025-11-11 15:19:50 - INFO -     Created chunk 10: timeline 83.0s - 107.0s (source: 313.0s - 337.0s)
+2025-11-11 15:19:50 - INFO -   ✓ Created 10 highlight chunks
+2025-11-11 15:19:50 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 15:19:50 - INFO - 
+================================================================================
+2025-11-11 15:19:50 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 15:19:50 - INFO - ================================================================================
+2025-11-11 15:19:50 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 15:19:50 - INFO - Status: ✓ Success
+2025-11-11 15:19:50 - INFO - Chunks created: 10
+2025-11-11 15:19:50 - INFO - Timeline now has 10 chunks
+2025-11-11 15:19:50 - INFO - Total duration: 106.99s
+2025-11-11 15:19:50 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 15:19:50 - INFO - --------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 15:19:50 - INFO - Success: True
+2025-11-11 15:19:50 - INFO - Timeline chunks after operation: 10
+2025-11-11 15:19:50 - INFO - Operation result keys: ['success', 'chunks_created', 'time_ranges']
+2025-11-11 15:19:50 - INFO -   Chunks created: 10
+2025-11-11 15:19:50 - INFO - FIND_HIGHLIGHTS: Created 10 chunks
+2025-11-11 15:19:50 - DEBUG -   Chunk 1: source=1.0s-5.0s, timeline=0.0s-4.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 2: source=6.0s-10.0s, timeline=4.0s-8.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 3: source=19.0s-24.0s, timeline=8.0s-13.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 4: source=36.0s-41.0s, timeline=13.0s-18.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 5: source=61.0s-70.0s, timeline=18.0s-27.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 6: source=69.0s-79.0s, timeline=27.0s-37.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 7: source=78.0s-88.0s, timeline=37.0s-47.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 8: source=87.0s-97.0s, timeline=47.0s-57.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 9: source=237.0s-263.0s, timeline=57.0s-83.0s
+2025-11-11 15:19:50 - DEBUG -   Chunk 10: source=313.0s-337.0s, timeline=83.0s-107.0s
+2025-11-11 15:19:50 - INFO - Response message: Found and added 10 clip(s) to timeline:
+  1. 1.0s - 5.0s
+  2. 6.0s - 10.0s
+  3. 19.0s - 24.0s
+  4. 3...
+2025-11-11 15:19:50 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - UPDATING TIMELINE UI
+2025-11-11 15:19:50 - INFO - --------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - Timeline chunks to display: 10
+2025-11-11 15:19:50 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - Reloading timeline from file...
+2025-11-11 15:19:50 - INFO - UPDATING CHAT UI
+2025-11-11 15:19:50 - INFO - --------------------------------------------------------------------------------
+2025-11-11 15:19:50 - INFO - Timeline loaded: 10 chunks
+2025-11-11 15:19:50 - INFO - Drawing timeline on canvas...
+2025-11-11 15:19:50 - INFO - Timeline canvas updated
+2025-11-11 15:19:50 - INFO - Updating UI button states...
+2025-11-11 15:19:50 - INFO - [VIDSOR] Timeline updated: 10 chunks
+2025-11-11 15:19:50 - INFO - Chat UI update scheduled
+2025-11-11 15:19:50 - INFO - 
+================================================================================
+2025-11-11 15:19:50 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 15:19:50 - INFO - ================================================================================
+2025-11-11 15:19:50 - INFO - Agent thread completed

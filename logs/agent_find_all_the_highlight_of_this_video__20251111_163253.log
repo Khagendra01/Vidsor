@@ -1,0 +1,261 @@
+2025-11-11 16:32:53 - INFO - ================================================================================
+2025-11-11 16:32:53 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 16:32:53 - INFO - ================================================================================
+2025-11-11 16:32:53 - INFO - Query: find all the highlight of this video.
+2025-11-11 16:32:53 - INFO - Log file: logs\agent_find_all_the_highlight_of_this_video__20251111_163253.log
+2025-11-11 16:32:53 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\bg
+2025-11-11 16:32:53 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\bg\video\pegblog_10min.mp4
+2025-11-11 16:32:53 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\bg\segment_tree.json
+2025-11-11 16:32:53 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 16:32:53 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-11 16:32:53 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:32:53 - INFO - CALLING ORCHESTRATOR
+2025-11-11 16:32:53 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:32:53 - INFO - 
+================================================================================
+2025-11-11 16:32:53 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 16:32:53 - INFO - ================================================================================
+2025-11-11 16:32:53 - INFO - Query: find all the highlight of this video.
+2025-11-11 16:32:53 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 16:32:53 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\bg\segment_tree.json
+2025-11-11 16:32:53 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\bg\video\pegblog_10min.mp4
+2025-11-11 16:32:53 - INFO - [LOADING] Loading segment tree...
+2025-11-11 16:32:53 - INFO -   ✓ Segment tree loaded
+2025-11-11 16:32:54 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 16:32:54 - INFO - 
+================================================================================
+2025-11-11 16:32:54 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 16:32:54 - INFO - ================================================================================
+2025-11-11 16:32:54 - INFO - Query: find all the highlight of this video.
+2025-11-11 16:32:54 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 16:32:54 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-11 16:32:58 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 16:32:58 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 16:32:58 - INFO -   Confidence: 1.00
+2025-11-11 16:32:58 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 16:32:58 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 16:32:58 - INFO -   Calling planner agent to find highlights...
+2025-11-11 16:32:58 - INFO - 
+============================================================
+2025-11-11 16:32:58 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-11 16:32:58 - INFO - ============================================================
+2025-11-11 16:32:58 - INFO - Query: find all the highlight of this video.
+2025-11-11 16:32:58 - INFO - 
+[INSPECTION] Inspecting segment tree to understand video content...
+2025-11-11 16:32:58 - INFO -   Found 100 unique keywords
+2025-11-11 16:32:58 - INFO -   Found 33 object classes
+2025-11-11 16:32:58 - INFO -   Sample keywords: 01t, 04, 10, 100, 12, 13, 1st, 20, 2015, 205, 21, 24, 29, 2d, 2nd...
+2025-11-11 16:32:58 - INFO -   Sample descriptions: 20 total (12 visual, 8 audio)
+2025-11-11 16:32:58 - INFO -   Sample descriptions (full, sorted chronologically):
+2025-11-11 16:32:58 - INFO -     1. [0.0s] [VISUAL] A Unified Detailed Description of a 1-second scene
+2025-11-11 16:32:58 - INFO -     2. [0.0s] [AUDIO] How are we late to giving birth?
+2025-11-11 16:32:58 - INFO -     3. [8.0s] [AUDIO] minutes late to our induction but it's okay because it's really at 9 o'clock they just said
+2025-11-11 16:32:58 - INFO -     4. [30.0s] [VISUAL] 1. A man and woman sitting in the back of a car: The camera captures the interior of the car with its passengers. The people are seated close together, and their bodies can be seen clearly against the backdrop of the vehicle's seats.
+2025-11-11 16:32:58 - INFO -     5. [32.0s] [AUDIO] and we're just gonna pull up to the hospital and just get settled into our room.
+2025-11-11 16:32:58 - INFO -     6. [48.0s] [AUDIO] night because obviously I know I was going to get birth today or the next day.
+2025-11-11 16:32:58 - INFO -     7. [58.0s] [VISUAL] 1-second scene that includes a man and woman sitting in a car
+2025-11-11 16:32:58 - INFO -     8. [88.0s] [VISUAL] 3 groups, 6 people, pink backpack, cup, action camera, wide-angle distortion, fisheye effect, telephoto compression
+2025-11-11 16:32:58 - INFO -     9. [119.0s] [VISUAL] 3D camera, tracking objects in real-time with computer vision algorithms
+2025-11-11 16:32:58 - INFO -     10. [212.0s] [AUDIO] I would say the most scariest part about the induction.
+2025-11-11 16:32:58 - INFO -     11. [216.0s] [AUDIO] the induction, or the most nerve-wracking part is like the unknown of not knowing how long
+2025-11-11 16:32:58 - INFO -     12. [240.0s] [VISUAL] 1-second scene showing a woman sitting on a bed in a hospital room. The video appears to be captured with a GoPro camera mounted on a backpack, providing an action camera perspective. The scene is composed with the woman occupying most of the frame, surrounded by various objects such as a chair and a clock on the wall. There are no visible technical artifacts or distortion in the image.
+2025-11-11 16:32:58 - INFO -     13. [272.0s] [VISUAL] 1-second scene that includes a woman in a hospital bed with a man in the background
+2025-11-11 16:32:58 - INFO -     14. [296.0s] [AUDIO] I got some medical rape pumps on the way my gold spectra. We're really gonna show you.
+2025-11-11 16:32:58 - INFO -     15. [300.0s] [VISUAL] 1-second scene with a person using a computer to monitor a monitor, shot using action camera, wide-angle distortion, fisheye effect, etc.
+2025-11-11 16:32:58 - INFO -     16. [316.0s] [AUDIO] Do you want me to record when you're crying? Yes. I'm giving birth.
+2025-11-11 16:32:58 - INFO -     17. [328.0s] [VISUAL] 2nd person's view (POV ) of a woman in a hospital bed with a monitor
+2025-11-11 16:32:58 - INFO -     18. [359.0s] [VISUAL] The image features a woman sitting in a chair, wrapped in a white sheet. She appears to be sick, with a blanket covering her upper body. The scene is set indoors, and there are no other people or objects visible in the frame. The camera perspective seems stable, providing a clear view of the subject. The image quality appears good, with no noticeable distortions or technical issues.
+2025-11-11 16:32:58 - INFO -     19. [482.0s] [VISUAL] 1 second scene including a skateboarder performing a trick in the air indoors on a wooden floor, and an overhead view showing a backpack-mounted camera following motion.
+2025-11-11 16:32:58 - INFO -     20. [510.0s] [VISUAL] First Person - The camera is held by a person whose body is not visible in the image. The viewpoint seems to be from the person's perspective, giving a sense of presence in the scene.
+2025-11-11 16:32:58 - INFO -   Inspection completed in 0.00s
+2025-11-11 16:32:58 - INFO - 
+[NARRATION] Creating video narrative understanding...
+2025-11-11 16:33:05 - INFO -   Video theme: a couple's journey to the hospital for childbirth
+2025-11-11 16:33:05 - INFO -   Narrative summary: The video follows a couple as they navigate their late arrival to the hospital for childbirth. They ...
+2025-11-11 16:33:05 - INFO -   Narrative structure:
+2025-11-11 16:33:05 - INFO -     INTRO: car, arrival, induction
+2025-11-11 16:33:05 - INFO -     BODY: hospital, settled, birth
+2025-11-11 16:33:05 - INFO -     ENDING: scariest, induction, part
+2025-11-11 16:33:05 - INFO -   Highlight keywords: scariest, arrival, birth
+2025-11-11 16:33:05 - INFO -   Narrative creation completed in 6.38s
+2025-11-11 16:33:05 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-11 16:33:05 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-11 16:33:09 - INFO - [LLM] Query generation completed in 4.31s
+2025-11-11 16:33:09 - DEBUG - [LLM RESPONSE] ```json
+{
+    "semantic_queries": [
+        "man and woman in a car discussing late arrival for induction",
+        "couple preparing to settle into hospital room for birth",
+        "man expressing fears about the induction process"
+    ],
+    "hierarchical_keywords": ["car", "arrival", "induction"...
+2025-11-11 16:33:09 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-11 16:33:09 - INFO -   [INSPECTION] Used segment tree inspection: Yes
+2025-11-11 16:33:09 - INFO -   Semantic queries: ['man and woman in a car discussing late arrival for induction', 'couple preparing to settle into hospital room for birth', 'man expressing fears about the induction process']
+2025-11-11 16:33:09 - INFO -   Hierarchical keywords: ['car', 'arrival', 'induction', 'hospital', 'settled', 'birth', 'scariest']
+2025-11-11 16:33:09 - INFO -   Object classes: ['car', 'cup']
+2025-11-11 16:33:09 - INFO -   Activity: childbirth
+2025-11-11 16:33:09 - INFO -   Is general highlight query: True
+2025-11-11 16:33:09 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-11 16:33:13 - INFO -   Query type: AGGREGATE
+2025-11-11 16:33:13 - INFO -   Search intent: semantic
+2025-11-11 16:33:13 - INFO -   Target entities: {'objects': [], 'activities': [], 'concepts': []}
+2025-11-11 16:33:13 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-11 16:33:13 - INFO -   Reasoning: The query is asking for all highlights of a video, which implies a request for a comprehensive collection of significant moments without specific conditions or filters. This indicates an aggregate search intent, focusing on retrieving all relevant highlights rather than specific objects or activities.
+2025-11-11 16:33:13 - INFO -   Analysis completed in 4.39s
+2025-11-11 16:33:13 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-11 16:33:18 - INFO -   Strategy operations: 1
+2025-11-11 16:33:18 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-11 16:33:18 - INFO -   Reasoning: This strategy focuses solely on hierarchical search as the query does not require object detection, activity detection, or semantic search. The absence of target entities suggests a need for a broad keyword-based lookup to aggregate relevant content.
+2025-11-11 16:33:18 - INFO -   Strategy planning completed in 4.84s
+2025-11-11 16:33:18 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-11 16:33:18 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-11 16:33:18 - INFO -   Semantic weight: 0.50
+2025-11-11 16:33:18 - INFO -   Activity weight: 0.30
+2025-11-11 16:33:18 - INFO -   Hierarchical weight: 0.10
+2025-11-11 16:33:18 - INFO -   Threshold: 0.50
+2025-11-11 16:33:18 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-11 16:33:18 - INFO - 
+  [SEARCH TYPE: General Highlights (Hierarchical Tree)]
+2025-11-11 16:33:18 - INFO -       Found 20 highlight candidates
+2025-11-11 16:33:18 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-11 16:33:18 - INFO -     Keyword: 'car'
+2025-11-11 16:33:18 - INFO -       Found 19 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'arrival'
+2025-11-11 16:33:18 - INFO -       Found 1 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'induction'
+2025-11-11 16:33:18 - INFO -       Found 5 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'hospital'
+2025-11-11 16:33:18 - INFO -       Found 20 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'settled'
+2025-11-11 16:33:18 - INFO -       Found 5 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'birth'
+2025-11-11 16:33:18 - INFO -       Found 11 leaf node matches
+2025-11-11 16:33:18 - INFO -     Keyword: 'scariest'
+2025-11-11 16:33:18 - INFO -       Found 2 leaf node matches
+2025-11-11 16:33:18 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-11 16:33:18 - INFO -     Query: 'man and woman in a car discussing late arrival for induction'
+2025-11-11 16:33:22 - INFO -       Found 15 matches (took 3.99s)
+2025-11-11 16:33:22 - INFO -     Query: 'couple preparing to settle into hospital room for birth'
+2025-11-11 16:33:22 - INFO -       Found 15 matches (took 0.02s)
+2025-11-11 16:33:22 - INFO -     Query: 'man expressing fears about the induction process'
+2025-11-11 16:33:22 - INFO -       Found 15 matches (took 0.02s)
+2025-11-11 16:33:22 - INFO - 
+  [SEARCH TYPE: Object Detection (YOLO)]
+2025-11-11 16:33:22 - INFO -     Class: 'cup'
+2025-11-11 16:33:22 - INFO -       Found 136 detections
+2025-11-11 16:33:22 - INFO -     Class: 'car'
+2025-11-11 16:33:22 - INFO -       Found 35 detections
+2025-11-11 16:33:22 - INFO - 
+  [SEARCH TYPE: Activity Pattern Matching]
+2025-11-11 16:33:22 - INFO -     Activity: childbirth
+2025-11-11 16:33:22 - INFO -       Evidence scenes before validation: 1
+2025-11-11 16:33:23 - INFO -       Evidence scenes after validation: 1
+2025-11-11 16:33:23 - INFO - 
+[AGGREGATION] Collected results from all search types:
+2025-11-11 16:33:23 - INFO -   Total results: 300
+2025-11-11 16:33:23 - INFO - 
+[STEP 3] Scoring all seconds with weighted features...
+2025-11-11 16:33:23 - INFO -   Total seconds to score: 600
+2025-11-11 16:33:24 - INFO - [STEP 3] Scoring completed in 0.10s
+2025-11-11 16:33:24 - INFO - 
+[FILTERING] Filtered to 1 seconds above threshold 0.50
+2025-11-11 16:33:24 - INFO -   Top 10 scored seconds:
+2025-11-11 16:33:24 - INFO -     1. Second 213: score=0.669 (sem=0.74, act=1.00, obj=0.17)
+2025-11-11 16:33:24 - INFO - 
+[AGENTIC] Phase 3: Self-Validation...
+2025-11-11 16:33:26 - INFO -   [VALIDATION] Issues detected: ['The result does not provide a clear highlight or summary of the video as requested.']
+2025-11-11 16:33:26 - INFO -   [VALIDATION] Suggestions: ['Include a summary or key moments from the video.', 'Provide timestamps or descriptions of highlights.']
+2025-11-11 16:33:26 - INFO - 
+[STEP 4] Selecting diverse highlights (removing redundancy)...
+2025-11-11 16:33:27 - INFO -   Selected 1 diverse seconds (from 1 above threshold)
+2025-11-11 16:33:27 - INFO -   Top 10 selected seconds:
+2025-11-11 16:33:27 - INFO -     1. Second 213 (213.0s): score=0.669 (sem=0.74)
+2025-11-11 16:33:27 - INFO - 
+[SELECTION] User intent detection:
+2025-11-11 16:33:27 - INFO -   Multiple indicators: True
+2025-11-11 16:33:27 - INFO -   Single indicators: False
+2025-11-11 16:33:27 - INFO -   Plural 'moments': False
+2025-11-11 16:33:27 - INFO -   Singular 'moment': False
+2025-11-11 16:33:27 - INFO -   Decision: MULTIPLE results (multiple indicator detected)
+2025-11-11 16:33:27 - INFO -   [ACTION] Returning all 1 time ranges
+2025-11-11 16:33:27 - INFO - 
+[AUTO-RERANK] Detected 'all/every' in query - will automatically rerank and filter false positives
+2025-11-11 16:33:27 - INFO - 
+[AUTO-RERANK] Automatically reranking and filtering 1 results...
+2025-11-11 16:33:27 - INFO - 
+[FINAL SELECTION]
+2025-11-11 16:33:27 - INFO -   Selected 1 time range(s)
+2025-11-11 16:33:27 - INFO -   Confidence: 0.67
+2025-11-11 16:33:27 - INFO -   Time ranges:
+2025-11-11 16:33:27 - INFO -     1. 213.00s - 214.00s (duration: 1.00s)
+2025-11-11 16:33:27 - INFO -   [SUCCESS] Found 1 time range(s) - proceeding with extraction
+2025-11-11 16:33:27 - INFO - 
+[MERGING] Merging 1 time ranges...
+2025-11-11 16:33:27 - INFO -   Before merge: 1 ranges
+2025-11-11 16:33:27 - INFO -   After merge: 1 non-overlapping ranges
+2025-11-11 16:33:27 - INFO -   Merged ranges with 2.0s padding:
+2025-11-11 16:33:27 - INFO -     Range 1: 212.00s - 215.00s (duration: 3.00s)
+2025-11-11 16:33:27 - INFO -   Planner found 1 time ranges
+2025-11-11 16:33:27 - INFO -   After merging: 1 time ranges
+2025-11-11 16:33:27 - INFO -   Total highlight duration: 3.0s (0.5% of video)
+2025-11-11 16:33:27 - INFO -     Created chunk 1: timeline 0.0s - 3.0s (source: 212.0s - 215.0s)
+2025-11-11 16:33:27 - INFO -   ✓ Created 1 highlight chunks
+2025-11-11 16:33:27 - INFO - 
+[SAVED] Timeline updated and saved to C:\Users\Khage\Desktop\Vidagent\projects\bg\timeline.json
+2025-11-11 16:33:27 - INFO - 
+================================================================================
+2025-11-11 16:33:27 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 16:33:27 - INFO - ================================================================================
+2025-11-11 16:33:27 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 16:33:27 - INFO - Status: ✓ Success
+2025-11-11 16:33:27 - INFO - Chunks created: 1
+2025-11-11 16:33:27 - INFO - Timeline now has 1 chunks
+2025-11-11 16:33:27 - INFO - Total duration: 3.00s
+2025-11-11 16:33:27 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 16:33:27 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 16:33:27 - INFO - Success: True
+2025-11-11 16:33:27 - INFO - Timeline chunks after operation: 1
+2025-11-11 16:33:27 - INFO - Operation result keys: ['success', 'chunks_created', 'time_ranges']
+2025-11-11 16:33:27 - INFO -   Chunks created: 1
+2025-11-11 16:33:27 - INFO - FIND_HIGHLIGHTS: Created 1 chunks
+2025-11-11 16:33:27 - DEBUG -   Chunk 1: source=212.0s-215.0s, timeline=0.0s-3.0s
+2025-11-11 16:33:27 - INFO - Response message: Found and added 1 clip(s) to timeline:
+  1. 212.0s - 215.0s...
+2025-11-11 16:33:27 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - UPDATING TIMELINE UI
+2025-11-11 16:33:27 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - Timeline chunks to display: 1
+2025-11-11 16:33:27 - INFO - Reloading timeline from file...
+2025-11-11 16:33:27 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - UPDATING CHAT UI
+2025-11-11 16:33:27 - INFO - --------------------------------------------------------------------------------
+2025-11-11 16:33:27 - INFO - Timeline loaded: 1 chunks
+2025-11-11 16:33:27 - INFO - Drawing timeline on canvas...
+2025-11-11 16:33:27 - INFO - Timeline canvas updated
+2025-11-11 16:33:27 - INFO - Updating UI button states...
+2025-11-11 16:33:27 - INFO - [VIDSOR] Timeline updated: 1 chunks
+2025-11-11 16:33:27 - INFO - Chat UI update scheduled
+2025-11-11 16:33:27 - INFO - 
+================================================================================
+2025-11-11 16:33:27 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 16:33:27 - INFO - ================================================================================
+2025-11-11 16:33:27 - INFO - Agent thread completed

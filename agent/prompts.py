@@ -96,6 +96,11 @@ SEARCH_QUERY_GENERATION_PROMPT = """Generate search queries and keywords for all
 
 CRITICAL FOR SEMANTIC SEARCH: If sample descriptions are provided, analyze their style, vocabulary, and structure. Generate semantic queries that match HOW descriptions are written, not abstract concepts.
 
+NARRATIVE COVERAGE: If video narrative structure is provided (intro/body/ending), generate queries that cover ALL narrative sections:
+- Generate 2-3 queries for EACH narrative section (intro, body, ending)
+- Use keywords from each section to ensure comprehensive coverage
+- Don't just focus on early scenes - ensure queries cover the entire video timeline
+
 Description Style Analysis:
 - Look at the sample descriptions provided
 - Note the vocabulary used (concrete nouns, action verbs, technical terms)
@@ -110,7 +115,7 @@ Example:
 
 Return JSON with:
 {{
-    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search - MUST match description style/vocabulary if samples provided
+    "semantic_queries": ["query1", "query2"],  // Natural language queries for semantic search - MUST match description style/vocabulary if samples provided. Generate 2-3 per narrative section if narrative structure provided.
     "hierarchical_keywords": ["keyword1", "keyword2"],  // Key nouns/verbs for fast tree lookup
     "object_classes": ["class1", "class2"],  // If objects are mentioned
     "activity_name": "activity",  // If activity is mentioned
@@ -127,7 +132,8 @@ For semantic_queries:
 - Include objects, actions, and locations mentioned in descriptions
 - Avoid abstract concepts, emotions, or marketing language
 - If descriptions mention "person doing X", use "person doing X" in queries
-- Match the vocabulary and phrasing patterns from sample descriptions"""
+- Match the vocabulary and phrasing patterns from sample descriptions
+- If narrative structure provided: Generate queries for intro (keywords: {intro_keywords}), body (keywords: {body_keywords}), ending (keywords: {ending_keywords})"""
 
 CLARIFICATION_DECISION_PROMPT = """You are analyzing a video search query that returned many results. Determine if the user wants all results or needs clarification to narrow down.
 
