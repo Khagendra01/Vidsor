@@ -1,7 +1,7 @@
 """Weight configuration utilities for search scoring."""
 
 from typing import Dict, Any, Set, Optional
-from agent.logging_utils import get_log_helper
+from agent.utils.logging_utils import get_log_helper
 
 
 def validate_weights(

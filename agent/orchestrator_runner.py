@@ -4,7 +4,7 @@ from typing import Optional, Dict, Any
 from agent.orchestrator_state import OrchestratorState
 from agent.orchestrator import create_orchestrator_agent
 from agent.timeline_manager import TimelineManager
-from agent.segment_tree_utils import load_segment_tree
+from agent.utils.segment_tree_utils import load_segment_tree
 
 
 def run_orchestrator(

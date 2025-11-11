@@ -16,15 +16,15 @@ from agent.query_analysis import (
 )
 from agent.scoring import score_seconds, group_contiguous_seconds
 from agent.refinement import decide_refine_or_research, refine_existing_results, validate_search_results, validate_activity_evidence
-from agent.utils import merge_time_ranges
-from agent.llm_utils import (
+from agent.utils.utils import merge_time_ranges
+from agent.utils.llm_utils import (
     create_llm,
     extract_json_from_response,
     parse_json_response,
     invoke_llm_with_json
 )
-from agent.logging_utils import get_log_helper
-from agent.weight_config import configure_search_weights
+from agent.utils.logging_utils import get_log_helper
+from agent.utils.weight_config import configure_search_weights
 from agent.query_builder import (
     build_search_query_message,
     format_content_inspection_for_narrative

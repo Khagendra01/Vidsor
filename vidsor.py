@@ -41,9 +41,9 @@ except ImportError:
     except ImportError:
         raise ImportError("MoviePy is required. Install with: pip install moviepy")
 
-from agent.segment_tree_utils import load_segment_tree, SegmentTreeQuery
+from agent.utils.segment_tree_utils import load_segment_tree, SegmentTreeQuery
 from agent.orchestrator_runner import run_orchestrator
-from agent.logging_utils import DualLogger, create_log_file
+from agent.utils.logging_utils import DualLogger, create_log_file
 from extractor.pipeline import SegmentTreePipeline
 from extractor.config import ExtractorConfig
 

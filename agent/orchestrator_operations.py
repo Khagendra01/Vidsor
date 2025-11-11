@@ -4,7 +4,7 @@ import json
 import re
 from typing import Dict, List, Optional, Tuple, Any
 from langchain_core.messages import SystemMessage, HumanMessage
-from agent.llm_utils import parse_json_response, invoke_llm_with_json
+from agent.utils.llm_utils import parse_json_response, invoke_llm_with_json
 
 
 def classify_operation(query: str, chunk_count: int, duration: float, llm, verbose: bool = False) -> Dict[str, Any]:

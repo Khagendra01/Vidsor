@@ -3,7 +3,7 @@
 import json
 from typing import Dict, Any, Set, Optional
 from langchain_core.messages import HumanMessage, SystemMessage
-from agent.llm_utils import parse_json_response, invoke_llm_with_json
+from agent.utils.llm_utils import parse_json_response, invoke_llm_with_json
 
 
 def analyze_query_semantics(query: str, llm) -> Dict[str, Any]:

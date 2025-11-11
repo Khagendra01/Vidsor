@@ -14,8 +14,8 @@ from agent.state import AgentState
 from agent.planner import create_planner_agent
 from agent.executor import create_execution_agent
 from agent.clarifier import create_clarification_node, should_ask_clarification
-from agent.segment_tree_utils import load_segment_tree
-from agent.logging_utils import DualLogger, create_log_file
+from agent.utils.segment_tree_utils import load_segment_tree
+from agent.utils.logging_utils import DualLogger, create_log_file
 
 
 def create_video_clip_agent(json_path: str, video_path: str, model_name: str = "gpt-4o-mini"):

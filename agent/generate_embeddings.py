@@ -4,7 +4,7 @@ This script precomputes embeddings for all transcriptions and unified descriptio
 in the segment tree, saving them to a cache file for faster semantic search.
 """
 
-from agent.segment_tree_utils import SegmentTreeQuery
+from agent.utils.segment_tree_utils import SegmentTreeQuery
 import sys
 
 def generate_embeddings(json_path: str = "camp_segment_tree.json", embedding_model: str = "BAAI/bge-large-en-v1.5"):

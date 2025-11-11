@@ -13,7 +13,7 @@ from agent.orchestrator_handlers import (
     handle_trim
 )
 from agent.planner import create_planner_agent
-from agent.llm_utils import create_llm
+from agent.utils.llm_utils import create_llm
 
 
 def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):

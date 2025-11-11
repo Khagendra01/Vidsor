@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 from agent.timeline_manager import TimelineManager
 from agent.orchestrator_state import OrchestratorState
-from agent.logging_utils import get_log_helper
+from agent.utils.logging_utils import get_log_helper
 from extractor.utils.video_utils import get_video_duration
 
 
