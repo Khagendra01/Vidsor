@@ -222,7 +222,7 @@ class Vidsor:
         self._load_chat_history()
         
         # Display chat history if UI is ready
-        if self.root and self.chat_text:
+        if self.root and hasattr(self, 'chat_text') and self.chat_text:
             self._display_chat_history()
     
     def upload_video_to_project(self, video_path: str, project_path: str) -> str:
@@ -551,10 +551,11 @@ class Vidsor:
             self.export_btn.config(state=tk.NORMAL if has_video and self.edit_state.chunks else tk.DISABLED)
         
         # Update chat send button state
-        if self.chat_send_btn:
+        if hasattr(self, 'chat_send_btn') and self.chat_send_btn:
             has_project = self.current_project_path is not None
             has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path) if self.segment_tree_path else False
-            self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree and not self.is_agent_running) else tk.DISABLED)
+            is_agent_running = hasattr(self, 'is_agent_running') and self.is_agent_running
+            self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree and not is_agent_running) else tk.DISABLED)
         
         # Update preview label with timeline info
         if self.preview_label:
