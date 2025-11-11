@@ -313,64 +313,27 @@ class Vidsor:
     
     def get_available_projects(self) -> List[str]:
         """Get list of available project names."""
-        if not os.path.exists(self.projects_dir):
-            return []
-        
-        projects = []
-        for item in os.listdir(self.projects_dir):
-            project_path = os.path.join(self.projects_dir, item)
-            if os.path.isdir(project_path):
-                config_path = os.path.join(project_path, "project_config.json")
-                if os.path.exists(config_path):
-                    projects.append(item)
-        return sorted(projects)
+        return self.project_manager.get_available_projects()
     
     def _load_video(self, video_path: Optional[str] = None):
         """Load video file with MoviePy."""
         if video_path:
             self.video_path = video_path
+            self.video_analyzer.video_path = video_path
         
-        if not self.video_path:
-            raise Exception("No video path provided")
+        self.video_analyzer.load_video(video_path)
+        self.video_clip = self.video_analyzer.video_clip
+        self.segment_tree = self.video_analyzer.segment_tree
         
-        try:
-            # Close existing video if any
-            if self.video_clip:
-                self.video_clip.close()
-            
-            self.video_clip = VideoFileClip(self.video_path)
-            print(f"[VIDSOR] Video loaded: {self.video_path}")
-            print(f"  Duration: {self.video_clip.duration:.2f}s")
-            print(f"  FPS: {self.video_clip.fps}")
-            print(f"  Resolution: {self.video_clip.size}")
-            
-            # Try to auto-detect segment tree
-            if not self.segment_tree_path:
-                video_dir = os.path.dirname(self.video_path)
-                video_name = Path(self.video_path).stem
-                potential_tree = os.path.join(video_dir, f"{video_name}_segment_tree.json")
-                if os.path.exists(potential_tree):
-                    self.segment_tree_path = potential_tree
-                    self._load_segment_tree()
-            
-            # Update UI state
-            self._update_ui_state()
-            
-        except Exception as e:
-            raise Exception(f"Failed to load video: {str(e)}")
+        # Update UI state
+        self._update_ui_state()
     
     def _load_segment_tree(self):
         """Load segment tree for analysis."""
-        if not self.segment_tree_path or not os.path.exists(self.segment_tree_path):
-            print("[VIDSOR] No segment tree provided. Will analyze video directly.")
-            return
-        
-        try:
-            self.segment_tree = load_segment_tree(self.segment_tree_path)
-            print(f"[VIDSOR] Segment tree loaded: {self.segment_tree_path}")
-        except Exception as e:
-            print(f"[VIDSOR] Warning: Failed to load segment tree: {e}")
-            self.segment_tree = None
+        self.video_analyzer.load_segment_tree(self.segment_tree_path)
+        self.segment_tree = self.video_analyzer.segment_tree
+        if self.segment_tree_path:
+            self.video_analyzer.segment_tree_path = self.segment_tree_path
     
     def analyze_video(self, 
                      silence_threshold: float = 2.0,
@@ -677,20 +640,7 @@ class Vidsor:
     
     def _on_play(self):
         """Play preview button handler - plays video directly from timeline.json chunks."""
-        if not self.video_clip:
-            messagebox.showwarning("Warning", "No video loaded")
-            return
-        
-        if not self.edit_state.chunks:
-            messagebox.showwarning("Warning", "No clips in timeline. Load timeline.json or generate highlights first.")
-            return
-        
-        # If already playing, do nothing
-        if self.edit_state.is_playing:
-            return
-        
-        # Start playback directly from source video using timeline chunks
-        self._start_playback_from_timeline()
+        self.playback_controller.on_play()
     
     def _start_playback_from_timeline(self):
         """Start video playback directly from timeline chunks (no pre-rendering)."""
@@ -1032,6 +982,8 @@ class Vidsor:
                 pass
     
     def _seek_to_time(self, timeline_time: float):
+        """Seek to a specific time in the timeline."""
+        self.playback_controller.seek_to_time(timeline_time)
         """
         Seek to a specific time in the timeline and update the video preview.
         
@@ -1221,121 +1173,11 @@ class Vidsor:
     
     def _on_pause(self):
         """Pause/Resume preview button handler."""
-        if self.edit_state.is_playing:
-            # Pause
-            self.edit_state.is_playing = False
-            # Keep has_started_playback = True so resume button stays enabled
-            self.status_label.config(text="Paused")
-            
-            # Pause audio
-            if HAS_PYGAME:
-                try:
-                    pygame.mixer.music.pause()
-                except:
-                    pass
-            
-            # Update playback controls - this will set Resume button correctly
-            self._update_playback_controls()
-            
-            # Keep canvas visible when paused (don't switch back to label)
-        else:
-            # Resume
-            self.edit_state.is_playing = True
-            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks) if self.edit_state.chunks else 0
-            self.status_label.config(text=f"Playing preview... ({timeline_duration:.1f}s)")
-            
-            # Check if playback thread is still alive - if not, restart it
-            if not self.playback_thread or not self.playback_thread.is_alive():
-                # Thread has exited (maybe due to error or completion) - restart it
-                if self.video_clip and self.edit_state.chunks:
-                    self.playback_thread = threading.Thread(
-                        target=self._playback_loop_from_timeline,
-                        daemon=True
-                    )
-                    self.playback_thread.start()
-            
-            # Check if audio thread is still alive - if not, restart it
-            if self.audio_clip and HAS_PYGAME:
-                # If audio needs restart (e.g., after scrubbing), stop current audio and restart
-                if self.audio_needs_restart:
-                    try:
-                        pygame.mixer.music.stop()
-                    except:
-                        pass
-                    # Stop the old audio thread if it's still running
-                    if self.audio_thread and self.audio_thread.is_alive():
-                        # The thread will exit when it sees has_started_playback is False or audio stops
-                        # We'll start a new one below
-                        pass
-                
-                if not self.audio_thread or not self.audio_thread.is_alive() or self.audio_needs_restart:
-                    # Audio thread has exited or needs restart - restart it from current position
-                    # Note: audio_needs_restart flag will be reset inside _audio_playback_loop
-                    self.audio_thread = threading.Thread(
-                        target=self._audio_playback_loop,
-                        daemon=True
-                    )
-                    self.audio_thread.start()
-                else:
-                    # Audio thread is alive and doesn't need restart - just unpause
-                    try:
-                        pygame.mixer.music.unpause()
-                    except Exception as e:
-                        print(f"[VIDSOR] Audio unpause error on resume: {e}")
-                        # If unpause fails, restart audio thread
-                        if self.audio_thread:
-                            self.audio_thread = threading.Thread(
-                                target=self._audio_playback_loop,
-                                daemon=True
-                            )
-                            self.audio_thread.start()
-            
-            # Update playback controls - this will set Pause button correctly
-            self._update_playback_controls()
+        self.playback_controller.on_pause()
     
     def _on_stop(self):
         """Stop preview button handler."""
-        self.edit_state.is_playing = False
-        self.edit_state.preview_time = 0.0
-        self.edit_state.has_started_playback = False  # Reset playback flag
-        self.status_label.config(text="Stopped")
-        
-        # Stop audio
-        if HAS_PYGAME:
-            try:
-                pygame.mixer.music.stop()
-            except:
-                pass
-        
-        # Update playback controls
-        self._update_playback_controls()
-        
-        # Reset preview display
-        if self.preview_canvas:
-            self.preview_canvas.delete("all")
-            self.preview_canvas.pack_forget()
-        
-        # Update timeline to show playhead at start
-        self._draw_timeline()
-        
-        if self.preview_label:
-            if has_video := self.video_clip is not None:
-                timeline_info = ""
-                if self.edit_state.chunks:
-                    highlight_count = sum(1 for c in self.edit_state.chunks if c.chunk_type == "highlight")
-                    total_chunks = len(self.edit_state.chunks)
-                    timeline_info = f"\nTimeline: {total_chunks} chunks ({highlight_count} highlights)"
-                
-                self.preview_label.config(
-                    text=f"Video: {os.path.basename(self.video_path)}\n\n"
-                         f"Duration: {self.video_clip.duration:.1f}s\n"
-                         f"FPS: {self.video_clip.fps}{timeline_info}\n\n"
-                         f"Click Play Preview to view timeline"
-                )
-                self.preview_label.pack(fill=tk.BOTH, expand=True)
-            else:
-                self.preview_label.config(text="No video loaded")
-                self.preview_label.pack(fill=tk.BOTH, expand=True)
+        self.playback_controller.on_stop()
     
     def _on_export(self):
         """Export video button handler."""
@@ -1375,6 +1217,8 @@ class Vidsor:
         return get_chunk_color(chunk_type, is_hovered, is_selected)
     
     def _on_timeline_click(self, event):
+        """Handle timeline click."""
+        self.timeline_controller.on_timeline_click(event)
         """Handle timeline click for chunk selection or playhead dragging."""
         if not self.timeline_canvas:
             return
@@ -1428,6 +1272,8 @@ class Vidsor:
             self.is_dragging_playhead = True
     
     def _on_timeline_drag(self, event):
+        """Handle timeline drag."""
+        self.timeline_controller.on_timeline_drag(event)
         """Handle timeline drag for playhead scrubbing."""
         if not self.is_dragging_playhead or not self.timeline_canvas:
             return
@@ -1470,9 +1316,11 @@ class Vidsor:
     
     def _on_timeline_release(self, event):
         """Handle mouse release after timeline drag."""
-        self.is_dragging_playhead = False
+        self.timeline_controller.on_timeline_release(event)
     
     def _on_timeline_motion(self, event):
+        """Handle mouse motion over timeline."""
+        self.timeline_controller.on_timeline_motion(event)
         """Handle mouse motion over timeline for hover effects."""
         # Don't update hover if dragging playhead
         if self.is_dragging_playhead:
@@ -1505,12 +1353,11 @@ class Vidsor:
     
     def _on_timeline_leave(self, event):
         """Handle mouse leaving timeline."""
-        if self.timeline_hover_chunk is not None:
-            self.timeline_hover_chunk = None
-            self._draw_timeline()
+        self.timeline_controller.on_timeline_leave(event)
     
     def _draw_timeline(self):
         """Draw professional timeline with chunks, playhead, and modern styling."""
+        self.timeline_controller.draw_timeline()
         if not self.timeline_canvas:
             return
         
@@ -1728,6 +1575,12 @@ class Vidsor:
     
     def _create_chat_ui(self, parent_frame):
         """Create chat interface UI components."""
+        self.agent_integration.create_chat_ui(parent_frame)
+        # Sync UI references
+        self.chat_text = self.agent_integration.chat_text
+        self.chat_input = self.agent_integration.chat_input
+        self.chat_send_btn = self.agent_integration.chat_send_btn
+        self.chat_status_label = self.agent_integration.chat_status_label
         # Chat frame
         chat_frame = ttk.LabelFrame(parent_frame, text="Chat Assistant", padding="10")
         chat_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
@@ -1801,6 +1654,7 @@ class Vidsor:
     
     def _on_send_message(self):
         """Handle send message button click."""
+        self.agent_integration.on_send_message()
         if self.is_agent_running:
             messagebox.showwarning("Warning", "Agent is already processing a query. Please wait.")
             return
@@ -2498,38 +2352,9 @@ class Vidsor:
     
     def _add_chat_message(self, role: str, content: str):
         """Add a message to chat history and display it."""
-        # Add to history
-        self.chat_history.append({"role": role, "content": content})
-        
-        # Save to file
-        self._save_chat_history()
-        
-        # Display in chat text widget
-        self.chat_text.config(state=tk.NORMAL)
-        
-        # Format message
-        if role == "user":
-            prefix = "You: "
-            tag = "user"
-        else:
-            prefix = "Assistant: "
-            tag = "assistant"
-        
-        # Get start position before inserting
-        start_pos = self.chat_text.index(tk.END)
-        self.chat_text.insert(tk.END, f"{prefix}{content}\n\n")
-        # Get end position after inserting (before the two newlines)
-        end_pos = self.chat_text.index(f"{start_pos}+{len(prefix)+len(content)}c")
-        
-        # Apply tags for styling
-        self.chat_text.tag_add(tag, start_pos, end_pos)
-        
-        # Configure tag styles
-        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
-        
-        self.chat_text.config(state=tk.DISABLED)
-        self.chat_text.see(tk.END)
+        self.agent_integration.add_chat_message(role, content)
+        # Sync chat history
+        self.chat_history = self.agent_integration.chat_history
     
     def _save_chat_history(self):
         """Save chat history to project folder."""
@@ -2550,47 +2375,12 @@ class Vidsor:
     
     def _load_chat_history(self):
         """Load chat history from project folder."""
-        self.chat_history = ChatManager.load_chat_history(self.current_project_path)
+        self.agent_integration.load_chat_history()
+        self.chat_history = self.agent_integration.chat_history
     
     def _display_chat_history(self):
         """Display all chat history in the chat text widget."""
-        if not self.chat_text:
-            return
-        
-        self.chat_text.config(state=tk.NORMAL)
-        self.chat_text.delete("1.0", tk.END)
-        
-        for msg in self.chat_history:
-            role = msg.get("role", "user")
-            content = msg.get("content", "")
-            
-            if role == "user":
-                prefix = "You: "
-                tag = "user"
-            else:
-                prefix = "Assistant: "
-                tag = "assistant"
-            
-            start_pos = self.chat_text.index(tk.END)
-            self.chat_text.insert(tk.END, f"{prefix}{content}\n\n")
-            end_pos = self.chat_text.index(tk.END)
-            
-            # Apply tags
-            self.chat_text.tag_add(tag, start_pos, f"{end_pos}-2c")
-        
-        # Configure tag styles
-        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
-        
-        self.chat_text.config(state=tk.DISABLED)
-        self.chat_text.see(tk.END)
-        
-        # Update send button state
-        if self.chat_send_btn:
-            has_project = self.current_project_path is not None
-            has_video = self.video_path is not None
-            has_segment_tree = self.segment_tree_path is not None and os.path.exists(self.segment_tree_path)
-            self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree) else tk.DISABLED)
+        self.agent_integration.display_chat_history()
     
     def run(self):
         """Run the Vidsor editor UI."""
