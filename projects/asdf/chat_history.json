@@ -1,0 +1,10 @@
+[
+  {
+    "role": "user",
+    "content": "find all the highlights of the video."
+  },
+  {
+    "role": "assistant",
+    "content": "Found and added 8 clip(s) to timeline:\n  1. 24.0s - 28.0s\n  2. 44.0s - 48.0s\n  3. 127.0s - 133.0s\n  4. 207.0s - 212.0s\n  5. 218.0s - 222.0s\n  6. 222.0s - 227.0s\n  7. 242.0s - 252.0s\n  8. 258.0s - 272.0s"
+  }
+]

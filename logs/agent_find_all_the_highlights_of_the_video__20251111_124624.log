@@ -1,0 +1,180 @@
+2025-11-11 12:46:24 - INFO - ================================================================================
+2025-11-11 12:46:24 - INFO - VIDSOR: Orchestrator Query Processing
+2025-11-11 12:46:24 - INFO - ================================================================================
+2025-11-11 12:46:24 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:46:24 - INFO - Log file: logs\agent_find_all_the_highlights_of_the_video__20251111_124624.log
+2025-11-11 12:46:24 - INFO - Project: C:\Users\Khage\Desktop\Vidagent\projects\asdf
+2025-11-11 12:46:24 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 12:46:24 - INFO - Segment tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 12:46:24 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:46:24 - INFO - Timeline.json is empty - starting with empty timeline
+2025-11-11 12:46:24 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 12:46:24 - INFO - CALLING ORCHESTRATOR
+2025-11-11 12:46:24 - INFO - --------------------------------------------------------------------------------
+2025-11-11 12:46:24 - INFO - 
+================================================================================
+2025-11-11 12:46:24 - INFO - ORCHESTRATOR AGENT RUNNER
+2025-11-11 12:46:24 - INFO - ================================================================================
+2025-11-11 12:46:24 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:46:24 - INFO - Timeline: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:46:24 - INFO - Segment Tree: C:\Users\Khage\Desktop\Vidagent\projects\asdf\segment_tree.json
+2025-11-11 12:46:24 - INFO - Video: C:\Users\Khage\Desktop\Vidagent\projects\asdf\video\camp_5min.mp4
+2025-11-11 12:46:24 - INFO - [LOADING] Loading segment tree...
+2025-11-11 12:46:24 - INFO -   ✓ Segment tree loaded
+2025-11-11 12:46:24 - INFO - 
+[EXECUTING] Running orchestrator agent...
+2025-11-11 12:46:24 - INFO - 
+================================================================================
+2025-11-11 12:46:24 - INFO - ORCHESTRATOR AGENT: Timeline Management
+2025-11-11 12:46:24 - INFO - ================================================================================
+2025-11-11 12:46:24 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:46:24 - INFO - Timeline path: C:\Users\Khage\Desktop\Vidagent\projects\asdf\timeline.json
+2025-11-11 12:46:24 - INFO - Timeline loaded: 0 chunks, 0.00s duration
+2025-11-11 12:46:29 - INFO - 
+[OPERATION CLASSIFICATION]
+2025-11-11 12:46:29 - INFO -   Operation: FIND_HIGHLIGHTS
+2025-11-11 12:46:29 - INFO -   Confidence: 1.00
+2025-11-11 12:46:29 - INFO -   Parameters: {'timeline_indices': [], 'insert_position': None, 'insert_before_index': None, 'insert_after_index': None, 'insert_between_indices': [], 'search_query': None, 'temporal_constraint': None, 'temporal_type': None, 'reorder_from_index': None, 'reorder_to_index': None, 'trim_index': None, 'trim_seconds': None, 'trim_from': None}
+2025-11-11 12:46:29 - INFO - 
+[OPERATION] FIND_HIGHLIGHTS
+2025-11-11 12:46:29 - INFO -   Calling planner agent to find highlights...
+2025-11-11 12:46:29 - INFO - 
+============================================================
+2025-11-11 12:46:29 - INFO - PLANNER AGENT: Multi-Modal Search Strategy
+2025-11-11 12:46:29 - INFO - ============================================================
+2025-11-11 12:46:29 - INFO - Query: find all the highlights of the video.
+2025-11-11 12:46:29 - INFO - 
+[INSPECTION] Inspecting segment tree to understand video content...
+2025-11-11 12:46:29 - INFO -   Found 100 unique keywords
+2025-11-11 12:46:29 - INFO -   Found 31 object classes
+2025-11-11 12:46:29 - INFO -   Sample keywords: 00, 01, 03, 08, 10, 12345, 15, 19, 1k, 20, 2015, 27, 2d, 2k, 2nd...
+2025-11-11 12:46:29 - INFO -   Inspection completed in 0.00s
+2025-11-11 12:46:29 - INFO - 
+[NARRATION] Creating video narrative understanding...
+2025-11-11 12:46:36 - INFO -   Video theme: outdoor adventure activities with airplanes and fishing
+2025-11-11 12:46:36 - INFO -   Narrative summary: The video captures an outdoor adventure featuring a man on a hillside, activities like flying a heli...
+2025-11-11 12:46:36 - INFO -   Narrative structure:
+2025-11-11 12:46:36 - INFO -     INTRO: 360, action, area, mountains
+2025-11-11 12:46:36 - INFO -     BODY: airplane, activities, fishing, enjoying
+2025-11-11 12:46:36 - INFO -     ENDING: fish, outdoor, moment
+2025-11-11 12:46:36 - INFO -   Highlight keywords: action, amazing, activities
+2025-11-11 12:46:36 - INFO -   Narrative creation completed in 7.34s
+2025-11-11 12:46:36 - INFO - 
+[STEP 1] Generating search queries for all modalities...
+2025-11-11 12:46:36 - INFO - [LLM] Calling LLM to generate search queries...
+2025-11-11 12:46:40 - INFO - [LLM] Query generation completed in 4.01s
+2025-11-11 12:46:40 - DEBUG - [LLM RESPONSE] ```json
+{
+    "semantic_queries": [
+        "find highlights featuring action and amazing activities in the outdoor adventure",
+        "show me the exciting moments with airplanes and fishing",
+        "what are the memorable moments of the young boy holding a fish"
+    ],
+    "hierarchical_keyword...
+2025-11-11 12:46:40 - INFO - 
+[SEARCH PLAN] Generated search queries:
+2025-11-11 12:46:40 - INFO -   [INSPECTION] Used segment tree inspection: Yes
+2025-11-11 12:46:40 - INFO -   Semantic queries: ['find highlights featuring action and amazing activities in the outdoor adventure', 'show me the exciting moments with airplanes and fishing', 'what are the memorable moments of the young boy holding a fish']
+2025-11-11 12:46:40 - INFO -   Hierarchical keywords: ['360', 'action', 'area', 'mountains', 'airplane', 'activities', 'fishing', 'enjoying', 'fish', 'outdoor', 'moment']
+2025-11-11 12:46:40 - INFO -   Object classes: ['airplane', 'boat']
+2025-11-11 12:46:40 - INFO -   Activity: fishing
+2025-11-11 12:46:40 - INFO -   Is general highlight query: True
+2025-11-11 12:46:40 - INFO - 
+[AGENTIC] Phase 1: Semantic Query Analysis...
+2025-11-11 12:46:47 - INFO -   Query type: AGGREGATE
+2025-11-11 12:46:47 - INFO -   Search intent: semantic
+2025-11-11 12:46:47 - INFO -   Target entities: {'objects': [], 'activities': [], 'concepts': []}
+2025-11-11 12:46:47 - INFO -   Special handling: {'negation': False, 'temporal': False, 'conditional': False, 'counting': False}
+2025-11-11 12:46:47 - INFO -   Reasoning: The query is asking for a collection of highlights from the video, which implies a request for all significant moments without specific conditions or filters. This indicates an aggregate search for all relevant content, hence the query type is AGGREGATE.
+2025-11-11 12:46:47 - INFO -   Analysis completed in 6.28s
+2025-11-11 12:46:47 - INFO - 
+[AGENTIC] Phase 2: Dynamic Strategy Planning...
+2025-11-11 12:46:53 - INFO -   Strategy operations: 1
+2025-11-11 12:46:53 - INFO -   Post-processing: ['rank_by_relevance']
+2025-11-11 12:46:53 - INFO -   Reasoning: This strategy focuses solely on hierarchical search as the query does not require object detection, activity detection, or semantic search. The absence of target entities means the search will rely on keyword-based tree lookup to aggregate relevant results.
+2025-11-11 12:46:53 - INFO -   Strategy planning completed in 6.31s
+2025-11-11 12:46:53 - INFO - 
+[VALIDATION] Cross-validating with search plan...
+2025-11-11 12:46:53 - INFO - 
+[WEIGHT CONFIGURATION]
+2025-11-11 12:46:53 - INFO -   Semantic weight: 0.40
+2025-11-11 12:46:53 - INFO -   Activity weight: 0.30
+2025-11-11 12:46:53 - INFO -   Hierarchical weight: 1.00
+2025-11-11 12:46:53 - INFO -   Threshold: 0.30
+2025-11-11 12:46:53 - INFO - 
+[STEP 2] Executing search with hierarchical tree + semantic search...
+2025-11-11 12:46:53 - INFO - 
+  [SEARCH TYPE: General Highlights (Hierarchical Tree)]
+2025-11-11 12:46:53 - INFO -       Found 20 highlight candidates
+2025-11-11 12:46:53 - INFO - 
+  [SEARCH TYPE: Hierarchical Tree (Fast Keyword Lookup)]
+2025-11-11 12:46:53 - INFO -     Keyword: '360'
+2025-11-11 12:46:53 - INFO -       Found 13 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'action'
+2025-11-11 12:46:53 - INFO -       Found 10 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'area'
+2025-11-11 12:46:53 - INFO -       Found 19 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'mountains'
+2025-11-11 12:46:53 - INFO -       Found 8 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'airplane'
+2025-11-11 12:46:53 - INFO -       Found 9 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'activities'
+2025-11-11 12:46:53 - INFO -       Found 4 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'fishing'
+2025-11-11 12:46:53 - INFO -       Found 20 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'enjoying'
+2025-11-11 12:46:53 - INFO -       Found 6 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'fish'
+2025-11-11 12:46:53 - INFO -       Found 18 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'outdoor'
+2025-11-11 12:46:53 - INFO -       Found 17 leaf node matches
+2025-11-11 12:46:53 - INFO -     Keyword: 'moment'
+2025-11-11 12:46:53 - INFO -       Found 9 leaf node matches
+2025-11-11 12:46:53 - INFO - 
+  [SEARCH TYPE: Semantic Search (Visual + Audio)]
+2025-11-11 12:46:53 - INFO -     Query: 'find highlights featuring action and amazing activities in the outdoor adventure'
+2025-11-11 12:46:54 - INFO -       Found 2 matches (took 1.15s)
+2025-11-11 12:46:54 - INFO -     Query: 'show me the exciting moments with airplanes and fishing'
+2025-11-11 12:46:54 - INFO -       Found 15 matches (took 0.03s)
+2025-11-11 12:46:54 - INFO -     Query: 'what are the memorable moments of the young boy holding a fish'
+2025-11-11 12:46:54 - INFO -       Found 15 matches (took 0.01s)
+2025-11-11 12:46:54 - INFO - 
+  [SEARCH TYPE: Object Detection (YOLO)]
+2025-11-11 12:46:54 - INFO -     Class: 'airplane'
+2025-11-11 12:46:54 - INFO -       Found 39 detections
+2025-11-11 12:46:54 - INFO -     Class: 'boat'
+2025-11-11 12:46:54 - INFO -       Found 29 detections
+2025-11-11 12:46:54 - INFO - 
+  [SEARCH TYPE: Activity Pattern Matching]
+2025-11-11 12:46:54 - INFO -     Activity: fishing
+2025-11-11 12:46:54 - INFO -       Evidence scenes before validation: 7
+2025-11-11 12:47:01 - INFO - 
+================================================================================
+2025-11-11 12:47:01 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 12:47:01 - INFO - ================================================================================
+2025-11-11 12:47:01 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 12:47:01 - ERROR - Status: ✗ Failed
+2025-11-11 12:47:01 - ERROR - Error: 'NoneType' object has no attribute 'get'
+2025-11-11 12:47:01 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 12:47:01 - INFO - ORCHESTRATOR RESULTS
+2025-11-11 12:47:01 - INFO - --------------------------------------------------------------------------------
+2025-11-11 12:47:01 - INFO - Operation: FIND_HIGHLIGHTS
+2025-11-11 12:47:01 - INFO - Success: False
+2025-11-11 12:47:01 - INFO - Timeline chunks after operation: 0
+2025-11-11 12:47:01 - INFO - Operation result keys: ['success', 'error', 'chunks_created']
+2025-11-11 12:47:01 - INFO -   Chunks created: 0
+2025-11-11 12:47:01 - ERROR - Operation failed: 'NoneType' object has no attribute 'get'
+2025-11-11 12:47:01 - INFO - Response message: Error: 'NoneType' object has no attribute 'get'...
+2025-11-11 12:47:01 - INFO - Skipping timeline UI update (success=False or no timeline_chunks)
+2025-11-11 12:47:01 - INFO - 
+--------------------------------------------------------------------------------
+2025-11-11 12:47:01 - INFO - UPDATING CHAT UI
+2025-11-11 12:47:01 - INFO - --------------------------------------------------------------------------------
+2025-11-11 12:47:01 - INFO - Chat UI update scheduled
+2025-11-11 12:47:01 - INFO - 
+================================================================================
+2025-11-11 12:47:01 - INFO - QUERY PROCESSING COMPLETED
+2025-11-11 12:47:01 - INFO - ================================================================================
+2025-11-11 12:47:01 - INFO - Agent thread completed

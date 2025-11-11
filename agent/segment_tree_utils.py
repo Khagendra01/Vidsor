@@ -66,8 +66,11 @@ class SegmentTreeQuery:
     def get_second_by_time(self, time_seconds: float) -> Optional[Dict]:
         """Get second data for a specific time."""
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             time_range = second_data.get("time_range", [])
-            if time_range[0] <= time_seconds <= time_range[1]:
+            if time_range and len(time_range) >= 2 and time_range[0] <= time_seconds <= time_range[1]:
                 return second_data
         return None
     
@@ -94,9 +97,14 @@ class SegmentTreeQuery:
         results = []
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             time_range = second_data.get("time_range", [])
             
             # Filter by time range if specified
+            if not time_range or len(time_range) < 2:
+                continue
             if time_start is not None and time_range[1] < time_start:
                 continue
             if time_end is not None and time_range[0] > time_end:
@@ -130,6 +138,9 @@ class SegmentTreeQuery:
         timeline = []
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             second_idx = second_data.get("second", 0)
             time_range = second_data.get("time_range", [])
             
@@ -166,9 +177,14 @@ class SegmentTreeQuery:
         results = []
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             time_range = second_data.get("time_range", [])
             
             # Filter by time range if specified
+            if not time_range or len(time_range) < 2:
+                continue
             if time_start is not None and time_range[1] < time_start:
                 continue
             if time_end is not None and time_range[0] > time_end:
@@ -216,6 +232,9 @@ class SegmentTreeQuery:
         class_counts = defaultdict(int)
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             for group in second_data.get("detection_groups", []):
                 for detection in group.get("detections", []):
                     class_name = detection.get("class_name")
@@ -234,8 +253,17 @@ class SegmentTreeQuery:
         track_ids = set()
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             for group in second_data.get("detection_groups", []):
+                # Skip None values in detection_groups
+                if group is None:
+                    continue
                 for detection in group.get("detections", []):
+                    # Skip None values in detections
+                    if detection is None:
+                        continue
                     track_id = detection.get("track_id")
                     if track_id is not None:
                         track_ids.add(track_id)
@@ -257,8 +285,13 @@ class SegmentTreeQuery:
         relevant_seconds = []
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             time_range = second_data.get("time_range", [])
             
+            if not time_range or len(time_range) < 2:
+                continue
             if time_start is not None and time_range[1] < time_start:
                 continue
             if time_end is not None and time_range[0] > time_end:
@@ -332,8 +365,13 @@ class SegmentTreeQuery:
         all_detections = []
         
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             time_range = second_data.get("time_range", [])
             
+            if not time_range or len(time_range) < 2:
+                continue
             if time_range[1] < time_start or time_range[0] > time_end:
                 continue
             
@@ -479,6 +517,9 @@ class SegmentTreeQuery:
         
         # Search for activity-related descriptions
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             second_idx = second_data.get("second", 0)
             time_range = second_data.get("time_range", [])
             
@@ -517,6 +558,9 @@ class SegmentTreeQuery:
             
             # Check BLIP descriptions
             for blip_desc in second_data.get("blip_descriptions", []):
+                # Skip None values in blip_descriptions
+                if blip_desc is None:
+                    continue
                 desc_text = blip_desc.get("description", "").strip()
                 if desc_text:
                     desc_lower = desc_text.lower()
@@ -1559,6 +1603,9 @@ class SegmentTreeQuery:
         # Collect sample descriptions
         descriptions_collected = 0
         for second_data in self.seconds:
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             if descriptions_collected >= max_sample_descriptions:
                 break
             unified_desc = second_data.get("unified_description", "")

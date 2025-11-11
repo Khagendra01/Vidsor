@@ -27,6 +27,9 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
     def time_to_second_idx(time_seconds: float) -> Optional[int]:
         """Map a time in seconds to the corresponding second index."""
         for idx, second_data in enumerate(feature_extractor.segment_tree.seconds):
+            # Skip None values that might be in the seconds list
+            if second_data is None:
+                continue
             tr = second_data.get("time_range", [])
             if tr and len(tr) >= 2 and tr[0] <= time_seconds <= tr[1]:
                 return idx

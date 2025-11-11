@@ -362,6 +362,15 @@ CRITICAL INSTRUCTIONS:
         start_time = time.time()
         semantic_analysis = analyze_query_semantics(query, llm)
         elapsed = time.time() - start_time
+        # Ensure semantic_analysis is not None
+        if semantic_analysis is None:
+            semantic_analysis = {
+                "query_type": "POSITIVE",
+                "search_intent": "hybrid",
+                "target_entities": {},
+                "special_handling": {},
+                "reasoning": "Default analysis (LLM returned None)"
+            }
         log_info(f"  Query type: {semantic_analysis.get('query_type', 'POSITIVE')}")
         log_info(f"  Search intent: {semantic_analysis.get('search_intent', 'hybrid')}")
         log_info(f"  Target entities: {semantic_analysis.get('target_entities', {})}")
@@ -590,6 +599,9 @@ CRITICAL INSTRUCTIONS:
                     def time_to_second_idx(time_seconds: float) -> Optional[int]:
                         """Map a time in seconds to the corresponding second index."""
                         for idx, second_data in enumerate(segment_tree.seconds):
+                            # Skip None values that might be in the seconds list
+                            if second_data is None:
+                                continue
                             tr = second_data.get("time_range", [])
                             if tr and len(tr) >= 2 and tr[0] <= time_seconds <= tr[1]:
                                 return idx
@@ -655,12 +667,14 @@ CRITICAL INSTRUCTIONS:
                     result["evidence_name"] = "fish caught"
                     # Validate evidence descriptions to filter false positives
                     log_info(f"      Evidence scenes before validation: {result.get('fish_holding_count', 0)}")
-                    result = validate_activity_evidence(query, result, llm, verbose=verbose)
+                    validated_result = validate_activity_evidence(query, result, llm, verbose=verbose)
+                    if validated_result is None:
+                        validated_result = result  # Fallback to original if validation returns None
                     # Update fish-specific fields after validation
-                    result["fish_holding_count"] = result.get("evidence_count", 0)
-                    result["fish_caught"] = result.get("detected", False)
-                    all_search_results.append(result)
-                    log_info(f"      Evidence scenes after validation: {result.get('fish_holding_count', 0)}")
+                    validated_result["fish_holding_count"] = validated_result.get("evidence_count", 0)
+                    validated_result["fish_caught"] = validated_result.get("detected", False)
+                    all_search_results.append(validated_result)
+                    log_info(f"      Evidence scenes after validation: {validated_result.get('fish_holding_count', 0)}")
                 elif activity_keywords:
                     log_info(f"    Activity: {activity_name or 'general'}")
                     result = segment_tree.check_activity(
@@ -674,9 +688,11 @@ CRITICAL INSTRUCTIONS:
                     result["evidence_name"] = activity_name or "activity"
                     # Validate evidence descriptions to filter false positives
                     log_info(f"      Evidence scenes before validation: {result.get('evidence_count', 0)}")
-                    result = validate_activity_evidence(query, result, llm, verbose=verbose)
-                    all_search_results.append(result)
-                    log_info(f"      Evidence scenes after validation: {result.get('evidence_count', 0)}")
+                    validated_result = validate_activity_evidence(query, result, llm, verbose=verbose)
+                    if validated_result is None:
+                        validated_result = result  # Fallback to original if validation returns None
+                    all_search_results.append(validated_result)
+                    log_info(f"      Evidence scenes after validation: {validated_result.get('evidence_count', 0)}")
             
             log_info(f"\n[AGGREGATION] Collected results from all search types:")
             log_info(f"  Total results: {len(all_search_results)}")
@@ -694,7 +710,9 @@ CRITICAL INSTRUCTIONS:
             negated_results = [r for r in all_search_results if r is not None and r.get("search_type") == "object_negated"]
             
             # CORE FIX: For negative queries, only score the seconds identified by negation logic
-            is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
+            is_negative = False
+            if semantic_analysis:
+                is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
             negated_second_indices: Optional[Set[int]] = None
             
             if is_negative and negated_results:

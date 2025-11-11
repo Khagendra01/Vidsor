@@ -227,7 +227,7 @@ class SegmentTreeGenerator:
             print(f"Processing {num_seconds} seconds (estimated from tracking data, max frame: {max_frame})...")
         
         # Process seconds in parallel
-        seconds_data = []
+        seconds_data = [None] * num_seconds  # Pre-allocate array to maintain structure
         with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
             futures = {
                 executor.submit(self._process_second, i, frames_data, max_frame): i
@@ -238,12 +238,30 @@ class SegmentTreeGenerator:
                 second_idx = futures[future]
                 try:
                     result = future.result()
-                    seconds_data.append(result)
+                    seconds_data[second_idx] = result
                     print(f"Completed second {second_idx + 1}/{num_seconds}")
                 except Exception as e:
                     print(f"Error processing second {second_idx}: {e}")
+                    # Create a minimal fallback entry instead of leaving None
+                    seconds_data[second_idx] = {
+                        "second": second_idx,
+                        "time_range": [round(second_idx, 3), round(second_idx + 0.999, 3)],
+                        "frame_range": [second_idx * FPS + 1, min((second_idx + 1) * FPS, max_frame)],
+                        "unified_description": f"Error processing second {second_idx}: {str(e)}",
+                        "llava_metadata": {
+                            "model": "error",
+                            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+                            "processing_time": 0,
+                            "error": str(e)
+                        },
+                        "blip_descriptions": [],
+                        "detection_groups": []
+                    }
         
-        # Sort by second index
+        # Convert to sparse array (remove None placeholders, keep only valid entries)
+        # This maintains compatibility with code that expects sparse arrays
+        seconds_data = [s for s in seconds_data if s is not None]
+        # Sort by second index to ensure proper ordering
         seconds_data.sort(key=lambda x: x["second"])
         
         # Generate transcriptions
