@@ -109,9 +109,21 @@ def handle_find_highlights(
     try:
         planner_result = planner_agent(planner_state)
         
-        # Check if planner_result is None
+        # Check if planner_result is None or not a dictionary
         if planner_result is None:
             error_msg = "Planner agent returned None - this may indicate an error in the planner"
+            if logger:
+                logger.error(f"  ✗ {error_msg}")
+            elif verbose:
+                print(f"  ✗ {error_msg}")
+            return {
+                "success": False,
+                "error": error_msg,
+                "chunks_created": []
+            }
+        
+        if not isinstance(planner_result, dict):
+            error_msg = f"Planner agent returned invalid type: {type(planner_result).__name__}, expected dict"
             if logger:
                 logger.error(f"  ✗ {error_msg}")
             elif verbose:
@@ -167,6 +179,9 @@ def handle_find_highlights(
             
             # Look for matching search result
             for result in search_results:
+                # Skip None values that might have been added to search_results
+                if result is None:
+                    continue
                 result_tr = result.get("time_range", [])
                 if result_tr and len(result_tr) >= 2:
                     if abs(result_tr[0] - start_time) < 1.0:  # Close match
@@ -642,6 +657,9 @@ def handle_replace(
             audio_description = ""
             
             for result in search_results:
+                # Skip None values that might have been added to search_results
+                if result is None:
+                    continue
                 result_tr = result.get("time_range", [])
                 if result_tr and len(result_tr) >= 2:
                     if abs(result_tr[0] - start_time) < 1.0:
@@ -827,6 +845,9 @@ def handle_insert(
             audio_description = ""
             
             for result in search_results:
+                # Skip None values that might have been added to search_results
+                if result is None:
+                    continue
                 result_tr = result.get("time_range", [])
                 if result_tr and len(result_tr) >= 2:
                     if abs(result_tr[0] - start_time) < 1.0:
@@ -1057,6 +1078,9 @@ def handle_find_broll(
             audio_description = ""
             
             for result in search_results:
+                # Skip None values that might have been added to search_results
+                if result is None:
+                    continue
                 result_tr = result.get("time_range", [])
                 if result_tr and len(result_tr) >= 2:
                     if abs(result_tr[0] - start_time) < 1.0:

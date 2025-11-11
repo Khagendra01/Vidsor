@@ -36,6 +36,9 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
     # Build lookup maps for search results
     semantic_map = {}  # second_idx -> max_score
     for result in semantic_results:
+        # Skip None values that might have been added to search results
+        if result is None:
+            continue
         tr = result.get("time_range", [])
         if tr and len(tr) >= 2:
             second_idx = time_to_second_idx(tr[0])
@@ -45,7 +48,13 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
     
     activity_map = {}  # second_idx -> score
     for result in activity_results:
+        # Skip None values that might have been added to search results
+        if result is None:
+            continue
         for evidence in result.get("evidence", []):
+            # Skip None values in evidence list
+            if evidence is None:
+                continue
             tr = evidence.get("time_range", [])
             if tr and len(tr) >= 2:
                 second_idx = time_to_second_idx(tr[0])
@@ -54,6 +63,9 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
     
     hierarchical_map = {}  # second_idx -> score
     for result in hierarchical_results:
+        # Skip None values that might have been added to search results
+        if result is None:
+            continue
         tr = result.get("time_range", [])
         if tr and len(tr) >= 2:
             second_idx = time_to_second_idx(tr[0])

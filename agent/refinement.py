@@ -140,6 +140,9 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
         # Map time ranges to their descriptions from search_results
         range_descriptions = {}
         for result in previous_search_results:
+            # Skip None values that might have been added to search_results
+            if result is None:
+                continue
             result_tr = result.get("time_range", [])
             if result_tr and len(result_tr) >= 2:
                 tr_key = (result_tr[0], result_tr[1])

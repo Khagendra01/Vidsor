@@ -687,10 +687,11 @@ CRITICAL INSTRUCTIONS:
             start_time = time.time()
             
             # Separate results by type for scoring
-            semantic_results = [r for r in all_search_results if r.get("search_type") == "semantic"]
-            activity_results = [r for r in all_search_results if r.get("search_type") == "activity"]
-            hierarchical_results = [r for r in all_search_results if r.get("search_type") in ["hierarchical", "hierarchical_highlight"]]
-            negated_results = [r for r in all_search_results if r.get("search_type") == "object_negated"]
+            # Filter out None values before accessing dictionary methods
+            semantic_results = [r for r in all_search_results if r is not None and r.get("search_type") == "semantic"]
+            activity_results = [r for r in all_search_results if r is not None and r.get("search_type") == "activity"]
+            hierarchical_results = [r for r in all_search_results if r is not None and r.get("search_type") in ["hierarchical", "hierarchical_highlight"]]
+            negated_results = [r for r in all_search_results if r is not None and r.get("search_type") == "object_negated"]
             
             # CORE FIX: For negative queries, only score the seconds identified by negation logic
             is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
@@ -839,6 +840,9 @@ CRITICAL INSTRUCTIONS:
                 # Map time ranges to their descriptions from search_results
                 range_descriptions = {}
                 for result in search_results:
+                    # Skip None values that might have been added to search_results
+                    if result is None:
+                        continue
                     result_tr = result.get("time_range", [])
                     if result_tr and len(result_tr) >= 2:
                         tr_key = (result_tr[0], result_tr[1])
