@@ -717,12 +717,16 @@ class Vidsor:
         
         # Bind timeline interactions
         self.timeline_canvas.bind("<Button-1>", self._on_timeline_click)
+        self.timeline_canvas.bind("<B1-Motion>", self._on_timeline_drag)
+        self.timeline_canvas.bind("<ButtonRelease-1>", self._on_timeline_release)
         self.timeline_canvas.bind("<Motion>", self._on_timeline_motion)
         self.timeline_canvas.bind("<Leave>", self._on_timeline_leave)
         
-        # Track hover state
+        # Track hover state and dragging
         self.timeline_hover_chunk = None
+        self.is_dragging_playhead = False
         self.timeline_update_counter = 0  # Counter for throttling timeline updates
+        self.audio_needs_restart = False  # Flag to indicate audio needs to restart from new position
         
         # Initialize UI state
         self._update_ui_state()
@@ -1132,12 +1136,32 @@ class Vidsor:
             return
         
         try:
-            # Build composite audio from timeline chunks
+            # Determine start time for audio playback
+            # Always start from current preview_time to keep audio in sync with video
+            # (preview_time is 0.0 at initial start, or current position after scrubbing)
+            start_timeline_time = self.edit_state.preview_time
+            self.audio_needs_restart = False  # Reset flag after using it
+            
+            # Build composite audio from timeline chunks starting from start_timeline_time
             audio_segments = []
             for chunk in self.edit_state.chunks:
+                # Skip chunks that end before the start time
+                if chunk.end_time <= start_timeline_time:
+                    continue
+                
                 # Use original timing to extract from source audio
                 extract_start = chunk.original_start_time if chunk.original_start_time is not None else chunk.start_time
                 extract_end = chunk.original_end_time if chunk.original_end_time is not None else chunk.end_time
+                
+                # If this chunk contains the start time, trim it
+                if chunk.start_time <= start_timeline_time < chunk.end_time:
+                    # Calculate position within this chunk
+                    chunk_position = (start_timeline_time - chunk.start_time) / (chunk.end_time - chunk.start_time)
+                    # Map to original video time
+                    if chunk.original_start_time is not None and chunk.original_end_time is not None:
+                        extract_start = chunk.original_start_time + chunk_position * (chunk.original_end_time - chunk.original_start_time)
+                    else:
+                        extract_start = chunk.start_time + chunk_position * (chunk.end_time - chunk.start_time)
                 
                 try:
                     # Extract audio segment
@@ -1256,6 +1280,116 @@ class Vidsor:
             except:
                 pass
     
+    def _seek_to_time(self, timeline_time: float):
+        """
+        Seek to a specific time in the timeline and update the video preview.
+        
+        Args:
+            timeline_time: Time in the timeline (in seconds)
+        """
+        if not self.video_clip:
+            return
+        
+        if not HAS_PIL:
+            return
+        
+        # Update preview time
+        self.edit_state.preview_time = timeline_time
+        
+        # Stop audio if playing (audio will restart from new position when resumed)
+        if self.edit_state.is_playing and HAS_PYGAME:
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+            self.audio_needs_restart = True
+        
+        # Mark that playback has started so Resume button appears
+        self.edit_state.has_started_playback = True
+        if self.root:
+            self.root.after(0, self._update_playback_controls)
+        
+        # Calculate timeline duration
+        if not self.edit_state.chunks:
+            timeline_duration = self.video_clip.duration
+            # If no chunks, just use the timeline time directly
+            original_time = max(0, min(timeline_time, self.video_clip.duration - 0.1))
+        else:
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+            
+            # Find which chunk we're in
+            current_chunk = None
+            for chunk in self.edit_state.chunks:
+                if chunk.start_time <= timeline_time < chunk.end_time:
+                    current_chunk = chunk
+                    break
+            
+            if current_chunk:
+                # Calculate position within this chunk (0.0 to 1.0)
+                chunk_position = (timeline_time - current_chunk.start_time) / (current_chunk.end_time - current_chunk.start_time)
+                
+                # Map to original video time
+                if current_chunk.original_start_time is not None and current_chunk.original_end_time is not None:
+                    original_time = current_chunk.original_start_time + chunk_position * (current_chunk.original_end_time - current_chunk.original_start_time)
+                else:
+                    # Fallback to sequential timing
+                    original_time = current_chunk.start_time + chunk_position * (current_chunk.end_time - current_chunk.start_time)
+            else:
+                # Between chunks or past end - use last chunk's end or video duration
+                if self.edit_state.chunks:
+                    last_chunk = self.edit_state.chunks[-1]
+                    if last_chunk.original_end_time is not None:
+                        original_time = last_chunk.original_end_time
+                    else:
+                        original_time = last_chunk.end_time
+                else:
+                    original_time = timeline_time
+            
+            # Ensure we're within video bounds
+            original_time = max(0, min(original_time, self.video_clip.duration - 0.1))
+        
+        try:
+            # Get frame from source video at original time
+            frame = self.video_clip.get_frame(original_time)
+            
+            # Convert frame to PIL Image
+            frame_pil = Image.fromarray(frame)
+            
+            # Resize to fit preview canvas (maintain aspect ratio)
+            max_width = 800
+            max_height = 500
+            
+            # Calculate resize dimensions maintaining aspect ratio
+            img_width, img_height = frame_pil.size
+            aspect = img_width / img_height
+            max_aspect = max_width / max_height
+            
+            if max_aspect > aspect:
+                # Max area is wider - fit to height
+                new_height = max_height
+                new_width = int(new_height * aspect)
+            else:
+                # Max area is taller - fit to width
+                new_width = max_width
+                new_height = int(new_width / aspect)
+            
+            # Resize frame
+            frame_pil = frame_pil.resize((new_width, new_height), Image.Resampling.LANCZOS)
+            
+            # Convert to PhotoImage
+            photo = ImageTk.PhotoImage(image=frame_pil)
+            
+            # Update preview frame in main thread
+            if self.root:
+                self.root.after(0, lambda p=photo: self._update_preview_frame(p))
+            
+            # Update timeline to show new playhead position
+            if self.timeline_canvas:
+                self._draw_timeline()
+                
+        except Exception as e:
+            print(f"[VIDSOR] Error seeking to time {timeline_time}: {e}")
+    
     def _update_preview_frame(self, photo):
         """Update preview canvas with new frame (called from main thread)."""
         if self.preview_canvas:
@@ -1371,15 +1505,28 @@ class Vidsor:
             
             # Check if audio thread is still alive - if not, restart it
             if self.audio_clip and HAS_PYGAME:
-                if not self.audio_thread or not self.audio_thread.is_alive():
-                    # Audio thread has exited - restart it
+                # If audio needs restart (e.g., after scrubbing), stop current audio and restart
+                if self.audio_needs_restart:
+                    try:
+                        pygame.mixer.music.stop()
+                    except:
+                        pass
+                    # Stop the old audio thread if it's still running
+                    if self.audio_thread and self.audio_thread.is_alive():
+                        # The thread will exit when it sees has_started_playback is False or audio stops
+                        # We'll start a new one below
+                        pass
+                
+                if not self.audio_thread or not self.audio_thread.is_alive() or self.audio_needs_restart:
+                    # Audio thread has exited or needs restart - restart it from current position
+                    # Note: audio_needs_restart flag will be reset inside _audio_playback_loop
                     self.audio_thread = threading.Thread(
                         target=self._audio_playback_loop,
                         daemon=True
                     )
                     self.audio_thread.start()
                 else:
-                    # Audio thread is alive - just unpause
+                    # Audio thread is alive and doesn't need restart - just unpause
                     try:
                         pygame.mixer.music.unpause()
                     except Exception as e:
@@ -1502,12 +1649,109 @@ class Vidsor:
                 return ("#4ECDC4", "#2E9B94", "#6EDDD5")  # Teal gradient
     
     def _on_timeline_click(self, event):
-        """Handle timeline click for chunk selection."""
-        # TODO: Implement chunk selection and trimming
-        pass
+        """Handle timeline click for chunk selection or playhead dragging."""
+        if not self.timeline_canvas:
+            return
+        
+        # Pause playback if it's currently running for better drag handling
+        if self.edit_state.is_playing:
+            self.edit_state.is_playing = False
+            self._update_playback_controls()
+        
+        # Get canvas coordinates
+        canvas_x = self.timeline_canvas.canvasx(event.x)
+        
+        # Calculate timeline duration and scale
+        if not self.edit_state.chunks:
+            if not self.video_clip:
+                return
+            timeline_duration = self.video_clip.duration
+        else:
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        
+        canvas_width = self.timeline_canvas.winfo_width() or 1000
+        scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
+        
+        # Check if clicking on/near the playhead (within 10 pixels)
+        playhead_x = self.edit_state.preview_time * scale
+        playhead_tolerance = 10
+        
+        if abs(canvas_x - playhead_x) <= playhead_tolerance:
+            # Clicked on playhead - start dragging
+            self.is_dragging_playhead = True
+            # Stop playback and audio if playing
+            if self.edit_state.is_playing:
+                self.edit_state.is_playing = False
+            # Stop audio completely
+            if HAS_PYGAME:
+                try:
+                    pygame.mixer.music.stop()
+                except:
+                    pass
+            # Mark that audio needs restart from new position
+            self.audio_needs_restart = True
+            # Mark that playback has started so Resume button appears
+            self.edit_state.has_started_playback = True
+            self._update_playback_controls()
+        else:
+            # Clicked elsewhere on timeline - seek to that position
+            new_time = canvas_x / scale
+            new_time = max(0, min(new_time, timeline_duration))
+            self._seek_to_time(new_time)
+            # Start dragging from this position
+            self.is_dragging_playhead = True
+    
+    def _on_timeline_drag(self, event):
+        """Handle timeline drag for playhead scrubbing."""
+        if not self.is_dragging_playhead or not self.timeline_canvas:
+            return
+        
+        # Stop playback and audio if it's currently running for better drag handling
+        if self.edit_state.is_playing:
+            self.edit_state.is_playing = False
+        # Stop audio completely
+        if HAS_PYGAME:
+            try:
+                pygame.mixer.music.stop()
+            except:
+                pass
+        # Mark that audio needs restart from new position
+        self.audio_needs_restart = True
+        # Mark that playback has started so Resume button appears
+        self.edit_state.has_started_playback = True
+        self._update_playback_controls()
+        
+        # Get canvas coordinates
+        canvas_x = self.timeline_canvas.canvasx(event.x)
+        
+        # Calculate timeline duration and scale
+        if not self.edit_state.chunks:
+            if not self.video_clip:
+                return
+            timeline_duration = self.video_clip.duration
+        else:
+            timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
+        
+        canvas_width = self.timeline_canvas.winfo_width() or 1000
+        scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
+        
+        # Calculate new time from mouse position
+        new_time = canvas_x / scale
+        new_time = max(0, min(new_time, timeline_duration))
+        
+        # Seek to new time
+        self._seek_to_time(new_time)
+    
+    def _on_timeline_release(self, event):
+        """Handle mouse release after timeline drag."""
+        self.is_dragging_playhead = False
     
     def _on_timeline_motion(self, event):
         """Handle mouse motion over timeline for hover effects."""
+        # Don't update hover if dragging playhead
+        if self.is_dragging_playhead:
+            return
+        
         if not self.edit_state.chunks or not self.timeline_canvas:
             return
         

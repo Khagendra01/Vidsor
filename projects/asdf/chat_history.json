@@ -1,42 +1,10 @@
 [
   {
     "role": "user",
-    "content": "find all the moment when they catch the fish."
+    "content": "find all the highlights of the video."
   },
   {
     "role": "assistant",
-    "content": "Found and added 10 clip(s) to timeline:\n  1. 127.0s - 133.0s\n  2. 150.0s - 162.0s\n  3. 184.0s - 192.0s\n  4. 196.0s - 201.0s\n  5. 202.0s - 206.0s\n  6. 215.0s - 221.0s\n  7. 222.0s - 227.0s\n  8. 235.0s - 239.0s\n  9. 239.0s - 243.0s\n  10. 242.0s - 252.0s"
-  },
-  {
-    "role": "user",
-    "content": "can you replace the first two clip with the two clip when they were in helicopter"
-  },
-  {
-    "role": "assistant",
-    "content": "Replaced 2 clip(s) with 2 new clip(s)."
-  },
-  {
-    "role": "user",
-    "content": "trim the first clip to 10 sec"
-  },
-  {
-    "role": "assistant",
-    "content": "Error: Operation 'TRIM' not yet implemented"
-  },
-  {
-    "role": "user",
-    "content": "trim the first clip to 10 sec"
-  },
-  {
-    "role": "assistant",
-    "content": "Operation 'TRIM' completed."
-  },
-  {
-    "role": "user",
-    "content": "trim first 5 sec of clip"
-  },
-  {
-    "role": "assistant",
-    "content": "Operation 'TRIM' completed."
+    "content": "Error: 'NoneType' object has no attribute 'get'"
   }
 ]
