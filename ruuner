@@ -11,17 +11,12 @@ hey should we write our own tool or do we have good other python opensource to v
 
 
 
-
-
-3. Modularization opportunities
 C. Weight configuration module (agent/weight_config.py)
 configure_search_weights() - extract weight configuration logic
 validate_weights() - weight validation and capping
 apply_weight_fixes() - highlight query boosts, etc.
-D. Query message builder (agent/query_builder.py)
-build_search_query_message() - extract complex message building logic
-format_content_inspection() - format inspection data for prompts
-format_video_narrative() - format narrative data
+
+3. Modularization opportunities
 E. Search execution module (agent/search_executor.py)
 execute_hierarchical_search() - hierarchical search logic
 execute_semantic_search() - semantic search with adaptive thresholds
