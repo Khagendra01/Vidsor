@@ -300,6 +300,8 @@ def handle_replace(
     
     indices = params.get("timeline_indices", [])
     search_query = params.get("search_query")
+    temporal_constraint = params.get("temporal_constraint")
+    temporal_type = params.get("temporal_type")
     
     if not indices:
         return {
@@ -327,13 +329,24 @@ def handle_replace(
     # Get chunks to be replaced (for reference)
     chunks_to_replace = timeline_manager.get_chunks(indices)
     
+    # Combine search query with temporal constraint if present
+    # This ensures the planner searches with full context
+    full_query = search_query
+    if temporal_constraint:
+        # Incorporate temporal constraint into the search query
+        # e.g., "helicopter clips" + "when they were in helicopter" → "helicopter clips when they were in helicopter"
+        full_query = f"{search_query} {temporal_constraint}"
+    
     if verbose:
         print(f"  Replacing {len(indices)} chunk(s) at indices {indices}")
         print(f"  Search query: '{search_query}'")
+        if temporal_constraint:
+            print(f"  Temporal constraint: '{temporal_constraint}' (type: {temporal_type})")
+        print(f"  Full query to planner: '{full_query}'")
     
     # Call planner to find replacement content
     planner_state = {
-        "user_query": search_query,
+        "user_query": full_query,  # Pass combined query with temporal constraint
         "video_path": state.get("video_path", ""),
         "json_path": state.get("json_path", ""),
         "segment_tree": state.get("segment_tree"),
@@ -341,6 +354,9 @@ def handle_replace(
         "time_ranges": None,
         "needs_clarification": False,
         "messages": state.get("messages", []),
+        # Pass temporal constraint separately for potential filtering
+        "temporal_constraint": temporal_constraint,
+        "temporal_type": temporal_type,
     }
     
     try:

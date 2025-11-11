@@ -140,7 +140,7 @@ def score_seconds(feature_extractor: PerSecondFeatureExtractor,
 
 def group_contiguous_seconds(scored_seconds: List[Dict], 
                               min_duration: float = 1.0,
-                              gap_tolerance: float = 2.0) -> List[Tuple[float, float]]:
+                              gap_tolerance: float = 1.0) -> List[Tuple[float, float]]:
     """
     Group contiguous high-scoring seconds into time ranges.
     """

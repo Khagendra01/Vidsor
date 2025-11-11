@@ -103,6 +103,13 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         log_info("=" * 60)
         log_info(f"Query: {query}")
         
+        # Check for temporal constraints
+        temporal_constraint = state.get("temporal_constraint")
+        temporal_type = state.get("temporal_type")
+        if temporal_constraint:
+            log_info(f"Temporal constraint: '{temporal_constraint}' (type: {temporal_type})")
+            log_info("  → Query includes temporal/conditional constraint - will search with full context")
+        
         # STEP 0: Decide if we need to inspect segment tree content
         # Inspect for abstract queries, highlights, vague queries, etc.
         query_lower = query.lower()
@@ -387,7 +394,7 @@ Sample descriptions:
                 for sem_query in semantic_queries:
                     log_info(f"    Query: '{sem_query}'")
                     start_time = time.time()
-                    threshold = 0.45
+                    threshold = 0.5
                     results = segment_tree.semantic_search(
                         sem_query,
                         top_k=15,
@@ -397,7 +404,7 @@ Sample descriptions:
                         verbose=False
                     )
                     if not results:
-                        threshold = 0.35
+                        threshold = 0.4
                         results = segment_tree.semantic_search(
                             sem_query,
                             top_k=15,
@@ -407,7 +414,7 @@ Sample descriptions:
                             verbose=False
                         )
                     if not results:
-                        threshold = 0.3
+                        threshold = 0.35
                         results = segment_tree.semantic_search(
                             sem_query,
                             top_k=15,
@@ -610,7 +617,7 @@ Sample descriptions:
             # NEW STEP 4: Group contiguous seconds into time ranges
             log_info(f"\n[STEP 4] Grouping contiguous seconds into time ranges...")
             
-            time_ranges = group_contiguous_seconds(filtered_seconds, min_duration=1.0, gap_tolerance=2.0)
+            time_ranges = group_contiguous_seconds(filtered_seconds, min_duration=1.0, gap_tolerance=1.0)
             
             log_info(f"  Grouped into {len(time_ranges)} time range(s)")
             if time_ranges:
@@ -678,6 +685,117 @@ Sample descriptions:
             
             # Store all search results for reference
             search_results = all_search_results
+            
+            # AUTOMATIC RERANKING AND FILTERING: Check if user specified "top N" or "all"
+            # Extract number from query (e.g., "top 10", "first 5", "best 15", "proceed top 10")
+            top_n_match = re.search(r'(?:proceed\s+)?(?:top|first|best|select)\s+(\d+)', query_lower)
+            extract_number = None
+            if top_n_match:
+                extract_number = int(top_n_match.group(1))
+                log_info(f"\n[AUTO-RERANK] Detected 'top {extract_number}' in query - will automatically rerank and filter")
+            elif "all" in query_lower or "every" in query_lower:
+                extract_number = None  # "all" means keep all, but still rerank
+                log_info(f"\n[AUTO-RERANK] Detected 'all/every' in query - will automatically rerank and filter false positives")
+            
+            # If we have results and user specified a number or "all", automatically rerank and filter
+            if time_ranges and (extract_number is not None or "all" in query_lower or "every" in query_lower):
+                log_info(f"\n[AUTO-RERANK] Automatically reranking and filtering {len(time_ranges)} results...")
+                
+                # Map time ranges to their descriptions from search_results
+                range_descriptions = {}
+                for result in search_results:
+                    result_tr = result.get("time_range", [])
+                    if result_tr and len(result_tr) >= 2:
+                        tr_key = (result_tr[0], result_tr[1])
+                        # Get description (prefer unified_description, fallback to description or text)
+                        desc = result.get("unified_description") or result.get("description") or result.get("text", "")
+                        if desc:
+                            if tr_key not in range_descriptions:
+                                range_descriptions[tr_key] = []
+                            range_descriptions[tr_key].append(desc)
+                
+                # Match time ranges with their descriptions
+                ranges_with_descriptions = []
+                for tr in time_ranges:
+                    tr_key = (tr[0], tr[1])
+                    descriptions = range_descriptions.get(tr_key, [])
+                    # Combine descriptions or use first one
+                    combined_desc = " | ".join(descriptions[:2]) if descriptions else f"Time range {tr[0]:.1f}s-{tr[1]:.1f}s"
+                    ranges_with_descriptions.append({
+                        "time_range": tr,
+                        "description": combined_desc
+                    })
+                
+                # Use LLM to rerank and filter
+                if len(ranges_with_descriptions) > 1:  # Only rerank if we have multiple results
+                    from agent.refinement import rank_ranges_with_llm
+                    
+                    # Determine top_n: use extract_number if specified, otherwise use all but filter false positives
+                    top_n_for_rerank = extract_number if extract_number else len(ranges_with_descriptions)
+                    
+                    try:
+                        ranked_ranges = rank_ranges_with_llm(
+                            ranges_with_descriptions,
+                            query,  # Use original query for ranking
+                            query,  # No previous query in auto-rerank
+                            top_n_for_rerank,
+                            logger,
+                            verbose=verbose
+                        )
+                        
+                        # Extract time ranges from ranked results
+                        reranked_time_ranges = [r["time_range"] for r in ranked_ranges]
+                        
+                        # Filter out false positives: use LLM to validate each result matches the query
+                        log_info(f"  [AUTO-FILTER] Validating {len(reranked_time_ranges)} results to remove false positives...")
+                        validated_ranges = []
+                        
+                        for r in ranked_ranges:
+                            tr = r["time_range"]
+                            desc = r["description"]
+                            
+                            # Quick validation prompt
+                            validation_prompt = f"""Does this video clip match the query?
+
+Query: "{query}"
+Clip description: "{desc[:200]}"
+
+Return JSON only:
+{{"is_valid": true/false, "reasoning": "brief explanation"}}"""
+                            
+                            try:
+                                validation_response = llm.invoke([
+                                    SystemMessage(content="You are a video search validator. Determine if a clip description actually matches the user's query. Filter out false positives."),
+                                    HumanMessage(content=validation_prompt)
+                                ])
+                                
+                                validation_text = validation_response.content.strip()
+                                validation_json = extract_json(validation_text)
+                                validation_result = json.loads(validation_json)
+                                
+                                if validation_result.get("is_valid", True):  # Default to valid if validation fails
+                                    validated_ranges.append(tr)
+                                else:
+                                    reasoning = validation_result.get("reasoning", "No reasoning")
+                                    log_info(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:60]}")
+                            except Exception as e:
+                                # On validation error, keep the result (don't filter)
+                                validated_ranges.append(tr)
+                                if verbose:
+                                    log_info(f"    Validation error for {tr[0]:.1f}s-{tr[1]:.1f}s, keeping result")
+                        
+                        if validated_ranges:
+                            time_ranges = validated_ranges
+                            log_info(f"  [AUTO-RERANK] Reranked and filtered to {len(time_ranges)} valid results")
+                        else:
+                            log_info(f"  [AUTO-RERANK] Warning: All results filtered out, keeping original top results")
+                            # Fallback: keep top N even if all filtered
+                            time_ranges = reranked_time_ranges[:min(extract_number or 10, len(reranked_time_ranges))]
+                    except Exception as e:
+                        log_info(f"  [AUTO-RERANK] Error during reranking: {e}, using original results")
+                        # Fallback: just take top N if specified
+                        if extract_number and len(time_ranges) > extract_number:
+                            time_ranges = time_ranges[:extract_number]
             
             log_info(f"\n[FINAL SELECTION]")
             log_info(f"  Selected {len(time_ranges)} time range(s)")

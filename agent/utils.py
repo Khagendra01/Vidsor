@@ -18,7 +18,7 @@ def extract_json(text: str) -> str:
 
 
 def merge_time_ranges(time_ranges: List[Tuple[float, float]], 
-                     padding: float = 2.0) -> List[Tuple[float, float]]:
+                     padding: float = 1.0) -> List[Tuple[float, float]]:
     """Merge overlapping time ranges and add padding."""
     if not time_ranges:
         return []

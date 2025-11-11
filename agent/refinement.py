@@ -72,13 +72,19 @@ Return JSON:
         query_lower = current_query.lower()
         
         # Check for refinement indicators
-        refinement_keywords = ["top", "best", "first", "most", "select", "give me", "show me"]
+        refinement_keywords = ["top", "best", "first", "most", "select", "give me", "show me", "proceed"]
         has_refinement = any(kw in query_lower for kw in refinement_keywords)
         
-        # Check for number
+        # Check for number - also check for "proceed top N" or "top N" patterns
         import re
-        numbers = re.findall(r'\d+', current_query)
-        extract_number = int(numbers[0]) if numbers else None
+        # Check for "proceed top N", "top N", "first N", "best N" patterns
+        proceed_match = re.search(r'(?:proceed\s+)?(?:top|first|best|select)\s+(\d+)', current_query.lower())
+        if proceed_match:
+            extract_number = int(proceed_match.group(1))
+        else:
+            # Fallback: just find any number
+            numbers = re.findall(r'\d+', current_query)
+            extract_number = int(numbers[0]) if numbers else None
         
         # Check if it's a completely different topic (simple heuristic)
         previous_words = set(previous_query.lower().split())
@@ -155,7 +161,7 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
             })
         
         # Use LLM to rank based on descriptions and user query
-        if len(ranges_with_descriptions) > extract_number:
+        if len(ranges_with_descriptions) > (extract_number or 1):
             if verbose:
                 print(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
             
@@ -163,11 +169,82 @@ def refine_existing_results(state: AgentState, decision: Dict, verbose: bool = F
                 ranges_with_descriptions,
                 current_query,
                 previous_query,
-                extract_number,
+                extract_number or len(ranges_with_descriptions),
                 state.get("logger"),
                 verbose=verbose
             )
-            refined_ranges = [r["time_range"] for r in ranked_ranges]
+            
+            # Filter out false positives after ranking
+            if ranked_ranges and extract_number:
+                if verbose:
+                    print(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
+                
+                # Get LLM for validation
+                try:
+                    from langchain_openai import ChatOpenAI
+                    llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+                except:
+                    try:
+                        from langchain_anthropic import ChatAnthropic
+                        llm = ChatAnthropic(model="claude-3-haiku-20240307", temperature=0)
+                    except:
+                        llm = None
+                
+                if llm:
+                    from langchain_core.messages import HumanMessage, SystemMessage
+                    from agent.utils import extract_json
+                    import json
+                    
+                    validated_ranges = []
+                    for r in ranked_ranges[:extract_number]:  # Only validate the top N we need
+                        tr = r["time_range"]
+                        desc = r["description"]
+                        
+                        validation_prompt = f"""Does this video clip match the query?
+
+Query: "{previous_query}"
+User refinement: "{current_query}"
+Clip description: "{desc[:200]}"
+
+Return JSON only:
+{{"is_valid": true/false, "reasoning": "brief explanation"}}"""
+                        
+                        try:
+                            validation_response = llm.invoke([
+                                SystemMessage(content="You are a video search validator. Determine if a clip description actually matches the user's query. Filter out false positives."),
+                                HumanMessage(content=validation_prompt)
+                            ])
+                            
+                            validation_text = validation_response.content.strip()
+                            validation_json = extract_json(validation_text)
+                            validation_result = json.loads(validation_json)
+                            
+                            if validation_result.get("is_valid", True):
+                                validated_ranges.append(tr)
+                            else:
+                                reasoning = validation_result.get("reasoning", "No reasoning")
+                                if verbose:
+                                    print(f"    Filtered out {tr[0]:.1f}s-{tr[1]:.1f}s: {reasoning[:60]}")
+                        except Exception as e:
+                            # On validation error, keep the result
+                            validated_ranges.append(tr)
+                            if verbose:
+                                print(f"    Validation error for {tr[0]:.1f}s-{tr[1]:.1f}s, keeping result")
+                    
+                    if validated_ranges:
+                        refined_ranges = validated_ranges
+                        if verbose:
+                            print(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
+                    else:
+                        # Fallback: keep ranked results even if all filtered
+                        refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
+                        if verbose:
+                            print(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
+                else:
+                    # No LLM available, just use ranked results
+                    refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
+            else:
+                refined_ranges = [r["time_range"] for r in ranked_ranges]
         else:
             refined_ranges = previous_time_ranges
     
@@ -286,22 +363,25 @@ def rank_ranges_with_llm(
         
         system_prompt = """You are a video search assistant. Your job is to rank video time ranges based on their descriptions and relevance to the user's query.
 
+IMPORTANT: Filter out false positives - only include clips that ACTUALLY match the query. If a clip doesn't match, exclude it even if it means returning fewer than {top_n} results.
+
 Context:
 - Original query: "{previous_query}"
 - User clarification/refinement: "{current_query}"
 - Total results: {total_count}
-- Need to select: top {top_n}
+- Need to select: top {top_n} (but only if they actually match)
 
-You will receive a list of time ranges with descriptions. Rank them by relevance to the user's query/clarification and return the top {top_n} most relevant ones.
+You will receive a list of time ranges with descriptions. Rank them by relevance and filter out false positives. Return only the clips that truly match the query.
 
 Return JSON array with ranked indices:
 [
-    {{"index": 0, "rank": 1, "reasoning": "why this is relevant"}},
-    {{"index": 5, "rank": 2, "reasoning": "why this is relevant"}},
+    {{"index": 0, "rank": 1, "is_valid": true, "reasoning": "why this is relevant and valid"}},
+    {{"index": 5, "rank": 2, "is_valid": true, "reasoning": "why this is relevant and valid"}},
+    {{"index": 3, "is_valid": false, "reasoning": "why this doesn't match (false positive)"}},
     ...
 ]
 
-Return exactly {top_n} results, ranked from most relevant (rank 1) to least relevant (rank {top_n})."""
+Return up to {top_n} valid results, ranked from most relevant (rank 1) to least relevant. Exclude any with is_valid: false."""
         
         prompt = f"""Time ranges to rank:
 {json.dumps(ranges_summary, indent=2)}
@@ -332,12 +412,18 @@ Return JSON array with top {top_n} ranked results. Return JSON only."""
         if isinstance(ranking_results, dict):
             ranking_results = [ranking_results]
         
-        # Sort by rank and extract indices
+        # Sort by rank and filter out invalid results
         ranking_results.sort(key=lambda x: x.get("rank", 999))
-        ranked_indices = [r["index"] for r in ranking_results[:top_n]]
+        # Filter to only valid results, then take top_n
+        valid_results = [r for r in ranking_results if r.get("is_valid", True)]
+        ranked_indices = [r["index"] for r in valid_results[:top_n]]
         
         # Return ranked ranges
         ranked_ranges = [ranges_with_descriptions[i] for i in ranked_indices if 0 <= i < len(ranges_with_descriptions)]
+        
+        if logger and len(valid_results) < len(ranking_results):
+            filtered_count = len(ranking_results) - len(valid_results)
+            logger.info(f"  [FILTER] Filtered out {filtered_count} false positives during ranking")
         
         if logger:
             logger.info(f"  [LLM RANKING] Selected top {len(ranked_ranges)} results")

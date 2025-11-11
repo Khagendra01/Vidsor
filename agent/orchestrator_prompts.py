@@ -39,6 +39,8 @@ Current Timeline Context:
 - Number of chunks: {chunk_count}
 - Total duration: {duration:.2f}s
 
+IMPORTANT: Always analyze and rephrase the query to preserve ALL context, especially temporal constraints (when, before, after, during) and conditional constraints.
+
 Classify the operation and extract parameters. Return JSON only:
 
 {{
@@ -50,7 +52,9 @@ Classify the operation and extract parameters. Return JSON only:
         "insert_before_index": 1,  // For INSERT (if before/after)
         "insert_after_index": 1,  // For INSERT (if after)
         "insert_between_indices": [1, 2],  // For INSERT (if between)
-        "search_query": "highlights",  // For FIND_HIGHLIGHTS, REPLACE, INSERT, FIND_BROLL
+        "search_query": "highlights",  // Core search query (e.g., "helicopter clips", "cooking moments")
+        "temporal_constraint": "when they were in helicopter",  // Temporal/conditional constraint if present (e.g., "when X", "before Y", "during Z")
+        "temporal_type": "when" | "before" | "after" | "during" | null,  // Type of temporal constraint
         "reorder_from_index": 3,  // For REORDER
         "reorder_to_index": 1,  // For REORDER
         "trim_index": 0,  // For TRIM
@@ -68,6 +72,16 @@ Guidelines:
 - "B-roll", "broll", "b roll" + timeline indices → FIND_BROLL
 - "move", "reorder" + indices → REORDER
 - "trim", "shorten", "cut" + timeline index + time → TRIM
+
+CRITICAL for search_query and temporal_constraint:
+- Extract the core search term in "search_query" (e.g., "helicopter clips", "cooking moments")
+- Extract temporal/conditional phrases in "temporal_constraint" (e.g., "when they were in helicopter", "before sunset", "during the fight")
+- If query is "replace X with clips when they were in helicopter":
+  - search_query: "helicopter clips"
+  - temporal_constraint: "when they were in helicopter"
+  - temporal_type: "when"
+- If temporal constraint is part of the search query, include it in search_query but also extract it separately
+- Preserve the full context - don't simplify away important constraints
 
 Extract timeline indices from phrases like:
 - "timeline index 0" → [0]
