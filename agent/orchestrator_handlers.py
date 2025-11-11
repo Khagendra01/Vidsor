@@ -6,6 +6,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from datetime import datetime
 from agent.timeline_manager import TimelineManager
 from agent.orchestrator_state import OrchestratorState
+from extractor.utils.video_utils import get_video_duration
 
 
 def create_timeline_chunk(
@@ -942,6 +943,45 @@ def handle_find_broll(
             "chunks_created": []
         }
     
+    # Get selected chunks and analyze main action
+    selected_chunks = timeline_manager.get_chunks(indices)
+    
+    # ========================================================================
+    # PHASE 1: Calculate main clip statistics and target constraints
+    # ========================================================================
+    main_clip_count = len(selected_chunks)
+    main_clip_total_duration = 0.0
+    
+    for chunk in selected_chunks:
+        orig_start = chunk.get("original_start_time", chunk.get("start_time"))
+        orig_end = chunk.get("original_end_time", chunk.get("end_time"))
+        if orig_start is not None and orig_end is not None:
+            main_clip_total_duration += (orig_end - orig_start)
+    
+    # Calculate target B-roll quantity
+    # Formula: 1-2 broll per main clip (target: 1.5x)
+    min_broll_count = max(1, main_clip_count)  # At least 1 broll
+    max_broll_count = main_clip_count * 2  # Max 2 per main clip
+    target_broll_count = int(round(main_clip_count * 1.5))  # Target: 1.5x
+    
+    # Calculate target B-roll duration (20-40% of main content)
+    ratio_min = 0.20  # 20%
+    ratio_max = 0.40  # 40%
+    target_broll_total_min = main_clip_total_duration * ratio_min
+    target_broll_total_max = main_clip_total_duration * ratio_max
+    
+    # Per-clip duration guidelines: 4-8 seconds (prefer 4-6)
+    min_clip_duration = 4.0
+    max_clip_duration = 8.0
+    preferred_clip_duration = 6.0
+    
+    if verbose:
+        print("\n[DIRECTOR GUIDELINES]")
+        print(f"  Main clips: {main_clip_count} clips, {main_clip_total_duration:.1f}s total")
+        print(f"  Target: {min_broll_count}-{max_broll_count} broll clips (aiming for {target_broll_count})")
+        print(f"  Duration per clip: {min_clip_duration}-{max_clip_duration}s (prefer {preferred_clip_duration}s)")
+        print(f"  Total target: {target_broll_total_min:.1f}-{target_broll_total_max:.1f}s ({ratio_min*100:.0f}-{ratio_max*100:.0f}% of main content)")
+    
     # Get time range from selected chunks
     time_range = timeline_manager.get_timeline_range(indices)
     if not time_range:
@@ -954,7 +994,6 @@ def handle_find_broll(
     start_time, end_time = time_range
     
     # Analyze main action from selected chunks
-    selected_chunks = timeline_manager.get_chunks(indices)
     segment_tree = state.get("segment_tree")
     keyword_set = set()
 
@@ -992,17 +1031,29 @@ def handle_find_broll(
     if verbose and main_keywords:
         print(f"  Main action keywords (top 5): {', '.join(main_keywords[:5])}")
     
-    # Build B-roll search query
+    # Build B-roll search query with director guidelines
     broll_query = f"find B-roll between {start_time:.1f}s and {end_time:.1f}s, show nature, scenery, wide shots, different from main action"
     if main_keywords:
         # Exclude main action keywords
         exclude_terms = ", ".join(set(main_keywords[:5]))  # Top 5 unique keywords
         broll_query += f", not {exclude_terms}"
     
+    # Add director guidelines to query
+    director_guidelines = (
+        f"\n\nDirector's Guidelines:\n"
+        f"- Main clips: {main_clip_count} clips, {main_clip_total_duration:.1f}s total\n"
+        f"- Target: {target_broll_count} broll clips (range: {min_broll_count}-{max_broll_count})\n"
+        f"- Duration per clip: {min_clip_duration}-{max_clip_duration}s (prefer {preferred_clip_duration}s)\n"
+        f"- Total broll duration: {target_broll_total_min:.1f}-{target_broll_total_max:.1f}s ({ratio_min*100:.0f}-{ratio_max*100:.0f}% of main content)\n"
+        f"- Purpose: Complementary footage, not overwhelming the main story\n"
+        f"- Quality over quantity: Select the most relevant and complementary footage"
+    )
+    broll_query += director_guidelines
+    
     if verbose:
         print(f"  Selected chunks: indices {indices}")
         print(f"  Source time range: {start_time:.1f}s - {end_time:.1f}s")
-        print(f"  B-roll query: '{broll_query}'")
+        print(f"  B-roll query: '{broll_query[:200]}...' (with director guidelines)")
     
     # Call planner to find B-roll
     planner_state = {
@@ -1055,7 +1106,160 @@ def handle_find_broll(
                 "chunks_created": []
             }
         
-        # Create B-roll chunks
+        search_results = planner_result.get("search_results", [])
+        
+        if verbose:
+            print(f"\n[PLANNER RESULTS]")
+            print(f"  Found: {len(time_ranges)} candidate clips")
+        
+        # ========================================================================
+        # PHASE 3: Filter and select best B-roll clips
+        # ========================================================================
+        
+        # Get video duration for boundary checks
+        video_path = state.get("video_path", "")
+        video_duration = None
+        if video_path:
+            video_duration = get_video_duration(video_path)
+        
+        # Score and prepare time ranges with metadata
+        scored_ranges = []
+        for tr in time_ranges:
+            if len(tr) < 2:
+                continue
+            tr_start, tr_end = tr[0], tr[1]
+            duration = tr_end - tr_start
+            
+            # Get description and score from search results
+            description = f"B-roll: {tr_start:.1f}s - {tr_end:.1f}s"
+            unified_description = description
+            audio_description = ""
+            relevance_score = 0.7  # Default
+            
+            for result in search_results:
+                if result is None:
+                    continue
+                result_tr = result.get("time_range", [])
+                if result_tr and len(result_tr) >= 2:
+                    if abs(result_tr[0] - tr_start) < 1.0:
+                        description = result.get("description", description)
+                        unified_description = result.get("unified_description", description)
+                        audio_description = result.get("audio_description", "")
+                        relevance_score = result.get("score", result.get("relevance_score", 0.7))
+                        break
+            
+            # Calculate duration score (prefer 4-8 seconds)
+            if duration < min_clip_duration:
+                duration_score = 0.3  # Too short
+            elif duration > max_clip_duration:
+                duration_score = 0.5  # Too long
+            elif min_clip_duration <= duration <= preferred_clip_duration:
+                duration_score = 1.0  # Perfect range
+            else:
+                duration_score = 0.8  # Good but not ideal
+            
+            # Combined score (weighted: 70% relevance, 30% duration)
+            combined_score = (relevance_score * 0.7) + (duration_score * 0.3)
+            
+            scored_ranges.append({
+                "time_range": (tr_start, tr_end),
+                "duration": duration,
+                "description": description,
+                "unified_description": unified_description,
+                "audio_description": audio_description,
+                "relevance_score": relevance_score,
+                "duration_score": duration_score,
+                "combined_score": combined_score
+            })
+        
+        # Sort by combined score (best first)
+        scored_ranges.sort(key=lambda x: x["combined_score"], reverse=True)
+        
+        # Select top N within target range
+        selected_ranges = scored_ranges[:max_broll_count]  # Take up to max
+        
+        # If we have more than target, try to get closer to target
+        if len(selected_ranges) > target_broll_count:
+            # Calculate total duration with target count
+            test_total = sum(r["duration"] for r in selected_ranges[:target_broll_count])
+            if test_total <= target_broll_total_max:
+                selected_ranges = selected_ranges[:target_broll_count]
+            else:
+                # Need fewer clips to stay within duration limit
+                # Find the best combination that fits
+                best_combination = []
+                best_total = 0.0
+                for i in range(min_broll_count, min(target_broll_count + 1, len(selected_ranges) + 1)):
+                    combo = selected_ranges[:i]
+                    combo_total = sum(r["duration"] for r in combo)
+                    if combo_total <= target_broll_total_max and combo_total > best_total:
+                        best_combination = combo
+                        best_total = combo_total
+                if best_combination:
+                    selected_ranges = best_combination
+                else:
+                    # Fallback: take minimum count
+                    selected_ranges = selected_ranges[:min_broll_count]
+        
+        # Ensure we have at least minimum
+        if len(selected_ranges) < min_broll_count and len(scored_ranges) >= min_broll_count:
+            selected_ranges = scored_ranges[:min_broll_count]
+        
+        if verbose:
+            print(f"  Selected: {len(selected_ranges)} clips (within target range {min_broll_count}-{max_broll_count})")
+            total_selected_duration = sum(r["duration"] for r in selected_ranges)
+            ratio_actual = (total_selected_duration / main_clip_total_duration * 100) if main_clip_total_duration > 0 else 0
+            print(f"  Total duration: {total_selected_duration:.1f}s ({ratio_actual:.0f}% of main content)")
+        
+        # ========================================================================
+        # PHASE 4: Adjust clip durations to 4-8 seconds
+        # ========================================================================
+        
+        adjusted_ranges = []
+        for r in selected_ranges:
+            tr_start, tr_end = r["time_range"]
+            duration = r["duration"]
+            adjusted_start = tr_start
+            adjusted_end = tr_end
+            
+            # Adjust if too short (< 4s) - try to extend
+            if duration < min_clip_duration:
+                extension_needed = min_clip_duration - duration
+                # Try to extend from end (check video boundary)
+                if video_duration is None or (tr_end + extension_needed) <= video_duration:
+                    adjusted_end = tr_end + extension_needed
+                elif video_duration and tr_start > extension_needed:
+                    # Try to extend from start
+                    adjusted_start = max(0, tr_start - extension_needed)
+            
+            # Adjust if too long (> 8s) - trim to 8s
+            elif duration > max_clip_duration:
+                # Trim from end, keeping the start
+                adjusted_end = adjusted_start + max_clip_duration
+            
+            # If in good range, keep as-is (maybe slight adjustment to preferred)
+            elif duration < preferred_clip_duration:
+                # Optionally extend slightly toward preferred, but don't force
+                pass  # Keep as-is for now
+            
+            adjusted_duration = adjusted_end - adjusted_start
+            adjusted_ranges.append({
+                **r,
+                "time_range": (adjusted_start, adjusted_end),
+                "duration": adjusted_duration,
+                "was_adjusted": (adjusted_start != tr_start or adjusted_end != tr_end)
+            })
+        
+        if verbose:
+            print(f"\n[FINAL SELECTION]")
+            for i, r in enumerate(adjusted_ranges, 1):
+                adj_note = " (adjusted)" if r.get("was_adjusted", False) else ""
+                print(f"  {i}. {r['duration']:.1f}s ({r['time_range'][0]:.1f}s - {r['time_range'][1]:.1f}s){adj_note}")
+        
+        # ========================================================================
+        # PHASE 5: Create B-roll chunks
+        # ========================================================================
+        
         chunks_created = []
         # Insert B-roll after the last selected chunk
         insert_position = max(indices) + 1
@@ -1069,35 +1273,18 @@ def handle_find_broll(
             timeline_start = 0.0
         
         current_timeline_time = timeline_start
-        search_results = planner_result.get("search_results", [])
         
-        for i, (start_time, end_time) in enumerate(time_ranges):
-            # Get description from search results
-            description = f"B-roll {i+1}: {start_time:.1f}s - {end_time:.1f}s"
-            unified_description = description
-            audio_description = ""
-            
-            for result in search_results:
-                # Skip None values that might have been added to search_results
-                if result is None:
-                    continue
-                result_tr = result.get("time_range", [])
-                if result_tr and len(result_tr) >= 2:
-                    if abs(result_tr[0] - start_time) < 1.0:
-                        description = result.get("description", description)
-                        unified_description = result.get("unified_description", description)
-                        audio_description = result.get("audio_description", "")
-                        break
-            
+        for i, r in enumerate(adjusted_ranges):
+            tr_start, tr_end = r["time_range"]
             chunk = create_timeline_chunk(
-                original_start=start_time,
-                original_end=end_time,
+                original_start=tr_start,
+                original_end=tr_end,
                 timeline_start=current_timeline_time,
                 chunk_type="broll",
-                description=description,
-                unified_description=unified_description,
-                audio_description=audio_description,
-                score=planner_result.get("confidence", 0.7)
+                description=r["description"],
+                unified_description=r["unified_description"],
+                audio_description=r["audio_description"],
+                score=r["combined_score"]
             )
             
             chunks_created.append(chunk)
@@ -1116,7 +1303,12 @@ def handle_find_broll(
             current_time = chunk["end_time"]
         
         if verbose:
-            print(f"  ✓ Created {len(chunks_created)} B-roll chunk(s) at position {insert_position}")
+            total_broll_duration = sum(r["duration"] for r in adjusted_ranges)
+            ratio_final = (total_broll_duration / main_clip_total_duration * 100) if main_clip_total_duration > 0 else 0
+            print(f"\n  ✓ Created {len(chunks_created)} B-roll chunk(s) at position {insert_position}")
+            print(f"  ✓ Total B-roll duration: {total_broll_duration:.1f}s ({ratio_final:.0f}% of main content)")
+            if len(chunks_created) > 0:
+                print(f"  ✓ Average clip duration: {total_broll_duration/len(chunks_created):.1f}s per clip")
         
         return {
             "success": True,
