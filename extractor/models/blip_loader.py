@@ -5,7 +5,7 @@ BLIP model loader for image captioning.
 import time
 import torch
 from transformers import BlipProcessor, BlipForConditionalGeneration, BitsAndBytesConfig
-from typing import Optional
+from typing import Optional, List
 from extractor.config import BLIP_MODEL
 
 
@@ -70,6 +70,33 @@ class BLIPLoader:
         
         caption = self.processor.decode(output[0], skip_special_tokens=True)
         return caption
+    
+    def caption_batch(self, images: List, max_new_tokens: int = 50) -> List[str]:
+        """
+        Generate captions for multiple images in a batch (much faster on GPU).
+        
+        Args:
+            images: List of PIL Images
+            max_new_tokens: Maximum tokens to generate per image
+            
+        Returns:
+            List of caption strings (same order as input images)
+        """
+        if not self._loaded:
+            self.load()
+        
+        if not images:
+            return []
+        
+        # Process images in batch
+        inputs = self.processor(images=images, return_tensors="pt", padding=True).to(self.model.device)
+        
+        with torch.inference_mode():
+            outputs = self.model.generate(**inputs, max_new_tokens=max_new_tokens)
+        
+        # Decode all captions
+        captions = [self.processor.decode(output, skip_special_tokens=True) for output in outputs]
+        return captions
     
     def is_loaded(self) -> bool:
         """Check if model is loaded."""

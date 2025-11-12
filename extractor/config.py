@@ -32,6 +32,7 @@ DEFAULT_YOLO_STRIDE = 10  # Process every Nth frame
 
 # BLIP configuration
 DEFAULT_BLIP_SPLIT = 1  # 1=middle, 2=first+last, 3=first+middle+last
+DEFAULT_BLIP_BATCH_SIZE = 48  # Batch size for BLIP processing (GPU memory dependent) - moderate setting for 8GB GPU
 
 # Hierarchical tree configuration
 DEFAULT_LEAF_DURATION = 5.0
@@ -54,6 +55,7 @@ class ExtractorConfig:
     tracker: str = DEFAULT_TRACKER
     yolo_stride: int = DEFAULT_YOLO_STRIDE
     blip_split: int = DEFAULT_BLIP_SPLIT
+    blip_batch_size: int = DEFAULT_BLIP_BATCH_SIZE
     
     # Processing options
     use_llava: bool = True

@@ -31,6 +31,8 @@ def main():
     # BLIP options
     parser.add_argument("--blip-split", type=int, default=1, choices=[1, 2, 3],
                        help="Number of frames per second for BLIP: 1=middle, 2=first+last, 3=first+middle+last (default: 1)")
+    parser.add_argument("--blip-batch-size", type=int, default=48,
+                       help="Batch size for BLIP processing (default: 48, adjust based on GPU memory)")
     
     # Hierarchical tree options
     parser.add_argument("--no-hierarchical", action="store_true", default=False,
@@ -67,6 +69,7 @@ def main():
         tracker=args.tracker,
         yolo_stride=args.yolo_stride,
         blip_split=args.blip_split,
+        blip_batch_size=args.blip_batch_size,
         use_llava=not args.no_llava,
         use_images=args.use_images,
         max_workers=args.max_workers,

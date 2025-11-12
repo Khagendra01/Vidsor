@@ -91,7 +91,7 @@ class SegmentTreeGenerator:
         else:
             return [middle_frame]
     
-    def _process_second(self, second_idx: int, frames_data: List[Dict], max_frame: Optional[int] = None) -> Dict:
+    def _process_second(self, second_idx: int, frames_data: List[Dict], max_frame: Optional[int] = None, blip_results_cache: Optional[Dict[int, Dict]] = None) -> Dict:
         """Process one second of video."""
         start_frame = (second_idx * FPS) + 1
         if max_frame is not None:
@@ -107,27 +107,18 @@ class SegmentTreeGenerator:
         # Get BLIP frame numbers
         blip_frame_numbers = self._get_blip_frame_numbers(start_frame, end_frame)
         
-        # Process BLIP frames in parallel
+        # Get BLIP results from cache (batch processed earlier)
         blip_results = []
-        with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
-            futures = {}
-            for frame_num in blip_frame_numbers:
+        for frame_num in blip_frame_numbers:
+            if blip_results_cache and frame_num in blip_results_cache:
+                result = blip_results_cache[frame_num]
+                blip_results.append((frame_num, result))
+            else:
+                # Fallback: process individually if not in cache
                 frame_image = self.video_utils.get_frame(frame_num)
                 if frame_image:
-                    future = executor.submit(self.visual_processor.process_frame, frame_num, frame_image)
-                    futures[future] = frame_num
-            
-            for future in as_completed(futures):
-                frame_num = futures[future]
-                try:
-                    result = future.result()
+                    result = self.visual_processor.process_frame(frame_num, frame_image)
                     blip_results.append((frame_num, result))
-                except Exception as e:
-                    print(f"Error processing BLIP for frame {frame_num}: {e}")
-                    blip_results.append((frame_num, {
-                        "description": f"Error: {str(e)}",
-                        "blip_metadata": {"model": "blip", "processing_time": 0}
-                    }))
         
         # Sort and create blip_descriptions
         blip_results.sort(key=lambda x: x[0])
@@ -226,11 +217,76 @@ class SegmentTreeGenerator:
             max_frame = max_tracked_frame
             print(f"Processing {num_seconds} seconds (estimated from tracking data, max frame: {max_frame})...")
         
-        # Process seconds in parallel
+        # STEP 1: Collect all frames that need BLIP processing
+        print(f"\nCollecting frames for batch BLIP processing...")
+        all_blip_frames = []  # List of (second_idx, frame_num) tuples
+        for second_idx in range(num_seconds):
+            start_frame = (second_idx * FPS) + 1
+            end_frame = min(start_frame + FPS - 1, max_frame) if max_frame else start_frame + FPS - 1
+            blip_frame_numbers = self._get_blip_frame_numbers(start_frame, end_frame)
+            for frame_num in blip_frame_numbers:
+                all_blip_frames.append((second_idx, frame_num))
+        
+        print(f"Extracting {len(all_blip_frames)} frames for batch processing...")
+        # Extract all frames
+        frame_images = {}  # frame_num -> PIL Image
+        for second_idx, frame_num in all_blip_frames:
+            if frame_num not in frame_images:
+                frame_image = self.video_utils.get_frame(frame_num)
+                if frame_image:
+                    frame_images[frame_num] = frame_image
+        
+        # STEP 2: Batch process all frames with BLIP
+        print(f"Batch processing {len(frame_images)} frames with BLIP (batch size: {self.config.blip_batch_size})...")
+        blip_results_cache = {}  # frame_num -> result dict
+        
+        # Process in batches
+        frame_nums_list = list(frame_images.keys())
+        batch_size = self.config.blip_batch_size
+        
+        for i in range(0, len(frame_nums_list), batch_size):
+            batch_frame_nums = frame_nums_list[i:i + batch_size]
+            batch_images = [frame_images[fn] for fn in batch_frame_nums]
+            
+            # Process batch
+            try:
+                batch_start = time.time()
+                captions = self.blip_loader.caption_batch(batch_images)
+                batch_time = time.time() - batch_start
+                
+                # Store results
+                for frame_num, caption in zip(batch_frame_nums, captions):
+                    blip_results_cache[frame_num] = {
+                        "description": caption,
+                        "blip_metadata": {
+                            "model": "blip",
+                            "processing_time": round(batch_time / len(batch_frame_nums), 3),
+                            "batch_size": len(batch_frame_nums)
+                        }
+                    }
+                
+                print(f"  Processed batch {i // batch_size + 1}/{(len(frame_nums_list) + batch_size - 1) // batch_size} ({len(batch_frame_nums)} frames in {batch_time:.2f}s)")
+            except Exception as e:
+                print(f"  Error processing batch {i // batch_size + 1}: {e}")
+                # Fallback: process individually
+                for frame_num, image in zip(batch_frame_nums, batch_images):
+                    try:
+                        result = self.visual_processor.process_frame(frame_num, image)
+                        blip_results_cache[frame_num] = result
+                    except Exception as e2:
+                        print(f"    Error processing frame {frame_num}: {e2}")
+                        blip_results_cache[frame_num] = {
+                            "description": f"Error: {str(e2)}",
+                            "blip_metadata": {"model": "blip", "processing_time": 0}
+                        }
+        
+        print(f"BLIP batch processing complete. Processed {len(blip_results_cache)} frames.\n")
+        
+        # STEP 3: Process seconds in parallel (using cached BLIP results)
         seconds_data = [None] * num_seconds  # Pre-allocate array to maintain structure
         with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
             futures = {
-                executor.submit(self._process_second, i, frames_data, max_frame): i
+                executor.submit(self._process_second, i, frames_data, max_frame, blip_results_cache): i
                 for i in range(num_seconds)
             }
             
