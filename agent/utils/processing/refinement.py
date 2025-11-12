@@ -219,10 +219,7 @@ Return JSON only."""
             if extract_number:
                 extract_number = max(1, min(extract_number, len(previous_time_ranges)))
             
-            if log_info:
-                log_info(f"  [AUTONOMY] Determined optimal number: {extract_number} (reasoning: {reasoning})")
-            elif verbose:
-                print(f"  [AUTONOMY] Determined optimal number: {extract_number} (reasoning: {reasoning})")
+            log.info(f"  [AUTONOMY] Determined optimal number: {extract_number} (reasoning: {reasoning})")
         except Exception as e:
             # Fallback: use reasonable default based on number of results
             if len(previous_time_ranges) <= 5:
@@ -232,10 +229,7 @@ Return JSON only."""
             else:
                 extract_number = min(7, len(previous_time_ranges) // 2)
             
-            if log_info:
-                log_info(f"  [AUTONOMY] Fallback: using {extract_number} results (error: {e})")
-            elif verbose:
-                print(f"  [AUTONOMY] Fallback: using {extract_number} results (error: {e})")
+            log.info(f"  [AUTONOMY] Fallback: using {extract_number} results (error: {e})")
     
     # If we have search results with descriptions, use LLM-based ranking
     # Also use LLM ranking if user gave autonomy (even without explicit extract_number)
@@ -273,10 +267,7 @@ Return JSON only."""
         target_number = extract_number if extract_number else (min(7, len(ranges_with_descriptions)) if user_gives_autonomy else len(ranges_with_descriptions))
         
         if len(ranges_with_descriptions) > 1:  # Always rank if we have multiple results
-            if log_info:
-                log_info(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
-            elif verbose:
-                print(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
+            log.info(f"  Using LLM-based ranking for {len(ranges_with_descriptions)} results...")
             
             ranked_ranges = rank_ranges_with_llm(
                 ranges_with_descriptions,
@@ -292,10 +283,7 @@ Return JSON only."""
             should_validate = extract_number and not user_gives_autonomy
             
             if ranked_ranges and should_validate:
-                if log_info:
-                    log_info(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
-                elif verbose:
-                    print(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
+                log.info(f"  [FILTER] Validating {len(ranked_ranges)} ranked results to remove false positives...")
                 
                 # Get LLM for validation using shared utility
                 try:
@@ -358,17 +346,11 @@ Return JSON only:
                     
                     if validated_ranges:
                         refined_ranges = validated_ranges
-                        if log_info:
-                            log_info(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
-                        elif verbose:
-                            print(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
+                        log.info(f"  [FILTER] Filtered to {len(refined_ranges)} valid results")
                     else:
                         # Fallback: keep ranked results even if all filtered
                         refined_ranges = [r["time_range"] for r in ranked_ranges[:extract_number]]
-                        if log_info:
-                            log_info(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
-                        elif verbose:
-                            print(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
+                        log.info(f"  [FILTER] Warning: All results filtered, keeping top {extract_number} ranked results")
                 else:
                     # No LLM available, just use ranked results
                     refined_ranges = [r["time_range"] for r in (ranked_ranges[:extract_number] if extract_number else ranked_ranges)]
@@ -419,12 +401,8 @@ Return JSON only:
         # Extract top N if specified
         if extract_number:
             scored_ranges = scored_ranges[:extract_number]
-            if log_info:
-                log_info(f"  Selected top {extract_number} by score")
-                log_info(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
-            elif verbose:
-                print(f"  Selected top {extract_number} by score")
-                print(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
+            log.info(f"  Selected top {extract_number} by score")
+            log.info(f"  Score range: {scored_ranges[-1][1]:.3f} - {scored_ranges[0][1]:.3f}")
         
         # Extract just the time ranges
         refined_ranges = [tr for tr, _ in scored_ranges]
@@ -435,10 +413,7 @@ Return JSON only:
         else:
             refined_ranges = previous_time_ranges
     
-    if log_info:
-        log_info(f"  Refined to {len(refined_ranges)} time ranges")
-    elif verbose:
-        print(f"  Refined to {len(refined_ranges)} time ranges")
+    log.info(f"  Refined to {len(refined_ranges)} time ranges")
     
     # CRITICAL: When user gives autonomy, NEVER ask for clarification again
     # Set needs_clarification to False explicitly
