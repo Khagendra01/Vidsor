@@ -49,11 +49,11 @@ class LLaVAProcessor:
         # Build image descriptions list
         descriptions_text = "\n".join([f"{i+1}. {desc}" for i, desc in enumerate(blip_descriptions)])
         
-        # Use enhanced prompt from prompt.py
+        # Use simple prompt that only asks for what can be inferred from the data
         prompt = get_llava_prompt(
             descriptions_text=descriptions_text,
             detection_summary=detection_summary,
-            include_technical=True,
+            include_technical=False,  # Use new simple prompt (default)
             short=False
         )
         

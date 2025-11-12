@@ -3,8 +3,9 @@ Enhanced prompts for video analysis that include technical camera/video details.
 These prompts ask models to describe both content AND technical aspects of video footage.
 """
 
-# Base prompt for LLaVA unified descriptions with technical details
-LLAVA_UNIFIED_PROMPT = """Based on these image descriptions and object detections, provide a unified detailed description of this 1-second scene. Include:
+# DEPRECATED: Old prompt that asks for technical details that can't be inferred from text descriptions
+# Renamed to IMAGE_TEXT_PROMPT for backward compatibility
+IMAGE_TEXT_PROMPT = """Based on these image descriptions and object detections, provide a unified detailed description of this 1-second scene. Include:
 
 1. Content Description - What is happening in the scene:
    - Objects, people, actions, and location
@@ -32,6 +33,23 @@ Object Detections Summary:
 
 Provide a comprehensive description covering both content and technical aspects of the video."""
 
+# Main prompt: Simple and only asks for what can be inferred from the provided data
+LLAVA_UNIFIED_PROMPT = """Based on the image descriptions and object detection information provided, create a clear and concise description of what is happening in this 1-second scene.
+
+Focus only on what can be directly inferred from the data:
+- What objects, people, and actions are visible (from the image descriptions)
+- What objects were detected (from the detection summary)
+- The scene context and setting as described
+- Any relevant details mentioned in the descriptions
+
+Image Descriptions:
+{descriptions_text}
+
+Object Detections Summary:
+{detection_summary}
+
+Provide a straightforward description based on the information above. Do not speculate about technical camera details, lighting conditions, or production style that cannot be inferred from the provided descriptions."""
+
 
 # Enhanced prompt for BLIP (if using prompt-based BLIP variant)
 BLIP_ENHANCED_PROMPT = """Describe this image in detail, including:
@@ -41,7 +59,7 @@ BLIP_ENHANCED_PROMPT = """Describe this image in detail, including:
 - Any technical characteristics of the video frame"""
 
 
-# Alternative shorter prompt for faster processing
+# Alternative shorter prompt for faster processing (DEPRECATED - uses old style)
 LLAVA_UNIFIED_PROMPT_SHORT = """Based on these image descriptions and object detections, provide a unified detailed description of this 1-second scene covering:
 
 1. Content: What is happening (objects, people, actions, location)
@@ -99,26 +117,28 @@ Object Detections Summary:
 Provide a comprehensive description covering the entire second."""
 
 
-def get_llava_prompt(descriptions_text: str, detection_summary: str, include_technical: bool = True, short: bool = False) -> str:
+def get_llava_prompt(descriptions_text: str, detection_summary: str, include_technical: bool = False, short: bool = False) -> str:
     """
-    Get LLaVA prompt with or without technical details.
+    Get LLaVA prompt. Default is now the simple prompt that only uses inferable data.
     
     Args:
         descriptions_text: Formatted BLIP descriptions
         detection_summary: Object detection summary
-        include_technical: Whether to include technical camera/video details
-        short: Whether to use shorter prompt version
+        include_technical: DEPRECATED - If True, uses old IMAGE_TEXT_PROMPT (may cause hallucination)
+        short: Whether to use shorter prompt version (DEPRECATED - uses old style)
     
     Returns:
         Formatted prompt string
     """
     if include_technical:
+        # Use deprecated prompt for backward compatibility
         if short:
             template = LLAVA_UNIFIED_PROMPT_SHORT
         else:
-            template = LLAVA_UNIFIED_PROMPT
+            template = IMAGE_TEXT_PROMPT
     else:
-        template = LLAVA_CONTENT_ONLY_PROMPT
+        # Default: Use simple prompt that only asks for what can be inferred
+        template = LLAVA_UNIFIED_PROMPT
     
     return template.format(
         descriptions_text=descriptions_text,
