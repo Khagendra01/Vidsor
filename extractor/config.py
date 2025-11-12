@@ -10,8 +10,9 @@ FPS = 30
 FRAMES_PER_GROUP = 5
 GROUPS_PER_SECOND = 6  # 30 frames / 5 = 6 groups
 
-# Model configuration
-BLIP_MODEL = "Salesforce/blip-image-captioning-base"
+# Model configuration 
+# BLIP_MODEL"Salesforce/blip-image-captioning-base" 
+BLIP_MODEL = "Salesforce/blip2-opt-2.7b" 
 WHISPER_MODEL = "base"  # Fast and accurate balance
 YOLO_MODEL = "old-test-utils/yolo11s.pt"  # YOLO model in old-test-utils folder
 

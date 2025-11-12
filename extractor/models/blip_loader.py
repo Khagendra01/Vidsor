@@ -4,7 +4,11 @@ BLIP model loader for image captioning.
 
 import time
 import torch
-from transformers import BlipProcessor, BlipForConditionalGeneration, BitsAndBytesConfig
+from transformers import (
+    BlipProcessor, BlipForConditionalGeneration,
+    Blip2Processor, Blip2ForConditionalGeneration,
+    BitsAndBytesConfig
+)
 from typing import Optional, List
 from extractor.config import BLIP_MODEL
 
@@ -25,28 +29,43 @@ class BLIPLoader:
         self._loaded = False
     
     def load(self):
-        """Load BLIP model and processor."""
+        """Load BLIP or BLIP2 model and processor."""
         if self._loaded:
             return
         
-        print("Loading BLIP model...")
+        # Detect if this is a BLIP2 model
+        is_blip2 = "blip2" in self.model_name.lower()
+        
+        print(f"Loading {'BLIP2' if is_blip2 else 'BLIP'} model...")
         start = time.time()
         
-        self.processor = BlipProcessor.from_pretrained(self.model_name, use_fast=True)
+        if is_blip2:
+            self.processor = Blip2Processor.from_pretrained(self.model_name, use_fast=True)
+        else:
+            self.processor = BlipProcessor.from_pretrained(self.model_name, use_fast=True)
         
-        # Configure 8-bit quantization
+        # Configure 8-bit quantization (same as before)
         quantization_config = BitsAndBytesConfig(load_in_8bit=True)
         
-        self.model = BlipForConditionalGeneration.from_pretrained(
-            self.model_name,
-            dtype=torch.float16,
-            device_map="auto",
-            quantization_config=quantization_config,
-            use_safetensors=True
-        )
+        if is_blip2:
+            self.model = Blip2ForConditionalGeneration.from_pretrained(
+                self.model_name,
+                dtype=torch.float16,
+                device_map="auto",
+                quantization_config=quantization_config,
+                use_safetensors=True
+            )
+        else:
+            self.model = BlipForConditionalGeneration.from_pretrained(
+                self.model_name,
+                dtype=torch.float16,
+                device_map="auto",
+                quantization_config=quantization_config,
+                use_safetensors=True
+            )
         
         elapsed = time.time() - start
-        print(f"BLIP model loaded in {elapsed:.2f}s")
+        print(f"{'BLIP2' if is_blip2 else 'BLIP'} model loaded in {elapsed:.2f}s")
         self._loaded = True
     
     def caption(self, image, max_new_tokens: int = 50) -> str:
