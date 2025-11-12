@@ -139,20 +139,32 @@ CLARIFICATION_DECISION_PROMPT = """You are analyzing a video search query that r
 
 User Query: "{query}"
 Number of Results Found: {result_count}
+{video_context}
+
+CRITICAL: You have video context understanding available. Use it to infer what the query means rather than asking for clarification when context is sufficient.
 
 Consider:
 - Does the query explicitly request "all", "every", "each", or similar words indicating they want all results?
-- Is the query vague or ambiguous (e.g., "find moments", "show me scenes")?
+- Is the query vague or ambiguous (e.g., "find moments", "show me scenes", "highlights")?
+- **If video context is provided**: Can you infer what "highlights" or "interesting moments" means based on the video theme and narrative? If yes, proceed without clarification.
+- **If video context is provided**: For abstract queries like "highlights", use the video theme and highlight keywords to understand what would be interesting for THIS specific video.
 - Would returning all {result_count} results be overwhelming or exactly what the user asked for?
-- Does the query have enough specificity that all results are relevant?
+- Does the query have enough specificity (either explicit or inferred from context) that all results are relevant?
+
+Guidelines:
+- If video context shows clear theme/narrative (e.g., "outdoor adventure", "cooking", "sports"), you can infer what "highlights" means without asking
+- Only ask for clarification if the query is truly ambiguous AND you lack sufficient context to make a reasonable inference
+- For "highlights" queries with good video context, proceed with results rather than asking for clarification
+- If {result_count} results is reasonable for a highlights query (typically 10-50 results for a 5-minute video), proceed
 
 Return JSON only:
 {{
     "needs_clarification": true/false,
-    "reasoning": "brief explanation",
+    "reasoning": "brief explanation (mention if you used video context to infer meaning)",
     "clarification_question": "question to ask user" (only if needs_clarification is true)
 }}
 
 If the user explicitly wants all results (e.g., "find all moments", "show every time"), set needs_clarification to false.
-If the query is vague and {result_count} results seems like too many, set needs_clarification to true and provide a helpful question."""
+If video context allows you to infer what the query means (e.g., "highlights" + video about "outdoor adventure" → adventure/activity moments), set needs_clarification to false.
+Only set needs_clarification to true if the query is genuinely ambiguous AND you lack sufficient context to make a reasonable inference."""
 

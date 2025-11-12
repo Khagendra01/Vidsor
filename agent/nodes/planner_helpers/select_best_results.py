@@ -285,15 +285,37 @@ Return JSON only:
         # Use LLM to decide if clarification is needed
         log.info(f"\n[CLARIFICATION DECISION] Found {len(time_ranges)} results - asking LLM if clarification needed...")
         
+        # Extract video narrative context if available
+        video_narrative = state.get("video_narrative")
+        video_context = ""
+        if video_narrative:
+            theme = video_narrative.get("video_theme", "")
+            narrative_summary = video_narrative.get("narrative_summary", "")
+            highlight_criteria = video_narrative.get("highlight_criteria", {})
+            highlight_keywords = highlight_criteria.get("keywords", []) if isinstance(highlight_criteria, dict) else []
+            
+            video_context = f"""
+Video Context Understanding:
+- Video Theme: {theme}
+- Narrative Summary: {narrative_summary[:200]}{'...' if len(narrative_summary) > 200 else ''}
+- Highlight Keywords (what makes moments interesting in this video): {', '.join(highlight_keywords[:10]) if highlight_keywords else 'N/A'}
+"""
+            log.info(f"  Using video context: theme='{theme}', highlight keywords={highlight_keywords[:5] if highlight_keywords else 'N/A'}")
+        else:
+            video_context = "\nVideo Context: Not available (no narrative understanding was created)"
+            log.info("  No video context available - proceeding with basic clarification logic")
+        
         clarification_prompt = CLARIFICATION_DECISION_PROMPT.format(
             query=query,
-            result_count=len(time_ranges)
+            result_count=len(time_ranges),
+            video_context=video_context
         )
         
         try:
             start_time = time.time()
+            system_message_content = "You are a helpful assistant that determines if users need clarification for video search queries. When video context is available, use it to infer query meaning rather than asking for clarification."
             clarification_response = llm.invoke([
-                SystemMessage(content="You are a helpful assistant that determines if users need clarification for video search queries."),
+                SystemMessage(content=system_message_content),
                 HumanMessage(content=clarification_prompt)
             ])
             elapsed = time.time() - start_time
@@ -320,10 +342,16 @@ Return JSON only:
                 log.info(f"  [SUCCESS] User wants all results - proceeding with {len(time_ranges)} time range(s)")
         except Exception as e:
             log.info(f"  [FALLBACK] LLM clarification decision failed: {e}, using default logic")
-            confidence = 0.6
-            needs_clarification = True
-            clarification_question = f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?"
-            log.info(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
+            # If we have video context, be more lenient - proceed with results
+            if video_narrative:
+                log.info(f"  [FALLBACK] Video context available - proceeding with results despite LLM failure")
+                confidence = 0.7
+                needs_clarification = False
+            else:
+                confidence = 0.6
+                needs_clarification = True
+                clarification_question = f"Found {len(time_ranges)} potential moments. Could you narrow down what you're looking for?"
+                log.info(f"  [WARNING] Too many results ({len(time_ranges)}) - will ask for clarification")
     else:
         log.info(f"  [SUCCESS] Found {len(time_ranges)} time range(s) - proceeding with extraction")
     
