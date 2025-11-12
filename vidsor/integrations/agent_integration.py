@@ -46,36 +46,38 @@ class AgentIntegration:
             # If theme was configured, we can access style
             style = ttk.Style()
             colors = {
-                'bg': '#1e1e1e',
-                'fg': '#e0e0e0',
-                'frame_bg': '#252525',
-                'entry_bg': '#2d2d2d',
+                'bg': '#0f0f0f',
+                'fg': '#ffffff',
+                'frame_bg': '#1a1a1a',
+                'panel_bg': '#161616',
+                'entry_bg': '#252525',
                 'entry_fg': '#ffffff',
-                'text_secondary': '#a0a0a0',
-                'accent': '#00bcf2',
-                'border': '#3d3d3d',
+                'text_secondary': '#888888',
+                'accent': '#ff0050',
+                'border': '#2a2a2a',
             }
         except:
-            # Fallback colors
+            # Fallback colors - CapCut-inspired
             colors = {
-                'bg': '#1e1e1e',
-                'fg': '#e0e0e0',
-                'frame_bg': '#252525',
-                'entry_bg': '#2d2d2d',
+                'bg': '#0f0f0f',
+                'fg': '#ffffff',
+                'frame_bg': '#1a1a1a',
+                'panel_bg': '#161616',
+                'entry_bg': '#252525',
                 'entry_fg': '#ffffff',
-                'text_secondary': '#a0a0a0',
-                'accent': '#00bcf2',
-                'border': '#3d3d3d',
+                'text_secondary': '#888888',
+                'accent': '#ff0050',
+                'border': '#2a2a2a',
             }
         
         font_family = "Segoe UI"
-        font_normal = (font_family, 10)
-        font_bold = (font_family, 10, "bold")
+        font_normal = (font_family, 11)
+        font_bold = (font_family, 11, "bold")
         font_small = (font_family, 9)
         
-        # Chat frame
+        # Chat frame - refined styling
         chat_frame = ttk.LabelFrame(parent_frame, text="Chat Assistant", padding="15")
-        chat_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+        chat_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         parent_frame.columnconfigure(0, weight=1)
         parent_frame.rowconfigure(0, weight=1)
         chat_frame.columnconfigure(0, weight=1)
@@ -87,28 +89,38 @@ class AgentIntegration:
         chat_history_frame.columnconfigure(0, weight=1)
         chat_history_frame.rowconfigure(0, weight=1)
         
+        # Chat text container with border
+        chat_text_container = tk.Frame(
+            chat_history_frame,
+            bg=colors['bg'],
+            highlightbackground=colors['border'],
+            highlightthickness=1,
+            relief='flat'
+        )
+        chat_text_container.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), padx=2, pady=2)
+        chat_text_container.columnconfigure(0, weight=1)
+        chat_text_container.rowconfigure(0, weight=1)
+        
         scrollbar = ttk.Scrollbar(chat_history_frame)
         scrollbar.grid(row=0, column=1, sticky=(tk.N, tk.S))
         
         self.chat_text = tk.Text(
-            chat_history_frame,
+            chat_text_container,
             wrap=tk.WORD,
             yscrollcommand=scrollbar.set,
             state=tk.DISABLED,
             height=30,
             font=font_normal,
-            bg=colors['entry_bg'],
+            bg=colors['panel_bg'],
             fg=colors['entry_fg'],
             selectbackground=colors['accent'],
             selectforeground='white',
             insertbackground=colors['accent'],
             relief='flat',
-            borderwidth=1,
-            highlightthickness=1,
-            highlightcolor=colors['accent'],
-            highlightbackground=colors['border'],
-            padx=10,
-            pady=10
+            borderwidth=0,
+            highlightthickness=0,
+            padx=12,
+            pady=12
         )
         self.chat_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.config(command=self.chat_text.yview)
@@ -118,9 +130,21 @@ class AgentIntegration:
         input_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         input_frame.columnconfigure(0, weight=1)
         
+        # Input container with border
+        input_container = tk.Frame(
+            input_frame,
+            bg=colors['bg'],
+            highlightbackground=colors['border'],
+            highlightthickness=1,
+            relief='flat'
+        )
+        input_container.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10), pady=2)
+        input_container.columnconfigure(0, weight=1)
+        input_container.rowconfigure(0, weight=1)
+        
         # Input text widget (multi-line)
         self.chat_input = tk.Text(
-            input_frame,
+            input_container,
             wrap=tk.WORD,
             height=3,
             font=font_normal,
@@ -130,14 +154,12 @@ class AgentIntegration:
             selectforeground='white',
             insertbackground=colors['accent'],
             relief='flat',
-            borderwidth=1,
-            highlightthickness=1,
-            highlightcolor=colors['accent'],
-            highlightbackground=colors['border'],
-            padx=10,
-            pady=8
+            borderwidth=0,
+            highlightthickness=0,
+            padx=12,
+            pady=10
         )
-        self.chat_input.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10))
+        self.chat_input.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         
         # Send button
         self.chat_send_btn = ttk.Button(
@@ -153,11 +175,11 @@ class AgentIntegration:
         self.chat_input.bind("<Return>", self.on_chat_input_return)
         self.chat_input.bind("<Shift-Return>", lambda e: None)  # Allow Shift+Enter for new line
         
-        # Focus handling for input border
+        # Focus handling for input container border
         def on_focus_in(event):
-            self.chat_input.config(highlightbackground=colors['accent'])
+            input_container.config(highlightbackground=colors['accent'])
         def on_focus_out(event):
-            self.chat_input.config(highlightbackground=colors['border'])
+            input_container.config(highlightbackground=colors['border'])
         self.chat_input.bind("<FocusIn>", on_focus_in)
         self.chat_input.bind("<FocusOut>", on_focus_out)
         
@@ -165,7 +187,7 @@ class AgentIntegration:
         self.chat_status_label = ttk.Label(chat_frame, text="Ready", 
                                           foreground=colors['text_secondary'], 
                                           font=font_small)
-        self.chat_status_label.grid(row=2, column=0, sticky=tk.W, pady=(5, 0))
+        self.chat_status_label.grid(row=2, column=0, sticky=tk.W, pady=(10, 0))
         
         # Display existing chat history if any
         self.display_chat_history()
