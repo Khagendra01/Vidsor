@@ -14,7 +14,7 @@ from extractor.models.whisper_loader import WhisperLoader
 from extractor.models.yolo_loader import YOLOLoader
 from extractor.processors.visual_processor import VisualProcessor
 from extractor.processors.audio_processor import AudioProcessor
-from extractor.processors.llava_processor import LLaVAProcessor
+from extractor.processors.gpt4o_mini_processor import GPT4oMiniProcessor
 from extractor.processors.tracking_processor import TrackingProcessor
 from extractor.utils.video_utils import VideoUtils
 
@@ -55,9 +55,8 @@ class SegmentTreeGenerator:
         # Initialize processors
         self.visual_processor = VisualProcessor(blip_loader)
         self.audio_processor = AudioProcessor(whisper_loader, video_path)
-        self.llava_processor = LLaVAProcessor(
-            ollama_url=config.ollama_url,
-            ollama_model=config.ollama_model,
+        self.llava_processor = GPT4oMiniProcessor(
+            api_key=config.openai_api_key,
             use_images=config.use_images
         )
         self.tracking_processor = TrackingProcessor(config.yolo_stride)

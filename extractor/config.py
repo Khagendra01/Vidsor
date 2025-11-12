@@ -24,7 +24,7 @@ AUDIO_SEGMENT_DURATION = 5  # Transcribe 5-second segments for better accuracy
 AUDIO_OVERLAP = 1  # 1 second overlap between segments
 
 # Parallel processing
-DEFAULT_MAX_WORKERS = 3
+DEFAULT_MAX_WORKERS = 10  # 10 concurrent requests for GPT-4o-mini (safe for Tier 1, 500 RPM)
 
 # Tracking configuration
 DEFAULT_TRACKER = "bytetrack"  # or "deepsort"
@@ -77,6 +77,5 @@ class ExtractorConfig:
     blip_model: Optional[str] = None
     whisper_model: Optional[str] = None
     yolo_model: Optional[str] = None
-    ollama_url: Optional[str] = None
-    ollama_model: Optional[str] = None
+    openai_api_key: Optional[str] = None
 
