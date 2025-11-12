@@ -39,8 +39,42 @@ class AgentIntegration:
     
     def create_chat_ui(self, parent_frame):
         """Create chat interface UI components."""
+        # Get colors from root window if available (set during theme configuration)
+        root = parent_frame.winfo_toplevel()
+        try:
+            # Try to get colors from root's theme configuration
+            # If theme was configured, we can access style
+            style = ttk.Style()
+            colors = {
+                'bg': '#1e1e1e',
+                'fg': '#e0e0e0',
+                'frame_bg': '#252525',
+                'entry_bg': '#2d2d2d',
+                'entry_fg': '#ffffff',
+                'text_secondary': '#a0a0a0',
+                'accent': '#00bcf2',
+                'border': '#3d3d3d',
+            }
+        except:
+            # Fallback colors
+            colors = {
+                'bg': '#1e1e1e',
+                'fg': '#e0e0e0',
+                'frame_bg': '#252525',
+                'entry_bg': '#2d2d2d',
+                'entry_fg': '#ffffff',
+                'text_secondary': '#a0a0a0',
+                'accent': '#00bcf2',
+                'border': '#3d3d3d',
+            }
+        
+        font_family = "Segoe UI"
+        font_normal = (font_family, 10)
+        font_bold = (font_family, 10, "bold")
+        font_small = (font_family, 9)
+        
         # Chat frame
-        chat_frame = ttk.LabelFrame(parent_frame, text="Chat Assistant", padding="10")
+        chat_frame = ttk.LabelFrame(parent_frame, text="Chat Assistant", padding="15")
         chat_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
         parent_frame.columnconfigure(0, weight=1)
         parent_frame.rowconfigure(0, weight=1)
@@ -49,7 +83,7 @@ class AgentIntegration:
         
         # Chat history display (scrollable text widget)
         chat_history_frame = ttk.Frame(chat_frame)
-        chat_history_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
+        chat_history_frame.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 15))
         chat_history_frame.columnconfigure(0, weight=1)
         chat_history_frame.rowconfigure(0, weight=1)
         
@@ -62,15 +96,26 @@ class AgentIntegration:
             yscrollcommand=scrollbar.set,
             state=tk.DISABLED,
             height=30,
-            font=("Arial", 10),
-            bg="#f5f5f5"
+            font=font_normal,
+            bg=colors['entry_bg'],
+            fg=colors['entry_fg'],
+            selectbackground=colors['accent'],
+            selectforeground='white',
+            insertbackground=colors['accent'],
+            relief='flat',
+            borderwidth=1,
+            highlightthickness=1,
+            highlightcolor=colors['accent'],
+            highlightbackground=colors['border'],
+            padx=10,
+            pady=10
         )
         self.chat_text.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
         scrollbar.config(command=self.chat_text.yview)
         
         # Chat input frame
         input_frame = ttk.Frame(chat_frame)
-        input_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 5))
+        input_frame.grid(row=1, column=0, sticky=(tk.W, tk.E), pady=(0, 10))
         input_frame.columnconfigure(0, weight=1)
         
         # Input text widget (multi-line)
@@ -78,16 +123,29 @@ class AgentIntegration:
             input_frame,
             wrap=tk.WORD,
             height=3,
-            font=("Arial", 10)
+            font=font_normal,
+            bg=colors['entry_bg'],
+            fg=colors['entry_fg'],
+            selectbackground=colors['accent'],
+            selectforeground='white',
+            insertbackground=colors['accent'],
+            relief='flat',
+            borderwidth=1,
+            highlightthickness=1,
+            highlightcolor=colors['accent'],
+            highlightbackground=colors['border'],
+            padx=10,
+            pady=8
         )
-        self.chat_input.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 5))
+        self.chat_input.grid(row=0, column=0, sticky=(tk.W, tk.E), padx=(0, 10))
         
         # Send button
         self.chat_send_btn = ttk.Button(
             input_frame,
             text="Send",
             command=self.on_send_message,
-            state=tk.DISABLED
+            state=tk.DISABLED,
+            style='Primary.TButton'
         )
         self.chat_send_btn.grid(row=0, column=1, sticky=tk.E)
         
@@ -95,8 +153,18 @@ class AgentIntegration:
         self.chat_input.bind("<Return>", self.on_chat_input_return)
         self.chat_input.bind("<Shift-Return>", lambda e: None)  # Allow Shift+Enter for new line
         
+        # Focus handling for input border
+        def on_focus_in(event):
+            self.chat_input.config(highlightbackground=colors['accent'])
+        def on_focus_out(event):
+            self.chat_input.config(highlightbackground=colors['border'])
+        self.chat_input.bind("<FocusIn>", on_focus_in)
+        self.chat_input.bind("<FocusOut>", on_focus_out)
+        
         # Chat status label
-        self.chat_status_label = ttk.Label(chat_frame, text="Ready", foreground="gray")
+        self.chat_status_label = ttk.Label(chat_frame, text="Ready", 
+                                          foreground=colors['text_secondary'], 
+                                          font=font_small)
         self.chat_status_label.grid(row=2, column=0, sticky=tk.W, pady=(5, 0))
         
         # Display existing chat history if any
@@ -153,7 +221,7 @@ class AgentIntegration:
         # Run agent in background thread
         self.is_agent_running = True
         self.chat_send_btn.config(state=tk.DISABLED)
-        self.chat_status_label.config(text="Processing query...", foreground="blue")
+        self.chat_status_label.config(text="Processing query...", foreground="#00bcf2")
         
         self.agent_thread = threading.Thread(
             target=self.run_agent_thread,
@@ -186,7 +254,7 @@ class AgentIntegration:
         # Run agent thread with clarification response
         self.is_agent_running = True
         self.chat_send_btn.config(state=tk.DISABLED)
-        self.chat_status_label.config(text="Processing clarification...", foreground="blue")
+        self.chat_status_label.config(text="Processing clarification...", foreground="#00bcf2")
         
         self.agent_thread = threading.Thread(
             target=self.run_agent_thread_with_clarification,
@@ -270,7 +338,7 @@ class AgentIntegration:
             # Update UI
             if self.vidsor.root:
                 self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", response))
-                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="#a0a0a0"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
             
         except Exception as e:
@@ -280,7 +348,7 @@ class AgentIntegration:
             logger.error(traceback.format_exc())
             if self.vidsor.root:
                 self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", error_msg))
-                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
+                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="#f44336"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
             self.is_agent_running = False
@@ -308,7 +376,7 @@ class AgentIntegration:
                 logger.error(error_msg)
                 if self.vidsor.root:
                     self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", error_msg))
-                    self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                    self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="#a0a0a0"))
                     self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
                 return
             
@@ -566,7 +634,7 @@ class AgentIntegration:
             logger.info("-" * 80)
             if self.vidsor.root:
                 self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", response))
-                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="gray"))
+                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="#a0a0a0"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
                 logger.info("Chat UI update scheduled")
             
@@ -586,7 +654,7 @@ class AgentIntegration:
             traceback.print_exc()
             if self.vidsor.root:
                 self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", error_msg))
-                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="red"))
+                self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="#f44336"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
             self.is_agent_running = False
@@ -620,9 +688,9 @@ class AgentIntegration:
         # Apply tags for styling
         self.chat_text.tag_add(tag, start_pos, end_pos)
         
-        # Configure tag styles
-        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
+        # Configure tag styles with modern dark theme colors
+        self.chat_text.tag_config("user", foreground="#4fc3f7", font=("Segoe UI", 10, "bold"))
+        self.chat_text.tag_config("assistant", foreground="#81c784", font=("Segoe UI", 10))
         
         self.chat_text.config(state=tk.DISABLED)
         self.chat_text.see(tk.END)
@@ -661,9 +729,9 @@ class AgentIntegration:
             # Apply tags
             self.chat_text.tag_add(tag, start_pos, f"{end_pos}-2c")
         
-        # Configure tag styles
-        self.chat_text.tag_config("user", foreground="blue", font=("Arial", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="green", font=("Arial", 10))
+        # Configure tag styles with modern dark theme colors
+        self.chat_text.tag_config("user", foreground="#4fc3f7", font=("Segoe UI", 10, "bold"))
+        self.chat_text.tag_config("assistant", foreground="#81c784", font=("Segoe UI", 10))
         
         self.chat_text.config(state=tk.DISABLED)
         self.chat_text.see(tk.END)

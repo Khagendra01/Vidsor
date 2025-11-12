@@ -11,11 +11,151 @@ if TYPE_CHECKING:
     from ..core.vidsor_app import Vidsor
 
 
+def configure_dark_theme(root: tk.Tk):
+    """Configure modern dark theme with custom styles."""
+    style = ttk.Style()
+    
+    # Try to use a modern theme, fallback to default
+    try:
+        style.theme_use('clam')
+    except:
+        pass
+    
+    # Color scheme - Modern dark theme
+    colors = {
+        'bg': '#1e1e1e',           # Main background (dark gray)
+        'fg': '#e0e0e0',           # Main foreground (light gray)
+        'frame_bg': '#252525',     # Frame background (slightly lighter)
+        'entry_bg': '#2d2d2d',     # Entry/input background
+        'entry_fg': '#ffffff',     # Entry text color
+        'select_bg': '#3d3d3d',    # Selection background
+        'select_fg': '#ffffff',    # Selection foreground
+        'button_bg': '#0078d4',    # Primary button (blue)
+        'button_hover': '#106ebe', # Button hover (darker blue)
+        'button_active': '#005a9e', # Button active (darkest blue)
+        'button_disabled': '#404040', # Disabled button
+        'accent': '#00bcf2',       # Accent color (cyan)
+        'border': '#3d3d3d',       # Border color
+        'text_secondary': '#a0a0a0', # Secondary text
+        'success': '#4caf50',      # Success color (green)
+        'warning': '#ff9800',      # Warning color (orange)
+        'error': '#f44336',        # Error color (red)
+    }
+    
+    # Configure root window
+    root.configure(bg=colors['bg'])
+    
+    # Modern font
+    font_family = "Segoe UI"
+    font_size = 10
+    font_bold = (font_family, font_size, "bold")
+    font_normal = (font_family, font_size)
+    font_small = (font_family, 9)
+    
+    # Frame styles
+    style.configure('TFrame', background=colors['bg'], borderwidth=0)
+    style.configure('TLabelframe', background=colors['frame_bg'], foreground=colors['fg'],
+                    borderwidth=1, relief='flat', bordercolor=colors['border'])
+    style.configure('TLabelframe.Label', background=colors['frame_bg'], foreground=colors['fg'],
+                    font=font_bold)
+    
+    # Label styles
+    style.configure('TLabel', background=colors['bg'], foreground=colors['fg'], font=font_normal)
+    style.map('TLabel', background=[('active', colors['bg'])])
+    
+    # Button styles with hover effects
+    style.configure('TButton', 
+                    background=colors['button_bg'],
+                    foreground='white',
+                    borderwidth=0,
+                    focuscolor='none',
+                    padding=(15, 8),
+                    font=font_normal,
+                    relief='flat')
+    style.map('TButton',
+              background=[('active', colors['button_hover']),
+                         ('pressed', colors['button_active']),
+                         ('disabled', colors['button_disabled'])],
+              foreground=[('disabled', colors['text_secondary'])])
+    
+    # Primary button style (for important actions)
+    style.configure('Primary.TButton',
+                    background=colors['button_bg'],
+                    foreground='white',
+                    borderwidth=0,
+                    focuscolor='none',
+                    padding=(20, 10),
+                    font=font_bold,
+                    relief='flat')
+    style.map('Primary.TButton',
+              background=[('active', colors['button_hover']),
+                         ('pressed', colors['button_active']),
+                         ('disabled', colors['button_disabled'])],
+              foreground=[('disabled', colors['text_secondary'])])
+    
+    # Entry/Combobox styles
+    style.configure('TEntry',
+                    fieldbackground=colors['entry_bg'],
+                    foreground=colors['entry_fg'],
+                    borderwidth=1,
+                    relief='flat',
+                    bordercolor=colors['border'],
+                    padding=8,
+                    font=font_normal)
+    style.map('TEntry',
+              fieldbackground=[('focus', colors['entry_bg'])],
+              bordercolor=[('focus', colors['accent'])])
+    
+    style.configure('TCombobox',
+                    fieldbackground=colors['entry_bg'],
+                    foreground=colors['entry_fg'],
+                    borderwidth=1,
+                    relief='flat',
+                    padding=8,
+                    font=font_normal)
+    style.map('TCombobox',
+              fieldbackground=[('readonly', colors['entry_bg'])],
+              selectbackground=[('readonly', colors['select_bg'])],
+              selectforeground=[('readonly', colors['select_fg'])],
+              bordercolor=[('focus', colors['accent'])])
+    
+    # Progressbar style
+    style.configure('TProgressbar',
+                    background=colors['accent'],
+                    troughcolor=colors['frame_bg'],
+                    borderwidth=0,
+                    relief='flat',
+                    thickness=8)
+    
+    # Scrollbar style
+    style.configure('TScrollbar',
+                    background=colors['frame_bg'],
+                    troughcolor=colors['bg'],
+                    borderwidth=0,
+                    arrowcolor=colors['fg'],
+                    darkcolor=colors['frame_bg'],
+                    lightcolor=colors['frame_bg'],
+                    relief='flat',
+                    width=12)
+    style.map('TScrollbar',
+              background=[('active', colors['border'])],
+              arrowcolor=[('active', colors['accent'])])
+    
+    # PanedWindow style
+    style.configure('TPanedwindow', background=colors['bg'])
+    style.map('TPanedwindow', background=[('active', colors['bg'])])
+    
+    return colors, font_normal, font_bold, font_small
+
+
 def create_main_ui(vidsor: 'Vidsor'):
     """Create the main Tkinter UI for video editing."""
     vidsor.root = tk.Tk()
     vidsor.root.title("Vidsor - Video Editor")
     vidsor.root.geometry("1600x900")
+    
+    # Configure dark theme
+    colors, font_normal, font_bold, font_small = configure_dark_theme(vidsor.root)
     
     # Main container with paned window for resizable split
     main_paned = ttk.PanedWindow(vidsor.root, orient=tk.HORIZONTAL)
@@ -24,11 +164,11 @@ def create_main_ui(vidsor: 'Vidsor'):
     vidsor.root.rowconfigure(0, weight=1)
     
     # Left panel - Video editor
-    left_frame = ttk.Frame(main_paned, padding="10")
+    left_frame = ttk.Frame(main_paned, padding="15")
     main_paned.add(left_frame, weight=2)
     
     # Right panel - Chat interface
-    right_frame = ttk.Frame(main_paned, padding="10")
+    right_frame = ttk.Frame(main_paned, padding="15")
     main_paned.add(right_frame, weight=1)
     
     # Main container (for left panel)
@@ -38,22 +178,24 @@ def create_main_ui(vidsor: 'Vidsor'):
     left_frame.rowconfigure(0, weight=1)
     
     # Project management frame
-    project_frame = ttk.LabelFrame(main_frame, text="Project", padding="15")
-    project_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+    project_frame = ttk.LabelFrame(main_frame, text="Project", padding="20")
+    project_frame.grid(row=0, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
     project_frame.columnconfigure(0, weight=1)
     
     # New Project button - first row with generous spacing
-    new_project_btn = ttk.Button(project_frame, text="New Project", command=vidsor._on_new_project)
+    new_project_btn = ttk.Button(project_frame, text="New Project", 
+                                 command=vidsor._on_new_project, style='Primary.TButton')
     new_project_btn.grid(row=0, column=0, sticky=tk.W, padx=5, pady=(5, 15))
     
     # Project selection row - second row
-    ttk.Label(project_frame, text="Project:").grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
+    ttk.Label(project_frame, text="Project:", font=font_bold).grid(row=1, column=0, padx=5, pady=8, sticky=tk.W)
     vidsor.project_combo = ttk.Combobox(project_frame, state="readonly", width=30)
-    vidsor.project_combo.grid(row=1, column=1, padx=5, pady=5, sticky=(tk.W, tk.E))
+    vidsor.project_combo.grid(row=1, column=1, padx=5, pady=8, sticky=(tk.W, tk.E))
     vidsor.project_combo.bind("<<ComboboxSelected>>", vidsor._on_project_selected)
     
-    vidsor.project_label = ttk.Label(project_frame, text="No project selected")
-    vidsor.project_label.grid(row=1, column=2, padx=5, pady=5, sticky=tk.W)
+    vidsor.project_label = ttk.Label(project_frame, text="No project selected", 
+                                     foreground=colors['text_secondary'])
+    vidsor.project_label.grid(row=1, column=2, padx=5, pady=8, sticky=tk.W)
     
     project_frame.columnconfigure(1, weight=1)
     
@@ -62,14 +204,15 @@ def create_main_ui(vidsor: 'Vidsor'):
     
     # Preview area
     preview_frame = ttk.LabelFrame(main_frame, text="Preview", padding="10")
-    preview_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=5)
+    preview_frame.grid(row=1, column=0, columnspan=2, sticky=(tk.W, tk.E, tk.N, tk.S), pady=(0, 10))
     
     # Preview label with fixed minimum size to prevent collapsing
     # Use a Canvas for better image display control
     vidsor.preview_canvas = tk.Canvas(
         preview_frame,
-        bg="black",
-        highlightthickness=0
+        bg="#000000",
+        highlightthickness=0,
+        relief='flat'
     )
     # Canvas initially hidden, will be shown when playing
     
@@ -77,9 +220,9 @@ def create_main_ui(vidsor: 'Vidsor'):
     vidsor.preview_label = tk.Label(
         preview_frame,
         text="No project selected\n\nCreate a new project and upload a video to get started",
-        bg="black",
-        fg="white",
-        font=("Arial", 12),
+        bg="#000000",
+        fg=colors['text_secondary'],
+        font=font_normal,
         anchor="center",
         justify="center"
     )
@@ -91,7 +234,7 @@ def create_main_ui(vidsor: 'Vidsor'):
     
     # Timeline
     timeline_frame = ttk.LabelFrame(main_frame, text="Timeline", padding="10")
-    timeline_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+    timeline_frame.grid(row=2, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
     timeline_frame.columnconfigure(0, weight=1)
     
     # Canvas for timeline
@@ -104,7 +247,8 @@ def create_main_ui(vidsor: 'Vidsor'):
         height=220,
         bg="#1a1a1a",
         scrollregion=(0, 0, 1000, 220),
-        highlightthickness=0
+        highlightthickness=0,
+        relief='flat'
     )
     vidsor.timeline_canvas.grid(row=0, column=0, sticky=(tk.W, tk.E))
     
@@ -115,33 +259,38 @@ def create_main_ui(vidsor: 'Vidsor'):
     
     # Controls
     controls_frame = ttk.Frame(main_frame)
-    controls_frame.grid(row=3, column=0, columnspan=2, pady=10)
+    controls_frame.grid(row=3, column=0, columnspan=2, pady=(0, 10))
     
-    # Buttons
-    vidsor.load_video_btn = ttk.Button(controls_frame, text="Upload Video", command=vidsor._on_load_video)
-    vidsor.load_video_btn.pack(side=tk.LEFT, padx=5)
+    # Buttons with consistent spacing
+    vidsor.load_video_btn = ttk.Button(controls_frame, text="Upload Video", 
+                                      command=vidsor._on_load_video)
+    vidsor.load_video_btn.pack(side=tk.LEFT, padx=8)
     
-    vidsor.play_btn = ttk.Button(controls_frame, text="Play Preview", command=vidsor._on_play, state=tk.DISABLED)
-    vidsor.play_btn.pack(side=tk.LEFT, padx=5)
+    vidsor.play_btn = ttk.Button(controls_frame, text="Play Preview", 
+                                command=vidsor._on_play, state=tk.DISABLED)
+    vidsor.play_btn.pack(side=tk.LEFT, padx=8)
     
-    vidsor.pause_btn = ttk.Button(controls_frame, text="Pause", command=vidsor._on_pause, state=tk.DISABLED)
-    vidsor.pause_btn.pack(side=tk.LEFT, padx=5)
+    vidsor.pause_btn = ttk.Button(controls_frame, text="Pause", 
+                                 command=vidsor._on_pause, state=tk.DISABLED)
+    vidsor.pause_btn.pack(side=tk.LEFT, padx=8)
     
-    ttk.Button(controls_frame, text="Stop", command=vidsor._on_stop).pack(side=tk.LEFT, padx=5)
+    ttk.Button(controls_frame, text="Stop", command=vidsor._on_stop).pack(side=tk.LEFT, padx=8)
     
-    vidsor.export_btn = ttk.Button(controls_frame, text="Export", command=vidsor._on_export, state=tk.DISABLED)
-    vidsor.export_btn.pack(side=tk.LEFT, padx=5)
+    vidsor.export_btn = ttk.Button(controls_frame, text="Export", 
+                                  command=vidsor._on_export, state=tk.DISABLED, style='Primary.TButton')
+    vidsor.export_btn.pack(side=tk.LEFT, padx=8)
     
     # Progress bar
     progress_frame = ttk.Frame(main_frame)
-    progress_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=5)
+    progress_frame.grid(row=4, column=0, columnspan=2, sticky=(tk.W, tk.E), pady=(0, 10))
     progress_frame.columnconfigure(0, weight=1)
     
     vidsor.progress_bar = ttk.Progressbar(progress_frame, mode='determinate', length=400)
     vidsor.progress_bar.grid(row=0, column=0, sticky=(tk.W, tk.E))
     
     # Status
-    vidsor.status_label = ttk.Label(main_frame, text="Ready - No project selected")
+    vidsor.status_label = ttk.Label(main_frame, text="Ready - No project selected",
+                                   foreground=colors['text_secondary'], font=font_small)
     vidsor.status_label.grid(row=5, column=0, columnspan=2, pady=5)
     
     # Configure grid weights
