@@ -299,14 +299,15 @@ class PlaybackController:
                 return
             
             # Concatenate audio segments
-            # Ensure concatenate_audioclips is available
-            if concatenate_audioclips is None:
+            # Get concatenate_audioclips function (handle import at runtime if needed)
+            _concatenate_audioclips = concatenate_audioclips
+            if _concatenate_audioclips is None:
                 try:
-                    from moviepy import concatenate_audioclips
+                    from moviepy import concatenate_audioclips as _concatenate_audioclips
                 except ImportError:
-                    from moviepy.editor import concatenate_audioclips
+                    from moviepy.editor import concatenate_audioclips as _concatenate_audioclips
             
-            composite_audio = concatenate_audioclips(audio_segments)
+            composite_audio = _concatenate_audioclips(audio_segments)
             
             # Create a temporary audio file for playback
             temp_audio = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
