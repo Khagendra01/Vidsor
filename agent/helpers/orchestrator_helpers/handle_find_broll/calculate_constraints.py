@@ -50,10 +50,10 @@ def calculate_broll_constraints(
     target_broll_total_min = main_clip_total_duration * ratio_min
     target_broll_total_max = main_clip_total_duration * ratio_max
     
-    # Per-clip duration guidelines: 4-8 seconds (prefer 4-6)
-    min_clip_duration = 4.0
-    max_clip_duration = 8.0
-    preferred_clip_duration = 6.0
+    # Per-clip duration guidelines: 2-4 seconds (prefer 3)
+    min_clip_duration = 2.0
+    max_clip_duration = 4.0
+    preferred_clip_duration = 3.0
     
     if verbose:
         print("\n[DIRECTOR GUIDELINES]")

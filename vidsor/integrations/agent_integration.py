@@ -715,7 +715,7 @@ class AgentIntegration:
         
         # Configure tag styles with modern dark theme colors
         self.chat_text.tag_config("user", foreground="#4fc3f7", font=("Segoe UI", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="#81c784", font=("Segoe UI", 10))
+        self.chat_text.tag_config("assistant", foreground="#ff3385", font=("Segoe UI", 10))
         
         self.chat_text.config(state=tk.DISABLED)
         self.chat_text.see(tk.END)
@@ -756,7 +756,7 @@ class AgentIntegration:
         
         # Configure tag styles with modern dark theme colors
         self.chat_text.tag_config("user", foreground="#4fc3f7", font=("Segoe UI", 10, "bold"))
-        self.chat_text.tag_config("assistant", foreground="#81c784", font=("Segoe UI", 10))
+        self.chat_text.tag_config("assistant", foreground="#ff3385", font=("Segoe UI", 10))
         
         self.chat_text.config(state=tk.DISABLED)
         self.chat_text.see(tk.END)

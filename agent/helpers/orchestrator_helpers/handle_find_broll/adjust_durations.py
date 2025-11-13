@@ -11,7 +11,7 @@ def adjust_broll_durations(
     verbose: bool = False
 ) -> List[Dict]:
     """
-    Adjust clip durations to fit within 4-8 second range.
+    Adjust clip durations to fit within 2-4 second range.
     
     Args:
         selected_ranges: List of selected B-roll range dictionaries
@@ -38,7 +38,7 @@ def adjust_broll_durations(
         adjusted_start = tr_start
         adjusted_end = tr_end
         
-        # Adjust if too short (< 4s) - try to extend
+        # Adjust if too short (< min) - try to extend
         if duration < min_clip_duration:
             extension_needed = min_clip_duration - duration
             # Try to extend from end (check video boundary)
@@ -48,7 +48,7 @@ def adjust_broll_durations(
                 # Try to extend from start
                 adjusted_start = max(0, tr_start - extension_needed)
         
-        # Adjust if too long (> 8s) - trim to 8s
+        # Adjust if too long (> max) - trim to max
         elif duration > max_clip_duration:
             # Trim from end, keeping the start
             adjusted_end = adjusted_start + max_clip_duration

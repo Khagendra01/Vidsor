@@ -6,6 +6,7 @@ from agent.state import OrchestratorState
 from agent.helpers.orchestrator_helpers import (
     validate_planner_result,
     create_clarification_response,
+    gather_clip_contexts,
 )
 from agent.helpers.orchestrator_helpers.handle_find_broll import (
     calculate_broll_constraints,
@@ -93,6 +94,8 @@ def handle_find_broll(
         print(f"  Selected chunks: indices {indices}")
     
     # Call planner to find B-roll
+    clip_contexts = gather_clip_contexts(segment_tree, timeline_manager, indices)
+
     planner_state = {
         "user_query": broll_query,
         "video_path": state.get("video_path", ""),
@@ -102,6 +105,7 @@ def handle_find_broll(
         "time_ranges": None,
         "needs_clarification": False,
         "messages": state.get("messages", []),
+        "clip_contexts": clip_contexts,
     }
     
     try:

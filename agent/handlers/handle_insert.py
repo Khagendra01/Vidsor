@@ -8,6 +8,7 @@ from agent.helpers.orchestrator_helpers import (
     create_clarification_response,
     create_chunks_from_time_ranges,
     recalculate_timeline_times,
+    gather_clip_contexts,
 )
 
 
@@ -43,19 +44,24 @@ def handle_insert(
     # Determine insert position
     insert_position = None
     
+    context_indices = []
+
     if insert_between_indices:
         # Insert between two indices
         idx1, idx2 = insert_between_indices[0], insert_between_indices[1]
         if 0 <= idx1 < len(timeline_manager.chunks) and 0 <= idx2 < len(timeline_manager.chunks):
             insert_position = idx2  # Insert after first index, before second
+            context_indices.extend([idx1, idx2])
     elif insert_after_index is not None:
         # Insert after specified index
         if 0 <= insert_after_index < len(timeline_manager.chunks):
             insert_position = insert_after_index + 1
+            context_indices.append(insert_after_index)
     elif insert_before_index is not None:
         # Insert before specified index
         if 0 <= insert_before_index < len(timeline_manager.chunks):
             insert_position = insert_before_index
+            context_indices.append(insert_before_index)
     
     if insert_position is None:
         return {
@@ -72,6 +78,11 @@ def handle_insert(
         print(f"  Inserting at position {insert_position}")
         print(f"  Search query: '{search_query}'")
     
+    # Gather context around insertion point (unique indices)
+    context_indices = sorted(set(idx for idx in context_indices if 0 <= idx < len(timeline_manager.chunks)))
+    segment_tree = state.get("segment_tree")
+    clip_contexts = gather_clip_contexts(segment_tree, timeline_manager, context_indices)
+
     # Call planner to find content
     planner_state = {
         "user_query": search_query,
@@ -82,6 +93,7 @@ def handle_insert(
         "time_ranges": None,
         "needs_clarification": False,
         "messages": state.get("messages", []),
+        "clip_contexts": clip_contexts,
     }
     
     try:
