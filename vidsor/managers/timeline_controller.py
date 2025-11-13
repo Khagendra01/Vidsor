@@ -9,6 +9,8 @@ try:
 except ImportError:
     HAS_PYGAME = False
 
+import re
+import tkinter as tk
 from ..utils import format_time, get_chunk_color
 
 
@@ -38,6 +40,7 @@ class TimelineController:
         
         # Get canvas coordinates
         canvas_x = self.vidsor.timeline_canvas.canvasx(event.x)
+        canvas_y = event.y
         
         # Calculate timeline duration and scale
         if not self.vidsor.edit_state.chunks:
@@ -49,6 +52,21 @@ class TimelineController:
         
         canvas_width = self.vidsor.timeline_canvas.winfo_width() or 1000
         scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
+        
+        # Timeline dimensions (matching draw_timeline)
+        RULER_HEIGHT = 35
+        CHUNK_AREA_TOP = RULER_HEIGHT
+        CHUNK_AREA_BOTTOM = CHUNK_AREA_TOP + 140
+        
+        # Check if clicking on a chunk (within chunk area)
+        clicked_chunk_idx = None
+        if self.vidsor.edit_state.chunks and CHUNK_AREA_TOP <= canvas_y <= CHUNK_AREA_BOTTOM:
+            for i, chunk in enumerate(self.vidsor.edit_state.chunks):
+                x_start = chunk.start_time * scale
+                x_end = chunk.end_time * scale
+                if x_start <= canvas_x <= x_end:
+                    clicked_chunk_idx = i
+                    break
         
         # Check if clicking on/near the playhead (within 10 pixels)
         playhead_x = self.vidsor.edit_state.preview_time * scale
@@ -71,6 +89,21 @@ class TimelineController:
             # Mark that playback has started so Resume button appears
             self.vidsor.edit_state.has_started_playback = True
             self.vidsor._update_playback_controls()
+        elif clicked_chunk_idx is not None:
+            # Clicked on a chunk - handle selection
+            # Single click: toggle selection
+            if clicked_chunk_idx in self.vidsor.edit_state.selected_chunks:
+                # Already selected - unselect it
+                self.vidsor.edit_state.selected_chunks.discard(clicked_chunk_idx)
+            else:
+                # Not selected - add to selection
+                self.vidsor.edit_state.selected_chunks.add(clicked_chunk_idx)
+            
+            # Update timeline display
+            self.draw_timeline()
+            
+            # Display selected chunks in chat
+            self._display_selected_chunks_in_chat()
         else:
             # Clicked elsewhere on timeline - seek to that position
             new_time = canvas_x / scale
@@ -244,7 +277,7 @@ class TimelineController:
                 
                 # Determine if this chunk is hovered or selected
                 is_hovered = (self.timeline_hover_chunk == i)
-                is_selected = (self.vidsor.edit_state.selected_chunk == i)
+                is_selected = (i in self.vidsor.edit_state.selected_chunks)
                 
                 # Get colors
                 fill_color, outline_color, gradient_color = get_chunk_color(
@@ -368,4 +401,79 @@ class TimelineController:
         # Update scroll region
         timeline_width = max(canvas_width, timeline_duration * scale)
         self.vidsor.timeline_canvas.configure(scrollregion=(0, 0, timeline_width, TIMELINE_HEIGHT))
+    
+    def on_timeline_double_click(self, event):
+        """Handle double-click on timeline to unselect chunks."""
+        if not self.vidsor.timeline_canvas:
+            return
+        
+        # Get canvas coordinates
+        canvas_x = self.vidsor.timeline_canvas.canvasx(event.x)
+        canvas_y = event.y
+        
+        # Calculate timeline duration and scale
+        if not self.vidsor.edit_state.chunks:
+            return
+        
+        timeline_duration = max(chunk.end_time for chunk in self.vidsor.edit_state.chunks)
+        canvas_width = self.vidsor.timeline_canvas.winfo_width() or 1000
+        scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
+        
+        # Timeline dimensions (matching draw_timeline)
+        RULER_HEIGHT = 35
+        CHUNK_AREA_TOP = RULER_HEIGHT
+        CHUNK_AREA_BOTTOM = CHUNK_AREA_TOP + 140
+        
+        # Check if double-clicking on a chunk
+        if CHUNK_AREA_TOP <= canvas_y <= CHUNK_AREA_BOTTOM:
+            for i, chunk in enumerate(self.vidsor.edit_state.chunks):
+                x_start = chunk.start_time * scale
+                x_end = chunk.end_time * scale
+                if x_start <= canvas_x <= x_end:
+                    # Double-clicked on chunk - unselect it
+                    self.vidsor.edit_state.selected_chunks.discard(i)
+                    # Update timeline display
+                    self.draw_timeline()
+                    # Update chat display
+                    self._display_selected_chunks_in_chat()
+                    break
+    
+    def _display_selected_chunks_in_chat(self):
+        """Insert selected clip references into the input box, or clear them if none selected."""
+        # Insert into input box
+        if hasattr(self.vidsor, 'agent_integration') and self.vidsor.agent_integration:
+            if self.vidsor.agent_integration.chat_input:
+                # Get current content
+                current_text = self.vidsor.agent_integration.chat_input.get("1.0", tk.END).strip()
+                
+                # Remove any existing clip references (like @clip1, @clip2, etc.)
+                # Pattern to match @clip followed by digits
+                current_text = re.sub(r'@clip\d+\s*', '', current_text).strip()
+                
+                # If there are selected chunks, add their references
+                if self.vidsor.edit_state.selected_chunks:
+                    # Get selected chunks sorted by start time
+                    selected_chunks = sorted(
+                        [(i, self.vidsor.edit_state.chunks[i]) for i in self.vidsor.edit_state.selected_chunks],
+                        key=lambda x: x[1].start_time
+                    )
+                    
+                    # Build clip references like @clip1 @clip2
+                    clip_refs = []
+                    for idx, chunk in selected_chunks:
+                        clip_refs.append(f"@clip{idx + 1}")
+                    
+                    # Add new clip references
+                    new_clip_refs = ' '.join(clip_refs)
+                    # Combine with existing text (if any) and new clip references
+                    new_text = f"{current_text} {new_clip_refs}".strip() if current_text else new_clip_refs
+                else:
+                    # No selected chunks - just use the text without clip references
+                    new_text = current_text
+                
+                # Update input box
+                self.vidsor.agent_integration.chat_input.delete("1.0", tk.END)
+                self.vidsor.agent_integration.chat_input.insert("1.0", new_text)
+                # Focus on input box
+                self.vidsor.agent_integration.chat_input.focus_set()
 

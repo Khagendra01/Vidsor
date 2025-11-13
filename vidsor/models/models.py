@@ -2,8 +2,8 @@
 Data models for Vidsor video editor.
 """
 
-from dataclasses import dataclass
-from typing import List, Optional
+from dataclasses import dataclass, field
+from typing import List, Optional, Set
 
 
 @dataclass
@@ -27,7 +27,8 @@ class Chunk:
 class EditState:
     """Current editing state."""
     chunks: List[Chunk]
-    selected_chunk: Optional[int] = None
+    selected_chunks: Set[int] = field(default_factory=set)  # Multiple selected chunks
+    selected_chunk: Optional[int] = None  # Deprecated: kept for backward compatibility
     preview_time: float = 0.0
     is_playing: bool = False
     has_started_playback: bool = False  # Track if playback has started (for resume button)

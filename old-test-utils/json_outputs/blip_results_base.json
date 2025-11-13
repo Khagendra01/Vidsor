@@ -1,0 +1,1821 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "model": "Salesforce/blip-image-captioning-base",
+  "test_config": {
+    "frame_interval": 10,
+    "max_frames": 300,
+    "batch_size": 48,
+   
+    "num_frames_processed": 300
+  },
+  "statistics": {
+    "total_frames": 300,
+    "total_processing_time": 14.15,
+    "avg_time_per_frame": 0.036,
+    "min_time": 0.031,
+    "max_time": 0.074,
+    "fps": 21.21
+  },
+  "results": [
+    {
+      "frame_number": 1,
+      "second": 0.0,
+      "caption": "a man in a green shirt and hat is pointing at the camera",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 11,
+      "second": 0.334,
+      "caption": "a man in a green shirt and sunglasses is standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 21,
+      "second": 0.667,
+      "caption": "a man in a green shirt and sunglasses is pointing at the camera",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 31,
+      "second": 1.001,
+      "caption": "a man in a green shirt and hat is standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 41,
+      "second": 1.335,
+      "caption": "a man in a green shirt and sunglasses is pointing at the camera",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 51,
+      "second": 1.668,
+      "caption": "a man in a green shirt and hat standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 61,
+      "second": 2.002,
+      "caption": "a man in a green shirt and hat standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 71,
+      "second": 2.336,
+      "caption": "a man in a green shirt and hat standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 81,
+      "second": 2.669,
+      "caption": "a man in a green shirt and hat pointing at the camera",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 91,
+      "second": 3.003,
+      "caption": "a man in a green shirt and hat standing on a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 101,
+      "second": 3.337,
+      "caption": "a man in a helicopter flying over a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 111,
+      "second": 3.67,
+      "caption": "a man in a helicopter flying over mountains",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 121,
+      "second": 4.004,
+      "caption": "a man in a helicopter flying over a mountain",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 131,
+      "second": 4.338,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 141,
+      "second": 4.671,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 151,
+      "second": 5.005,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 161,
+      "second": 5.339,
+      "caption": "a small plane is sitting on the shore",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 171,
+      "second": 5.672,
+      "caption": "a man is standing near a tent with a dog",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 181,
+      "second": 6.006,
+      "caption": "a man is standing near a tent with a dog",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 191,
+      "second": 6.34,
+      "caption": "a man is standing next to a tree",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 201,
+      "second": 6.673,
+      "caption": "two men sitting on the ground eating food",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 211,
+      "second": 7.007,
+      "caption": "two people sitting on the ground eating food",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 221,
+      "second": 7.341,
+      "caption": "two men sitting on the ground eating food",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 231,
+      "second": 7.674,
+      "caption": "two people sitting on the ground eating food",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 241,
+      "second": 8.008,
+      "caption": "a man fishing on a lake with two boats",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 251,
+      "second": 8.342,
+      "caption": "a man fishing on a lake with two boats",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 261,
+      "second": 8.675,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 271,
+      "second": 9.009,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 281,
+      "second": 9.343,
+      "caption": "a man holding a fish in his hand",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 291,
+      "second": 9.676,
+      "caption": "a man holding a fish in his hand",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 301,
+      "second": 10.01,
+      "caption": "a man holding a fish in his hand",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 311,
+      "second": 10.344,
+      "caption": "a young boy holding a fish on a fishing line",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 321,
+      "second": 10.677,
+      "caption": "a young boy holding a fish on a rock",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 331,
+      "second": 11.011,
+      "caption": "a young boy holding a fish on a fishing line",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 341,
+      "second": 11.345,
+      "caption": "a man holding a fish in his hands",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 351,
+      "second": 11.678,
+      "caption": "a man holding a fish in his hands",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 361,
+      "second": 12.012,
+      "caption": "two people walking down a trail in the mountains",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 371,
+      "second": 12.346,
+      "caption": "two people walking up a hill with a lake in the background",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 381,
+      "second": 12.679,
+      "caption": "two people walking up a hill with a lake in the background",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 391,
+      "second": 13.013,
+      "caption": "a man in a kayak is holding a fish",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 401,
+      "second": 13.347,
+      "caption": "a man in a boat on a lake",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 411,
+      "second": 13.68,
+      "caption": "a man in a boat on a lake",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 421,
+      "second": 14.014,
+      "caption": "a man in a wooden boat with a hat",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 431,
+      "second": 14.348,
+      "caption": "a man in a wooden cabin with a hat",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 441,
+      "second": 14.681,
+      "caption": "a man in a hat is opening a door",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 451,
+      "second": 15.015,
+      "caption": "a man in a hat and jacket is opening a door",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 461,
+      "second": 15.349,
+      "caption": "a man standing in front of a wooden cabin",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 471,
+      "second": 15.682,
+      "caption": "a man is standing outside of a cabin",
+      "processing_time": 0.041
+    },
+    {
+      "frame_number": 481,
+      "second": 16.016,
+      "caption": "a man is standing outside of a cabin",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 491,
+      "second": 16.35,
+      "caption": "a man is standing outside of a wooden house",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 501,
+      "second": 16.683,
+      "caption": "a man sitting on a chair in front of a building",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 511,
+      "second": 17.017,
+      "caption": "a man sitting on a chair in front of a building",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 521,
+      "second": 17.351,
+      "caption": "a man sitting on a chair in front of a building",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 531,
+      "second": 17.684,
+      "caption": "a man sitting on a chair in front of a building",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 541,
+      "second": 18.018,
+      "caption": "a tree stump with a small hole in it",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 551,
+      "second": 18.352,
+      "caption": "a tree stump with a small hole in it",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 561,
+      "second": 18.685,
+      "caption": "a hammer is stuck into a tree stump",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 571,
+      "second": 19.019,
+      "caption": "a axe is stuck into a tree stump",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 581,
+      "second": 19.353,
+      "caption": "a axe is stuck into a tree stump",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 591,
+      "second": 19.686,
+      "caption": "a axe is stuck into a tree stump",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 601,
+      "second": 20.02,
+      "caption": "a fire pit with a fire in it",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 611,
+      "second": 20.354,
+      "caption": "a knife with a red and black logo on it",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 621,
+      "second": 20.687,
+      "caption": "a knife with a mountain in the background",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 631,
+      "second": 21.021,
+      "caption": "a logo for the mountain club",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 641,
+      "second": 21.355,
+      "caption": "the logo for the new outdoor recreation center",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 651,
+      "second": 21.688,
+      "caption": "the logo for the new logo",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 661,
+      "second": 22.022,
+      "caption": "the logo for the new logo",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 671,
+      "second": 22.356,
+      "caption": "the logo for the new logo",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 681,
+      "second": 22.689,
+      "caption": "a logo with mountains and trees in the background",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 691,
+      "second": 23.023,
+      "caption": "a man driving a car on a road",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 701,
+      "second": 23.357,
+      "caption": "a car driving down a road with a view of the ocean",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 711,
+      "second": 23.69,
+      "caption": "a car driving down a road with a view of a river",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 721,
+      "second": 24.024,
+      "caption": "a person driving a car on a road",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 731,
+      "second": 24.358,
+      "caption": "a man driving a car down a road",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 741,
+      "second": 24.691,
+      "caption": "a man in a car with a cell phone",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 751,
+      "second": 25.025,
+      "caption": "a man in a car is holding a gun",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 761,
+      "second": 25.359,
+      "caption": "a man in a car with a hat and a hat",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 771,
+      "second": 25.692,
+      "caption": "a man walking down a street carrying a bag",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 781,
+      "second": 26.026,
+      "caption": "a man walking down the street with a bag",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 791,
+      "second": 26.36,
+      "caption": "a man walking down the street carrying a bag",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 801,
+      "second": 26.693,
+      "caption": "a man walking down the street with a bag",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 811,
+      "second": 27.027,
+      "caption": "a man is getting off the boat and getting off",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 821,
+      "second": 27.361,
+      "caption": "a man is getting off a boat and getting off",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 831,
+      "second": 27.694,
+      "caption": "a man is getting off the plane and getting off",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 841,
+      "second": 28.028,
+      "caption": "two men are standing in front of a helicopter",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 851,
+      "second": 28.362,
+      "caption": "a man in a hat is working on a machine",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 861,
+      "second": 28.695,
+      "caption": "a man in a black jacket is holding a gun",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 871,
+      "second": 29.029,
+      "caption": "a man in a black jacket is sitting in the back of a truck",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 881,
+      "second": 29.363,
+      "caption": "a man in a helicopter with a camera",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 891,
+      "second": 29.696,
+      "caption": "a man in a small car with a camera",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 901,
+      "second": 30.03,
+      "caption": "a man in a helicopter with a helmet on",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 911,
+      "second": 30.364,
+      "caption": "a man in a helicopter with a helmet on",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 921,
+      "second": 30.697,
+      "caption": "a man in a boat is driving down the river",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 931,
+      "second": 31.031,
+      "caption": "a man in a boat is driving down the river",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 941,
+      "second": 31.365,
+      "caption": "a man in a helicopter flying over a river",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 951,
+      "second": 31.698,
+      "caption": "a boat is in the water near a house",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 961,
+      "second": 32.032,
+      "caption": "a boat is seen from the water as it passes through a flooded area",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 971,
+      "second": 32.366,
+      "caption": "a boat is seen from the inside of a boat",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 981,
+      "second": 32.699,
+      "caption": "a boat is seen from the inside of a boat",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 991,
+      "second": 33.033,
+      "caption": "a man in a boat with a camera",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1001,
+      "second": 33.367,
+      "caption": "a man in a boat with a camera",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1011,
+      "second": 33.7,
+      "caption": "a man in a boat is driving on the water",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1021,
+      "second": 34.034,
+      "caption": "a man in a boat with a camera",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1031,
+      "second": 34.368,
+      "caption": "a man in a helicopter flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1041,
+      "second": 34.701,
+      "caption": "a man in a helicopter flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1051,
+      "second": 35.035,
+      "caption": "a man in a helicopter flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1061,
+      "second": 35.369,
+      "caption": "a man in a cockpit looking at the view from the cockpit",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1071,
+      "second": 35.702,
+      "caption": "a view of a lake from a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1081,
+      "second": 36.036,
+      "caption": "a view of a lake from a helicopter",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1091,
+      "second": 36.37,
+      "caption": "a view of a lake from a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1101,
+      "second": 36.703,
+      "caption": "a small plane flying over a lake",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1111,
+      "second": 37.037,
+      "caption": "a man in a red jacket is sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1121,
+      "second": 37.371,
+      "caption": "a young boy in a helicopter looking out the window",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1131,
+      "second": 37.704,
+      "caption": "a man in a red jacket is sitting in the cockpit of a helicopter",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1141,
+      "second": 38.038,
+      "caption": "a small plane flying over a lake",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1151,
+      "second": 38.372,
+      "caption": "a helicopter flying over a lake with a view of the ocean",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1161,
+      "second": 38.705,
+      "caption": "a helicopter flying over a lake with a view of the ocean",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1171,
+      "second": 39.039,
+      "caption": "a plane flying over a body of water",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1181,
+      "second": 39.373,
+      "caption": "a view from the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1191,
+      "second": 39.706,
+      "caption": "a small plane flying over a field",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1201,
+      "second": 40.04,
+      "caption": "a small plane flying over a field",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1211,
+      "second": 40.374,
+      "caption": "a view from the cockpit of a plane flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1221,
+      "second": 40.707,
+      "caption": "a view from the cockpit of a plane flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1231,
+      "second": 41.041,
+      "caption": "a view from the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1241,
+      "second": 41.375,
+      "caption": "a view from the cockpit of a plane flying over a river",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1251,
+      "second": 41.708,
+      "caption": "two boys are sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1261,
+      "second": 42.042,
+      "caption": "two boys are sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1271,
+      "second": 42.376,
+      "caption": "two boys are sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1281,
+      "second": 42.709,
+      "caption": "two boys are sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1291,
+      "second": 43.043,
+      "caption": "two boys are sitting in the cockpit of a plane",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1301,
+      "second": 43.377,
+      "caption": "a person flying a small plane over a green field",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1311,
+      "second": 43.71,
+      "caption": "a person flying a small plane over a green field",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1321,
+      "second": 44.044,
+      "caption": "a person flying a helicopter over a green field",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1331,
+      "second": 44.378,
+      "caption": "two men in a helicopter with headphones",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1341,
+      "second": 44.711,
+      "caption": "two men in a helicopter with headphones on",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1351,
+      "second": 45.045,
+      "caption": "two men in a helicopter with their heads up",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1361,
+      "second": 45.379,
+      "caption": "two men in a helicopter with their heads up",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1371,
+      "second": 45.712,
+      "caption": "a small plane flying over a lush green valley",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1381,
+      "second": 46.046,
+      "caption": "a view from a plane of a mountain range",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1391,
+      "second": 46.38,
+      "caption": "a person flying a small plane over a lush green valley",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1401,
+      "second": 46.713,
+      "caption": "a view from a plane of mountains and clouds",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1411,
+      "second": 47.047,
+      "caption": "a small plane flying over a mountain range",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1421,
+      "second": 47.381,
+      "caption": "a small plane flying over a mountain range",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1431,
+      "second": 47.714,
+      "caption": "a view from the cockpit of a plane flying over a mountain range",
+      "processing_time": 0.033
+    },
+    {
+      "frame_number": 1441,
+      "second": 48.048,
+      "caption": "a helicopter flying over a mountain range",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1451,
+      "second": 48.382,
+      "caption": "a helicopter flying over a mountain range",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1461,
+      "second": 48.715,
+      "caption": "a helicopter flying over a mountain range",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1471,
+      "second": 49.049,
+      "caption": "a man in a helicopter flying over mountains",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1481,
+      "second": 49.383,
+      "caption": "a man in a helicopter flying over mountains",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1491,
+      "second": 49.716,
+      "caption": "a man in a helicopter flying over mountains",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1501,
+      "second": 50.05,
+      "caption": "a view from the cockpit of a plane flying over mountains",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1511,
+      "second": 50.384,
+      "caption": "a view of the mountains from a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1521,
+      "second": 50.717,
+      "caption": "a view from the cockpit of a plane flying over a mountain range",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1531,
+      "second": 51.051,
+      "caption": "a view from the cockpit of a plane flying over a mountain range",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1541,
+      "second": 51.385,
+      "caption": "a man in a red jacket sitting in a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1551,
+      "second": 51.718,
+      "caption": "a man in a red jacket sitting in a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1561,
+      "second": 52.052,
+      "caption": "a man in a red jacket sitting in a helicopter",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1571,
+      "second": 52.386,
+      "caption": "a view from the cockpit of a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1581,
+      "second": 52.719,
+      "caption": "a plane flying over a lake with a view of mountains",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1591,
+      "second": 53.053,
+      "caption": "a view from the cockpit of a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1601,
+      "second": 53.387,
+      "caption": "a view of a lake from a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1611,
+      "second": 53.72,
+      "caption": "a view of a lake from a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1621,
+      "second": 54.054,
+      "caption": "a plane flying over a lake with mountains in the background",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1631,
+      "second": 54.388,
+      "caption": "a plane flying over a lake with mountains in the background",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1641,
+      "second": 54.721,
+      "caption": "a plane flying over a lake with mountains in the background",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1651,
+      "second": 55.055,
+      "caption": "a plane flying over a lake with mountains in the background",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1661,
+      "second": 55.389,
+      "caption": "a plane flying over a lake with mountains in the background",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1671,
+      "second": 55.722,
+      "caption": "a man in a helicopter flying over a lake",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1681,
+      "second": 56.056,
+      "caption": "a man in a helicopter flying over a lake",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1691,
+      "second": 56.39,
+      "caption": "a man in a helicopter flying over a lake",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1701,
+      "second": 56.723,
+      "caption": "a man in a helicopter flying over a lake",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1711,
+      "second": 57.057,
+      "caption": "a man in a boat with a camera",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1721,
+      "second": 57.391,
+      "caption": "a man in a boat is driving through the water",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1731,
+      "second": 57.724,
+      "caption": "a man in a boat with a camera",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1741,
+      "second": 58.058,
+      "caption": "a man driving a boat on a river",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1751,
+      "second": 58.392,
+      "caption": "a man driving a boat on a river",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1761,
+      "second": 58.725,
+      "caption": "a man driving a boat on a river",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1771,
+      "second": 59.059,
+      "caption": "a man driving a boat on a river",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1781,
+      "second": 59.393,
+      "caption": "a man in a helicopter cockpit with a camera",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1791,
+      "second": 59.726,
+      "caption": "a man in a blue jacket is driving a small plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1801,
+      "second": 60.06,
+      "caption": "a man in a helicopter cockpit is seen",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1811,
+      "second": 60.394,
+      "caption": "a man in a hat is standing next to a helicopter",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1821,
+      "second": 60.727,
+      "caption": "a man in a gray jacket is standing next to a helicopter",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1831,
+      "second": 61.061,
+      "caption": "a man in a jacket is standing next to a helicopter",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1841,
+      "second": 61.395,
+      "caption": "a man in a hat is standing next to a helicopter",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1851,
+      "second": 61.728,
+      "caption": "a man standing next to a small plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1861,
+      "second": 62.062,
+      "caption": "a man in a hat and jacket standing next to a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1871,
+      "second": 62.396,
+      "caption": "a man in a hat standing next to a plane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1881,
+      "second": 62.729,
+      "caption": "a man is getting ready to go into a seaplane",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1891,
+      "second": 63.063,
+      "caption": "a man is getting his canoe out of the water",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1901,
+      "second": 63.397,
+      "caption": "a man in a canoe is getting ready to go into the water",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1911,
+      "second": 63.73,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.032
+    },
+    {
+      "frame_number": 1921,
+      "second": 64.064,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1931,
+      "second": 64.398,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1941,
+      "second": 64.731,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1951,
+      "second": 65.065,
+      "caption": "a man is getting off the boat",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1961,
+      "second": 65.399,
+      "caption": "a man is getting off the boat",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1971,
+      "second": 65.732,
+      "caption": "a man is getting off the boat",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1981,
+      "second": 66.066,
+      "caption": "a man is getting his boat out of the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 1991,
+      "second": 66.4,
+      "caption": "a man is getting off the plane",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2001,
+      "second": 66.733,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2011,
+      "second": 67.067,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2021,
+      "second": 67.401,
+      "caption": "a small boat is docked on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2031,
+      "second": 67.734,
+      "caption": "a small boat is docked on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2041,
+      "second": 68.068,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2051,
+      "second": 68.402,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2061,
+      "second": 68.735,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2071,
+      "second": 69.069,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2081,
+      "second": 69.403,
+      "caption": "a small plane is sitting in the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2091,
+      "second": 69.736,
+      "caption": "a small plane is sitting on the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2101,
+      "second": 70.07,
+      "caption": "a small plane is flying over the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2111,
+      "second": 70.404,
+      "caption": "a small plane is floating in the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2121,
+      "second": 70.737,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2131,
+      "second": 71.071,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2141,
+      "second": 71.405,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2151,
+      "second": 71.738,
+      "caption": "a man is fishing on a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2161,
+      "second": 72.072,
+      "caption": "a man is standing on the edge of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2171,
+      "second": 72.406,
+      "caption": "a man in red raincoats standing on a rock near a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2181,
+      "second": 72.739,
+      "caption": "a group of people standing on a rocky shore",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2191,
+      "second": 73.073,
+      "caption": "a man and two children are standing near a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2201,
+      "second": 73.407,
+      "caption": "a man and two children are standing near the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2211,
+      "second": 73.74,
+      "caption": "a man and two children are standing near the water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2221,
+      "second": 74.074,
+      "caption": "a man in a red raincoat standing next to a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2231,
+      "second": 74.408,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2241,
+      "second": 74.741,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2251,
+      "second": 75.075,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2261,
+      "second": 75.409,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2271,
+      "second": 75.742,
+      "caption": "a man standing on a beach next to a body of water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2281,
+      "second": 76.076,
+      "caption": "a man standing on a beach next to a body of water",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2291,
+      "second": 76.41,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2301,
+      "second": 76.743,
+      "caption": "a man standing on a beach next to a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2311,
+      "second": 77.077,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2321,
+      "second": 77.411,
+      "caption": "a man and a child are standing on the shore",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2331,
+      "second": 77.744,
+      "caption": "a man and a child are standing on the shore",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2341,
+      "second": 78.078,
+      "caption": "a man and a little girl are standing on the shore",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2351,
+      "second": 78.412,
+      "caption": "a man and a little girl are standing on the shore",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2361,
+      "second": 78.745,
+      "caption": "a man and a little girl are standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2371,
+      "second": 79.079,
+      "caption": "a man and a child are standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2381,
+      "second": 79.413,
+      "caption": "a man is fishing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2391,
+      "second": 79.746,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.034
+    },
+    {
+      "frame_number": 2401,
+      "second": 80.08,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2411,
+      "second": 80.414,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2421,
+      "second": 80.747,
+      "caption": "a man standing on a rocky shore next to a body of water",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2431,
+      "second": 81.081,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2441,
+      "second": 81.415,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2451,
+      "second": 81.748,
+      "caption": "a map of alaska",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2461,
+      "second": 82.082,
+      "caption": "a map of the alaska region",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2471,
+      "second": 82.416,
+      "caption": "a map of the alaska region",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2481,
+      "second": 82.749,
+      "caption": "a map of the alaska region",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2491,
+      "second": 83.083,
+      "caption": "a map of the alaska region",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2501,
+      "second": 83.417,
+      "caption": "a map of the alaska region",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2511,
+      "second": 83.75,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2521,
+      "second": 84.084,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2531,
+      "second": 84.418,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2541,
+      "second": 84.751,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2551,
+      "second": 85.085,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2561,
+      "second": 85.419,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2571,
+      "second": 85.752,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2581,
+      "second": 86.086,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2591,
+      "second": 86.42,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2601,
+      "second": 86.753,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2611,
+      "second": 87.087,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2621,
+      "second": 87.421,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2631,
+      "second": 87.754,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2641,
+      "second": 88.088,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2651,
+      "second": 88.422,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2661,
+      "second": 88.755,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2671,
+      "second": 89.089,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2681,
+      "second": 89.423,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2691,
+      "second": 89.756,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2701,
+      "second": 90.09,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2711,
+      "second": 90.424,
+      "caption": "a man standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2721,
+      "second": 90.757,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2731,
+      "second": 91.091,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2741,
+      "second": 91.425,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2751,
+      "second": 91.758,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2761,
+      "second": 92.092,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2771,
+      "second": 92.426,
+      "caption": "a man standing on a rock near a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2781,
+      "second": 92.759,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2791,
+      "second": 93.093,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2801,
+      "second": 93.427,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2811,
+      "second": 93.76,
+      "caption": "a man is standing on the shore of a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2821,
+      "second": 94.094,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2831,
+      "second": 94.428,
+      "caption": "a man standing on a rocky shore next to a body of water",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2841,
+      "second": 94.761,
+      "caption": "a man standing on a rocky shore next to a body of water",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2851,
+      "second": 95.095,
+      "caption": "a man standing on a rocky shore next to a body of water",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2861,
+      "second": 95.429,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2871,
+      "second": 95.762,
+      "caption": "a man standing on a rocky shore next to a lake",
+      "processing_time": 0.031
+    },
+    {
+      "frame_number": 2881,
+      "second": 96.096,
+      "caption": "two people are walking along the shore of a lake",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2891,
+      "second": 96.43,
+      "caption": "two people are walking along the shore of a lake",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2901,
+      "second": 96.763,
+      "caption": "two people are walking along a river",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2911,
+      "second": 97.097,
+      "caption": "two people walking along a rocky beach",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2921,
+      "second": 97.431,
+      "caption": "two people walking along a river with a backpack",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2931,
+      "second": 97.764,
+      "caption": "two people walking along a river with backpacks",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2941,
+      "second": 98.098,
+      "caption": "two people walking along a river in the woods",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2951,
+      "second": 98.432,
+      "caption": "two people walking along a river in the woods",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2961,
+      "second": 98.765,
+      "caption": "a man with a backpack walking through the woods",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2971,
+      "second": 99.099,
+      "caption": "a man with a backpack walking through the woods",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2981,
+      "second": 99.433,
+      "caption": "a man walking through the woods with a backpack",
+      "processing_time": 0.074
+    },
+    {
+      "frame_number": 2991,
+      "second": 99.766,
+      "caption": "a man walking through the woods",
+      "processing_time": 0.074
+    }
+  ]
+}

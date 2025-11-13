@@ -1,0 +1,1835 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "test_config": {
+    "test_interval": 30,
+    "max_frames_to_test": 100,
+    "blip_batch_size": 32,
+    "max_workers": 4,
+    "frames_tested": [
+      1,
+      31,
+      61,
+      91,
+      121,
+      151,
+      181,
+      211,
+      241,
+      271,
+      301,
+      331,
+      361,
+      391,
+      421,
+      451,
+      481,
+      511,
+      541,
+      571,
+      601,
+      631,
+      661,
+      691,
+      721,
+      751,
+      781,
+      811,
+      841,
+      871,
+      901,
+      931,
+      961,
+      991,
+      1021,
+      1051,
+      1081,
+      1111,
+      1141,
+      1171,
+      1201,
+      1231,
+      1261,
+      1291,
+      1321,
+      1351,
+      1381,
+      1411,
+      1441,
+      1471,
+      1501,
+      1531,
+      1561,
+      1591,
+      1621,
+      1651,
+      1681,
+      1711,
+      1741,
+      1771,
+      1801,
+      1831,
+      1861,
+      1891,
+      1921,
+      1951,
+      1981,
+      2011,
+      2041,
+      2071,
+      2101,
+      2131,
+      2161,
+      2191,
+      2221,
+      2251,
+      2281,
+      2311,
+      2341,
+      2371,
+      2401,
+      2431,
+      2461,
+      2491,
+      2521,
+      2551,
+      2581,
+      2611,
+      2641,
+      2671,
+      2701,
+      2731,
+      2761,
+      2791,
+      2821,
+      2851,
+      2881,
+      2911,
+      2941,
+      2971
+    ],
+    "num_frames_tested": 100
+  },
+  "statistics": {
+    "total_frames": 100,
+    "total_processing_time": 469.75,
+    "blip": {
+      "avg_time_per_frame": 0.063,
+      "total_time": 6.32,
+      "min_time": 0.05,
+      "max_time": 0.207
+    },
+    "bakllava": {
+      "avg_time_per_frame": 18.253,
+      "total_time": 1825.32,
+      "min_time": 13.461,
+      "max_time": 24.439
+    },
+    "speedup": {
+      "faster": "BLIP",
+      "ratio": 0.0,
+      "time_difference": 18.19
+    }
+  },
+  "results": [
+    {
+      "frame_number": 1,
+      "second": 0.0,
+      "blip": {
+        "caption": "a man in a green shirt and hat is pointing at the camera",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "A man, wearing a green shirt and brown baseball cap, is standing on a hill with his finger pointed forward. He appears to be making a gesture towards the camera as if calling out to someone or something. Behind him, there is an expansive view of water and mountains, creating a breathtaking backdrop for the scene.",
+        "processing_time": 16.51190209388733
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.445
+      }
+    },
+    {
+      "frame_number": 31,
+      "second": 1.0,
+      "blip": {
+        "caption": "a man in a green shirt and hat is standing on a mountain",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a man is standing on a hill, overlooking a scenic view of a large body of water with mountains in the background. He appears to be pointing at something in the distance while wearing sunglasses and a hat. The man seems to be enjoying his time outdoors, taking in the beautiful surroundings.\n\nThe landscape includes numerous trees scattered around the area, with some close to the water's edge and others further up the hill. The overall atmosphere of the scene is one of leisure and appreciation for nature.",
+        "processing_time": 21.006795167922974
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.94
+      }
+    },
+    {
+      "frame_number": 61,
+      "second": 2.0,
+      "blip": {
+        "caption": "a man in a green shirt and hat standing on a mountain",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image features a man standing on the side of a hill with a picturesque background that includes mountains, a body of water, and several trees scattered across the scene. He appears to be wearing a baseball cap and is pointing forward, possibly giving directions or indicating something of interest. The man is situated near the center of the frame, with the natural surroundings creating a beautiful and serene backdrop for the photo.",
+        "processing_time": 24.438932180404663
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 24.372
+      }
+    },
+    {
+      "frame_number": 91,
+      "second": 3.0,
+      "blip": {
+        "caption": "a man in a green shirt and hat standing on a mountain",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing sunglasses and a hat is standing on top of a hill, overlooking a scenic landscape. He has his arms outstretched, as if greeting someone or simply enjoying the view. The man appears to be smiling and posing for a photo.\n\nThe surrounding area features several trees, adding to the picturesque setting. In the far distance, there is a small boat on the water, hinting at possible recreational activities in the area. Overall, the scene captures a beautiful outdoor location where people can enjoy nature and engage in various leisure activities.",
+        "processing_time": 13.461083889007568
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 13.394
+      }
+    },
+    {
+      "frame_number": 121,
+      "second": 4.0,
+      "blip": {
+        "caption": "a man in a helicopter flying over a mountain",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a person is sitting in the cockpit of a small airplane, which is flying high above the ground. The pilot appears to be enjoying the view from the plane's window, as does a passenger seated next to them. They are both looking out over the beautiful landscape below. \n\nOutside the plane, the stunning view includes snow-covered mountains and lush green fields, creating a breathtaking scene for the occupants of the aircraft.",
+        "processing_time": 15.103972434997559
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 15.037
+      }
+    },
+    {
+      "frame_number": 151,
+      "second": 5.0,
+      "blip": {
+        "caption": "a small plane is sitting on the water",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image features a blue and white airplane that has landed on a lake. The aircraft is parked near the shore, partially submerged in water. There is another smaller plane visible in the scene. The larger airplane seems to be seaplane-like, designed for water landings.\n\nSeveral people are present around the main airplane. One person can be found closer to the front of the aircraft, while two others are positioned on the right side. Another individual is seen further back near the middle of the scene. The presence of these people suggests that they might be attending to the plane or simply observing the unique sight of an airplane on a lake.",
+        "processing_time": 17.658828020095825
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.592
+      }
+    },
+    {
+      "frame_number": 181,
+      "second": 6.0,
+      "blip": {
+        "caption": "a man is standing next to a tent",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image features an older man wearing a baseball cap and glasses, standing near some trees. He appears to be looking towards the camera as if posing for the picture. There are two instances of this man in the image, one on the left side and another on the right side. In both cases, he is surrounded by greenery.\n\nAdditionally, there are two birds visible in the scene, with one located closer to the left side of the image and the other near the center. There is also a backpack situated close to the man on the left, perhaps indicating that they are out for an outdoor adventure.",
+        "processing_time": 18.431131601333618
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.364
+      }
+    },
+    {
+      "frame_number": 211,
+      "second": 7.0,
+      "blip": {
+        "caption": "two men sitting on the ground eating food",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a group of people is gathered outdoors near a lake or riverbank. They are sitting on various surfaces such as rocks and logs while enjoying their food. The main person in focus is eating chips off a plastic plate. There are multiple items scattered around the scene including bottles, cups, knives, and bowls. \n\nA frisbee can be seen near one of the individuals, hinting at some fun activities planned for the day. A backpack is also visible, likely holding more food or essentials for their outdoor excursion. The overall atmosphere appears to be casual and enjoyable as the group shares a meal together in nature.",
+        "processing_time": 20.21404504776001
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.147
+      }
+    },
+    {
+      "frame_number": 241,
+      "second": 8.0,
+      "blip": {
+        "caption": "a man fishing on a lake with two boats",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image captures a man standing next to a body of water, holding a fishing pole and preparing to cast it. He is positioned near the center of the scene. The surroundings appear to be cloudy, adding to the atmosphere of the moment. \n\nThere are two kayaks visible in the picture: one on the left side, close to the man, and another further away on the right side. Additionally, there are two backpacks present - one near the first kayak and another closer to the second kayak on the right side of the scene. This suggests that the man may have arrived at the location with his gear and supplies for a day out on the water.",
+        "processing_time": 21.52098059654236
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 21.454
+      }
+    },
+    {
+      "frame_number": 271,
+      "second": 9.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image captures a peaceful scene at the edge of a large lake with rolling hills and mountains beyond it. A man, possibly wearing a grey sweater, is standing on rocks near two green kayaks, one slightly to his left and the other to his right. It appears he may be preparing to embark on a boating adventure. \n\nThere are a few additional objects in the scene, including a backpack located further to the right side of the image, possibly belonging to the man or someone else who might be joining him. A bottle can also be seen close to the center of the scene, adding to the outdoor atmosphere.",
+        "processing_time": 20.995617151260376
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.929
+      }
+    },
+    {
+      "frame_number": 301,
+      "second": 10.0,
+      "blip": {
+        "caption": "a man holding a fish in his hand",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "A person is standing by the water holding a fish that was just caught. The person is wearing a black jacket and appears to be proudly displaying the fish. The scene includes several rocks scattered around the area near the body of water. \nAnother fish can be spotted swimming in the water, giving context to the fishing activity that has taken place. A boat is visible in the background, further suggesting that this scene is set on a body of water where fishing is a common activity.",
+        "processing_time": 19.769145011901855
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.702
+      }
+    },
+    {
+      "frame_number": 331,
+      "second": 11.0,
+      "blip": {
+        "caption": "a young boy holding a fish on a fishing line",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a young boy is holding a large fish with his hands, while standing outside surrounded by trees. The boy looks proud and is possibly posing for a photo with the fish that appears to be a trophy catch. The fish has a large mouth and seems to be an impressive specimen.\n\nIn addition to the boy and the fish, there are multiple knives in the scene. One knife is located on the left side of the image, another knife is towards the top right corner, and the third knife appears at the bottom right part of the picture. These knives may be related to fishing or preparing the catch for display.",
+        "processing_time": 19.722606897354126
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.656
+      }
+    },
+    {
+      "frame_number": 361,
+      "second": 12.0,
+      "blip": {
+        "caption": "two people walking down a trail in the mountains",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image shows two men hiking through a grassy field with tall grass on a trail. They are both shirtless, possibly due to the warm weather or physical exertion during their hike. \n\nOne of them is wearing shorts and is walking ahead of the other man. The surrounding area has a few bushes, and there's a beautiful lake in the background, adding a serene atmosphere to the scene. The men seem to be enjoying their outdoor adventure while being surrounded by nature.",
+        "processing_time": 18.365148067474365
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.298
+      }
+    },
+    {
+      "frame_number": 391,
+      "second": 13.0,
+      "blip": {
+        "caption": "a man in a kayak is holding a fish",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing a hat and glasses is kayaking on the water with his mouth open, possibly making a funny or angry face. He has a fishing rod in front of him, indicating that he might be out on the water for leisure or sport.\n\nThe scene also includes another person riding a small boat behind the man, as well as a few smaller boats in the vicinity. An additional individual can be spotted further back in the image. The setting appears to be a lake or a similar body of water suitable for boating and fishing activities.",
+        "processing_time": 17.93936562538147
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.872
+      }
+    },
+    {
+      "frame_number": 421,
+      "second": 14.0,
+      "blip": {
+        "caption": "a man in a wooden boat with a hat",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, there are two men standing inside a wooden structure, which appears to be a cabin or shed. One of the men is wearing glasses and has his mouth open, perhaps engaging in conversation or reacting to something. The other man stands nearby, possibly observing or participating in the scene.\n\nAround them, various objects can be seen, such as a chair located near the left edge of the image and two bottles placed within close proximity of each other toward the center. Additionally, there are two backpacks \u2013 one on the floor near the right side of the image and another further back in the scene. Another bottle is visible at the far right edge of the image.",
+        "processing_time": 19.32016086578369
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.253
+      }
+    },
+    {
+      "frame_number": 451,
+      "second": 15.0,
+      "blip": {
+        "caption": "a man in a hat and jacket is opening a door",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image features a man in an army jacket, glasses, and hat standing outside of a log cabin. He appears to be peeking into the open doorway of the cabin with curiosity or interest. In addition to the man, there is another person visible in the scene, located closer to the cabin. There are several backpacks scattered around the area outside the cabin; one near the left side, another at the center-right, and two more further to the right. A bottle can also be seen placed on a surface close to the cabin.",
+        "processing_time": 19.262749195098877
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.196
+      }
+    },
+    {
+      "frame_number": 481,
+      "second": 16.0,
+      "blip": {
+        "caption": "a man is standing outside of a cabin",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the scene, a man is leaning against an old log cabin while drinking from a cup. He appears to be taking a break and enjoying his drink outside of the building. There are two other people visible in the image but they seem to be further back and not interacting with the main subject.\n\nSeveral chairs can be seen scattered throughout the scene, possibly indicating an outdoor gathering or social event. There is also a bowl situated towards the right side of the image. The overall atmosphere suggests a casual, laid-back environment where people are relaxing and mingling.",
+        "processing_time": 20.303763389587402
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.237
+      }
+    },
+    {
+      "frame_number": 511,
+      "second": 17.0,
+      "blip": {
+        "caption": "a man sitting on a chair in front of a building",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, there is a man sitting on a chair near a building, holding a cup up to his mouth, likely drinking from it. The scene appears to be set in a rustic log cabin. Several other cups are scattered around the area as well.\n\nTo the side of the man, there is a dining table with a bench nearby. In the background, another person is visible standing at some distance away. There is also a bowl present on a different surface within the scene. The overall atmosphere suggests a casual and relaxed setting where people are enjoying their time.",
+        "processing_time": 20.607320547103882
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.54
+      }
+    },
+    {
+      "frame_number": 541,
+      "second": 18.0,
+      "blip": {
+        "caption": "a tree stump with a small hole in it",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, there is a large tree stump placed on a grass field. The stump displays multiple drill holes and appears to be old and weathered. It covers most of the frame from top to bottom and almost the entire width of the image. The grassy area surrounding the stump is green and well-maintained, providing a pleasant contrast to the aged appearance of the tree stump.",
+        "processing_time": 18.91652750968933
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.85
+      }
+    },
+    {
+      "frame_number": 571,
+      "second": 19.0,
+      "blip": {
+        "caption": "a axe is stuck into a tree stump",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image depicts an interesting scene featuring a tree stump with various grafitti on it, including an image of a mountain and some red writing. Surrounding the stump, several barbed wires are visible at different heights and distances, adding to the artistic composition of the scene. \n\nThere are also multiple smaller images or symbols within the overall composition, such as a circle near the center of the image and another one closer to the bottom right corner. Additionally, there is a clock positioned towards the top left area of the image. The combination of these elements creates a visually captivating picture.",
+        "processing_time": 18.757864475250244
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.691
+      }
+    },
+    {
+      "frame_number": 601,
+      "second": 20.0,
+      "blip": {
+        "caption": "a large axe with a red circle on it",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a black and white picture of a mountain landscape is featured on a chair. The chair appears to be made from a tree stump, giving it a rustic appearance. \n\nIn addition to the tree stump chair, there are multiple chairs visible in the scene. Two other chairs can be seen in the background, with one positioned further back and another closer to the middle of the scene. An interesting element of this image is the presence of four bottles that seem to have a fire theme, possibly resembling glass Coca-Cola bottles. They are placed at various locations throughout the scene, adding to its artistic and creative composition.",
+        "processing_time": 19.000012159347534
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.933
+      }
+    },
+    {
+      "frame_number": 631,
+      "second": 21.0,
+      "blip": {
+        "caption": "a logo for the mountain club",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "A white and black logo featuring an outdoor scene is displayed on a gray background. The logo consists of a circle with a mountain range and trees, along with the words \"Outdoor Boys.\" There are two instances of the word \"boys\" in the design, one positioned above the other. This logo likely represents a group or team named \"Outdoor Boys.\"",
+        "processing_time": 17.029404163360596
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.962
+      }
+    },
+    {
+      "frame_number": 661,
+      "second": 22.0,
+      "blip": {
+        "caption": "the logo for the new logo",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image features a logo for Outdoor Boys, which consists of a white circle with black designs and lettering. Within the logo, there are two instances of the word \"Outdoor.\" The first instance is located near the top of the design, while the second is situated closer to the bottom. A mountain scene is depicted in the center of the logo, surrounded by clouds. This design emphasizes the connection between Outdoor Boys and nature-based activities.",
+        "processing_time": 16.992346048355103
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.925
+      }
+    },
+    {
+      "frame_number": 691,
+      "second": 23.0,
+      "blip": {
+        "caption": "a man driving a car on a road",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image captures the view from inside a car looking out through the windshield, with a pair of sunglasses hanging from the top wiper. The car is on a roadway or parked lot, and the surroundings show some buildings in the background. \n\nIn addition to the main car, there are two other cars visible: one positioned further back on the right side and another just above the middle of the image. There are also several small objects floating around in the air, possibly due to wind or debris from nearby vehicles.",
+        "processing_time": 16.298765420913696
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.232
+      }
+    },
+    {
+      "frame_number": 721,
+      "second": 24.0,
+      "blip": {
+        "caption": "a person driving a car on a road",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The image shows the interior of a car with a dashboard view, displaying a few key elements, such as the speedometer and the American flag. A person can be seen through the windshield, outside the vehicle. Through the car window, one can observe an area with multiple boats near the shoreline, possibly enjoying the water or being docked. \n\nA couple of small objects are also noticeable in the image; a cell phone rests on a surface inside the car, while a pair of sunglasses is located closer to the windshield. The scene provides a glimpse of a journey or an outing in progress.",
+        "processing_time": 15.985738515853882
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 15.919
+      }
+    },
+    {
+      "frame_number": 751,
+      "second": 25.0,
+      "blip": {
+        "caption": "a man in a car is holding a gun",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the scene, there is a man wearing a baseball hat sitting inside a car. He appears to be making a face as he looks out of the car window. Another person can also be seen sitting in the car with him. The car has its door open, and it seems like they are either preparing to get out or have just entered the vehicle.\n\nThere is another car visible in the background, positioned behind the main car. A pair of scissors can be found on the ground close to the foreground, adding an unexpected detail to the scene.",
+        "processing_time": 17.439902305603027
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.373
+      }
+    },
+    {
+      "frame_number": 781,
+      "second": 26.0,
+      "blip": {
+        "caption": "a man walking down a street with a bag",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "A man is walking down a street carrying two large bags, one in each hand. He appears to be the main subject in the scene, located in the center of the image. The man seems to be preparing for travel or returning from a trip, as indicated by the luggage.\n\nAdditionally, there are several cars visible in the background, suggesting that the street is busy or has significant traffic. Furthermore, there are two benches along the sidewalk, providing seating areas for pedestrians and passersby.",
+        "processing_time": 17.87942409515381
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.813
+      }
+    },
+    {
+      "frame_number": 811,
+      "second": 27.0,
+      "blip": {
+        "caption": "a man is getting off the boat and getting off",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "The scene shows a dock with a small airplane parked on the water at the end of it. A man is standing on the deck of the plane, while two young boys and their father are on the pier nearby. The father appears to be holding a package as he stands between the boy and another person. All three children seem to be getting ready for a trip or adventure. \n\nSeveral other people can be spotted in the area, perhaps also preparing for the journey or observing the scene. A backpack is located on the dock close to the father and his two sons, suggesting that they might have their belongings nearby.",
+        "processing_time": 18.591646909713745
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.525
+      }
+    },
+    {
+      "frame_number": 841,
+      "second": 28.0,
+      "blip": {
+        "caption": "two men are standing in front of a helicopter",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, two men are standing on a tarmac next to each other. One of the men is wearing a baseball cap and glasses while making a weird face. The man with the cap is closer to the left side of the image, while the other person is situated more towards the right.\n\nThere is an airplane in the background, taking up the majority of the scene's space. Both men appear to be posing for the camera, possibly enjoying their time at the airfield.",
+        "processing_time": 17.594680070877075
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.528
+      }
+    },
+    {
+      "frame_number": 871,
+      "second": 29.0,
+      "blip": {
+        "caption": "a man in a black jacket and hat is sitting in a car",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, a man is sitting inside a small airplane, wearing a jacket. He appears to be preparing for takeoff or perhaps just after landing. The plane's interior has various equipment and items scattered around. \n\nThere are at least two cell phones in the scene, one near the top right corner of the plane and another closer to the middle area. Additionally, there is a bottle situated near the center of the airplane. A chair can be seen towards the right side of the plane's interior, possibly for the pilot or passengers to use during the flight.",
+        "processing_time": 17.8307843208313
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.764
+      }
+    },
+    {
+      "frame_number": 901,
+      "second": 30.0,
+      "blip": {
+        "caption": "a man in a helicopter with a helmet on",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "In the image, there is a man wearing glasses and smiling for the camera inside an airplane. He appears to be sitting on a pilot's chair, giving off the impression of a happy, contented pilot. Surrounding him are several other chairs placed throughout the airplane cabin.\n\nAnother person can be seen seated further back in the airplane, possibly a passenger or crew member. Various items like cups and a bottle are also visible within the scene, suggesting that this could be a flight with refreshments provided for the passengers.",
+        "processing_time": 18.311506271362305
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.245
+      }
+    },
+    {
+      "frame_number": 931,
+      "second": 31.0,
+      "blip": {
+        "caption": "a man in a boat is driving down the river",
+        "processing_time": 0.06692306697368622
+      },
+      "bakllava": {
+        "caption": "A man is sitting inside a small aircraft cockpit, wearing sunglasses and a hat. He appears to be flying the airplane, as he holds the control stick in his hand. The plane seems to be above water, with a scenic view of an ocean outside the window. There are multiple boats of varying sizes visible on the surface of the water. The pilot is focused on his flight, while the environment around him remains busy with these boats.",
+        "processing_time": 17.076266527175903
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.009
+      }
+    },
+    {
+      "frame_number": 961,
+      "second": 32.0,
+      "blip": {
+        "caption": "a boat is seen from the water as it passes through a flooded area",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The scene features a boat floating on the water, surrounded by a peaceful lake setting. The boat appears to be passing through a small body of water close to the land, where a dock is present. There are a few cars visible near the shoreline, suggesting that this location might have a parking area for visitors. Overall, it looks like a serene and picturesque view of a large lake with a boat making its way across the water.",
+        "processing_time": 16.555269479751587
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.501
+      }
+    },
+    {
+      "frame_number": 991,
+      "second": 33.0,
+      "blip": {
+        "caption": "a man in a boat with a camera",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a person is sitting inside a small airplane cockpit, wearing sunglasses and holding a cell phone in their hand. The pilot appears to be taking a break or possibly communicating with someone on the ground. \n\nThe plane is flying above water, as evidenced by the visible waterway outside the window. There are several buttons and knobs within the cockpit, indicating that it is a functional aircraft. Additionally, there is another person seated in the background, likely serving as a passenger or co-pilot.",
+        "processing_time": 16.296136379241943
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.242
+      }
+    },
+    {
+      "frame_number": 1021,
+      "second": 34.0,
+      "blip": {
+        "caption": "a man in a boat with a camera",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The scene takes place inside a small airplane flying over a body of water. A man is sitting at the controls, attentively looking at the flight instruments while piloting the plane. He appears to be wearing earbuds, likely communicating with air traffic control or enjoying music during his flight.\n\nIn the airplane, there is another person seated nearby, possibly a passenger or co-pilot. A chair can be seen towards the right side of the aircraft. Additionally, a bottle is present in the middle of the plane, possibly for refreshment during the flight.",
+        "processing_time": 16.275628089904785
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.221
+      }
+    },
+    {
+      "frame_number": 1051,
+      "second": 35.0,
+      "blip": {
+        "caption": "a man in a helicopter flying over a river",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image consists of two shots of a person sitting in the cockpit of an airplane, wearing headphones and flying the plane. In both shots, the pilot is focused on navigating the aircraft. The first shot is on the left side of the image, while the second shot is on the right side.\n\nThe airplane's interior can be seen with a chair positioned in the center of the cockpit in both shots. A cell phone is also visible in the cockpit on the left side of the image. The headphones worn by the pilot are clearly noticeable in both sections of the picture, emphasizing his communication and control during the flight.",
+        "processing_time": 17.73129916191101
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.677
+      }
+    },
+    {
+      "frame_number": 1081,
+      "second": 36.0,
+      "blip": {
+        "caption": "a view of a lake from a helicopter",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features a black and white airplane flying high above a town with an expansive body of water, such as a lake or river, visible below. The view from the plane showcases several cars scattered around the area near the water's edge. In total, there are thirteen cars, each in different positions along the shoreline. The scene creates a sense of serene landscape as seen from a bird's eye view.",
+        "processing_time": 17.933654308319092
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.879
+      }
+    },
+    {
+      "frame_number": 1111,
+      "second": 37.0,
+      "blip": {
+        "caption": "a man in a red jacket is sitting in the cockpit of a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features a person wearing headphones and sitting in the passenger seat of an airplane. The young man is seated next to the pilot, and both are focused on flying the plane. The cockpit view shows a runway below them as they navigate through the sky.\n\nIn the scene, there are numerous cars visible on the ground, likely representing traffic near the airport or along the surrounding roads. A backpack can be seen in the foreground of the image, possibly belonging to one of the pilots or passengers.",
+        "processing_time": 17.73170256614685
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.677
+      }
+    },
+    {
+      "frame_number": 1141,
+      "second": 38.0,
+      "blip": {
+        "caption": "a small plane flying over a lake",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The scene is an aerial view of a coastline and lake during an overcast day, as seen from inside a plane. The airplane window through which the photo was taken is visible in the lower right corner. A gray sky overhead contributes to the overall atmosphere of the image.\n\nIn addition to the picturesque landscape, there are a few cars along the coastline, possibly indicating some human activity or settlements nearby. Overall, it is a captivating view that showcases the beauty of nature and the experience of flying above such landscapes.",
+        "processing_time": 17.586073398590088
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.532
+      }
+    },
+    {
+      "frame_number": 1171,
+      "second": 39.0,
+      "blip": {
+        "caption": "a plane flying over a body of water",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image shows a wing of an airplane captured from inside the plane. Through the window, you can see the outside view featuring water and trees below. A small section of the sky is visible in the upper left corner of the image, providing a glimpse of the weather from the aircraft's perspective.\n\nThe wing appears to be slightly tilted upwards, as it is seen from a higher angle. This unique viewpoint offers an interesting perspective on the plane's flight over the water and forest landscape.",
+        "processing_time": 16.872329473495483
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.818
+      }
+    },
+    {
+      "frame_number": 1201,
+      "second": 40.0,
+      "blip": {
+        "caption": "a small plane flying over a field",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is an aerial view of a green and brown field, as seen from the window of an airplane. The plane's perspective provides a clear picture of the landscape below. In the scene, there are several small objects, possibly trees or other vegetation, scattered throughout the area. These objects appear distinct against the backdrop of the sky, emphasizing the height from which the photo was taken.",
+        "processing_time": 16.886070728302002
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.832
+      }
+    },
+    {
+      "frame_number": 1231,
+      "second": 41.0,
+      "blip": {
+        "caption": "a view from the cockpit of a plane flying over a river",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The scene features a grass-covered field with a river running through it, seen from an airplane flying high above. The airplane is positioned in the upper part of the image, focusing on the top half of the scene. Through the plane's window, one can observe the vast expanse of the field and the winding river below. This bird's eye view offers a beautiful and serene perspective of the landscape.",
+        "processing_time": 16.249685525894165
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.195
+      }
+    },
+    {
+      "frame_number": 1261,
+      "second": 42.0,
+      "blip": {
+        "caption": "two young boys are sitting in the cockpit of a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features two young boys, both wearing headphones and sitting in the front seats of a small airplane. They are looking out the window, enjoying the view during their flight. The headphones likely provide them with entertainment or information during the journey. \n\nIn the plane, there are a few additional elements, such as a chair on one side, a bottle placed near one of the boys, and a remote control resting on one of the seats. There is also another person visible towards the right side of the image, though they seem to be seated further back in the airplane.",
+        "processing_time": 17.140660285949707
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.086
+      }
+    },
+    {
+      "frame_number": 1291,
+      "second": 43.0,
+      "blip": {
+        "caption": "two boys are sitting in the cockpit of a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "Two children are enjoying their time on a small airplane, sitting close to each other and smiling. One child is seated towards the left side of the plane while the other is on the right. They appear to be having a great experience, possibly flying high above the ground.\n\nIn the image, there is also an adult visible in the middle of the scene. The airplane's interior features several chairs for passengers, including one near the front where the children are seated and another chair further back on the right side.",
+        "processing_time": 17.566519260406494
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.512
+      }
+    },
+    {
+      "frame_number": 1321,
+      "second": 44.0,
+      "blip": {
+        "caption": "a person flying a helicopter over a green field",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is an aerial view of a landscape, captured from inside a helicopter. Through the window, we can see a river winding through the area, surrounded by green fields and some small roads. A total of nine people are visible in the scene, likely passengers or crew members within the helicopter. Their positions range from the left side to the middle and right side of the image, all enjoying the view of the land below.",
+        "processing_time": 18.612747192382812
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.558
+      }
+    },
+    {
+      "frame_number": 1351,
+      "second": 45.0,
+      "blip": {
+        "caption": "two men in a helicopter with their heads up",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image shows the interior of a small airplane, with two middle-aged men sitting in their seats. One man is wearing glasses and a jacket, while the other is seated across from him. They appear to be having a conversation or enjoying the flight together.\n\nIn the plane, there are several seats visible, some filled by the passengers and others empty. In addition to the passengers, there are headphones placed on one of the seats, suggesting that entertainment or communication devices may be available for use during the flight. The overall atmosphere appears to be comfortable and relaxed.",
+        "processing_time": 20.627493619918823
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.573
+      }
+    },
+    {
+      "frame_number": 1381,
+      "second": 46.0,
+      "blip": {
+        "caption": "a view of a mountain range from a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image showcases an aerial view of a large, lush green field with patchy grass and mountains in the distance. It seems to be taken from the window of an airplane, as the field below appears vast and uninterrupted, providing a clear view of the land. The scene also includes a bird, flying high above the field, adding to the nature and serenity of the landscape.",
+        "processing_time": 18.94368314743042
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.889
+      }
+    },
+    {
+      "frame_number": 1411,
+      "second": 47.0,
+      "blip": {
+        "caption": "a small plane flying over a mountain range",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features a breathtaking bird's eye view of snow-covered mountains with green areas and a large body of water. An airplane can be seen flying through the cloudy sky, capturing the stunning scenery below. \n\nThe perspective offers a clear view of the mountains, as well as the plane's wing, which adds to the sense of being high up in the sky. The overall scene showcases the beauty and grandeur of nature, combined with the marvel of human engineering - the airplane.",
+        "processing_time": 18.58005452156067
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.526
+      }
+    },
+    {
+      "frame_number": 1441,
+      "second": 48.0,
+      "blip": {
+        "caption": "a helicopter flying over a mountain range",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is an aerial view of a beautiful mountainous area covered with snow and trees. A small airplane is flying over the mountains, giving a clear view of the stunning landscape below. The terrain consists of numerous mountains and valleys, with patches of greenery visible among the snow-covered peaks. The airplane's position in the top right corner of the image provides a sense of altitude, allowing the viewer to appreciate the vastness and grandeur of the mountain range from above.",
+        "processing_time": 18.005419492721558
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.951
+      }
+    },
+    {
+      "frame_number": 1471,
+      "second": 49.0,
+      "blip": {
+        "caption": "a man in a helicopter flying over mountains",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a man is sitting inside a small airplane flying high above the ground. The plane's windows are visible, and the pilot seems to be focused on the path ahead. Outside the plane, the beautiful landscape of a mountain can be seen, giving a sense of the altitude and adventure associated with this flight. \n\nSeveral other people are also present in various positions within the small aircraft, adding to the feeling of excitement and anticipation for their journey. One person appears to be closer to the pilot, while others are seated further back or on the side of the airplane.",
+        "processing_time": 17.85897994041443
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.805
+      }
+    },
+    {
+      "frame_number": 1501,
+      "second": 50.0,
+      "blip": {
+        "caption": "a view from the cockpit of a plane flying over mountains",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is an aerial shot of a mountainous region, taken from inside an airplane as it flies over the area. The view showcases a large valley surrounded by mountains, with patchy snow covering the peaks. Through the window, we can observe not only the magnificent landscape but also the wing of the airplane, providing a sense of perspective and height. The image captures the beauty and grandeur of nature, as well as the marvel of human engineering and flight.",
+        "processing_time": 18.112220525741577
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.058
+      }
+    },
+    {
+      "frame_number": 1531,
+      "second": 51.0,
+      "blip": {
+        "caption": "a view from the cockpit of a plane flying over a mountain range",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is an aerial view of a mountainous area covered with snow and trees. It appears to be captured from the window of an airplane, as the green landscape and rocky mountains are seen below. The scene exhibits the beauty of nature with a diverse terrain, including a valley in the midst of the mountains.\n\nIn this picturesque setting, there are several people dispersed throughout the landscape, possibly enjoying outdoor activities or taking in the breathtaking view from various vantage points on the mountains.",
+        "processing_time": 18.285629272460938
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.231
+      }
+    },
+    {
+      "frame_number": 1561,
+      "second": 52.0,
+      "blip": {
+        "caption": "a man in a red jacket sitting in a helicopter",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a young man is sitting inside an airplane cockpit wearing a red jacket and headphones. He appears to be talking on a radio, communicating with air traffic control or someone else on the ground. The plane's window can be seen in the upper part of the scene, providing a view from the cockpit.\n\nAnother person is partially visible near the bottom left corner of the image. There are also two bottles situated close to each other in the lower right part of the picture.",
+        "processing_time": 18.45049738883972
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.396
+      }
+    },
+    {
+      "frame_number": 1591,
+      "second": 53.0,
+      "blip": {
+        "caption": "a view from the cockpit of a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features a view of the ground from an aircraft window, showcasing a green island surrounded by blue waters. It appears to be a beautiful tropical destination. Numerous boats can be seen dispersed throughout the ocean, indicating that it is likely a popular area for marine activities.\n\nInterestingly, there are two additional airplanes visible in the sky, one positioned above and another beside the main aircraft. This suggests that the area is busy with air traffic, possibly due to the appeal of the tropical island.",
+        "processing_time": 17.95603656768799
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.902
+      }
+    },
+    {
+      "frame_number": 1621,
+      "second": 54.0,
+      "blip": {
+        "caption": "a plane flying over a lake with mountains in the background",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image showcases an aerial view of a picturesque landscape, featuring a vast blue lake surrounded by mountains. A plane can be seen flying over the calm and clear blue water, providing a unique perspective of the scenic area. The plane's position is mostly visible in the top left corner of the image. This beautiful scene emphasizes the beauty of nature and the joy of airborne exploration.",
+        "processing_time": 17.515339612960815
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.461
+      }
+    },
+    {
+      "frame_number": 1651,
+      "second": 55.0,
+      "blip": {
+        "caption": "a plane flying over a lake with mountains in the background",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image captures an aerial view of a large body of water, likely a lake, with snow-capped mountains in the distance. A plane is flying low over the water, allowing its passengers to enjoy the picturesque scenery. There are two people visible inside the airplane, sitting close to each other and most likely taking in the beautiful sights above them.",
+        "processing_time": 16.402692556381226
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.348
+      }
+    },
+    {
+      "frame_number": 1681,
+      "second": 56.0,
+      "blip": {
+        "caption": "a man in a helicopter flying over a lake",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a man is sitting inside a small airplane, wearing headphones and holding the control column or steering wheel. He appears to be flying the plane, possibly over a lake with mountains in the background. The view from the cockpit provides a beautiful scenic view of the landscape.\n\nInside the airplane, there are several switches visible near the control column, which the man uses to operate the aircraft's various functions. Overall, the scene captures the excitement and focus of the pilot as he navigates the plane through the picturesque environment.",
+        "processing_time": 18.412978887557983
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.359
+      }
+    },
+    {
+      "frame_number": 1711,
+      "second": 57.0,
+      "blip": {
+        "caption": "a man in a boat with a camera",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "A man is sitting in the pilot's seat of a small aircraft, likely a seaplane as there is water visible below. He appears to be flying the plane near mountains and water. The interior of the aircraft can be seen through the window, revealing several control surfaces such as a steering wheel, a couple of levers, and some switches. There is also a cup placed nearby the pilot's seat.",
+        "processing_time": 18.66087293624878
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.606
+      }
+    },
+    {
+      "frame_number": 1741,
+      "second": 58.0,
+      "blip": {
+        "caption": "a man driving a boat on a river",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a man is sitting inside a small plane flying over a river surrounded by trees. He appears to be enjoying the flight, and his reflection can be seen in the plane's window. The pilot seems to be pointing at something below, possibly indicating an interesting feature or landmark. The aircraft occupies most of the scene, with its wings extending wide, providing a sense of scale as it soars above the river and forest.",
+        "processing_time": 19.63276505470276
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.578
+      }
+    },
+    {
+      "frame_number": 1771,
+      "second": 59.0,
+      "blip": {
+        "caption": "a man driving a boat on a river",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing sunglasses is sitting inside a small propeller plane flying over a river. He appears to be controlling the aircraft as he is near the center of the scene. The airplane has two sets of controls, one on each side, allowing for ease in maneuvering. \n\nOutside the aircraft, you can see the beautiful landscape featuring trees and mountains surrounding the body of water below. This picturesque setting adds to the overall appeal of the image, showcasing both the interior of the plane and its stunning external environment.",
+        "processing_time": 21.269843101501465
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 21.215
+      }
+    },
+    {
+      "frame_number": 1801,
+      "second": 60.0,
+      "blip": {
+        "caption": "a man in a helicopter cockpit is seen",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image is a cockpit view from inside an airplane, where a pilot is sitting during flight. The person appears to be wearing a jacket with the word \"red\" on it. In the cockpit, there are several knobs and switches that the pilot interacts with while flying the plane. A chair can also be seen in the scene, likely used by the pilot for comfortable seating during long flights.",
+        "processing_time": 18.823253870010376
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.769
+      }
+    },
+    {
+      "frame_number": 1831,
+      "second": 61.0,
+      "blip": {
+        "caption": "a man in a jacket is standing next to a helicopter",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "A man wearing a grey jacket is standing close to the front of a small airplane, possibly climbing into the pilot's seat. The airplane occupies most of the image, with its nose pointing towards the right side of the frame. Another person can be seen further back in the scene, inside the small aircraft. \n\nIn addition to the people and the airplane, there are several books scattered throughout the image. Some are located near the man in the grey jacket, while others are positioned closer to the viewer, both on the ground and on different levels within the plane. The presence of these books suggests that they might be related to the aircraft's operation or maintenance.",
+        "processing_time": 19.571717262268066
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.517
+      }
+    },
+    {
+      "frame_number": 1861,
+      "second": 62.0,
+      "blip": {
+        "caption": "a man in a hat and jacket standing next to a plane",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "1987 is a key number in this scene, as it's displayed prominently on the front of an airplane. A man with eyeglasses is standing near the airplane, looking at something in his hand. The aircraft is quite large, occupying most of the image from left to right.\n\nAnother person can be seen standing further back near the tail of the plane, possibly observing or assisting the man closer to the airplane. The scene seems to be set in a gravel area, with both individuals appearing to be involved in some activity related to the airplane.",
+        "processing_time": 20.25106143951416
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.197
+      }
+    },
+    {
+      "frame_number": 1891,
+      "second": 63.0,
+      "blip": {
+        "caption": "a man is getting his canoe out of the water",
+        "processing_time": 0.05445334315299988
+      },
+      "bakllava": {
+        "caption": "The image features a seaplane with two people on board, ready for takeoff. One person is closer to the front of the plane while the other is positioned more towards the back. The passengers are wearing backpacks, suggesting they might be on a fishing or adventuring trip. \n\nThe airplane has a unique feature: it can take off and land on both water and land. In this particular scene, the plane is resting on the water near the shoreline. A boat, possibly used for transportation before boarding the plane, is visible close to the seaplane. Additionally, a person can be seen standing nearby, likely observing the plane or waiting for their turn to board.",
+        "processing_time": 20.483160734176636
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 20.429
+      }
+    },
+    {
+      "frame_number": 1921,
+      "second": 64.0,
+      "blip": {
+        "caption": "a man is standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image captures a scene with a sea plane parked on the water near the shore. Two people can be seen inside the plane, preparing for their flight. One person is seated towards the left side of the aircraft while the other is seated more towards the center. They appear to be wearing jackets, possibly red and orange in color, indicating that they might be ready for a cold or wet weather conditions.\n\nThe sea plane itself occupies a large portion of the image, spanning from the middle-left side to nearly the entire height of the frame. The people inside the airplane are visible through the windows, giving us a clear view of their activities.",
+        "processing_time": 21.76518225669861
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 21.715
+      }
+    },
+    {
+      "frame_number": 1951,
+      "second": 65.0,
+      "blip": {
+        "caption": "a man is getting off the boat",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a person is standing on a boat holding a red gas can. They are positioned close to the center of the boat. The boat has a blue and white color scheme, and it appears to be a small watercraft. There are also two other people visible in the scene, both located closer to the edge of the boat. It seems that they might be preparing for an activity or a journey on the water.",
+        "processing_time": 19.389060974121094
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.339
+      }
+    },
+    {
+      "frame_number": 1981,
+      "second": 66.0,
+      "blip": {
+        "caption": "a man is getting his boat to take off",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man is standing inside a small airplane, preparing for takeoff. He is wearing a sweatshirt and holding a red gas can, possibly filling it up before the flight. The airplane occupies most of the visible area, stretching from the left to the right edge of the frame. \n\nThere are several other people in the scene, with one person standing close to the pilot, who is likely assisting with the preparations. The remaining individuals are scattered around the airplane, either attending to different tasks or observing the ongoing activities.",
+        "processing_time": 19.249696493148804
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.199
+      }
+    },
+    {
+      "frame_number": 2011,
+      "second": 67.0,
+      "blip": {
+        "caption": "a small plane is sitting on the water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The scene features a seaplane with a large wing, resting on the water near the shore. The airplane has a prominent N98MB logo and seems to be securely docked at the bay. A rope is holding the aircraft in position, ensuring it remains stationary. \n\nSeveral people can be observed around the seaplane. One person is situated closer to the front of the plane, while two others are scattered near the middle section. Another individual is seen further back on the aircraft. They might be passengers or staff members attending to the plane.",
+        "processing_time": 18.4266095161438
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.376
+      }
+    },
+    {
+      "frame_number": 2041,
+      "second": 68.0,
+      "blip": {
+        "caption": "a small plane is sitting on the water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a blue and white seaplane with the numbers \"98\" on it, sitting on the water. It is tied to the dock, securing its position. There are two people visible near the middle of the plane, possibly preparing for a flight or attending to the aircraft.\n\nA few smaller airplanes can be seen in the background, providing a sense of depth to the scene. Additionally, there's a boat on the water, adding variety to the watercraft present.",
+        "processing_time": 17.330719232559204
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.28
+      }
+    },
+    {
+      "frame_number": 2071,
+      "second": 69.0,
+      "blip": {
+        "caption": "a small plane is sitting on the water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "9677 is the unique number assigned to this small blue and white airplane. The aircraft appears to be on a body of water, either parked or in the process of taking off. With pontoons attached to the bottom of the plane, it seems to be designed for water landings. \n\nTwo people are visible near the nose of the airplane, possibly preparing for takeoff or just having landed. Additionally, there is another individual further away from the aircraft, likely observing or assisting the process.",
+        "processing_time": 19.56007719039917
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.51
+      }
+    },
+    {
+      "frame_number": 2101,
+      "second": 70.0,
+      "blip": {
+        "caption": "a small plane is flying over the water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a small blue and white plane flying above the water, with mountains visible in the background. The airplane appears to be coming in for a landing on a body of water, possibly a lake. \nThere are two people on board the plane, one seated toward the left side and the other more centered. They seem to be enjoying their time together, as indicated by the presence of a banana in the foreground, suggesting that they might be having a snack during their journey.",
+        "processing_time": 18.92907166481018
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.879
+      }
+    },
+    {
+      "frame_number": 2131,
+      "second": 71.0,
+      "blip": {
+        "caption": "a man is standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a man standing near the shore of a lake, wearing a hooded jacket and looking back over his shoulder. He appears to be observing something or someone on the other side of the water. The sky seems cloudy, creating a moody atmosphere.\n\nIn addition to the man, there are three birds in the scene: one flying close to the water's surface, another flying high above the lake, and the third perched on a branch nearby. The presence of these birds adds a sense of life and movement to the otherwise tranquil setting.",
+        "processing_time": 19.63583254814148
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.586
+      }
+    },
+    {
+      "frame_number": 2161,
+      "second": 72.0,
+      "blip": {
+        "caption": "a man is standing on the edge of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, there is a man standing near the edge of a cliff overlooking a vast body of water, possibly a lake or the ocean. He is wearing glasses and looking out at the scene before him. There are also two small figures of people visible in the distance, likely enjoying the view as well. \nA bird can be seen flying above the water, adding a sense of movement to the scene. The man appears to be captivated by the picturesque landscape around him.",
+        "processing_time": 19.7513165473938
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 19.701
+      }
+    },
+    {
+      "frame_number": 2191,
+      "second": 73.0,
+      "blip": {
+        "caption": "a man and two children are standing near a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The scene is set at the edge of a body of water, likely a lake, where a family of three people is standing and enjoying the view. The two adults and a child are dressed in jackets, with one of the adults wearing sunglasses. All three individuals are looking towards the water, seemingly captivated by the surroundings.\n\nThe image features a beautiful landscape with nature all around. There is a boat visible on the lake, adding to the outdoor atmosphere. The family appears to be having a pleasant time together in this picturesque setting.",
+        "processing_time": 18.51130723953247
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.461
+      }
+    },
+    {
+      "frame_number": 2221,
+      "second": 74.0,
+      "blip": {
+        "caption": "a man in a red raincoat standing next to a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a father and his son are standing on a pebbly shoreline, looking out over a calm lake surrounded by mountains. The man and boy appear to be enjoying their time together and taking in the beautiful scenery. There are also a few other people present in the area, but they are not closely associated with the main subjects.\n\nOne of the individuals is wearing a backpack, possibly carrying essentials for their outdoor adventure. A bird can be spotted near the water's edge, adding to the peaceful atmosphere of the scene.",
+        "processing_time": 18.876128673553467
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.826
+      }
+    },
+    {
+      "frame_number": 2251,
+      "second": 75.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "4 men are on the side of a river, standing close to each other and holding fishing rods. They are all wearing jackets, suggesting that they are prepared for colder weather or have recently been fishing in the water. Their positioning indicates they might be engaging in a group activity or sharing a bonding moment while enjoying the outdoors together.",
+        "processing_time": 16.5500705242157
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.5
+      }
+    },
+    {
+      "frame_number": 2281,
+      "second": 76.0,
+      "blip": {
+        "caption": "a man standing on a beach next to a body of water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "2 people on a riverbank with fishing gear, one of them wearing a red jacket and the other wearing black. They seem to be preparing to go fishing together. The man in the black coat is standing closer to the camera, while the person in the red jacket is further back near the edge of the river.\n\nThere are several bottles nearby, likely containing fishing gear or personal belongings. One bottle is close to the person in the black coat, another one is a bit further away, and two more bottles are placed towards the right side of the scene. The men are facing each other, possibly discussing their fishing plans or enjoying the outdoors together.",
+        "processing_time": 18.437695503234863
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.387
+      }
+    },
+    {
+      "frame_number": 2311,
+      "second": 77.0,
+      "blip": {
+        "caption": "a man standing on a beach next to a body of water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the scene, a man is walking along a beach accompanied by two other individuals. The man in front of them is wearing a baseball cap and has a backpack on. Behind him, one person appears to be carrying a suitcase, while the third person seems to have a handbag.\n\nThe group seems to be enjoying their time at the beach, and the presence of luggage suggests they might be traveling or on an adventure together.",
+        "processing_time": 17.62355661392212
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.573
+      }
+    },
+    {
+      "frame_number": 2341,
+      "second": 78.0,
+      "blip": {
+        "caption": "a man and a little girl are standing on the shore",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The scene features a man and a boy wearing red jackets, standing on a gravel beach next to a lake. They appear to be having a conversation while enjoying the lakeside setting. There are also several boats floating on the water at various distances from the shore.\n\nAdditionally, there is another person present in the middle ground of the scene. A dog can be seen close to the man and the boy, adding to the family-friendly atmosphere of the lakefront.",
+        "processing_time": 16.84389042854309
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.794
+      }
+    },
+    {
+      "frame_number": 2371,
+      "second": 79.0,
+      "blip": {
+        "caption": "a man and a child are standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "A man and a child are standing on the shoreline, looking out across the water. The man appears to be wearing sunglasses and a ball cap, while the child is donned in a red jacket. They seem to be enjoying their time by the lake, possibly fishing or simply taking in the view. \n\nThere are also two boats visible near the shoreline, one closer to the man and the child, and another further away on the right side of the image. Additionally, there are two motorcycles parked nearby, adding to the recreational atmosphere of the scene.",
+        "processing_time": 18.597697257995605
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.547
+      }
+    },
+    {
+      "frame_number": 2401,
+      "second": 80.0,
+      "blip": {
+        "caption": "a man standing on a rocky shore next to a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing a green jacket is standing near the edge of the ocean, looking out over the water. He appears to be observing something in the distance, possibly out on the water. A bird can be seen flying nearby, adding to the serene atmosphere. \n\nA backpack is placed close to the man, indicating that he might have been hiking or camping in the area. In addition, there are several small figures of people scattered throughout the scene, which could be either objects in the environment or represent some form of artistic expression.",
+        "processing_time": 17.004112720489502
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.954
+      }
+    },
+    {
+      "frame_number": 2431,
+      "second": 81.0,
+      "blip": {
+        "caption": "a man standing on a rocky shore next to a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, there are two men standing by a lake, likely enjoying their time outdoors. One man is wearing a jacket with an emblem on it and has his mouth open, possibly laughing or making a funny facial expression. The other man is nearby, closer to the edge of the lake.\n\nThere are also several items around them, including two backpacks placed on the ground, one close to the first man and the other near the second man. A bicycle can be seen further back in the scene, likely used by one of them to reach the location. Additionally, there is a bottle positioned between the two men, possibly containing a beverage they are sharing.",
+        "processing_time": 18.495673418045044
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.445
+      }
+    },
+    {
+      "frame_number": 2461,
+      "second": 82.0,
+      "blip": {
+        "caption": "a map of the alaska region",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a map of Alaska, showing its different regions and the northernmost parts of Canada. A red arrow is placed on the map to indicate a specific area or direction. There are two instances of the word \"Alaska\" on the map, one towards the left side and another near the center.\n\nIn addition to the map, various country flags can be seen in the background, suggesting an international context or perhaps highlighting Alaska's connections with other countries.",
+        "processing_time": 18.55209231376648
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 18.502
+      }
+    },
+    {
+      "frame_number": 2491,
+      "second": 83.0,
+      "blip": {
+        "caption": "a map of the alaska region",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a map of Alaska, highlighting its various land and water masses. The map displays the large expanse of water that covers the majority of the state, with the diverse topography of the interior featuring prominently. A red arrow is drawn on the map, pointing to the lower right portion of the image, possibly indicating a specific point of interest or direction.",
+        "processing_time": 16.910830974578857
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.861
+      }
+    },
+    {
+      "frame_number": 2521,
+      "second": 84.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man is standing near the edge of a lake, wearing a black jacket with the hood up, and a baseball hat with an H on it. He appears to be talking or interacting with someone off-camera. The backdrop consists of beautiful lake scenery with trees surrounding the area.\n\nAdditionally, there are multiple birds scattered throughout the sky in the background, adding to the lively atmosphere. A backpack can also be seen close to the man, possibly indicating that he is on a trip or outdoor adventure.",
+        "processing_time": 16.634639739990234
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.584
+      }
+    },
+    {
+      "frame_number": 2551,
+      "second": 85.0,
+      "blip": {
+        "caption": "a man is standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "A man is standing by a body of water, with his mouth wide open as if he is about to shout or make a funny noise. He appears to be in the mountains, wearing a hat and jacket, which suggests he might be in a remote location, possibly enjoying some outdoor activities.\n\nThere are also several other people scattered throughout the scene at various distances from the main subject, suggesting this could be a popular spot for visitors or a gathering area.",
+        "processing_time": 15.0704824924469
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 15.02
+      }
+    },
+    {
+      "frame_number": 2581,
+      "second": 86.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The image features a man standing on a rocky shore next to a lake, wearing a black jacket with a white cap. He appears to be smiling and posing for a picture against the scenic backdrop. There are several other people scattered throughout the image near the water's edge, likely enjoying their time in this picturesque setting. A backpack can be spotted close to one of these individuals, possibly indicating that they have been traveling or carrying supplies for their outdoor adventure.",
+        "processing_time": 15.17250657081604
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 15.122
+      }
+    },
+    {
+      "frame_number": 2611,
+      "second": 87.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing glasses and a hat is standing near the water. He has his hands in his jacket pockets and appears to be looking out over the lake or ocean. The scene also features a backpack placed on the ground close to the man, possibly indicating that he is on an outdoor adventure or hiking trip.\n\nThere are two other people present in the background, although they appear to be much smaller and not as prominent as the main subject. Additionally, there is a bottle located in the middle of the scene, which might belong to one of the individuals.",
+        "processing_time": 16.534141063690186
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.484
+      }
+    },
+    {
+      "frame_number": 2641,
+      "second": 88.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing a black jacket and ball cap is standing on a beach next to a body of water. He appears to be talking or making a presentation while standing near the water's edge. There are several people scattered around the scene, possibly attending the same event or enjoying the outdoor setting. \n\nA few boats can be seen floating on the water not far from the shoreline. Additionally, there is a backpack located towards the right side of the scene, likely belonging to one of the people present.",
+        "processing_time": 16.414414405822754
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.364
+      }
+    },
+    {
+      "frame_number": 2671,
+      "second": 89.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "A man wearing a black jacket is standing on some rocks near the water, looking back at the camera while taking a selfie. He appears to be by a lake and there are other people present in the background. The man seems to be enjoying his time outdoors. In addition to the individuals, there are two dogs visible in the scene, one closer to the left side of the image and the other nearer to the center-right. A backpack can also be seen placed on the ground not far from the first dog.",
+        "processing_time": 16.909337520599365
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.859
+      }
+    },
+    {
+      "frame_number": 2701,
+      "second": 90.0,
+      "blip": {
+        "caption": "a man standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing a black jacket is standing near the edge of a large lake, possibly posing for a picture. Another person can be seen slightly behind and to the right of him, also close to the water. A third individual appears further back on the right side of the scene. \n\nThe setting features several birds scattered throughout the sky above the water, making the atmosphere pleasant and serene. In addition, there are two backpacks placed nearby, one closer to the center of the scene and the other towards the right edge, suggesting that these individuals might be taking a break from hiking or enjoying a day outdoors by the lake.",
+        "processing_time": 17.882601261138916
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 17.832
+      }
+    },
+    {
+      "frame_number": 2731,
+      "second": 91.0,
+      "blip": {
+        "caption": "a man standing on a rock near a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "The scene features a man standing by the water, wearing a black jacket and hat. He seems to be observing the lake and the surrounding landscape, which includes mountains in the background. The man is also wearing glasses and a baseball cap, enhancing his presence in the scene. In addition to the man, there are two backpacks near him, suggesting that he might be prepared for outdoor activities or hiking.",
+        "processing_time": 16.768757820129395
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.719
+      }
+    },
+    {
+      "frame_number": 2761,
+      "second": 92.0,
+      "blip": {
+        "caption": "a man standing on a rock near a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, there is a middle-aged man standing by the water, wearing black clothing and sunglasses. He appears to be looking into the distance, taking in the beautiful view of the lake and mountains beyond. The man seems to be getting ready for a hike or an outdoor adventure, as he is wearing a backpack. \n\nIn addition to the main subject, there are several small figures of people scattered throughout the scene. These distant figures could potentially represent other hikers or visitors to the area.",
+        "processing_time": 16.71488904953003
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.665
+      }
+    },
+    {
+      "frame_number": 2791,
+      "second": 93.0,
+      "blip": {
+        "caption": "a man is standing on the shore of a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, a man wearing a black jacket is standing by a lake, making a funny face as he tries to imitate a bear. He appears to be shouting or having a conversation with someone. There are other people present in the scene, some closer to the main person and others further away.\n\nA backpack can be seen near the man by the lake, likely indicating that they have been traveling or enjoying an outdoor adventure. A boat is also visible on the water, adding to the lively atmosphere of the scene.",
+        "processing_time": 16.763777494430542
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.714
+      }
+    },
+    {
+      "frame_number": 2821,
+      "second": 94.0,
+      "blip": {
+        "caption": "a man standing on a rocky shore next to a lake",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "A man wearing a black jacket and hat is standing on the shore of a river, facing the camera. He appears to be taking a selfie while looking into the water. The man is positioned close to the edge of the frame, with his outfit occupying a significant portion of the image.\n\nIn the background, there are multiple small figures of people scattered across the scene, giving the impression that this location is popular for outdoor activities. Additionally, a backpack can be seen placed on the ground near one of these small figures.",
+        "processing_time": 15.876239538192749
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 15.826
+      }
+    },
+    {
+      "frame_number": 2851,
+      "second": 95.0,
+      "blip": {
+        "caption": "a man standing on a rocky shore next to a body of water",
+        "processing_time": 0.0502474382519722
+      },
+      "bakllava": {
+        "caption": "In the image, there is a man wearing a baseball cap and standing next to a large body of water. The man seems to be looking at the water, taking in the scenic view. There are two bottles visible in the scene, one near the center and another further left. Additionally, there are two backpacks; one can be seen on the ground close to the man, while the other is placed a little bit higher up in the image.",
+        "processing_time": 16.18198823928833
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.0,
+        "time_difference": 16.132
+      }
+    },
+    {
+      "frame_number": 2881,
+      "second": 96.0,
+      "blip": {
+        "caption": "two people are walking along the shore of a lake",
+        "processing_time": 0.20681476593017578
+      },
+      "bakllava": {
+        "caption": "2 people are standing by the water's edge with their fishing gear. One person is closer to the left side of the scene, while the other person is on the right side. Both individuals appear to be wearing raincoats or jackets, likely preparing for some outdoor activities despite the weather.\n\nThere are two backpacks visible in the image \u2013 one near each person. The person on the left has a backpack located just below and to their left, while the person on the right has a backpack slightly above and to their right. Additionally, there is another backpack placed further back in the scene, closer to the water.\n\nTwo kayaks can be seen in the picture \u2013 one positioned in front of the person on the left and the other one situated in front of the person on the right. This suggests that these individuals are likely preparing for some paddling activities on the body of water.",
+        "processing_time": 19.453567504882812
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.01,
+        "time_difference": 19.247
+      }
+    },
+    {
+      "frame_number": 2911,
+      "second": 97.0,
+      "blip": {
+        "caption": "two people are walking along a rocky beach",
+        "processing_time": 0.20681476593017578
+      },
+      "bakllava": {
+        "caption": "In the image, a boy wearing a red jacket is sitting on a pathway with a large backpack beside him. The scene features multiple people, including one person standing near the boy and another person off to the side of the frame. \n\nThere are several items lying around, such as two bottles placed closer to the middle of the image. Additionally, there are three boats positioned at different locations within the picture. One boat is near the bottom right corner, while the other two boats are situated closer to the center of the scene.",
+        "processing_time": 20.78155541419983
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.01,
+        "time_difference": 20.575
+      }
+    },
+    {
+      "frame_number": 2941,
+      "second": 98.0,
+      "blip": {
+        "caption": "two people walking along a river in the woods",
+        "processing_time": 0.20681476593017578
+      },
+      "bakllava": {
+        "caption": "The image features a woman and a man standing on a rocky trail near a body of water, possibly a lake or river. The woman is wearing a red coat and appears to be walking towards the water, while the man is already standing by the edge of the lake with his backpack on. There are two additional backpacks in the scene, one near the woman and the other near the man. \n\nA boat can be seen floating on the water and both individuals seem to be engaged in outdoor activities, possibly hiking or camping around the area. The overall atmosphere of the image suggests an adventurous scene with people enjoying nature.",
+        "processing_time": 22.4270179271698
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.01,
+        "time_difference": 22.22
+      }
+    },
+    {
+      "frame_number": 2971,
+      "second": 99.0,
+      "blip": {
+        "caption": "a man with a backpack walking through the woods",
+        "processing_time": 0.20681476593017578
+      },
+      "bakllava": {
+        "caption": "In the image, there is a man wearing an orange jacket who appears to be walking through a wooded area or field with a backpack on his back. He has blonde hair and is navigating the natural environment while carrying his gear. The man seems to be focused on his destination as he makes his way through this outdoor setting.",
+        "processing_time": 21.66903567314148
+      },
+      "speedup": {
+        "faster": "BLIP",
+        "ratio": 0.01,
+        "time_difference": 21.462
+      }
+    }
+  ]
+}

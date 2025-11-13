@@ -86,7 +86,7 @@ def draw_timeline(self):
             
             # Determine if this chunk is hovered or selected
             is_hovered = (self.timeline_hover_chunk == i)
-            is_selected = (self.edit_state.selected_chunk == i)
+            is_selected = (i in self.edit_state.selected_chunks)
             
             # Get colors
             fill_color, outline_color, gradient_color = self._get_chunk_color(

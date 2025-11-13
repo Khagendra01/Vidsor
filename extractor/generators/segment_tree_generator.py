@@ -148,19 +148,26 @@ class SegmentTreeGenerator:
                 "bakllava_metadata": result["bakllava_metadata"]
             })
         
-        # Process with BakLLaVA to get unified description (replaces GPT-4o-mini)
-        if frame_images:
-            bakllava_result = self.bakllava_processor.process(frame_images, detection_summary)
-            unified_description = bakllava_result["unified_description"]
-            bakllava_metadata = bakllava_result["bakllava_metadata"]
+        # Use frame descriptions directly (skip redundant BakLLaVA unified description call)
+        # This avoids making another 600 API calls - we already have frame descriptions from STEP 2
+        if bakllava_descriptions:
+            # Combine frame descriptions with detection summary
+            frame_texts = [desc["description"] for desc in bakllava_descriptions]
+            if frame_texts:
+                unified_description = " | ".join(frame_texts)
+                if detection_summary:
+                    unified_description = f"{unified_description} | Detections: {detection_summary}"
+            else:
+                unified_description = detection_summary or "No description available"
         else:
-            unified_description = detection_summary
-            bakllava_metadata = {
-                "model": "none",
-                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
-                "processing_time": 0,
-                "note": "No frames available for processing"
-            }
+            unified_description = detection_summary or "No description available"
+        
+        bakllava_metadata = {
+            "model": "bakllava",
+            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
+            "processing_time": 0,
+            "note": "Unified description created from frame descriptions (no additional API call)"
+        }
         
         return {
             "second": second_idx,

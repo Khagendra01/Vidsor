@@ -1,0 +1,159 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "tracking_json_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_yolo_bytetrack.json",
+  "test_config": {
+    "test_interval": 10,
+    "seconds_tested": [
+      0,
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "num_seconds_tested": 6,
+    "total_video_seconds": 300
+  },
+  "models": {
+    "gpt-4o-mini": {
+      "model": "gpt-4o-mini",
+      "seconds_tested": [
+        0,
+        10,
+        20,
+        30,
+        40,
+        50
+      ],
+      "num_seconds": 6,
+      "results": [
+        {
+          "second": 0,
+          "time_range": [
+            0,
+            0.999
+          ],
+          "blip_description": "a man in a green shirt and sunglasses is standing on a mountain",
+          "detection_summary": "Total unique tracks: 1, Groups: 6",
+          "llava_description": "### 1. Content Description\n\nIn this 1-second scene, a man wearing a vibrant green shirt and stylish sunglasses stands confidently atop a rugged mountain peak, which is adorned with rocky outcrops and patches of grass. The backdrop features a stunning panoramic view of rolling hills and distant mountain ranges, bathed in the warm glow of sunlight. The colors are vivid: the green of the man's shirt contrasts sharply with the earthy browns and grays of the mountain rocks. His stance is relaxed yet triumphant, possibly reveling in the achievement of reaching this high vantage point. The scene appears to capture a moment of solitude and reflection, suggesting that the man may be enjoying a break during a hike or a personal adventure.\n\n### 2. Camera Perspective and Technical Details\n\nThe camera perspective is third-person, providing an external view of the man on the mountain. The camera is possibly mounted on a tripod or a stable surface, which contributes to a steady shot, allowing the viewer to fully appreciate the scenic beauty without the distraction of shaky movements. The field of view seems to be wide-angle, capturing both the subject and the expansive landscape surrounding him, emphasizing the scale of the mountain and the vastness of the view. The camera may exhibit some slight distortion typical of wide-angle lenses, giving a sense of depth to the scene while maintaining focus on the man in the foreground. \n\n### 3. Video Production Style and Characteristics\n\nThe video style resembles that of an action camera, akin to GoPro footage, with a focus on outdoor adventure and exploration. It employs natural outdoor lighting, which enhances the vibrant colors and details of the scene. The frame composition is well-balanced, with the man positioned slightly off-center against the backdrop of the sweeping landscape, which draws the viewer's eye toward both the subject and the breathtaking scenery. There are no noticeable technical artifacts such as motion blur or lens flare, as the shot is clear and crisp, highlighting the beauty of the environment and the subject's presence within it. This clarity suggests a professional level of video production that captures the essence of outdoor adventure effectively.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:48:19",
+            "processing_time": 6.72,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 9.009,
+          "llava_time": 7.77
+        },
+        {
+          "second": 10,
+          "time_range": [
+            10,
+            10.999
+          ],
+          "blip_description": "a young boy holding a fish on a rock",
+          "detection_summary": "Total unique tracks: 3, Groups: 6",
+          "llava_description": "### Unified Scene Description\n\n#### 1. Content Description\nIn this vibrant scene, a young boy is joyfully holding up a freshly caught fish, proudly displaying it to an unseen audience. He stands on a rugged rock formation by the edge of a serene body of water, likely a lake or river, which reflects the clear blue sky above. The boy, who appears to be around eight years old, is wearing a bright red T-shirt that pops against the natural greens and browns of the surrounding environment. His hair is tousled by a gentle breeze, and his expression is one of sheer delight, with a wide smile showcasing his excitement. \n\nThe fish, glistening in the sunlight, is a striking silver with hints of blue and green, indicating it might be a trout or similar freshwater species. The surrounding rocks are uneven and covered with patches of moss, and there are small tufts of grass sprouting in between. In the background, the water is calm, reflecting the greenery of the nearby trees, which create a picturesque and tranquil setting. The scene captures the essence of a summer day outdoors, filled with the joys of childhood exploration and the thrill of catching one\u2019s first fish.\n\n#### 2. Camera Perspective and Technical Details\nThe camera perspective is third-person, providing a clear view of the boy and the surrounding environment without being obstructive. The camera is likely mounted on a tripod or a stable handheld device, allowing for a steady shot that captures the boy\u2019s proud moment without significant shaking. The field of view is moderately wide, encompassing not only the boy and the fish but also the rocky foreground and the expansive water in the background, giving viewers a sense of location and context.\n\nThe camera movement is stable, focusing on the boy as he holds the fish aloft, possibly with a slight zoom-in effect to emphasize his expression of joy. The lens characteristics appear to be standard, with no noticeable distortion, allowing for a clear and true-to-life representation of the scene.\n\n#### 3. Video Production Style and Characteristics\nThe video style resembles that of an action camera or a family documentary, capturing a candid moment of outdoor adventure. The lighting is natural and bright, typical of a sunny day, enhancing the vivid colors of the boy\u2019s clothing and the fish. The frame composition is thoughtfully arranged; the boy is positioned in the foreground, with the shimmering water and lush greenery creating a beautiful backdrop that draws the viewer\u2019s eye to both the subject and the setting.\n\nThere are minimal technical artifacts present; the video is clear without motion blur, and the lighting is even, suggesting careful attention to exposure settings during filming. Overall, the scene conveys a sense of joy and connection to nature, making it both visually appealing and emotionally resonant.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:48:30",
+            "processing_time": 10.06,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 11.42,
+          "llava_time": 10.308
+        },
+        {
+          "second": 20,
+          "time_range": [
+            20,
+            20.999
+          ],
+          "blip_description": "a knife is on top of a tree stump",
+          "detection_summary": "Total unique tracks: 1, Groups: 6",
+          "llava_description": "**Unified Detailed Description of the Scene**\n\n1. **Content Description:**\n   The scene captures a close-up view of a knife resting atop a weathered tree stump, situated in a lush, green outdoor setting. The knife, with a polished steel blade that gleams in the sunlight, features a wooden handle that contrasts with the rustic surface of the stump. The stump itself is rough and gnarled, displaying various shades of brown and hints of moss along its edges, indicating it has been exposed to the elements for some time. Surrounding the stump are vibrant green grasses and a few delicate wildflowers, adding color and life to the scene. \n\n   The setting suggests a serene, natural environment, possibly a forest or a secluded park, where one could imagine activities like camping or outdoor cooking taking place. The placement of the knife on the stump implies that it has been recently used, potentially for food preparation or other tasks associated with outdoor living.\n\n2. **Camera Perspective and Technical Details:**\n   The camera perspective is third-person, providing an observational view of the knife and stump. The camera appears to be mounted on a stable tripod, ensuring a steady shot that allows for detailed examination of the knife's features and the texture of the stump. The field of view is relatively narrow, focusing specifically on the knife and stump, which enhances the intimacy of the scene and draws attention to these central objects without distraction from the surrounding environment.\n\n   There is no noticeable camera movement, contributing to a calm and contemplative atmosphere. The lens characteristics show no signs of distortion, indicating a standard lens was used, likely with a focal length that captures the objects in sharp detail without compromising the natural proportions.\n\n3. **Video Production Style and Characteristics:**\n   The video style leans towards a documentary or nature exploration format, showcasing the beauty of natural objects and their surroundings. The lighting is bright and natural, with sunlight illuminating the knife and stump, creating gentle highlights and shadows that enhance the visual appeal. The frame composition is well-balanced, with the knife positioned prominently in the foreground and the stump anchoring the scene, surrounded by the soft greens of the grass and flowers.\n\n   There are minimal technical artifacts; the image appears clear and focused, with no noticeable motion blur or lens flare. This clarity allows viewers to appreciate the details of the knife and stump without distraction, making it an engaging visual experience that invites contemplation of the natural setting. Overall, the scene encapsulates a moment of quiet beauty in the outdoors, highlighted by the simple yet striking juxtaposition of the knife against the natural texture of the tree stump.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:48:42",
+            "processing_time": 11.18,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 12.133,
+          "llava_time": 11.386
+        },
+        {
+          "second": 30,
+          "time_range": [
+            30,
+            30.999
+          ],
+          "blip_description": "a man in a boat is driving down the river",
+          "detection_summary": "Total unique tracks: 2, Groups: 6",
+          "llava_description": "### Unified Detailed Description of the Scene\n\n#### 1. Content Description\nThe scene captures a man navigating a small boat along a gently flowing river. The riverbanks are lush and green, with trees and shrubs framing the waterway. The man, dressed in a light-colored shirt and dark shorts, is seated in the boat, gripping the steering wheel with one hand while using the other to adjust a fishing rod positioned beside him. His posture suggests concentration and enjoyment as he steers the vessel downstream.\n\nSunlight filters through the overhanging branches, casting dappled light across the water's surface, which glimmers with reflections of the surrounding nature. The river itself is a rich, deep blue, contrasting with the vibrant greens of the foliage. As the boat moves, small ripples trail behind it, subtly disturbing the calm water.\n\nIn the background, the sounds of nature can be heard \u2013 the gentle lapping of water against the boat, distant birds chirping, and the rustle of leaves in the breeze. This peaceful setting conveys a sense of relaxation and connection to nature, making the viewer feel as if they are part of this serene moment.\n\n#### 2. Camera Perspective and Technical Details\n- **Camera Perspective**: The scene is captured from a third-person perspective, providing a clear view of both the man in the boat and the surrounding environment.\n- **Camera Positioning**: The camera appears to be handheld, potentially mounted on a stabilizer to reduce shake while following the movement of the boat.\n- **Field of View**: The field of view is moderately wide, allowing the viewer to see the man, the boat, and a significant portion of the riverbanks simultaneously, creating an immersive experience of the scene.\n- **Camera Movement**: The camera exhibits a smooth, slightly panning movement as it follows the boat's trajectory along the river, enhancing the dynamic feel of the journey while maintaining stability.\n- **Lens Characteristics**: There are no signs of wide-angle distortion or fisheye effects; the lens appears to maintain realistic proportions, emphasizing the natural beauty of the landscape without exaggeration.\n\n#### 3. Video Production Style and Characteristics\n- **Video Style**: The video appears to be styled like action camera footage, reminiscent of GoPro-style videos that focus on outdoor activities and adventures. It aims to capture the essence of leisure and exploration.\n- **Lighting**: The lighting is natural and bright, indicative of a sunny day outdoors. The sunlight enhances the colors, making the greens of the trees and the blue of the water appear even more vibrant.\n- **Frame Composition**: The man is positioned slightly off-center in the frame, with the river and banks beautifully framing the shot. The composition balances the subject and the background, drawing attention to both the individual and the scenic surroundings.\n- **Technical Artifacts**: There is minimal motion blur due to the stable camera movement, and the clarity of the image suggests a high-quality recording. No noticeable lens flares or compression artifacts are present, indicating professional-grade video quality.\n\nOverall, this 1-second scene encapsulates a moment of tranquility and adventure, with technical execution that enhances its visual appeal and immersive quality.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:48:53",
+            "processing_time": 9.73,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 10.633,
+          "llava_time": 9.94
+        },
+        {
+          "second": 40,
+          "time_range": [
+            40,
+            40.999
+          ],
+          "blip_description": "a view from the cockpit of a plane flying over a river",
+          "detection_summary": "Total unique tracks: 1, Groups: 6",
+          "llava_description": "### Unified Detailed Description of the Scene\n\n#### 1. Content Description\nIn this brief 1-second scene, the viewer is transported to the cockpit of an aircraft soaring above a picturesque river. The cockpit is filled with various instruments and controls, lending a sense of authenticity to the pilot's experience. Below, the river snakes through a vibrant landscape, with lush greenery lining its banks. The water shimmers in the sunlight, reflecting hues of blue and silver, while the surrounding terrain features patches of vivid emerald grass and clusters of trees that frame the waterway. \n\nThe aircraft is in mid-flight, gently banking to the side, which creates a dynamic view of the river below. As the camera captures this scene, it glances slightly to the left, revealing the river's meandering path, accentuated by a few small boats dotting the water, perhaps fishing or leisurely cruising. The movement of the plane adds a slight tilt to the view, enhancing the sense of speed and altitude.\n\n#### 2. Camera Perspective and Technical Details\nThe camera perspective is a first-person point of view (POV), directly from the cockpit of the plane, which immerses the viewer in the pilot's experience. The camera is likely mounted within the cockpit, possibly on a stable tripod or directly attached to the panel, allowing for minimal shake and a clear view of the landscape below.\n\nThe field of view appears moderately wide-angle, capturing both the cockpit's essential instruments and a substantial portion of the river and surrounding landscape. The camera movement is smooth and stable, suggesting that the aircraft is flying at a consistent altitude and speed, with only gentle banking motions causing slight shifts in the view.\n\nLens characteristics indicate a potential wide-angle distortion at the edges, subtly curving the horizon and enhancing the expansive view of the landscape. However, this distortion is minimal, maintaining the realism of the scene.\n\n#### 3. Video Production Style and Characteristics\nThe video style can be categorized as action camera footage, reminiscent of a GoPro-style setup, emphasizing the thrill of flight while documenting the natural beauty below. The lighting is bright and natural, as the scene is set during daylight, creating a vibrant and inviting atmosphere. The sunlight illuminates the cockpit and glints off the river, enhancing the visual appeal.\n\nFrame composition is well-executed, with the cockpit instruments occupying the lower portion of the frame and the river dominating the upper half. This arrangement allows viewers to appreciate both the technical aspect of flying and the stunning aerial view of the landscape.\n\nThere are minimal technical artifacts present in the footage; however, some slight motion blur may be noticeable as the camera captures the rapid movement of the aircraft, especially in the transition of the landscape below. Overall, the scene is a visually striking and engaging representation of flight over a scenic river, capturing the essence of adventure and exploration.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:49:03",
+            "processing_time": 8.76,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 9.701,
+          "llava_time": 8.953
+        },
+        {
+          "second": 50,
+          "time_range": [
+            50,
+            50.999
+          ],
+          "blip_description": "a view from the cockpit of a plane flying over a mountain range",
+          "detection_summary": "Total unique tracks: 0, Groups: 6",
+          "llava_description": "### Unified Detailed Description of the Scene\n\n#### 1. Content Description\nIn this 1-second scene, we find ourselves inside the cockpit of a plane soaring high above a breathtaking mountain range. The cockpit is equipped with various controls and displays, hinting at the functionality of the aircraft. The pilot, not directly visible but implied by the cockpit setup, is likely navigating through this picturesque landscape. \n\nThe mountains below are characterized by jagged peaks and deep valleys, showcasing a vibrant palette of colors. The snow-capped summits glisten under the sunlight, while the lower slopes are adorned with patches of lush green forest and rocky outcrops. As the plane glides through the clear blue sky, the movement is fluid and graceful, suggesting a smooth flight path. The cockpit window frames this scene, offering a panoramic view of the rugged terrain below, with the mountains stretching far into the horizon.\n\n#### 2. Camera Perspective and Technical Details\n- **Camera Perspective:** The perspective is third-person, as it provides a view from within the cockpit rather than a direct first-person view of the pilot.\n- **Camera Positioning:** The camera is mounted securely within the cockpit, likely fixed to the dashboard or a similar surface to capture the external landscape while minimizing vibrations.\n- **Field of View:** The camera offers a wide-angle field of view, encompassing a substantial portion of the cockpit as well as the expansive landscape below, enhancing the sense of altitude and openness.\n- **Camera Movement:** The camera is stable, reflecting the smooth operation of the aircraft and suggesting that there are no abrupt movements or turbulence affecting the shot.\n- **Lens Characteristics:** The wide-angle lens may exhibit slight distortion at the edges, typical of cockpit footage, which adds to the immersive quality of the scene.\n\n#### 3. Video Production Style and Characteristics\n- **Video Style:** This footage resembles action camera-style production, akin to that of a GoPro, capturing an exhilarating moment of flight over stunning natural scenery. It may also have elements of documentary-style filming, aiming to showcase the beauty of aviation and nature.\n- **Lighting:** The scene is illuminated with natural outdoor lighting, likely during the day, where the sunlight enhances the vibrancy of the colors in the landscape and reflects off the cockpit glass.\n- **Frame Composition:** The frame is well-composed, with the cockpit instruments occupying the lower third of the screen, while the majestic mountain range dominates the upper two-thirds. This composition effectively balances the technical aspects of flying with the beauty of the external environment.\n- **Technical Artifacts:** There are no significant technical artifacts evident, but minor reflections on the cockpit glass may create subtle lens flares, adding to the authenticity of the cockpit experience.\n\nOverall, this captivating 1-second scene combines the thrill of aviation with the stunning beauty of nature, presented through a well-executed technical framework that enhances viewer engagement.",
+          "llava_metadata": {
+            "model": "gpt-4o-mini",
+            "timestamp": "2025-11-11T21:49:13",
+            "processing_time": 9.81,
+            "note": "OpenAI API processed with text only"
+          },
+          "processing_time": 10.807,
+          "llava_time": 10.004
+        }
+      ],
+      "timing": {
+        "total_llava_time": 58.36,
+        "total_processing_time": 63.7,
+        "avg_llava_time_per_second": 9.727,
+        "avg_total_time_per_second": 10.617,
+        "seconds_per_second": 0.1
+      },
+      "total_time": 63.73
+    }
+  },
+  "summary": {
+    "total_test_time": 63.73,
+    "speed_comparison": {
+      "gpt-4o-mini": {
+        "avg_llava_time": 9.727,
+        "throughput": 0.1,
+        "total_time": 63.73
+      }
+    }
+  }
+}

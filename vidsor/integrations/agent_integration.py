@@ -211,6 +211,9 @@ class AgentIntegration:
         if not message:
             return
         
+        # Remove @ symbols from clip references (e.g., @clip1 -> clip1)
+        message = message.replace("@", "")
+        
         # Check if this is a response to a clarification
         if self.pending_clarification:
             # User is responding to clarification - continue with preserved state

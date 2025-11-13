@@ -96,7 +96,8 @@ from .vidsor.timeline_handlers import (
     on_timeline_drag,
     on_timeline_release,
     on_timeline_motion,
-    on_timeline_leave
+    on_timeline_leave,
+    on_timeline_double_click
 )
 
 
@@ -675,6 +676,10 @@ class Vidsor:
     def _on_timeline_leave(self, event):
         """Handle mouse leaving timeline."""
         return on_timeline_leave(self, event)
+    
+    def _on_timeline_double_click(self, event):
+        """Handle double-click on timeline to unselect chunks."""
+        return on_timeline_double_click(self, event)
     
     def _draw_timeline(self):
         """Draw professional timeline with chunks, playhead, and modern styling."""

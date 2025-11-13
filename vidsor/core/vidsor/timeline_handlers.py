@@ -13,56 +13,6 @@ except ImportError:
 def on_timeline_click(self, event):
     """Handle timeline click for chunk selection or playhead dragging."""
     self.timeline_controller.on_timeline_click(event)
-    if not self.timeline_canvas:
-        return
-    
-    # Pause playback if it's currently running for better drag handling
-    if self.edit_state.is_playing:
-        self.edit_state.is_playing = False
-        self._update_playback_controls()
-    
-    # Get canvas coordinates
-    canvas_x = self.timeline_canvas.canvasx(event.x)
-    
-    # Calculate timeline duration and scale
-    if not self.edit_state.chunks:
-        if not self.video_clip:
-            return
-        timeline_duration = self.video_clip.duration
-    else:
-        timeline_duration = max(chunk.end_time for chunk in self.edit_state.chunks)
-    
-    canvas_width = self.timeline_canvas.winfo_width() or 1000
-    scale = canvas_width / timeline_duration if timeline_duration > 0 else 1
-    
-    # Check if clicking on/near the playhead (within 10 pixels)
-    playhead_x = self.edit_state.preview_time * scale
-    playhead_tolerance = 10
-    
-    if abs(canvas_x - playhead_x) <= playhead_tolerance:
-        # Clicked on playhead - start dragging
-        self.is_dragging_playhead = True
-        # Stop playback and audio if playing
-        if self.edit_state.is_playing:
-            self.edit_state.is_playing = False
-        # Stop audio completely
-        if HAS_PYGAME:
-            try:
-                pygame.mixer.music.stop()
-            except:
-                pass
-        # Mark that audio needs restart from new position
-        self.audio_needs_restart = True
-        # Mark that playback has started so Resume button appears
-        self.edit_state.has_started_playback = True
-        self._update_playback_controls()
-    else:
-        # Clicked elsewhere on timeline - seek to that position
-        new_time = canvas_x / scale
-        new_time = max(0, min(new_time, timeline_duration))
-        self._seek_to_time(new_time)
-        # Start dragging from this position
-        self.is_dragging_playhead = True
 
 
 def on_timeline_drag(self, event):
@@ -149,4 +99,9 @@ def on_timeline_motion(self, event):
 def on_timeline_leave(self, event):
     """Handle mouse leaving timeline."""
     self.timeline_controller.on_timeline_leave(event)
+
+
+def on_timeline_double_click(self, event):
+    """Handle double-click on timeline to unselect chunks."""
+    self.timeline_controller.on_timeline_double_click(event)
 

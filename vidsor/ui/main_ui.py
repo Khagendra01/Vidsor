@@ -356,6 +356,7 @@ def create_main_ui(vidsor: 'Vidsor'):
     
     # Bind timeline interactions
     vidsor.timeline_canvas.bind("<Button-1>", vidsor._on_timeline_click)
+    vidsor.timeline_canvas.bind("<Double-Button-1>", vidsor._on_timeline_double_click)
     vidsor.timeline_canvas.bind("<B1-Motion>", vidsor._on_timeline_drag)
     vidsor.timeline_canvas.bind("<ButtonRelease-1>", vidsor._on_timeline_release)
     vidsor.timeline_canvas.bind("<Motion>", vidsor._on_timeline_motion)

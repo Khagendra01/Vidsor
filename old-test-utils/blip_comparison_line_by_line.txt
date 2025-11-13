@@ -1,0 +1,3033 @@
+====================================================================================================
+LINE-BY-LINE JSON COMPARISON
+====================================================================================================
+
+METADATA COMPARISON:
+----------------------------------------------------------------------------------------------------
+Video Path: C:\Users\Khage\Desktop\Vidagent\old-test-utils\camp_5min.mp4
+Base Model:  Salesforce/blip-image-captioning-base
+BLIP2 Model: Salesforce/blip2-opt-2.7b
+
+STATISTICS COMPARISON:
+----------------------------------------------------------------------------------------------------
+  total_frames              | Base: 300             | BLIP2: 300             | Diff: 0               (0.0%)
+  total_processing_time     | Base: 14.15           | BLIP2: 34.35           | Diff: 20.200000000000003 (142.8%)
+  avg_time_per_frame        | Base: 0.036           | BLIP2: 0.101           | Diff: 0.065           (180.6%)
+  min_time                  | Base: 0.031           | BLIP2: 0.079           | Diff: 0.048           (154.8%)
+  max_time                  | Base: 0.074           | BLIP2: 0.215           | Diff: 0.14100000000000001 (190.5%)
+  fps                       | Base: 21.21           | BLIP2: 8.73            | Diff: -12.48          (-58.8%)
+
+TEST CONFIG COMPARISON:
+----------------------------------------------------------------------------------------------------
+  frame_interval            | Base: 10              | BLIP2: 10              | ✓
+  max_frames                | Base: 300             | BLIP2: 300             | ✓
+  batch_size                | Base: 48              | BLIP2: 48              | ✓
+  num_frames_processed      | Base: 300             | BLIP2: 300             | ✓
+
+RESULTS COMPARISON (Frame by Frame):
+====================================================================================================
+
+Frame    1 (Second  0.000):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1 ✓
+  second:        0.000 ✓
+  caption:
+    Base:  a man in a green shirt and hat is pointing at the camera
+    BLIP2: a man in a hat and sunglasses is pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   11 (Second  0.334):
+----------------------------------------------------------------------------------------------------
+  frame_number:  11 ✓
+  second:        0.334 ✓
+  caption:
+    Base:  a man in a green shirt and sunglasses is standing on a mountain
+    BLIP2: a man in a hat and sunglasses pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   21 (Second  0.667):
+----------------------------------------------------------------------------------------------------
+  frame_number:  21 ✓
+  second:        0.667 ✓
+  caption:
+    Base:  a man in a green shirt and sunglasses is pointing at the camera
+    BLIP2: a man in a hat and sunglasses pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   31 (Second  1.001):
+----------------------------------------------------------------------------------------------------
+  frame_number:  31 ✓
+  second:        1.001 ✓
+  caption:
+    Base:  a man in a green shirt and hat is standing on a mountain
+    BLIP2: a man in a hat and sunglasses pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   41 (Second  1.335):
+----------------------------------------------------------------------------------------------------
+  frame_number:  41 ✓
+  second:        1.335 ✓
+  caption:
+    Base:  a man in a green shirt and sunglasses is pointing at the camera
+    BLIP2: a man in a hat and sunglasses pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   51 (Second  1.668):
+----------------------------------------------------------------------------------------------------
+  frame_number:  51 ✓
+  second:        1.668 ✓
+  caption:
+    Base:  a man in a green shirt and hat standing on a mountain
+    BLIP2: a man in a hat and sunglasses pointing at something
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   61 (Second  2.002):
+----------------------------------------------------------------------------------------------------
+  frame_number:  61 ✓
+  second:        2.002 ✓
+  caption:
+    Base:  a man in a green shirt and hat standing on a mountain
+    BLIP2: a man in a hat and sunglasses pointing at something
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   71 (Second  2.336):
+----------------------------------------------------------------------------------------------------
+  frame_number:  71 ✓
+  second:        2.336 ✓
+  caption:
+    Base:  a man in a green shirt and hat standing on a mountain
+    BLIP2: a man in a hat and sunglasses pointing at a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   81 (Second  2.669):
+----------------------------------------------------------------------------------------------------
+  frame_number:  81 ✓
+  second:        2.669 ✓
+  caption:
+    Base:  a man in a green shirt and hat pointing at the camera
+    BLIP2: a man in a hat and sunglasses standing on a mountain
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame   91 (Second  3.003):
+----------------------------------------------------------------------------------------------------
+  frame_number:  91 ✓
+  second:        3.003 ✓
+  caption:
+    Base:  a man in a green shirt and hat standing on a mountain
+    BLIP2: a man in a hat and sunglasses is pointing at the camera
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  101 (Second  3.337):
+----------------------------------------------------------------------------------------------------
+  frame_number:  101 ✓
+  second:        3.337 ✓
+  caption:
+    Base:  a man in a helicopter flying over a mountain
+    BLIP2: a man is sitting in the cockpit of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  111 (Second  3.670):
+----------------------------------------------------------------------------------------------------
+  frame_number:  111 ✓
+  second:        3.670 ✓
+  caption:
+    Base:  a man in a helicopter flying over mountains
+    BLIP2: a man is driving a plane through the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  121 (Second  4.004):
+----------------------------------------------------------------------------------------------------
+  frame_number:  121 ✓
+  second:        4.004 ✓
+  caption:
+    Base:  a man in a helicopter flying over a mountain
+    BLIP2: a pilot is flying a plane with a view of mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  131 (Second  4.338):
+----------------------------------------------------------------------------------------------------
+  frame_number:  131 ✓
+  second:        4.338 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a man standing next to a small plane on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  141 (Second  4.671):
+----------------------------------------------------------------------------------------------------
+  frame_number:  141 ✓
+  second:        4.671 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a small plane is sitting on the water
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  151 (Second  5.005):
+----------------------------------------------------------------------------------------------------
+  frame_number:  151 ✓
+  second:        5.005 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a small plane is parked on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  161 (Second  5.339):
+----------------------------------------------------------------------------------------------------
+  frame_number:  161 ✓
+  second:        5.339 ✓
+  caption:
+    Base:  a small plane is sitting on the shore
+    BLIP2: a seaplane is sitting on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  171 (Second  5.672):
+----------------------------------------------------------------------------------------------------
+  frame_number:  171 ✓
+  second:        5.672 ✓
+  caption:
+    Base:  a man is standing near a tent with a dog
+    BLIP2: a man is standing next to a tent
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  181 (Second  6.006):
+----------------------------------------------------------------------------------------------------
+  frame_number:  181 ✓
+  second:        6.006 ✓
+  caption:
+    Base:  a man is standing near a tent with a dog
+    BLIP2: a man in a hat and glasses is standing next to a tent
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  191 (Second  6.340):
+----------------------------------------------------------------------------------------------------
+  frame_number:  191 ✓
+  second:        6.340 ✓
+  caption:
+    Base:  a man is standing next to a tree
+    BLIP2: a man in a hat and glasses standing next to a tent
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  201 (Second  6.673):
+----------------------------------------------------------------------------------------------------
+  frame_number:  201 ✓
+  second:        6.673 ✓
+  caption:
+    Base:  two men sitting on the ground eating food
+    BLIP2: three men eating food on the ground near a campfire
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  211 (Second  7.007):
+----------------------------------------------------------------------------------------------------
+  frame_number:  211 ✓
+  second:        7.007 ✓
+  caption:
+    Base:  two people sitting on the ground eating food
+    BLIP2: three people eating food on the ground near a campfire
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  221 (Second  7.341):
+----------------------------------------------------------------------------------------------------
+  frame_number:  221 ✓
+  second:        7.341 ✓
+  caption:
+    Base:  two men sitting on the ground eating food
+    BLIP2: three people eating food on the ground near a campfire
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  231 (Second  7.674):
+----------------------------------------------------------------------------------------------------
+  frame_number:  231 ✓
+  second:        7.674 ✓
+  caption:
+    Base:  two people sitting on the ground eating food
+    BLIP2: three people eating food on the ground near a campfire
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  241 (Second  8.008):
+----------------------------------------------------------------------------------------------------
+  frame_number:  241 ✓
+  second:        8.008 ✓
+  caption:
+    Base:  a man fishing on a lake with two boats
+    BLIP2: a man is fishing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  251 (Second  8.342):
+----------------------------------------------------------------------------------------------------
+  frame_number:  251 ✓
+  second:        8.342 ✓
+  caption:
+    Base:  a man fishing on a lake with two boats
+    BLIP2: a man standing next to two kayaks on the shore
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  261 (Second  8.675):
+----------------------------------------------------------------------------------------------------
+  frame_number:  261 ✓
+  second:        8.675 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man standing next to his kayaks on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  271 (Second  9.009):
+----------------------------------------------------------------------------------------------------
+  frame_number:  271 ✓
+  second:        9.009 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man standing next to two kayaks on the shore
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  281 (Second  9.343):
+----------------------------------------------------------------------------------------------------
+  frame_number:  281 ✓
+  second:        9.343 ✓
+  caption:
+    Base:  a man holding a fish in his hand
+    BLIP2: a person holding a fish in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  291 (Second  9.676):
+----------------------------------------------------------------------------------------------------
+  frame_number:  291 ✓
+  second:        9.676 ✓
+  caption:
+    Base:  a man holding a fish in his hand
+    BLIP2: a person holding a fish in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  301 (Second 10.010):
+----------------------------------------------------------------------------------------------------
+  frame_number:  301 ✓
+  second:        10.010 ✓
+  caption:
+    Base:  a man holding a fish in his hand
+    BLIP2: a person holding a fish in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  311 (Second 10.344):
+----------------------------------------------------------------------------------------------------
+  frame_number:  311 ✓
+  second:        10.344 ✓
+  caption:
+    Base:  a young boy holding a fish on a fishing line
+    BLIP2: a young boy holding a fish on a gravel road
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  321 (Second 10.677):
+----------------------------------------------------------------------------------------------------
+  frame_number:  321 ✓
+  second:        10.677 ✓
+  caption:
+    Base:  a young boy holding a fish on a rock
+    BLIP2: a young boy holding a fish on a gravel road
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  331 (Second 11.011):
+----------------------------------------------------------------------------------------------------
+  frame_number:  331 ✓
+  second:        11.011 ✓
+  caption:
+    Base:  a young boy holding a fish on a fishing line
+    BLIP2: a young boy holding a fish on a gravel road
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  341 (Second 11.345):
+----------------------------------------------------------------------------------------------------
+  frame_number:  341 ✓
+  second:        11.345 ✓
+  caption:
+    Base:  a man holding a fish in his hands
+    BLIP2: a person holding a fish on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  351 (Second 11.678):
+----------------------------------------------------------------------------------------------------
+  frame_number:  351 ✓
+  second:        11.678 ✓
+  caption:
+    Base:  a man holding a fish in his hands
+    BLIP2: a person holding a fish on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  361 (Second 12.012):
+----------------------------------------------------------------------------------------------------
+  frame_number:  361 ✓
+  second:        12.012 ✓
+  caption:
+    Base:  two people walking down a trail in the mountains
+    BLIP2: two people walking on a trail near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  371 (Second 12.346):
+----------------------------------------------------------------------------------------------------
+  frame_number:  371 ✓
+  second:        12.346 ✓
+  caption:
+    Base:  two people walking up a hill with a lake in the background
+    BLIP2: two people walking on a trail near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  381 (Second 12.679):
+----------------------------------------------------------------------------------------------------
+  frame_number:  381 ✓
+  second:        12.679 ✓
+  caption:
+    Base:  two people walking up a hill with a lake in the background
+    BLIP2: two people are hiking on a mountain with a lake in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  391 (Second 13.013):
+----------------------------------------------------------------------------------------------------
+  frame_number:  391 ✓
+  second:        13.013 ✓
+  caption:
+    Base:  a man in a kayak is holding a fish
+    BLIP2: a man in a fishing vest is holding a fish
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  401 (Second 13.347):
+----------------------------------------------------------------------------------------------------
+  frame_number:  401 ✓
+  second:        13.347 ✓
+  caption:
+    Base:  a man in a boat on a lake
+    BLIP2: a man in a hat and glasses is fishing in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  411 (Second 13.680):
+----------------------------------------------------------------------------------------------------
+  frame_number:  411 ✓
+  second:        13.680 ✓
+  caption:
+    Base:  a man in a boat on a lake
+    BLIP2: a man in a hat and glasses is fishing in a boat
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  421 (Second 14.014):
+----------------------------------------------------------------------------------------------------
+  frame_number:  421 ✓
+  second:        14.014 ✓
+  caption:
+    Base:  a man in a wooden boat with a hat
+    BLIP2: a man in a hat and jacket is standing in a doorway
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  431 (Second 14.348):
+----------------------------------------------------------------------------------------------------
+  frame_number:  431 ✓
+  second:        14.348 ✓
+  caption:
+    Base:  a man in a wooden cabin with a hat
+    BLIP2: a man in a hat and jacket is standing in a doorway
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  441 (Second 14.681):
+----------------------------------------------------------------------------------------------------
+  frame_number:  441 ✓
+  second:        14.681 ✓
+  caption:
+    Base:  a man in a hat is opening a door
+    BLIP2: a man in a hat and glasses is standing in a small cabin
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  451 (Second 15.015):
+----------------------------------------------------------------------------------------------------
+  frame_number:  451 ✓
+  second:        15.015 ✓
+  caption:
+    Base:  a man in a hat and jacket is opening a door
+    BLIP2: a man in a hat and jacket standing in front of a cabin
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  461 (Second 15.349):
+----------------------------------------------------------------------------------------------------
+  frame_number:  461 ✓
+  second:        15.349 ✓
+  caption:
+    Base:  a man standing in front of a wooden cabin
+    BLIP2: a man standing in front of a cabin door
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  471 (Second 15.682):
+----------------------------------------------------------------------------------------------------
+  frame_number:  471 ✓
+  second:        15.682 ✓
+  caption:
+    Base:  a man is standing outside of a cabin
+    BLIP2: a man standing outside of a cabin with a cup of coffee
+    ✗ DIFFERENT
+  processing_time: Base=0.041s, BLIP2=0.115s, Diff=0.074s ✗
+
+Frame  481 (Second 16.016):
+----------------------------------------------------------------------------------------------------
+  frame_number:  481 ✓
+  second:        16.016 ✓
+  caption:
+    Base:  a man is standing outside of a cabin
+    BLIP2: a man standing outside of a cabin with a cup of coffee
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  491 (Second 16.350):
+----------------------------------------------------------------------------------------------------
+  frame_number:  491 ✓
+  second:        16.350 ✓
+  caption:
+    Base:  a man is standing outside of a wooden house
+    BLIP2: a man is sitting in front of a log cabin
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  501 (Second 16.683):
+----------------------------------------------------------------------------------------------------
+  frame_number:  501 ✓
+  second:        16.683 ✓
+  caption:
+    Base:  a man sitting on a chair in front of a building
+    BLIP2: a man sitting outside of a cabin eating a bowl of soup
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  511 (Second 17.017):
+----------------------------------------------------------------------------------------------------
+  frame_number:  511 ✓
+  second:        17.017 ✓
+  caption:
+    Base:  a man sitting on a chair in front of a building
+    BLIP2: a man sitting outside of a cabin eating a bowl of food
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  521 (Second 17.351):
+----------------------------------------------------------------------------------------------------
+  frame_number:  521 ✓
+  second:        17.351 ✓
+  caption:
+    Base:  a man sitting on a chair in front of a building
+    BLIP2: a man sitting in front of a log cabin eating a cup of tea
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  531 (Second 17.684):
+----------------------------------------------------------------------------------------------------
+  frame_number:  531 ✓
+  second:        17.684 ✓
+  caption:
+    Base:  a man sitting on a chair in front of a building
+    BLIP2: a man sitting on a log outside of a cabin
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  541 (Second 18.018):
+----------------------------------------------------------------------------------------------------
+  frame_number:  541 ✓
+  second:        18.018 ✓
+  caption:
+    Base:  a tree stump with a small hole in it
+    BLIP2: a close up of a stump with a hole in it
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  551 (Second 18.352):
+----------------------------------------------------------------------------------------------------
+  frame_number:  551 ✓
+  second:        18.352 ✓
+  caption:
+    Base:  a tree stump with a small hole in it
+    BLIP2: a close up of a stump with a hole in it
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  561 (Second 18.685):
+----------------------------------------------------------------------------------------------------
+  frame_number:  561 ✓
+  second:        18.685 ✓
+  caption:
+    Base:  a hammer is stuck into a tree stump
+    BLIP2: a close up of an axe sticking out of a stump
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  571 (Second 19.019):
+----------------------------------------------------------------------------------------------------
+  frame_number:  571 ✓
+  second:        19.019 ✓
+  caption:
+    Base:  a axe is stuck into a tree stump
+    BLIP2: a person is cutting a tree stump with a knife
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  581 (Second 19.353):
+----------------------------------------------------------------------------------------------------
+  frame_number:  581 ✓
+  second:        19.353 ✓
+  caption:
+    Base:  a axe is stuck into a tree stump
+    BLIP2: a person is cutting a tree stump with a hammer
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  591 (Second 19.686):
+----------------------------------------------------------------------------------------------------
+  frame_number:  591 ✓
+  second:        19.686 ✓
+  caption:
+    Base:  a axe is stuck into a tree stump
+    BLIP2: a large axe is sitting on top of a stump
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  601 (Second 20.020):
+----------------------------------------------------------------------------------------------------
+  frame_number:  601 ✓
+  second:        20.020 ✓
+  caption:
+    Base:  a fire pit with a fire in it
+    BLIP2: a person is holding an axe on top of a tree stump
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  611 (Second 20.354):
+----------------------------------------------------------------------------------------------------
+  frame_number:  611 ✓
+  second:        20.354 ✓
+  caption:
+    Base:  a knife with a red and black logo on it
+    BLIP2: the outdoor boys logo on a log with a knife
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  621 (Second 20.687):
+----------------------------------------------------------------------------------------------------
+  frame_number:  621 ✓
+  second:        20.687 ✓
+  caption:
+    Base:  a knife with a mountain in the background
+    BLIP2: the outdoor boys logo on a log with a knife
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  631 (Second 21.021):
+----------------------------------------------------------------------------------------------------
+  frame_number:  631 ✓
+  second:        21.021 ✓
+  caption:
+    Base:  a logo for the mountain club
+    BLIP2: the logo for outdoor boys is shown in the image
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  641 (Second 21.355):
+----------------------------------------------------------------------------------------------------
+  frame_number:  641 ✓
+  second:        21.355 ✓
+  caption:
+    Base:  the logo for the new outdoor recreation center
+    BLIP2: the outdoor boys logo on a white shirt
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  651 (Second 21.688):
+----------------------------------------------------------------------------------------------------
+  frame_number:  651 ✓
+  second:        21.688 ✓
+  caption:
+    Base:  the logo for the new logo
+    BLIP2: the outdoor boys logo
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  661 (Second 22.022):
+----------------------------------------------------------------------------------------------------
+  frame_number:  661 ✓
+  second:        22.022 ✓
+  caption:
+    Base:  the logo for the new logo
+    BLIP2: the outdoor boys logo
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  671 (Second 22.356):
+----------------------------------------------------------------------------------------------------
+  frame_number:  671 ✓
+  second:        22.356 ✓
+  caption:
+    Base:  the logo for the new logo
+    BLIP2: the outdoor boys logo
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  681 (Second 22.689):
+----------------------------------------------------------------------------------------------------
+  frame_number:  681 ✓
+  second:        22.689 ✓
+  caption:
+    Base:  a logo with mountains and trees in the background
+    BLIP2: the outdoor boys logo on a gray background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  691 (Second 23.023):
+----------------------------------------------------------------------------------------------------
+  frame_number:  691 ✓
+  second:        23.023 ✓
+  caption:
+    Base:  a man driving a car on a road
+    BLIP2: a car driving down the road with a camera attached to it
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  701 (Second 23.357):
+----------------------------------------------------------------------------------------------------
+  frame_number:  701 ✓
+  second:        23.357 ✓
+  caption:
+    Base:  a car driving down a road with a view of the ocean
+    BLIP2: a car driving down the road with a camera on the dashboard
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  711 (Second 23.690):
+----------------------------------------------------------------------------------------------------
+  frame_number:  711 ✓
+  second:        23.690 ✓
+  caption:
+    Base:  a car driving down a road with a view of a river
+    BLIP2: a car driving down a road with a boat in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  721 (Second 24.024):
+----------------------------------------------------------------------------------------------------
+  frame_number:  721 ✓
+  second:        24.024 ✓
+  caption:
+    Base:  a person driving a car on a road
+    BLIP2: a car driving down the road with a person in the driver's seat
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  731 (Second 24.358):
+----------------------------------------------------------------------------------------------------
+  frame_number:  731 ✓
+  second:        24.358 ✓
+  caption:
+    Base:  a man driving a car down a road
+    BLIP2: a person driving a car with the steering wheel in the air
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  741 (Second 24.691):
+----------------------------------------------------------------------------------------------------
+  frame_number:  741 ✓
+  second:        24.691 ✓
+  caption:
+    Base:  a man in a car with a cell phone
+    BLIP2: a man in a hat and jacket is driving a car
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  751 (Second 25.025):
+----------------------------------------------------------------------------------------------------
+  frame_number:  751 ✓
+  second:        25.025 ✓
+  caption:
+    Base:  a man in a car is holding a gun
+    BLIP2: a man in a hat is sitting in the driver's seat of a car
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  761 (Second 25.359):
+----------------------------------------------------------------------------------------------------
+  frame_number:  761 ✓
+  second:        25.359 ✓
+  caption:
+    Base:  a man in a car with a hat and a hat
+    BLIP2: a man in a hat and jacket sitting in the driver's seat of a car
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  771 (Second 25.692):
+----------------------------------------------------------------------------------------------------
+  frame_number:  771 ✓
+  second:        25.692 ✓
+  caption:
+    Base:  a man walking down a street carrying a bag
+    BLIP2: a man carrying luggage on a road
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  781 (Second 26.026):
+----------------------------------------------------------------------------------------------------
+  frame_number:  781 ✓
+  second:        26.026 ✓
+  caption:
+    Base:  a man walking down the street with a bag
+    BLIP2: a man carrying a bag of luggage on a road
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  791 (Second 26.360):
+----------------------------------------------------------------------------------------------------
+  frame_number:  791 ✓
+  second:        26.360 ✓
+  caption:
+    Base:  a man walking down the street carrying a bag
+    BLIP2: a man carrying luggage on a dock
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  801 (Second 26.693):
+----------------------------------------------------------------------------------------------------
+  frame_number:  801 ✓
+  second:        26.693 ✓
+  caption:
+    Base:  a man walking down the street with a bag
+    BLIP2: a man carrying luggage on a dock near a boat
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  811 (Second 27.027):
+----------------------------------------------------------------------------------------------------
+  frame_number:  811 ✓
+  second:        27.027 ✓
+  caption:
+    Base:  a man is getting off the boat and getting off
+    BLIP2: two men loading luggage onto a plane at the dock
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  821 (Second 27.361):
+----------------------------------------------------------------------------------------------------
+  frame_number:  821 ✓
+  second:        27.361 ✓
+  caption:
+    Base:  a man is getting off a boat and getting off
+    BLIP2: a man and woman are loading luggage onto a small plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  831 (Second 27.694):
+----------------------------------------------------------------------------------------------------
+  frame_number:  831 ✓
+  second:        27.694 ✓
+  caption:
+    Base:  a man is getting off the plane and getting off
+    BLIP2: a man is loading a small plane onto a dock
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  841 (Second 28.028):
+----------------------------------------------------------------------------------------------------
+  frame_number:  841 ✓
+  second:        28.028 ✓
+  caption:
+    Base:  two men are standing in front of a helicopter
+    BLIP2: two men are taking a selfie in front of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  851 (Second 28.362):
+----------------------------------------------------------------------------------------------------
+  frame_number:  851 ✓
+  second:        28.362 ✓
+  caption:
+    Base:  a man in a hat is working on a machine
+    BLIP2: a man in a hat is putting something into a truck
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  861 (Second 28.695):
+----------------------------------------------------------------------------------------------------
+  frame_number:  861 ✓
+  second:        28.695 ✓
+  caption:
+    Base:  a man in a black jacket is holding a gun
+    BLIP2: a man is getting out of a truck and putting his hand on the door
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  871 (Second 29.029):
+----------------------------------------------------------------------------------------------------
+  frame_number:  871 ✓
+  second:        29.029 ✓
+  caption:
+    Base:  a man in a black jacket is sitting in the back of a truck
+    BLIP2: a man in a black jacket and hat is looking into the door of a small plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  881 (Second 29.363):
+----------------------------------------------------------------------------------------------------
+  frame_number:  881 ✓
+  second:        29.363 ✓
+  caption:
+    Base:  a man in a helicopter with a camera
+    BLIP2: a man in a black jacket and hat sitting in the back of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  891 (Second 29.696):
+----------------------------------------------------------------------------------------------------
+  frame_number:  891 ✓
+  second:        29.696 ✓
+  caption:
+    Base:  a man in a small car with a camera
+    BLIP2: a man in a black jacket and glasses is sitting in the back of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  901 (Second 30.030):
+----------------------------------------------------------------------------------------------------
+  frame_number:  901 ✓
+  second:        30.030 ✓
+  caption:
+    Base:  a man in a helicopter with a helmet on
+    BLIP2: a man in a black jacket and glasses is sitting in the back of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  911 (Second 30.364):
+----------------------------------------------------------------------------------------------------
+  frame_number:  911 ✓
+  second:        30.364 ✓
+  caption:
+    Base:  a man in a helicopter with a helmet on
+    BLIP2: a man in a black jacket and hat sitting in the back of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  921 (Second 30.697):
+----------------------------------------------------------------------------------------------------
+  frame_number:  921 ✓
+  second:        30.697 ✓
+  caption:
+    Base:  a man in a boat is driving down the river
+    BLIP2: a man driving a boat on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  931 (Second 31.031):
+----------------------------------------------------------------------------------------------------
+  frame_number:  931 ✓
+  second:        31.031 ✓
+  caption:
+    Base:  a man in a boat is driving down the river
+    BLIP2: a man driving a small plane with a view of the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  941 (Second 31.365):
+----------------------------------------------------------------------------------------------------
+  frame_number:  941 ✓
+  second:        31.365 ✓
+  caption:
+    Base:  a man in a helicopter flying over a river
+    BLIP2: a man driving a plane with a map on the dashboard
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  951 (Second 31.698):
+----------------------------------------------------------------------------------------------------
+  frame_number:  951 ✓
+  second:        31.698 ✓
+  caption:
+    Base:  a boat is in the water near a house
+    BLIP2: a view from the front of a boat looking at a dock
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.101s, Diff=0.067s ✗
+
+Frame  961 (Second 32.032):
+----------------------------------------------------------------------------------------------------
+  frame_number:  961 ✓
+  second:        32.032 ✓
+  caption:
+    Base:  a boat is seen from the water as it passes through a flooded area
+    BLIP2: a view from the front of a boat as it travels through the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame  971 (Second 32.366):
+----------------------------------------------------------------------------------------------------
+  frame_number:  971 ✓
+  second:        32.366 ✓
+  caption:
+    Base:  a boat is seen from the inside of a boat
+    BLIP2: a view from the front of a boat looking out over the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame  981 (Second 32.699):
+----------------------------------------------------------------------------------------------------
+  frame_number:  981 ✓
+  second:        32.699 ✓
+  caption:
+    Base:  a boat is seen from the inside of a boat
+    BLIP2: a view from the front of a boat as it travels through the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame  991 (Second 33.033):
+----------------------------------------------------------------------------------------------------
+  frame_number:  991 ✓
+  second:        33.033 ✓
+  caption:
+    Base:  a man in a boat with a camera
+    BLIP2: a man driving a small plane over water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1001 (Second 33.367):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1001 ✓
+  second:        33.367 ✓
+  caption:
+    Base:  a man in a boat with a camera
+    BLIP2: a man is driving a small plane in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1011 (Second 33.700):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1011 ✓
+  second:        33.700 ✓
+  caption:
+    Base:  a man in a boat is driving on the water
+    BLIP2: a man driving a small plane on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1021 (Second 34.034):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1021 ✓
+  second:        34.034 ✓
+  caption:
+    Base:  a man in a boat with a camera
+    BLIP2: a man is driving a small plane in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1031 (Second 34.368):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1031 ✓
+  second:        34.368 ✓
+  caption:
+    Base:  a man in a helicopter flying over a river
+    BLIP2: a man is driving a helicopter over a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1041 (Second 34.701):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1041 ✓
+  second:        34.701 ✓
+  caption:
+    Base:  a man in a helicopter flying over a river
+    BLIP2: a man is flying a helicopter over a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1051 (Second 35.035):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1051 ✓
+  second:        35.035 ✓
+  caption:
+    Base:  a man in a helicopter flying over a river
+    BLIP2: a man is driving a plane over a river
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1061 (Second 35.369):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1061 ✓
+  second:        35.369 ✓
+  caption:
+    Base:  a man in a cockpit looking at the view from the cockpit
+    BLIP2: a man is driving a small plane on a runway
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1071 (Second 35.702):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1071 ✓
+  second:        35.702 ✓
+  caption:
+    Base:  a view of a lake from a plane
+    BLIP2: a view from the cockpit of a small plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1081 (Second 36.036):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1081 ✓
+  second:        36.036 ✓
+  caption:
+    Base:  a view of a lake from a helicopter
+    BLIP2: a view from the cockpit of a small plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1091 (Second 36.370):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1091 ✓
+  second:        36.370 ✓
+  caption:
+    Base:  a view of a lake from a plane
+    BLIP2: a view from the cockpit of a small plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1101 (Second 36.703):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1101 ✓
+  second:        36.703 ✓
+  caption:
+    Base:  a small plane flying over a lake
+    BLIP2: a view from the cockpit of a small plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1111 (Second 37.037):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1111 ✓
+  second:        37.037 ✓
+  caption:
+    Base:  a man in a red jacket is sitting in the cockpit of a plane
+    BLIP2: a boy wearing headphones and sitting in a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1121 (Second 37.371):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1121 ✓
+  second:        37.371 ✓
+  caption:
+    Base:  a young boy in a helicopter looking out the window
+    BLIP2: a boy wearing headphones and sitting in a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1131 (Second 37.704):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1131 ✓
+  second:        37.704 ✓
+  caption:
+    Base:  a man in a red jacket is sitting in the cockpit of a helicopter
+    BLIP2: a boy wearing headphones and looking out the window of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1141 (Second 38.038):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1141 ✓
+  second:        38.038 ✓
+  caption:
+    Base:  a small plane flying over a lake
+    BLIP2: a view from the cockpit of a small airplane
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1151 (Second 38.372):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1151 ✓
+  second:        38.372 ✓
+  caption:
+    Base:  a helicopter flying over a lake with a view of the ocean
+    BLIP2: a view from inside a helicopter looking out over the water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1161 (Second 38.705):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1161 ✓
+  second:        38.705 ✓
+  caption:
+    Base:  a helicopter flying over a lake with a view of the ocean
+    BLIP2: a view from inside a helicopter looking out the window
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1171 (Second 39.039):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1171 ✓
+  second:        39.039 ✓
+  caption:
+    Base:  a plane flying over a body of water
+    BLIP2: a view from inside a plane looking out the window
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1181 (Second 39.373):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1181 ✓
+  second:        39.373 ✓
+  caption:
+    Base:  a view from the cockpit of a plane
+    BLIP2: a view from the wing of a small plane looking out over a marsh
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1191 (Second 39.706):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1191 ✓
+  second:        39.706 ✓
+  caption:
+    Base:  a small plane flying over a field
+    BLIP2: a view from an airplane wing looking out over a marshy area
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1201 (Second 40.040):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1201 ✓
+  second:        40.040 ✓
+  caption:
+    Base:  a small plane flying over a field
+    BLIP2: a view from the wing of a small plane over a marshy area
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1211 (Second 40.374):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1211 ✓
+  second:        40.374 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a river
+    BLIP2: a view from an airplane of a river and marsh
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1221 (Second 40.707):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1221 ✓
+  second:        40.707 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a river
+    BLIP2: a view from an airplane of a river and marsh
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1231 (Second 41.041):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1231 ✓
+  second:        41.041 ✓
+  caption:
+    Base:  a view from the cockpit of a plane
+    BLIP2: a view from an airplane of a river and marsh
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1241 (Second 41.375):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1241 ✓
+  second:        41.375 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a river
+    BLIP2: a view from the wing of a plane looking down on a river
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1251 (Second 41.708):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1251 ✓
+  second:        41.708 ✓
+  caption:
+    Base:  two boys are sitting in the cockpit of a plane
+    BLIP2: two boys in an airplane with their parents
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1261 (Second 42.042):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1261 ✓
+  second:        42.042 ✓
+  caption:
+    Base:  two boys are sitting in the cockpit of a plane
+    BLIP2: two boys in an airplane with headphones on
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1271 (Second 42.376):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1271 ✓
+  second:        42.376 ✓
+  caption:
+    Base:  two boys are sitting in the cockpit of a plane
+    BLIP2: two boys in an airplane with their heads in the air
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1281 (Second 42.709):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1281 ✓
+  second:        42.709 ✓
+  caption:
+    Base:  two boys are sitting in the cockpit of a plane
+    BLIP2: two boys in an airplane with headphones on
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1291 (Second 43.043):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1291 ✓
+  second:        43.043 ✓
+  caption:
+    Base:  two boys are sitting in the cockpit of a plane
+    BLIP2: two boys in an airplane with headphones on
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1301 (Second 43.377):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1301 ✓
+  second:        43.377 ✓
+  caption:
+    Base:  a person flying a small plane over a green field
+    BLIP2: a view from an airplane of a river and grass
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1311 (Second 43.710):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1311 ✓
+  second:        43.710 ✓
+  caption:
+    Base:  a person flying a small plane over a green field
+    BLIP2: a view from an airplane of a river and grass
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1321 (Second 44.044):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1321 ✓
+  second:        44.044 ✓
+  caption:
+    Base:  a person flying a helicopter over a green field
+    BLIP2: a view from an airplane of a river and a field
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1331 (Second 44.378):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1331 ✓
+  second:        44.378 ✓
+  caption:
+    Base:  two men in a helicopter with headphones
+    BLIP2: two men in the cockpit of a helicopter with headphones on
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1341 (Second 44.711):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1341 ✓
+  second:        44.711 ✓
+  caption:
+    Base:  two men in a helicopter with headphones on
+    BLIP2: two men in the cockpit of a helicopter with headphones on
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1351 (Second 45.045):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1351 ✓
+  second:        45.045 ✓
+  caption:
+    Base:  two men in a helicopter with their heads up
+    BLIP2: two men in the cockpit of a helicopter with one man wearing headphones
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1361 (Second 45.379):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1361 ✓
+  second:        45.379 ✓
+  caption:
+    Base:  two men in a helicopter with their heads up
+    BLIP2: two men in the cockpit of a small plane
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1371 (Second 45.712):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1371 ✓
+  second:        45.712 ✓
+  caption:
+    Base:  a small plane flying over a lush green valley
+    BLIP2: a view from inside a small airplane looking out over a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1381 (Second 46.046):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1381 ✓
+  second:        46.046 ✓
+  caption:
+    Base:  a view from a plane of a mountain range
+    BLIP2: a view from inside a small airplane looking out over a green valley
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1391 (Second 46.380):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1391 ✓
+  second:        46.380 ✓
+  caption:
+    Base:  a person flying a small plane over a lush green valley
+    BLIP2: a view from inside a small airplane looking out over a valley
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1401 (Second 46.713):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1401 ✓
+  second:        46.713 ✓
+  caption:
+    Base:  a view from a plane of mountains and clouds
+    BLIP2: a view from inside a plane of mountains and water
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1411 (Second 47.047):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1411 ✓
+  second:        47.047 ✓
+  caption:
+    Base:  a small plane flying over a mountain range
+    BLIP2: a view from the cockpit of a small plane flying over a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1421 (Second 47.381):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1421 ✓
+  second:        47.381 ✓
+  caption:
+    Base:  a small plane flying over a mountain range
+    BLIP2: a view from inside a plane looking out over a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1431 (Second 47.714):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1431 ✓
+  second:        47.714 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a mountain range
+    BLIP2: a view from inside a small airplane looking out at a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.033s, BLIP2=0.089s, Diff=0.056s ✗
+
+Frame 1441 (Second 48.048):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1441 ✓
+  second:        48.048 ✓
+  caption:
+    Base:  a helicopter flying over a mountain range
+    BLIP2: a view from inside a small airplane looking out the window at a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1451 (Second 48.382):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1451 ✓
+  second:        48.382 ✓
+  caption:
+    Base:  a helicopter flying over a mountain range
+    BLIP2: a view from inside a small airplane looking out the window at a mountain range
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1461 (Second 48.715):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1461 ✓
+  second:        48.715 ✓
+  caption:
+    Base:  a helicopter flying over a mountain range
+    BLIP2: a view from inside a plane of mountains and snow
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1471 (Second 49.049):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1471 ✓
+  second:        49.049 ✓
+  caption:
+    Base:  a man in a helicopter flying over mountains
+    BLIP2: a man is sitting in the cockpit of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1481 (Second 49.383):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1481 ✓
+  second:        49.383 ✓
+  caption:
+    Base:  a man in a helicopter flying over mountains
+    BLIP2: a man is driving a plane through the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1491 (Second 49.716):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1491 ✓
+  second:        49.716 ✓
+  caption:
+    Base:  a man in a helicopter flying over mountains
+    BLIP2: a man is driving a plane in the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1501 (Second 50.050):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1501 ✓
+  second:        50.050 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over mountains
+    BLIP2: an airplane flying over a mountain range with a river
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1511 (Second 50.384):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1511 ✓
+  second:        50.384 ✓
+  caption:
+    Base:  a view of the mountains from a plane
+    BLIP2: a view from an airplane of a glacier and mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1521 (Second 50.717):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1521 ✓
+  second:        50.717 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a mountain range
+    BLIP2: a view from an airplane of a glacier and mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1531 (Second 51.051):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1531 ✓
+  second:        51.051 ✓
+  caption:
+    Base:  a view from the cockpit of a plane flying over a mountain range
+    BLIP2: an airplane flying over a mountain range with a glacier in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1541 (Second 51.385):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1541 ✓
+  second:        51.385 ✓
+  caption:
+    Base:  a man in a red jacket sitting in a plane
+    BLIP2: a boy wearing headphones and sitting in a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1551 (Second 51.718):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1551 ✓
+  second:        51.718 ✓
+  caption:
+    Base:  a man in a red jacket sitting in a plane
+    BLIP2: a boy wearing headphones and sitting in a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1561 (Second 52.052):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1561 ✓
+  second:        52.052 ✓
+  caption:
+    Base:  a man in a red jacket sitting in a helicopter
+    BLIP2: a boy wearing headphones and sitting in a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1571 (Second 52.386):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1571 ✓
+  second:        52.386 ✓
+  caption:
+    Base:  a view from the cockpit of a plane
+    BLIP2: a view from inside a plane looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1581 (Second 52.719):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1581 ✓
+  second:        52.719 ✓
+  caption:
+    Base:  a plane flying over a lake with a view of mountains
+    BLIP2: a view from inside a plane looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1591 (Second 53.053):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1591 ✓
+  second:        53.053 ✓
+  caption:
+    Base:  a view from the cockpit of a plane
+    BLIP2: a view from inside a plane looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1601 (Second 53.387):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1601 ✓
+  second:        53.387 ✓
+  caption:
+    Base:  a view of a lake from a plane
+    BLIP2: a view from the cockpit of a plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1611 (Second 53.720):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1611 ✓
+  second:        53.720 ✓
+  caption:
+    Base:  a view of a lake from a plane
+    BLIP2: a view from the cockpit of a plane looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1621 (Second 54.054):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1621 ✓
+  second:        54.054 ✓
+  caption:
+    Base:  a plane flying over a lake with mountains in the background
+    BLIP2: a view from the cockpit of a plane flying over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1631 (Second 54.388):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1631 ✓
+  second:        54.388 ✓
+  caption:
+    Base:  a plane flying over a lake with mountains in the background
+    BLIP2: a view from inside a plane looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1641 (Second 54.721):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1641 ✓
+  second:        54.721 ✓
+  caption:
+    Base:  a plane flying over a lake with mountains in the background
+    BLIP2: a view from inside a helicopter looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1651 (Second 55.055):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1651 ✓
+  second:        55.055 ✓
+  caption:
+    Base:  a plane flying over a lake with mountains in the background
+    BLIP2: a view from inside a helicopter looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1661 (Second 55.389):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1661 ✓
+  second:        55.389 ✓
+  caption:
+    Base:  a plane flying over a lake with mountains in the background
+    BLIP2: a view from inside a helicopter looking out over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1671 (Second 55.722):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1671 ✓
+  second:        55.722 ✓
+  caption:
+    Base:  a man in a helicopter flying over a lake
+    BLIP2: a man is driving a helicopter over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1681 (Second 56.056):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1681 ✓
+  second:        56.056 ✓
+  caption:
+    Base:  a man in a helicopter flying over a lake
+    BLIP2: a man is driving a plane with a view of the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1691 (Second 56.390):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1691 ✓
+  second:        56.390 ✓
+  caption:
+    Base:  a man in a helicopter flying over a lake
+    BLIP2: a man is driving a plane with a view of the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1701 (Second 56.723):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1701 ✓
+  second:        56.723 ✓
+  caption:
+    Base:  a man in a helicopter flying over a lake
+    BLIP2: a man is driving a helicopter over a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1711 (Second 57.057):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1711 ✓
+  second:        57.057 ✓
+  caption:
+    Base:  a man in a boat with a camera
+    BLIP2: a man driving a plane with a lake in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1721 (Second 57.391):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1721 ✓
+  second:        57.391 ✓
+  caption:
+    Base:  a man in a boat is driving through the water
+    BLIP2: a man is driving a plane with a lake in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1731 (Second 57.724):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1731 ✓
+  second:        57.724 ✓
+  caption:
+    Base:  a man in a boat with a camera
+    BLIP2: a man is driving a plane with a lake in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1741 (Second 58.058):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1741 ✓
+  second:        58.058 ✓
+  caption:
+    Base:  a man driving a boat on a river
+    BLIP2: a man is driving a plane with a view of the water
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1751 (Second 58.392):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1751 ✓
+  second:        58.392 ✓
+  caption:
+    Base:  a man driving a boat on a river
+    BLIP2: a man is driving a plane with a map on the dashboard
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1761 (Second 58.725):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1761 ✓
+  second:        58.725 ✓
+  caption:
+    Base:  a man driving a boat on a river
+    BLIP2: a man is driving a helicopter over a river
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1771 (Second 59.059):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1771 ✓
+  second:        59.059 ✓
+  caption:
+    Base:  a man driving a boat on a river
+    BLIP2: a man is driving a plane with a map on the dashboard
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1781 (Second 59.393):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1781 ✓
+  second:        59.393 ✓
+  caption:
+    Base:  a man in a helicopter cockpit with a camera
+    BLIP2: a man in a hoodie is sitting in the cockpit of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1791 (Second 59.726):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1791 ✓
+  second:        59.726 ✓
+  caption:
+    Base:  a man in a blue jacket is driving a small plane
+    BLIP2: a man in a black jacket is sitting in the cockpit of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1801 (Second 60.060):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1801 ✓
+  second:        60.060 ✓
+  caption:
+    Base:  a man in a helicopter cockpit is seen
+    BLIP2: a man is sitting in the cockpit of a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1811 (Second 60.394):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1811 ✓
+  second:        60.394 ✓
+  caption:
+    Base:  a man in a hat is standing next to a helicopter
+    BLIP2: a man in a jacket and hat is standing next to a small airplane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1821 (Second 60.727):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1821 ✓
+  second:        60.727 ✓
+  caption:
+    Base:  a man in a gray jacket is standing next to a helicopter
+    BLIP2: a man is smiling while standing next to a small airplane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1831 (Second 61.061):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1831 ✓
+  second:        61.061 ✓
+  caption:
+    Base:  a man in a jacket is standing next to a helicopter
+    BLIP2: a man standing next to a small airplane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1841 (Second 61.395):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1841 ✓
+  second:        61.395 ✓
+  caption:
+    Base:  a man in a hat is standing next to a helicopter
+    BLIP2: a man in a hat and glasses standing next to a small plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1851 (Second 61.728):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1851 ✓
+  second:        61.728 ✓
+  caption:
+    Base:  a man standing next to a small plane
+    BLIP2: a man in a jacket and glasses standing next to a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1861 (Second 62.062):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1861 ✓
+  second:        62.062 ✓
+  caption:
+    Base:  a man in a hat and jacket standing next to a plane
+    BLIP2: a man in a jacket standing next to a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1871 (Second 62.396):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1871 ✓
+  second:        62.396 ✓
+  caption:
+    Base:  a man in a hat standing next to a plane
+    BLIP2: a man in a jacket and hat standing next to a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1881 (Second 62.729):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1881 ✓
+  second:        62.729 ✓
+  caption:
+    Base:  a man is getting ready to go into a seaplane
+    BLIP2: a group of people standing next to a plane on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1891 (Second 63.063):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1891 ✓
+  second:        63.063 ✓
+  caption:
+    Base:  a man is getting his canoe out of the water
+    BLIP2: a group of people standing next to a plane on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1901 (Second 63.397):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1901 ✓
+  second:        63.397 ✓
+  caption:
+    Base:  a man in a canoe is getting ready to go into the water
+    BLIP2: two people are standing on the side of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1911 (Second 63.730):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1911 ✓
+  second:        63.730 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: two people are standing on the side of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.032s, BLIP2=0.100s, Diff=0.068s ✗
+
+Frame 1921 (Second 64.064):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1921 ✓
+  second:        64.064 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: two people are standing on the side of a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1931 (Second 64.398):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1931 ✓
+  second:        64.398 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: two people standing on the side of a plane in the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1941 (Second 64.731):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1941 ✓
+  second:        64.731 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: people boarding a plane on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1951 (Second 65.065):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1951 ✓
+  second:        65.065 ✓
+  caption:
+    Base:  a man is getting off the boat
+    BLIP2: a man is loading fuel into a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1961 (Second 65.399):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1961 ✓
+  second:        65.399 ✓
+  caption:
+    Base:  a man is getting off the boat
+    BLIP2: a man is loading a fuel can into a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1971 (Second 65.732):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1971 ✓
+  second:        65.732 ✓
+  caption:
+    Base:  a man is getting off the boat
+    BLIP2: a man is loading a gas can onto a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1981 (Second 66.066):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1981 ✓
+  second:        66.066 ✓
+  caption:
+    Base:  a man is getting his boat out of the water
+    BLIP2: a man is loading a gas can onto a helicopter
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 1991 (Second 66.400):
+----------------------------------------------------------------------------------------------------
+  frame_number:  1991 ✓
+  second:        66.400 ✓
+  caption:
+    Base:  a man is getting off the plane
+    BLIP2: a man is loading fuel into a plane
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2001 (Second 66.733):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2001 ✓
+  second:        66.733 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a sea plane parked on the side of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2011 (Second 67.067):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2011 ✓
+  second:        67.067 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a seaplane parked on the water with a mountain in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2021 (Second 67.401):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2021 ✓
+  second:        67.401 ✓
+  caption:
+    Base:  a small boat is docked on the water
+    BLIP2: a seaplane parked on the water with a mountain in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2031 (Second 67.734):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2031 ✓
+  second:        67.734 ✓
+  caption:
+    Base:  a small boat is docked on the water
+    BLIP2: a seaplane parked on the water with mountains in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2041 (Second 68.068):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2041 ✓
+  second:        68.068 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a seaplane parked on the water with mountains in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2051 (Second 68.402):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2051 ✓
+  second:        68.402 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a seaplane parked on the water with mountains in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2061 (Second 68.735):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2061 ✓
+  second:        68.735 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a small plane sitting on the water with a mountain in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2071 (Second 69.069):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2071 ✓
+  second:        69.069 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a seaplane is parked on the water with a mountain in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2081 (Second 69.403):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2081 ✓
+  second:        69.403 ✓
+  caption:
+    Base:  a small plane is sitting in the water
+    BLIP2: a seaplane is parked on the water next to a mountain
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2091 (Second 69.736):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2091 ✓
+  second:        69.736 ✓
+  caption:
+    Base:  a small plane is sitting on the water
+    BLIP2: a small plane is parked on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2101 (Second 70.070):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2101 ✓
+  second:        70.070 ✓
+  caption:
+    Base:  a small plane is flying over the water
+    BLIP2: a small plane is sitting on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2111 (Second 70.404):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2111 ✓
+  second:        70.404 ✓
+  caption:
+    Base:  a small plane is floating in the water
+    BLIP2: a small plane is sitting on the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2121 (Second 70.737):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2121 ✓
+  second:        70.737 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man in a hat and jacket looking at the water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2131 (Second 71.071):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2131 ✓
+  second:        71.071 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man standing in front of a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2141 (Second 71.405):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2141 ✓
+  second:        71.405 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man standing in front of a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2151 (Second 71.738):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2151 ✓
+  second:        71.738 ✓
+  caption:
+    Base:  a man is fishing on a lake
+    BLIP2: a man standing in front of a lake looking at the mountains
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2161 (Second 72.072):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2161 ✓
+  second:        72.072 ✓
+  caption:
+    Base:  a man is standing on the edge of a lake
+    BLIP2: a man is standing in front of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2171 (Second 72.406):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2171 ✓
+  second:        72.406 ✓
+  caption:
+    Base:  a man in red raincoats standing on a rock near a lake
+    BLIP2: a man and two children standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2181 (Second 72.739):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2181 ✓
+  second:        72.739 ✓
+  caption:
+    Base:  a group of people standing on a rocky shore
+    BLIP2: a man and two children standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2191 (Second 73.073):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2191 ✓
+  second:        73.073 ✓
+  caption:
+    Base:  a man and two children are standing near a lake
+    BLIP2: a man and two children standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2201 (Second 73.407):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2201 ✓
+  second:        73.407 ✓
+  caption:
+    Base:  a man and two children are standing near the water
+    BLIP2: a man and two children standing near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2211 (Second 73.740):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2211 ✓
+  second:        73.740 ✓
+  caption:
+    Base:  a man and two children are standing near the water
+    BLIP2: a man and two children standing near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2221 (Second 74.074):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2221 ✓
+  second:        74.074 ✓
+  caption:
+    Base:  a man in a red raincoat standing next to a lake
+    BLIP2: a man and two children standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2231 (Second 74.408):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2231 ✓
+  second:        74.408 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a jacket is standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2241 (Second 74.741):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2241 ✓
+  second:        74.741 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man is standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2251 (Second 75.075):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2251 ✓
+  second:        75.075 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: two people standing next to a lake with mountains in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2261 (Second 75.409):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2261 ✓
+  second:        75.409 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: two men standing next to a lake with a mountain in the background
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2271 (Second 75.742):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2271 ✓
+  second:        75.742 ✓
+  caption:
+    Base:  a man standing on a beach next to a body of water
+    BLIP2: two people standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2281 (Second 76.076):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2281 ✓
+  second:        76.076 ✓
+  caption:
+    Base:  a man standing on a beach next to a body of water
+    BLIP2: two men standing next to a lake with a boat
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2291 (Second 76.410):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2291 ✓
+  second:        76.410 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: two people standing next to a lake with a boat
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2301 (Second 76.743):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2301 ✓
+  second:        76.743 ✓
+  caption:
+    Base:  a man standing on a beach next to a lake
+    BLIP2: two people standing near a lake with a man in a red jacket
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2311 (Second 77.077):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2311 ✓
+  second:        77.077 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: two people standing next to a lake with a man in a red jacket
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2321 (Second 77.411):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2321 ✓
+  second:        77.411 ✓
+  caption:
+    Base:  a man and a child are standing on the shore
+    BLIP2: a man in a red jacket and two children standing near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2331 (Second 77.744):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2331 ✓
+  second:        77.744 ✓
+  caption:
+    Base:  a man and a child are standing on the shore
+    BLIP2: a man and two children are standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2341 (Second 78.078):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2341 ✓
+  second:        78.078 ✓
+  caption:
+    Base:  a man and a little girl are standing on the shore
+    BLIP2: a man and two children standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2351 (Second 78.412):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2351 ✓
+  second:        78.412 ✓
+  caption:
+    Base:  a man and a little girl are standing on the shore
+    BLIP2: a man and a child standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2361 (Second 78.745):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2361 ✓
+  second:        78.745 ✓
+  caption:
+    Base:  a man and a little girl are standing on the shore of a lake
+    BLIP2: a man and a child standing on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2371 (Second 79.079):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2371 ✓
+  second:        79.079 ✓
+  caption:
+    Base:  a man and a child are standing on the shore of a lake
+    BLIP2: a man and a child standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2381 (Second 79.413):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2381 ✓
+  second:        79.413 ✓
+  caption:
+    Base:  a man is fishing on the shore of a lake
+    BLIP2: a man and a child standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2391 (Second 79.746):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2391 ✓
+  second:        79.746 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man and a child standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.034s, BLIP2=0.095s, Diff=0.061s ✗
+
+Frame 2401 (Second 80.080):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2401 ✓
+  second:        80.080 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2411 (Second 80.414):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2411 ✓
+  second:        80.414 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2421 (Second 80.747):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2421 ✓
+  second:        80.747 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a body of water
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2431 (Second 81.081):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2431 ✓
+  second:        81.081 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2441 (Second 81.415):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2441 ✓
+  second:        81.415 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2451 (Second 81.748):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2451 ✓
+  second:        81.748 ✓
+  caption:
+    Base:  a map of alaska
+    BLIP2: alaska map with the location of the state
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2461 (Second 82.082):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2461 ✓
+  second:        82.082 ✓
+  caption:
+    Base:  a map of the alaska region
+    BLIP2: alaska map with red arrow
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2471 (Second 82.416):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2471 ✓
+  second:        82.416 ✓
+  caption:
+    Base:  a map of the alaska region
+    BLIP2: alaska map with red arrow
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2481 (Second 82.749):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2481 ✓
+  second:        82.749 ✓
+  caption:
+    Base:  a map of the alaska region
+    BLIP2: alaska map with red arrow
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2491 (Second 83.083):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2491 ✓
+  second:        83.083 ✓
+  caption:
+    Base:  a map of the alaska region
+    BLIP2: alaska map with red arrow
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2501 (Second 83.417):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2501 ✓
+  second:        83.417 ✓
+  caption:
+    Base:  a map of the alaska region
+    BLIP2: alaska map with red arrow
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2511 (Second 83.750):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2511 ✓
+  second:        83.750 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2521 (Second 84.084):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2521 ✓
+  second:        84.084 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2531 (Second 84.418):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2531 ✓
+  second:        84.418 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2541 (Second 84.751):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2541 ✓
+  second:        84.751 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man in a jacket and hat standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2551 (Second 85.085):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2551 ✓
+  second:        85.085 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man in a jacket and hat standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2561 (Second 85.419):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2561 ✓
+  second:        85.419 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2571 (Second 85.752):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2571 ✓
+  second:        85.752 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2581 (Second 86.086):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2581 ✓
+  second:        86.086 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2591 (Second 86.420):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2591 ✓
+  second:        86.420 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2601 (Second 86.753):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2601 ✓
+  second:        86.753 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2611 (Second 87.087):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2611 ✓
+  second:        87.087 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2621 (Second 87.421):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2621 ✓
+  second:        87.421 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2631 (Second 87.754):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2631 ✓
+  second:        87.754 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a jacket and hat standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2641 (Second 88.088):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2641 ✓
+  second:        88.088 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2651 (Second 88.422):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2651 ✓
+  second:        88.422 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2661 (Second 88.755):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2661 ✓
+  second:        88.755 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2671 (Second 89.089):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2671 ✓
+  second:        89.089 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2681 (Second 89.423):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2681 ✓
+  second:        89.423 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2691 (Second 89.756):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2691 ✓
+  second:        89.756 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2701 (Second 90.090):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2701 ✓
+  second:        90.090 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2711 (Second 90.424):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2711 ✓
+  second:        90.424 ✓
+  caption:
+    Base:  a man standing on the shore of a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2721 (Second 90.757):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2721 ✓
+  second:        90.757 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2731 (Second 91.091):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2731 ✓
+  second:        91.091 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2741 (Second 91.425):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2741 ✓
+  second:        91.425 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2751 (Second 91.758):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2751 ✓
+  second:        91.758 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2761 (Second 92.092):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2761 ✓
+  second:        92.092 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2771 (Second 92.426):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2771 ✓
+  second:        92.426 ✓
+  caption:
+    Base:  a man standing on a rock near a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2781 (Second 92.759):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2781 ✓
+  second:        92.759 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2791 (Second 93.093):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2791 ✓
+  second:        93.093 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man is standing in front of a lake with his mouth open
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2801 (Second 93.427):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2801 ✓
+  second:        93.427 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2811 (Second 93.760):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2811 ✓
+  second:        93.760 ✓
+  caption:
+    Base:  a man is standing on the shore of a lake
+    BLIP2: a man is standing in front of a lake with his mouth open
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2821 (Second 94.094):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2821 ✓
+  second:        94.094 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2831 (Second 94.428):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2831 ✓
+  second:        94.428 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a body of water
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2841 (Second 94.761):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2841 ✓
+  second:        94.761 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a body of water
+    BLIP2: a man in a hat and jacket standing next to a body of water
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2851 (Second 95.095):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2851 ✓
+  second:        95.095 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a body of water
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2861 (Second 95.429):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2861 ✓
+  second:        95.429 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2871 (Second 95.762):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2871 ✓
+  second:        95.762 ✓
+  caption:
+    Base:  a man standing on a rocky shore next to a lake
+    BLIP2: a man in a hat and jacket standing next to a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.031s, BLIP2=0.079s, Diff=0.048s ✗
+
+Frame 2881 (Second 96.096):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2881 ✓
+  second:        96.096 ✓
+  caption:
+    Base:  two people are walking along the shore of a lake
+    BLIP2: two people with backpacks on the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2891 (Second 96.430):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2891 ✓
+  second:        96.430 ✓
+  caption:
+    Base:  two people are walking along the shore of a lake
+    BLIP2: two children in red jackets are standing near the water
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2901 (Second 96.763):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2901 ✓
+  second:        96.763 ✓
+  caption:
+    Base:  two people are walking along a river
+    BLIP2: two people with backpacks walking along the shore of a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2911 (Second 97.097):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2911 ✓
+  second:        97.097 ✓
+  caption:
+    Base:  two people walking along a rocky beach
+    BLIP2: two people with backpacks on the beach near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2921 (Second 97.431):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2921 ✓
+  second:        97.431 ✓
+  caption:
+    Base:  two people walking along a river with a backpack
+    BLIP2: two people walking along a gravel road with backpacks
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2931 (Second 97.764):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2931 ✓
+  second:        97.764 ✓
+  caption:
+    Base:  two people walking along a river with backpacks
+    BLIP2: two people with backpacks walking along a path near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2941 (Second 98.098):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2941 ✓
+  second:        98.098 ✓
+  caption:
+    Base:  two people walking along a river in the woods
+    BLIP2: two people walking along a path near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2951 (Second 98.432):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2951 ✓
+  second:        98.432 ✓
+  caption:
+    Base:  two people walking along a river in the woods
+    BLIP2: two people walking along a path near a lake
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2961 (Second 98.765):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2961 ✓
+  second:        98.765 ✓
+  caption:
+    Base:  a man with a backpack walking through the woods
+    BLIP2: a woman with a backpack walking through the woods
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2971 (Second 99.099):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2971 ✓
+  second:        99.099 ✓
+  caption:
+    Base:  a man with a backpack walking through the woods
+    BLIP2: a man with a backpack walking through the woods
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2981 (Second 99.433):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2981 ✓
+  second:        99.433 ✓
+  caption:
+    Base:  a man walking through the woods with a backpack
+    BLIP2: a man carrying a large backpack in the woods
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+Frame 2991 (Second 99.766):
+----------------------------------------------------------------------------------------------------
+  frame_number:  2991 ✓
+  second:        99.766 ✓
+  caption:
+    Base:  a man walking through the woods
+    BLIP2: a man with a backpack walking through the woods
+    ✗ DIFFERENT
+  processing_time: Base=0.074s, BLIP2=0.215s, Diff=0.141s ✗
+
+====================================================================================================
+SUMMARY:
+----------------------------------------------------------------------------------------------------
+Total frames compared: 300
+Frames with different captions: 298 (99.3%)
+Frames with different processing times: 300 (100.0%)

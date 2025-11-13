@@ -1,0 +1,923 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "test_config": {
+    "test_interval": 30,
+    "max_frames_to_test": 100,
+    "batch_size": 32,
+    "frames_tested": [
+      1,
+      31,
+      61,
+      91,
+      121,
+      151,
+      181,
+      211,
+      241,
+      271,
+      301,
+      331,
+      361,
+      391,
+      421,
+      451,
+      481,
+      511,
+      541,
+      571,
+      601,
+      631,
+      661,
+      691,
+      721,
+      751,
+      781,
+      811,
+      841,
+      871,
+      901,
+      931,
+      961,
+      991,
+      1021,
+      1051,
+      1081,
+      1111,
+      1141,
+      1171,
+      1201,
+      1231,
+      1261,
+      1291,
+      1321,
+      1351,
+      1381,
+      1411,
+      1441,
+      1471,
+      1501,
+      1531,
+      1561,
+      1591,
+      1621,
+      1651,
+      1681,
+      1711,
+      1741,
+      1771,
+      1801,
+      1831,
+      1861,
+      1891,
+      1921,
+      1951,
+      1981,
+      2011,
+      2041,
+      2071,
+      2101,
+      2131,
+      2161,
+      2191,
+      2221,
+      2251,
+      2281,
+      2311,
+      2341,
+      2371,
+      2401,
+      2431,
+      2461,
+      2491,
+      2521,
+      2551,
+      2581,
+      2611,
+      2641,
+      2671,
+      2701,
+      2731,
+      2761,
+      2791,
+      2821,
+      2851,
+      2881,
+      2911,
+      2941,
+      2971
+    ],
+    "num_frames_tested": 100
+  },
+  "statistics": {
+    "total_frames": 100,
+    "total_processing_time": 29.24,
+    "bakllava": {
+      "avg_time_per_frame": 0.274,
+      "total_time": 27.38,
+      "min_time": 0.208,
+      "max_time": 0.95
+    }
+  },
+  "results": [
+    {
+      "frame_number": 1,
+      "second": 0.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 31,
+      "second": 1.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 61,
+      "second": 2.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 91,
+      "second": 3.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 121,
+      "second": 4.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 151,
+      "second": 5.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 181,
+      "second": 6.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 211,
+      "second": 7.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 241,
+      "second": 8.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 271,
+      "second": 9.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 301,
+      "second": 10.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 331,
+      "second": 11.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 361,
+      "second": 12.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 391,
+      "second": 13.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 421,
+      "second": 14.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 451,
+      "second": 15.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 481,
+      "second": 16.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 511,
+      "second": 17.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 541,
+      "second": 18.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 571,
+      "second": 19.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 601,
+      "second": 20.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 631,
+      "second": 21.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 661,
+      "second": 22.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 691,
+      "second": 23.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 721,
+      "second": 24.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 751,
+      "second": 25.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 781,
+      "second": 26.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 811,
+      "second": 27.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 841,
+      "second": 28.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 871,
+      "second": 29.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 901,
+      "second": 30.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 931,
+      "second": 31.0,
+      "bakllava": {
+        "caption": "32 images of a man in a cockpit of an airplane, adjusting the control column.",
+        "processing_time": 0.316
+      }
+    },
+    {
+      "frame_number": 961,
+      "second": 32.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 991,
+      "second": 33.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1021,
+      "second": 34.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1051,
+      "second": 35.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1081,
+      "second": 36.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1111,
+      "second": 37.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1141,
+      "second": 38.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1171,
+      "second": 39.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1201,
+      "second": 40.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1231,
+      "second": 41.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1261,
+      "second": 42.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1291,
+      "second": 43.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1321,
+      "second": 44.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1351,
+      "second": 45.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1381,
+      "second": 46.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1411,
+      "second": 47.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1441,
+      "second": 48.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1471,
+      "second": 49.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1501,
+      "second": 50.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1531,
+      "second": 51.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1561,
+      "second": 52.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1591,
+      "second": 53.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1621,
+      "second": 54.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1651,
+      "second": 55.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1681,
+      "second": 56.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1711,
+      "second": 57.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1741,
+      "second": 58.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1771,
+      "second": 59.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1801,
+      "second": 60.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1831,
+      "second": 61.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1861,
+      "second": 62.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1891,
+      "second": 63.0,
+      "bakllava": {
+        "caption": "32 images showing a plane with people in it and one guy looking at the camera.",
+        "processing_time": 0.213
+      }
+    },
+    {
+      "frame_number": 1921,
+      "second": 64.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 1951,
+      "second": 65.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 1981,
+      "second": 66.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2011,
+      "second": 67.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2041,
+      "second": 68.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2071,
+      "second": 69.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2101,
+      "second": 70.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2131,
+      "second": 71.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2161,
+      "second": 72.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2191,
+      "second": 73.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2221,
+      "second": 74.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2251,
+      "second": 75.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2281,
+      "second": 76.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2311,
+      "second": 77.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2341,
+      "second": 78.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2371,
+      "second": 79.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2401,
+      "second": 80.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2431,
+      "second": 81.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2461,
+      "second": 82.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2491,
+      "second": 83.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2521,
+      "second": 84.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2551,
+      "second": 85.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2581,
+      "second": 86.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2611,
+      "second": 87.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2641,
+      "second": 88.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2671,
+      "second": 89.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2701,
+      "second": 90.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2731,
+      "second": 91.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2761,
+      "second": 92.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2791,
+      "second": 93.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2821,
+      "second": 94.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2851,
+      "second": 95.0,
+      "bakllava": {
+        "caption": "32 images showing a man standing next to a river and mountains in the background.",
+        "processing_time": 0.208
+      }
+    },
+    {
+      "frame_number": 2881,
+      "second": 96.0,
+      "bakllava": {
+        "caption": "1 out of 4 images is selected by default when nothing else is selected.",
+        "processing_time": 0.95
+      }
+    },
+    {
+      "frame_number": 2911,
+      "second": 97.0,
+      "bakllava": {
+        "caption": "1 out of 4 images is selected by default when nothing else is selected.",
+        "processing_time": 0.95
+      }
+    },
+    {
+      "frame_number": 2941,
+      "second": 98.0,
+      "bakllava": {
+        "caption": "1 out of 4 images is selected by default when nothing else is selected.",
+        "processing_time": 0.95
+      }
+    },
+    {
+      "frame_number": 2971,
+      "second": 99.0,
+      "bakllava": {
+        "caption": "1 out of 4 images is selected by default when nothing else is selected.",
+        "processing_time": 0.95
+      }
+    }
+  ]
+}

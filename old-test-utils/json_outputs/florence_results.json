@@ -1,0 +1,1821 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "model": "microsoft/Florence-2-base",
+  "test_config": {
+    "frame_interval": 10,
+    "max_frames": 300,
+    "batch_size": 48,
+    
+    "num_frames_processed": 300
+  },
+  "statistics": {
+    "total_frames": 300,
+    "total_processing_time": 41.45,
+    "avg_time_per_frame": 0.093,
+    "min_time": 0.05,
+    "max_time": 0.109,
+    "fps": 7.24
+  },
+  "results": [
+    {
+      "frame_number": 1,
+      "second": 0.0,
+      "caption": "A man in a green shirt and sunglasses pointing at the camera.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 11,
+      "second": 0.334,
+      "caption": "A man in a green shirt and sunglasses pointing at the camera.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 21,
+      "second": 0.667,
+      "caption": "A man in a green shirt and sunglasses pointing at the camera.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 31,
+      "second": 1.001,
+      "caption": "A man in a green shirt and hat pointing at the camera.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 41,
+      "second": 1.335,
+      "caption": "A man in a green shirt and sunglasses pointing at the camera.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 51,
+      "second": 1.668,
+      "caption": "A man in a green shirt and sunglasses pointing at something.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 61,
+      "second": 2.002,
+      "caption": "A man in a green shirt and sunglasses pointing at something.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 71,
+      "second": 2.336,
+      "caption": "A man in a green shirt and sunglasses standing on a grassy hill.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 81,
+      "second": 2.669,
+      "caption": "A man in a green shirt and sunglasses standing on a grassy hill.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 91,
+      "second": 3.003,
+      "caption": "A man in a green shirt and hat standing on a grassy hill.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 101,
+      "second": 3.337,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 111,
+      "second": 3.67,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 121,
+      "second": 4.004,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 131,
+      "second": 4.338,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 141,
+      "second": 4.671,
+      "caption": "A seaplane is sitting on the water with a ramp.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 151,
+      "second": 5.005,
+      "caption": "A seaplane is sitting on the shore of a lake.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 161,
+      "second": 5.339,
+      "caption": "A seaplane that is sitting in the water.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 171,
+      "second": 5.672,
+      "caption": "A man in a gray shirt and a gray hat is setting up a tent.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 181,
+      "second": 6.006,
+      "caption": "A man in a gray shirt and a gray hat is setting up a tent.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 191,
+      "second": 6.34,
+      "caption": "A man in a gray shirt and a gray hat is holding a tarp.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 201,
+      "second": 6.673,
+      "caption": "A group of people sitting around a campfire eating food.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 211,
+      "second": 7.007,
+      "caption": "A group of people sitting around a campfire eating food.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 221,
+      "second": 7.341,
+      "caption": "A group of people sitting around a campfire eating food.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 231,
+      "second": 7.674,
+      "caption": "A group of people sitting around a campfire eating food.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 241,
+      "second": 8.008,
+      "caption": "A man standing on a beach next to two kayaks.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 251,
+      "second": 8.342,
+      "caption": "A man standing next to two kayaks on a beach.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 261,
+      "second": 8.675,
+      "caption": "A man standing next to two kayaks on a beach.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 271,
+      "second": 9.009,
+      "caption": "A man standing next to two kayaks on a beach.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 281,
+      "second": 9.343,
+      "caption": "A man holding a fish in his hands.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 291,
+      "second": 9.676,
+      "caption": "A man holding a fish in his hands.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 301,
+      "second": 10.01,
+      "caption": "A man holding a fish in his hands.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 311,
+      "second": 10.344,
+      "caption": "A young boy holding a large fish on a river bank.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 321,
+      "second": 10.677,
+      "caption": "A young boy holding a large fish on a fishing rod.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 331,
+      "second": 11.011,
+      "caption": "A young boy holding a large fish on a fishing rod.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 341,
+      "second": 11.345,
+      "caption": "A man holding a large fish in his hands.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 351,
+      "second": 11.678,
+      "caption": "A man holding a large fish in his hands.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 361,
+      "second": 12.012,
+      "caption": "A couple of people walking down a trail in the mountains.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 371,
+      "second": 12.346,
+      "caption": "A couple of people walking down a trail in the mountains.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 381,
+      "second": 12.679,
+      "caption": "A couple of people walking down a trail in the mountains.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 391,
+      "second": 13.013,
+      "caption": "A man in a kayak on a lake with mountains in the background.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 401,
+      "second": 13.347,
+      "caption": "A man in a hat and vest on a boat in the water.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 411,
+      "second": 13.68,
+      "caption": "A man in a hat and vest standing in a body of water.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 421,
+      "second": 14.014,
+      "caption": "A man in a hat and overalls standing in a doorway.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 431,
+      "second": 14.348,
+      "caption": "A man in a hat and overalls crouching in a wooden cabin.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 441,
+      "second": 14.681,
+      "caption": "A man in a hat and overalls sitting in a wooden box.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 451,
+      "second": 15.015,
+      "caption": "A man wearing a hat and overalls standing in front of a wooden building.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 461,
+      "second": 15.349,
+      "caption": "A man standing in the doorway of a log cabin holding a cup of coffee.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 471,
+      "second": 15.682,
+      "caption": "A man standing in front of a wooden door holding a cup of coffee.",
+      "processing_time": 0.103
+    },
+    {
+      "frame_number": 481,
+      "second": 16.016,
+      "caption": "A man standing in front of a wooden door holding a cup.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 491,
+      "second": 16.35,
+      "caption": "A man sitting on a stool in front of a wooden building.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 501,
+      "second": 16.683,
+      "caption": "A man sitting on a stool in front of a wooden cabin.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 511,
+      "second": 17.017,
+      "caption": "A man sitting on a stool in front of a wooden cabin.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 521,
+      "second": 17.351,
+      "caption": "A man sitting on a stool in front of a wooden cabin.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 531,
+      "second": 17.684,
+      "caption": "A man sitting on a stool in front of a wooden cabin.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 541,
+      "second": 18.018,
+      "caption": "A tree stump with a hole in it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 551,
+      "second": 18.352,
+      "caption": "A tree stump with a hole in it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 561,
+      "second": 18.685,
+      "caption": "A large axe sitting on top of a tree stump.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 571,
+      "second": 19.019,
+      "caption": "A tree stump with a mountain in the background.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 581,
+      "second": 19.353,
+      "caption": "A tree stump with a black and white image of a mountain.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 591,
+      "second": 19.686,
+      "caption": "A tree stump with an axe sticking out of it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 601,
+      "second": 20.02,
+      "caption": "A tree stump with a logo on it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 611,
+      "second": 20.354,
+      "caption": "A tree stump with a logo on it that says \"Quidoor Boys\"",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 621,
+      "second": 20.687,
+      "caption": "A rock with the words \"Quidoor Boys\" written on it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 631,
+      "second": 21.021,
+      "caption": "A drawing of a mountain with the words Outdoors Boys on it.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 641,
+      "second": 21.355,
+      "caption": "the logo for the outdoor boys",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 651,
+      "second": 21.688,
+      "caption": "the logo for the outdoor boys",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 661,
+      "second": 22.022,
+      "caption": "the logo for the outdoor boys",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 671,
+      "second": 22.356,
+      "caption": "the logo for the outdoor boys",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 681,
+      "second": 22.689,
+      "caption": "the logo for the outdoor boys",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 691,
+      "second": 23.023,
+      "caption": "A view from the inside of a car on a rainy day.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 701,
+      "second": 23.357,
+      "caption": "A view from the inside of a car looking out the window.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 711,
+      "second": 23.69,
+      "caption": "A view from the inside of a car looking out the window.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 721,
+      "second": 24.024,
+      "caption": "A man driving a car on a rainy day.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 731,
+      "second": 24.358,
+      "caption": "A man driving a car on a rainy day.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 741,
+      "second": 24.691,
+      "caption": "A man sitting in the driver's seat of a car with two children.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 751,
+      "second": 25.025,
+      "caption": "A man in a hat is driving a car.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 761,
+      "second": 25.359,
+      "caption": "A man in a black jacket and hat sitting in a truck.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 771,
+      "second": 25.692,
+      "caption": "A man carrying a large black bag on a wet road.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 781,
+      "second": 26.026,
+      "caption": "A man walking down a street carrying a large bag.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 791,
+      "second": 26.36,
+      "caption": "A man walking down a street carrying a large bag.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 801,
+      "second": 26.693,
+      "caption": "A man carrying a large bag on the side of a road.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 811,
+      "second": 27.027,
+      "caption": "A man and two boys standing on a dock next to a boat.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 821,
+      "second": 27.361,
+      "caption": "A man and a boy standing on a dock next to a boat.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 831,
+      "second": 27.694,
+      "caption": "A man and a young boy standing on a dock next to a boat.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 841,
+      "second": 28.028,
+      "caption": "A man in a black jacket and a man wearing a hat.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 851,
+      "second": 28.362,
+      "caption": "A man in a military uniform is getting off of a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 861,
+      "second": 28.695,
+      "caption": "A man in a hat and jacket is working on a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 871,
+      "second": 29.029,
+      "caption": "A man in a black jacket and sunglasses sitting in a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 881,
+      "second": 29.363,
+      "caption": "A man in a black jacket and hat sitting in a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 891,
+      "second": 29.696,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 901,
+      "second": 30.03,
+      "caption": "A man in a black jacket and glasses sitting in a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 911,
+      "second": 30.364,
+      "caption": "A man in a black jacket and hat sitting in a helicopter.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 921,
+      "second": 30.697,
+      "caption": "A man sitting in the cockpit of a boat on a river.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 931,
+      "second": 31.031,
+      "caption": "A man sitting in the cockpit of a boat on a river.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 941,
+      "second": 31.365,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 951,
+      "second": 31.698,
+      "caption": "A view from the cockpit of a boat on a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 961,
+      "second": 32.032,
+      "caption": "A view from the back of a boat on a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 971,
+      "second": 32.366,
+      "caption": "A view of a body of water from a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 981,
+      "second": 32.699,
+      "caption": "A view from the cockpit of a boat on a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 991,
+      "second": 33.033,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1001,
+      "second": 33.367,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1011,
+      "second": 33.7,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1021,
+      "second": 34.034,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1031,
+      "second": 34.368,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1041,
+      "second": 34.701,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1051,
+      "second": 35.035,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1061,
+      "second": 35.369,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1071,
+      "second": 35.702,
+      "caption": "A view of a tornado from an airplane window.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1081,
+      "second": 36.036,
+      "caption": "A view from the cockpit of a small plane flying over a lake.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1091,
+      "second": 36.37,
+      "caption": "A view of a large body of water from a plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1101,
+      "second": 36.703,
+      "caption": "A view from the cockpit of a small plane flying over a lake.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1111,
+      "second": 37.037,
+      "caption": "A young boy sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1121,
+      "second": 37.371,
+      "caption": "A young boy sitting in the cockpit of a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1131,
+      "second": 37.704,
+      "caption": "A young boy wearing headphones sitting in a small plane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1141,
+      "second": 38.038,
+      "caption": "A view from the cockpit of a helicopter flying over a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1151,
+      "second": 38.372,
+      "caption": "A view from the cockpit of a helicopter flying over a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1161,
+      "second": 38.705,
+      "caption": "A helicopter flying over a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1171,
+      "second": 39.039,
+      "caption": "A view from the cockpit of a helicopter flying over a body of water.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1181,
+      "second": 39.373,
+      "caption": "A view from the cockpit of a small plane flying over a field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1191,
+      "second": 39.706,
+      "caption": "A view from the cockpit of a small plane flying over a field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1201,
+      "second": 40.04,
+      "caption": "A view from the cockpit of a small plane flying over a field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1211,
+      "second": 40.374,
+      "caption": "A view of a river and a small plane flying over it.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1221,
+      "second": 40.707,
+      "caption": "A view of a river and a small plane flying over it.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1231,
+      "second": 41.041,
+      "caption": "A view of a river and a small plane flying over a marsh.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1241,
+      "second": 41.375,
+      "caption": "A view of a river and a grassy field from an airplane.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1251,
+      "second": 41.708,
+      "caption": "Two young boys sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1261,
+      "second": 42.042,
+      "caption": "Two young boys sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1271,
+      "second": 42.376,
+      "caption": "Two young boys sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1281,
+      "second": 42.709,
+      "caption": "Two young boys sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1291,
+      "second": 43.043,
+      "caption": "Two young boys sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1301,
+      "second": 43.377,
+      "caption": "A view from the cockpit of a helicopter flying over a green field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1311,
+      "second": 43.71,
+      "caption": "A view from the cockpit of a helicopter flying over a green field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1321,
+      "second": 44.044,
+      "caption": "A view from the cockpit of a helicopter flying over a grassy field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1331,
+      "second": 44.378,
+      "caption": "A group of men sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1341,
+      "second": 44.711,
+      "caption": "A group of men sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1351,
+      "second": 45.045,
+      "caption": "A group of men sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1361,
+      "second": 45.379,
+      "caption": "A group of men sitting in the cockpit of a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1371,
+      "second": 45.712,
+      "caption": "A view from the cockpit of a small plane flying over a green field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1381,
+      "second": 46.046,
+      "caption": "A view from the cockpit of a plane flying over a lush green field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1391,
+      "second": 46.38,
+      "caption": "A view from the cockpit of a small plane flying over a lush green field.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1401,
+      "second": 46.713,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1411,
+      "second": 47.047,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1421,
+      "second": 47.381,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1431,
+      "second": 47.714,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.089
+    },
+    {
+      "frame_number": 1441,
+      "second": 48.048,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1451,
+      "second": 48.382,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1461,
+      "second": 48.715,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1471,
+      "second": 49.049,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1481,
+      "second": 49.383,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1491,
+      "second": 49.716,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1501,
+      "second": 50.05,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1511,
+      "second": 50.384,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1521,
+      "second": 50.717,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1531,
+      "second": 51.051,
+      "caption": "A view of a mountain range from a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1541,
+      "second": 51.385,
+      "caption": "A young boy wearing headphones sitting in a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1551,
+      "second": 51.718,
+      "caption": "A young boy sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1561,
+      "second": 52.052,
+      "caption": "A young boy sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1571,
+      "second": 52.386,
+      "caption": "A view from the cockpit of a plane flying over a body of water.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1581,
+      "second": 52.719,
+      "caption": "A view from the cockpit of a plane flying over a body of water.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1591,
+      "second": 53.053,
+      "caption": "A view from the cockpit of a plane flying over a lake.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1601,
+      "second": 53.387,
+      "caption": "A view of a large body of water with mountains in the background.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1611,
+      "second": 53.72,
+      "caption": "A view of a large body of water with mountains in the background.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1621,
+      "second": 54.054,
+      "caption": "A view from the cockpit of a plane flying over a body of water.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1631,
+      "second": 54.388,
+      "caption": "A view of a large body of water from a plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1641,
+      "second": 54.721,
+      "caption": "A view of a lake with mountains in the background.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1651,
+      "second": 55.055,
+      "caption": "A view of a lake with mountains in the background.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1661,
+      "second": 55.389,
+      "caption": "A view of a lake with mountains in the background.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1671,
+      "second": 55.722,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1681,
+      "second": 56.056,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1691,
+      "second": 56.39,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1701,
+      "second": 56.723,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1711,
+      "second": 57.057,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1721,
+      "second": 57.391,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1731,
+      "second": 57.724,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1741,
+      "second": 58.058,
+      "caption": "A man sitting in the cockpit of a boat on a lake.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1751,
+      "second": 58.392,
+      "caption": "A man sitting in the cockpit of a boat on a river.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1761,
+      "second": 58.725,
+      "caption": "A man sitting in the cockpit of a helicopter looking out over a river.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1771,
+      "second": 59.059,
+      "caption": "A man sitting in the cockpit of a boat on a river.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1781,
+      "second": 59.393,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1791,
+      "second": 59.726,
+      "caption": "A man sitting in the cockpit of a helicopter looking out the window.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1801,
+      "second": 60.06,
+      "caption": "A man sitting in the cockpit of a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1811,
+      "second": 60.394,
+      "caption": "A man in a black jacket and hat sitting in a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1821,
+      "second": 60.727,
+      "caption": "A man sitting in the cockpit of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1831,
+      "second": 61.061,
+      "caption": "A man standing in front of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1841,
+      "second": 61.395,
+      "caption": "A man in a hat and jacket standing next to a helicopter.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1851,
+      "second": 61.728,
+      "caption": "A man standing in front of a small plane on a lake.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1861,
+      "second": 62.062,
+      "caption": "A man standing in front of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1871,
+      "second": 62.396,
+      "caption": "A man standing in front of a small plane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1881,
+      "second": 62.729,
+      "caption": "A group of people standing on top of a boat next to a seaplane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1891,
+      "second": 63.063,
+      "caption": "A group of people standing on top of a boat next to a seaplane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1901,
+      "second": 63.397,
+      "caption": "A group of people standing on top of a boat next to a seaplane.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1911,
+      "second": 63.73,
+      "caption": "A man standing on the steps of a seaplane on a lake.",
+      "processing_time": 0.109
+    },
+    {
+      "frame_number": 1921,
+      "second": 64.064,
+      "caption": "A man standing on top of a boat next to a seaplane.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1931,
+      "second": 64.398,
+      "caption": "A group of people standing on top of a boat in the water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1941,
+      "second": 64.731,
+      "caption": "A group of people standing on top of a boat in the water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1951,
+      "second": 65.065,
+      "caption": "A man standing on the steps of a small plane with a red bucket.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1961,
+      "second": 65.399,
+      "caption": "A man standing on the steps of a small plane.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1971,
+      "second": 65.732,
+      "caption": "A man standing on the steps of a small plane holding a red bag.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1981,
+      "second": 66.066,
+      "caption": "A man standing on the deck of a small plane with a red box.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 1991,
+      "second": 66.4,
+      "caption": "A man standing on the steps of a small plane holding a red container.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2001,
+      "second": 66.733,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2011,
+      "second": 67.067,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2021,
+      "second": 67.401,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2031,
+      "second": 67.734,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2041,
+      "second": 68.068,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2051,
+      "second": 68.402,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2061,
+      "second": 68.735,
+      "caption": "A seaplane sitting on top of a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2071,
+      "second": 69.069,
+      "caption": "A seaplane is sitting on the shore of a lake.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2081,
+      "second": 69.403,
+      "caption": "A seaplane is sitting on the water with a ramp.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2091,
+      "second": 69.736,
+      "caption": "A seaplane is sitting on the shore of a lake.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2101,
+      "second": 70.07,
+      "caption": "A seaplane is sitting on the water with its landing gear down.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2111,
+      "second": 70.404,
+      "caption": "A seaplane that is sitting in the water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2121,
+      "second": 70.737,
+      "caption": "A man standing on the shore of a lake with mountains in the background.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2131,
+      "second": 71.071,
+      "caption": "A man standing on the shore of a lake with mountains in the background.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2141,
+      "second": 71.405,
+      "caption": "A man standing on the shore of a lake with mountains in the background.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2151,
+      "second": 71.738,
+      "caption": "A man standing on the shore of a lake.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2161,
+      "second": 72.072,
+      "caption": "A man standing on the shore of a lake looking at a fish.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2171,
+      "second": 72.406,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2181,
+      "second": 72.739,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2191,
+      "second": 73.073,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2201,
+      "second": 73.407,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2211,
+      "second": 73.74,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2221,
+      "second": 74.074,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2231,
+      "second": 74.408,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2241,
+      "second": 74.741,
+      "caption": "A man standing on the shore of a lake.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2251,
+      "second": 75.075,
+      "caption": "A man and two children walking along a river bank.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2261,
+      "second": 75.409,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2271,
+      "second": 75.742,
+      "caption": "A man and a woman walking along a river next to a lake.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2281,
+      "second": 76.076,
+      "caption": "A man and a woman standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2291,
+      "second": 76.41,
+      "caption": "A man and two children walking along a river bank.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2301,
+      "second": 76.743,
+      "caption": "A group of people walking along a river next to a forest.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2311,
+      "second": 77.077,
+      "caption": "A group of people standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2321,
+      "second": 77.411,
+      "caption": "A man and two children standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2331,
+      "second": 77.744,
+      "caption": "A man and a little girl standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2341,
+      "second": 78.078,
+      "caption": "A man and a little girl standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2351,
+      "second": 78.412,
+      "caption": "A man and a little girl standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2361,
+      "second": 78.745,
+      "caption": "A man and a little girl standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2371,
+      "second": 79.079,
+      "caption": "A man and a little girl standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2381,
+      "second": 79.413,
+      "caption": "A man and a little boy standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2391,
+      "second": 79.746,
+      "caption": "A man and a child standing next to a body of water.",
+      "processing_time": 0.096
+    },
+    {
+      "frame_number": 2401,
+      "second": 80.08,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2411,
+      "second": 80.414,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2421,
+      "second": 80.747,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2431,
+      "second": 81.081,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2441,
+      "second": 81.415,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2451,
+      "second": 81.748,
+      "caption": "A map of Alaska with the Alaska U.S. highlighted.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2461,
+      "second": 82.082,
+      "caption": "A map of Alaska with a red arrow pointing to Alaska.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2471,
+      "second": 82.416,
+      "caption": "A map of Alaska with a red arrow pointing to Alaska.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2481,
+      "second": 82.749,
+      "caption": "A map of Alaska with a red arrow pointing to Alaska.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2491,
+      "second": 83.083,
+      "caption": "A map of Alaska with a red arrow pointing to Alaska.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2501,
+      "second": 83.417,
+      "caption": "A map of Alaska with a red arrow pointing to Alaska.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2511,
+      "second": 83.75,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2521,
+      "second": 84.084,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2531,
+      "second": 84.418,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2541,
+      "second": 84.751,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2551,
+      "second": 85.085,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2561,
+      "second": 85.419,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2571,
+      "second": 85.752,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2581,
+      "second": 86.086,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2591,
+      "second": 86.42,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2601,
+      "second": 86.753,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2611,
+      "second": 87.087,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2621,
+      "second": 87.421,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2631,
+      "second": 87.754,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2641,
+      "second": 88.088,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2651,
+      "second": 88.422,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2661,
+      "second": 88.755,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2671,
+      "second": 89.089,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2681,
+      "second": 89.423,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2691,
+      "second": 89.756,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2701,
+      "second": 90.09,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2711,
+      "second": 90.424,
+      "caption": "A man standing on a beach next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2721,
+      "second": 90.757,
+      "caption": "A man standing in front of a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2731,
+      "second": 91.091,
+      "caption": "A man standing in front of a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2741,
+      "second": 91.425,
+      "caption": "A man standing in front of a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2751,
+      "second": 91.758,
+      "caption": "A man standing in front of a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2761,
+      "second": 92.092,
+      "caption": "A man standing in front of a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2771,
+      "second": 92.426,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2781,
+      "second": 92.759,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2791,
+      "second": 93.093,
+      "caption": "A man standing on a dirt road next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2801,
+      "second": 93.427,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2811,
+      "second": 93.76,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2821,
+      "second": 94.094,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2831,
+      "second": 94.428,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2841,
+      "second": 94.761,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2851,
+      "second": 95.095,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2861,
+      "second": 95.429,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2871,
+      "second": 95.762,
+      "caption": "A man standing next to a body of water.",
+      "processing_time": 0.087
+    },
+    {
+      "frame_number": 2881,
+      "second": 96.096,
+      "caption": "A man in a red jacket standing next to a body of water.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2891,
+      "second": 96.43,
+      "caption": "A man in a red jacket and a woman in a blue jacket are walking along a river.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2901,
+      "second": 96.763,
+      "caption": "A couple of people that are standing next to a body of water.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2911,
+      "second": 97.097,
+      "caption": "A group of people standing next to a body of water.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2921,
+      "second": 97.431,
+      "caption": "A couple of people walking down a gravel road next to a river.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2931,
+      "second": 97.764,
+      "caption": "A couple of people walking down a gravel road next to a lake.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2941,
+      "second": 98.098,
+      "caption": "A couple of people walking down a gravel road next to a lake.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2951,
+      "second": 98.432,
+      "caption": "A couple of people walking down a dirt road next to a river.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2961,
+      "second": 98.765,
+      "caption": "A man in a red jacket and blue jeans with a backpack walking down a trail.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2971,
+      "second": 99.099,
+      "caption": "A man with a backpack walking down a trail in the woods.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2981,
+      "second": 99.433,
+      "caption": "A man with a backpack walking down a trail in the woods.",
+      "processing_time": 0.05
+    },
+    {
+      "frame_number": 2991,
+      "second": 99.766,
+      "caption": "A man with a backpack walking down a trail in the woods.",
+      "processing_time": 0.05
+    }
+  ]
+}

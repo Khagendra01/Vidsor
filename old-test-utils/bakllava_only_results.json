@@ -1,0 +1,829 @@
+{
+  "video_path": "C:\\Users\\Khage\\Desktop\\Vidagent\\old-test-utils\\camp_5min.mp4",
+  "model_info": {
+    "model": "qwen2.5:7b",
+    "source": "Ollama",
+    "ollama_url": "http://localhost:11434/api/generate",
+    "ollama_model": "qwen2.5:7b",
+    "processing_method": "individual_requests_parallel",
+    "note": "Each image is processed individually via separate API calls. Parallelization achieved through concurrent requests."
+  },
+  "test_config": {
+    "test_interval": 30,
+    "max_frames_to_test": 100,
+    "max_workers": 16,
+    "num_frames_tested": 100
+  },
+  "statistics": {
+    "total_frames": 100,
+    "total_processing_time": 292.26,
+    "vision_model": {
+      "avg_time_per_frame": 43.323,
+      "total_time": 4332.32,
+      "min_time": 10.446,
+      "max_time": 53.162
+    }
+  },
+  "results": [
+    {
+      "frame_number": 1,
+      "second": 0.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes along both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few vehicles, including cars and a motorcycle, are parked or moving slowly in the lane.\n\nA large billboard advertising an electronics store is prominently displayed above one of the storefronts. The sky is clear with some fluffy white clouds, indicating a sunny day. In the background, there's a tall building with its windows reflecting the sunlight, giving it a bright and vibrant appearance.\n\nNotably, a person in a red jacket is walking towards the camera on the sidewalk, while another individual in a blue shirt is crossing the street at the crosswalk. A small dog is following behind the person in the red jacket, adding a touch of liveliness to the scene. The spatial relationships show that the buildings are close together, with the people and",
+        "processing_time": 24.2
+      }
+    },
+    {
+      "frame_number": 31,
+      "second": 1.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and stalls on both sides of the road. A wide variety of people are present: some walking briskly along the sidewalk, others standing at street corners or crossing the street. There is a mix of local residents and tourists, as evidenced by their diverse clothing styles.\n\nA few vehicles are visible in the frame, including a taxi parked near a shop and several bicycles scattered around. A large advertisement board with colorful posters stands prominently on one side of the road, drawing attention to its vibrant display. The sky above is clear and blue, with some fluffy white clouds visible.\n\nIn terms of spatial relationships, the people are positioned at different distances from the camera, creating a sense of depth in the scene. Some individuals are closer, while others are farther away, adding to the realism of the image. Notable visual details include a group of people gathered around a street vendor selling",
+        "processing_time": 10.446
+      }
+    },
+    {
+      "frame_number": 61,
+      "second": 2.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants on either side of the road. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a busy shopping district.\n\nA few cars are parked on the street, and one is driving slowly in the lane between the parked vehicles and the sidewalk. The sky is clear with bright sunlight, casting shadows from various objects such as buildings and people. A large billboard advertising an electronic store is prominently displayed above the shops on the right side of the frame.\n\nIn the foreground, a group of three people are standing near a caf\u00e9 table outside, one of them holding an umbrella to shield themselves from the sun. Behind them, another person is walking briskly towards the camera, carrying a backpack and wearing sunglasses. The spatial relationships show that the caf\u00e9 area is slightly elevated compared to the street level.\n\nNotable visual details include the",
+        "processing_time": 18.538
+      }
+    },
+    {
+      "frame_number": 91,
+      "second": 3.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with several shops and cafes lining both sides of the street. A few people are walking along the sidewalk, some carrying bags or briefcases, while others are standing near storefronts, possibly waiting for transportation or browsing.\n\nIn the foreground, there is a young woman wearing a red jacket and blue jeans, standing in front of a caf\u00e9 with an open door. She has her back slightly turned towards the camera, and she appears to be engaged in conversation with another person who is not visible but can be inferred from her body language. A small dog is by her side, looking up at her with its head tilted.\n\nBehind her, there are several other people walking or standing on the sidewalk. One man is carrying a large backpack and holding an umbrella over his head to shield himself from the sun. Another woman is walking briskly towards the camera, wearing sunglasses and a black coat",
+        "processing_time": 53.162
+      }
+    },
+    {
+      "frame_number": 121,
+      "second": 4.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a busy commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be on their way home after work.\n\nA few cars and motorcycles are parked haphazardly by the side of the road, suggesting this is a popular spot for parking despite limited space. A large billboard advertising an electronics store is prominently displayed above the street level, catching the viewer's attention with its bright colors and bold text.\n\nIn the background, there are tall buildings with illuminated windows, indicating that many businesses are still open late into the evening. The sky has a mix of artificial lighting from street lamps and shop lights, creating a vibrant and lively atmosphere despite it being dusk.\n\nNotably, in the foreground, a person is walking briskly towards the right side of the frame, carrying a backpack and",
+        "processing_time": 47.365
+      }
+    },
+    {
+      "frame_number": 151,
+      "second": 5.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, suggesting it is a typical weekday scene.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, featuring bright colors and dynamic graphics. Directly in front of me, there's a group of three people standing near a crosswalk signal; two are adults and one appears to be a child, possibly their young son or daughter. The adults are engaged in conversation while the child is looking around curiously.\n\nIn the background, several cars are parked on the street, with some moving slowly along the road. A few pedestrians are crossing the street at a nearby crosswalk, following the green light signal. The sky above shows clear blue with a few scattered clouds, indicating a sunny day.\n\nThe spatial relationships show that",
+        "processing_time": 41.591
+      }
+    },
+    {
+      "frame_number": 181,
+      "second": 6.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with numerous shops and stalls on both sides of the road. There are several people walking along the sidewalk and crossing the street, some carrying shopping bags or walking pets.\n\nA few vehicles are parked on the curb, including a red sedan and a yellow motorcycle. In the middle of the frame, there is a large, colorful advertisement billboard featuring a cartoon character with a bright smile. The billboard stands out against the backdrop of the more muted buildings and shops.\n\nIn the foreground, a young woman in a blue jacket is walking towards the right side of the image, her face partially obscured by a wide-brimmed hat. She appears to be looking down at her phone while walking. Behind her, a man in a black suit is standing on the sidewalk, holding a coffee cup and talking on his cellphone.\n\nThe sky above is clear with some fluffy white clouds scattered across it,",
+        "processing_time": 13.366
+      }
+    },
+    {
+      "frame_number": 211,
+      "second": 7.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few vehicles, including cars and a motorcycle, are parked along the curb.\n\nIn the foreground, there is a group of four people standing near a caf\u00e9 table outside, two men and two women, all engaged in conversation. One woman is holding an umbrella, likely to shield herself from the sun or rain. Behind them, another person is walking towards the crosswalk with a backpack on their back.\n\nThe sky above is clear with some fluffy clouds scattered across it, indicating a sunny day. The buildings are modern and tall, with large windows and glass facades reflecting the sunlight. A few trees line the street, providing shade to pedestrians.\n\nIn the background, there's a larger building with a sign that reads \"Starbucks\" visible",
+        "processing_time": 44.529
+      }
+    },
+    {
+      "frame_number": 241,
+      "second": 8.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be an urban area with tall buildings lining both sides of the street, creating a narrow and crowded environment. There are several people walking on the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a commercial district near a market or office area.\n\nIn the foreground, a young woman in a red coat is standing at an intersection, looking both ways before crossing. She is positioned slightly to the right of the frame, with her left hand holding a small bag and her right hand gesturing towards the street. A few cars are parked on the side of the road, and one car is passing by slowly.\n\nBehind her, several other people are walking or standing at bus stops, waiting for public transportation. The sky above is clear and blue, with some white clouds scattered across it. There's a bright sun in the upper left corner, casting light and shadows on the scene. A few",
+        "processing_time": 26.989
+      }
+    },
+    {
+      "frame_number": 271,
+      "second": 9.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a busy urban street scene during the daytime with clear blue skies above. There are several cars parked along both sides of the road and a few vehicles driving on it. A pedestrian crosswalk is visible at one end, with people crossing the street. On the left side of the frame, there's a large billboard advertising an electronic store, featuring a colorful display of smartphones and tablets. To the right, a small caf\u00e9 with outdoor seating is partially visible, with a few patrons sitting outside enjoying their drinks or meals in the sun. The setting appears to be a bustling commercial area with various shops and businesses nearby. In the background, several tall buildings line the street, providing a sense of depth and scale to the scene. A person wearing a red jacket and carrying a backpack is walking towards the crosswalk, while another individual in a blue shirt is standing near the caf\u00e9 entrance. The spatial relationships show the pedestrian on the sidewalk moving closer to the crosswalk, with cars",
+        "processing_time": 50.355
+      }
+    },
+    {
+      "frame_number": 301,
+      "second": 10.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a commercial area with several shops and cafes along both sides of the road. A few people are walking on the sidewalk, some carrying shopping bags or briefcases, while others are standing outside cafes or browsing shop windows.\n\nA large billboard is prominently displayed at one end of the frame, featuring an advertisement for a local restaurant chain. The sun is shining brightly, casting shadows from various objects and people onto the pavement. A few cars are parked on the street, and a couple of pedestrians are crossing the road at a crosswalk.\n\nIn the background, there's a tall building with large windows, likely an office or residential complex. The spatial relationships show that the buildings are relatively close to each other, creating a dense urban environment. Notable visual details include the reflections on wet surfaces from the sunlight and the various colors of clothing worn by the people in the scene.",
+        "processing_time": 35.748
+      }
+    },
+    {
+      "frame_number": 331,
+      "second": 11.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely lunchtime or early evening.\n\nIn the foreground, there is a person standing near a bicycle parked against a building. This individual seems to be engaged in conversation with another person who is walking past them. Both individuals are dressed casually, suggesting they might be locals rather than tourists.\n\nBehind these two people, I can see several more pedestrians moving along the sidewalk, some walking briskly and others stopping occasionally to look at storefronts or engage in conversations. There are also a few vehicles parked on the street, including a taxi and a delivery van, which add to the sense of activity.\n\nThe sky is clear with patches of blue visible between tall buildings, indicating it's a sunny day. The light source appears to",
+        "processing_time": 38.647
+      }
+    },
+    {
+      "frame_number": 361,
+      "second": 12.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few cars and motorcycles are parked along the curb.\n\nA large billboard advertising an electronics store is prominently displayed on one building, featuring a colorful image of a smartphone. Directly in front of me, a person wearing a blue jacket and jeans is standing near a coffee shop, holding a cup of what appears to be a hot beverage. Behind them, another individual is walking towards the camera with a backpack.\n\nThe sky above is clear and bright, with some white clouds scattered across it. The sun is shining from an angle that casts soft shadows on the street. A few trees are visible in the background, providing shade for pedestrians. The overall atmosphere suggests a typical weekday scene where people are going about their daily activities.",
+        "processing_time": 29.934
+      }
+    },
+    {
+      "frame_number": 391,
+      "second": 13.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking on the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a weekday.\n\nA few vehicles can be seen parked along the curb and one moving slowly in the opposite direction. A large billboard advertising an electronic store is prominently displayed above the storefronts. The sky is clear with bright sunlight casting shadows from tall buildings onto the street below.\n\nIn the foreground, a person wearing a blue jacket and jeans is walking towards the right side of the frame. They are carrying a small backpack and have their head slightly tilted as if looking at something on their phone or map. Behind them, another individual in a red coat is walking briskly with an umbrella open to shield from the sun.\n\nThe spatial relationships show that the buildings are tall and close together, creating a narrow street space. The person",
+        "processing_time": 21.346
+      }
+    },
+    {
+      "frame_number": 421,
+      "second": 14.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few cars are parked along the curb and one is slowly moving in the opposite direction, its headlights illuminating the wet pavement.\n\nA large billboard advertising an electronic store is prominently displayed above the storefronts. The sky is overcast with some patches of sunlight peeking through, casting soft shadows on the ground. A group of people are gathered around a street vendor selling snacks and drinks, with one person holding up a beverage to be photographed by another individual.\n\nIn the background, there's a tall building with large windows that reflect the surrounding environment, giving an impression of depth in the scene. The spatial relationships show a mix of urban elements\u2014pedestrians, vehicles, and commercial structures\u2014all coexisting in this vibrant city setting.",
+        "processing_time": 32.808
+      }
+    },
+    {
+      "frame_number": 451,
+      "second": 15.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. There are several people walking along the sidewalk on the right side of the image, some carrying shopping bags and others using their smartphones. A few cars are parked on the left side of the street, and a red sedan is driving slowly in the middle lane. On the far left, there's a large billboard advertising an electronic store with bright lights illuminating it. The buildings lining both sides of the street are modern with glass facades, giving the scene a contemporary feel. A few trees are visible on the right side of the frame, providing some greenery amidst the urban setting. In the background, a tall skyscraper can be seen, dominating the skyline and adding to the sense of a busy city environment.",
+        "processing_time": 15.711
+      }
+    },
+    {
+      "frame_number": 481,
+      "second": 16.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants on both sides of the street. There are numerous people walking along the sidewalk, some carrying bags or briefcases, indicating they might be shoppers or commuters.\n\nA few vehicles are parked on the side of the road, including a taxi and a delivery van. In the foreground, there is a person wearing a red jacket sitting on a bench, reading a newspaper. Behind them, another individual in a blue shirt is walking towards a coffee shop with an open door.\n\nThe street itself has a mix of modern and older buildings, with some having large windows and others featuring traditional brick facades. A few trees line the sidewalk, providing shade to passersby. The sky above is clear with patches of sunlight filtering through, casting shadows on the ground.\n\nNotable visual details include the reflections in the glass storefronts, the diverse range of people's clothing styles,",
+        "processing_time": 45.589
+      }
+    },
+    {
+      "frame_number": 511,
+      "second": 17.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be an urban area with tall buildings lining both sides of the street, some of which have large windows and advertisements displayed on their facades. There are several people walking along the sidewalk in various directions, some carrying bags or briefcases, others chatting or using their smartphones.\n\nIn the foreground, a group of four individuals are standing near a crosswalk signal that currently displays a green \"WALK\" sign, indicating it's safe to cross. A few pedestrians are already crossing the street at this point. Behind them, there is a small caf\u00e9 with tables and chairs outside, occupied by two people enjoying their drinks.\n\nA large truck parked on the opposite side of the street is blocking part of the view, but one can see its cargo area filled with various items. In the background, several cars are parked along the curb, some with their doors open as if waiting for passengers to exit or enter.\n\nThe",
+        "processing_time": 45.49
+      }
+    },
+    {
+      "frame_number": 541,
+      "second": 18.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are numerous people walking along the sidewalk, some carrying bags or briefcases, indicating they might be shoppers or office workers on their way home.\n\nIn the foreground, there is a group of four people standing near a caf\u00e9, two men and two women, all engaged in conversation. One woman is holding a coffee cup, suggesting she has just purchased a drink from the caf\u00e9. Behind them, another person is walking briskly towards the camera, carrying a large backpack and wearing a business suit, possibly heading to an appointment or work.\n\nOn the opposite side of the street, there are several parked cars and bicycles, with some people riding by on their way to work or errands. A few shops have signs advertising local services and products, such as a bakery, a bookstore, and a clothing store.\n\nThe sky is clear",
+        "processing_time": 45.978
+      }
+    },
+    {
+      "frame_number": 571,
+      "second": 19.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a commercial area with several shops and cafes on both sides of the road. There are people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nOn the left side of the frame, there is a caf\u00e9 with an open door and a few patrons sitting at outdoor tables. A sign above the entrance reads \"Caf\u00e9 Delight.\" In front of the caf\u00e9, a delivery person is unloading packages from a small van parked on the street.\n\nOpposite the caf\u00e9, there's a bookstore with large windows displaying various books for sale. The store has a sign that says \"BookNook\" and several customers are browsing inside or waiting outside to enter.\n\nIn the background, I can see more buildings with shop fronts, some of which have signs advertising local businesses. A few cars are parked on the street, and pedestrians walk",
+        "processing_time": 45.967
+      }
+    },
+    {
+      "frame_number": 601,
+      "second": 20.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and cafes lining both sides of the road. A few people are walking on the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard advertising an electronics store is prominently displayed at one end of the frame, taking up about half of the background space. Directly in front of the billboard, a small group of four people are gathered around a food truck, with two of them leaning against the side of the truck and two more standing slightly behind them. The food truck appears to be selling some kind of street food, as one person is holding a paper-wrapped item.\n\nIn the foreground, there's a man in a blue jacket walking towards the group from the right side of the frame, his back facing partially into the view. He seems to be carrying a laptop bag and looking down at his phone or device. A",
+        "processing_time": 45.998
+      }
+    },
+    {
+      "frame_number": 631,
+      "second": 21.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with several shops and cafes lining both sides of the street. There are people walking on the sidewalk and crossing the street at crosswalks.\n\nA few objects and actions visible include:\n- A red sedan parked along the curb, partially obstructing part of the sidewalk.\n- Several pedestrians walking in different directions, some carrying bags or using their smartphones.\n- A couple sitting on a bench near a caf\u00e9, enjoying what seems to be a sunny day.\n- A delivery person riding an electric scooter down the street.\n\nThe spatial relationships and positions are as follows:\n- The sedan is positioned between the sidewalk and the street, partially blocking pedestrian access.\n- Pedestrians are distributed along both sides of the street, with some closer to the parked car and others further away.\n- The couple on the bench is situated near a caf\u00e9 entrance, facing towards the camera.\n\nNotable visual details",
+        "processing_time": 46.031
+      }
+    },
+    {
+      "frame_number": 661,
+      "second": 22.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. There are several people walking on both sides of the sidewalk and crossing the street at a crosswalk. A few vehicles, including a red sedan and a blue SUV, are parked along the curb. In the background, there is a row of tall buildings with windows visible, suggesting an office area or commercial district.\n\nA person in a yellow jacket is walking towards the camera on the left side of the frame, while another individual wearing a black coat is crossing the street at the crosswalk. A young child, holding a red toy car, is standing next to their parent who is waiting for them at the curb.\n\nThe sky above is clear with some scattered clouds, indicating a sunny day. There are several trees lining the sidewalk on the right side of the frame, providing shade and adding greenery to the urban setting. A signboard advertising \"Coffee Shop\" can be seen near the crosswalk.\n\nIn terms of spatial",
+        "processing_time": 46.047
+      }
+    },
+    {
+      "frame_number": 691,
+      "second": 23.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes along both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few cars are parked on the curb, and one car is moving slowly in the opposite direction.\n\nIn the foreground, there's a young woman wearing a blue jacket and jeans, standing near a caf\u00e9 window with her back to the camera. She appears to be looking down at her phone. Behind her, two men are walking side by side; one of them is carrying a bag over his shoulder while the other has a casual stance.\n\nTo the right of the frame, there's a large billboard advertising an electronic device. The sky above shows clear blue with some white clouds scattered throughout. A few trees line the street on the left side, providing shade and adding to the urban setting.\n\nThe spatial relationships show the woman in the foreground,",
+        "processing_time": 45.955
+      }
+    },
+    {
+      "frame_number": 721,
+      "second": 24.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be in a modern urban area, with tall buildings lining both sides of the street. There are several people walking on the sidewalk and crossing the street at a crosswalk. A few cars and a motorcycle are parked along the curb.\n\nIn the foreground, a young woman wearing a black jacket and jeans is standing near a bus stop. She has her back to the camera, but she appears to be looking at something with interest or concern. Behind her, a man in a gray sweater is walking towards the crosswalk, carrying a bag. A few other pedestrians are also visible, some walking briskly and others stopping briefly.\n\nIn the background, several tall office buildings can be seen, their windows reflecting the bright sunlight. The sky above shows scattered clouds with patches of blue sky peeking through. There's a small park area on one side of the street with trees and benches,",
+        "processing_time": 45.914
+      }
+    },
+    {
+      "frame_number": 751,
+      "second": 25.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking on the sidewalk, some carrying shopping bags or briefcases, indicating it's likely an afternoon or early evening time.\n\nA large billboard advertising a local restaurant is prominently displayed at one end of the frame, casting shadows from the bright sunlight. The sky above is clear with patches of blue visible through the buildings and trees. A few cars are parked on the street, and a couple of pedestrians are crossing the road at a crosswalk near the center.\n\nIn the background, taller buildings form an imposing skyline, with some windows reflecting the sun's rays. A small park area can be seen in the distance, with a few benches and greenery visible through the gaps between buildings. The spatial relationships show that the street is relatively narrow compared to the height of the surrounding structures, creating a sense of depth and",
+        "processing_time": 45.784
+      }
+    },
+    {
+      "frame_number": 781,
+      "second": 26.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few cars and a motorcycle are parked along the curb.\n\nIn the foreground, there is a group of four people standing near a caf\u00e9 window, two men and two women, all engaged in conversation. Behind them, another person is walking towards the camera with a backpack. The spatial relationships show that the caf\u00e9 is centrally located within the frame, with the pedestrians and parked vehicles surrounding it.\n\nNotable visual details include colorful shop signs, a bright blue sky with some white clouds, and sunlight reflecting off the glass of nearby buildings. A few trees are visible on the sidewalk, adding to the urban setting's greenery. The overall scene conveys a sense of activity and movement typical of a busy city environment during daylight hours.",
+        "processing_time": 45.699
+      }
+    },
+    {
+      "frame_number": 811,
+      "second": 27.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at a crosswalk. A few vehicles, including cars and a motorcycle, are parked along the curb or moving slowly in the traffic lane.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, featuring bright colors and a prominent logo. The sky above shows clear blue with some white clouds scattered throughout, indicating a sunny day. A few pedestrians are carrying shopping bags, suggesting they might be returning from doing their errands or shopping.\n\nIn the background, there's a tall building with large windows, likely an office space or a residential building. The spatial relationships show that the people and vehicles are in close proximity to each other, creating a dynamic scene of urban life. Notable visual details include the reflections on wet pavement from passing cars and",
+        "processing_time": 45.621
+      }
+    },
+    {
+      "frame_number": 841,
+      "second": 28.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at crosswalks.\n\nA few objects and actions visible include:\n- A red sedan parked on the right side of the street, partially obstructing the view.\n- Several pedestrians wearing various clothing, including a woman in a bright yellow jacket and a man in a dark blue shirt.\n- A group of people gathered around a food truck selling what looks like hot dogs or sausages, with one person handing out items to another.\n- A large billboard advertising an electronic store on the building across the street.\n\nThe spatial relationships show that the camera is positioned slightly above eye level, providing a bird's-eye view of the scene. The sun is shining from the upper right corner, casting shadows towards the lower left. There are several trees and plants along the sidewalk, adding",
+        "processing_time": 45.528
+      }
+    },
+    {
+      "frame_number": 871,
+      "second": 29.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely lunchtime or early evening.\n\nA few vehicles can be seen on the street: a red sedan parked by a cafe, and two pedestrians crossing the street at a crosswalk ahead. The sky is overcast with light clouds, suggesting an approaching afternoon shower. A large billboard advertising a local supermarket stands prominently on one side of the road, catching the viewer's attention.\n\nIn the background, there are tall buildings with windows reflecting the sunlight, giving the scene a sense of depth and urban density. A few trees line the sidewalk, providing some greenery amidst the concrete structures. The spatial relationships show people walking towards or away from the camera, creating a dynamic flow in the scene.",
+        "processing_time": 45.424
+      }
+    },
+    {
+      "frame_number": 901,
+      "second": 30.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars and bicycles are present, adding to the scene's dynamic nature.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, while smaller advertisements for local businesses can be seen on other buildings. The sky above is clear with some fluffy clouds, indicating a sunny day.\n\nIn terms of spatial relationships, the crosswalk is positioned in front of a caf\u00e9, and several people are waiting to cross. A few pedestrians are walking towards the camera, while others are moving away from it. A cyclist is seen on the right side of the frame, heading towards the left.\n\nNotable visual details include a group of young adults standing near a bus stop, a person holding an umbrella walking briskly down the sidewalk,",
+        "processing_time": 45.303
+      }
+    },
+    {
+      "frame_number": 931,
+      "second": 31.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and cafes lining both sides of the street. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, while others are standing at crosswalks waiting for the signal to cross.\n\nA large billboard advertising an electronics store is prominently displayed on one side of the street, featuring a colorful image of a smartphone with text below it. Directly across from the billboard, there's a small park with a few benches and trees providing some shade. A few children are playing in the park while their parents watch them from nearby.\n\nIn the background, several tall buildings can be seen, including an office tower with its glass facade reflecting the sunlight. The sky is clear and blue, with a few white clouds scattered overhead. A few cars are parked on the street, and one person is walking down the middle of the sidewalk towards the camera, holding a coffee",
+        "processing_time": 45.309
+      }
+    },
+    {
+      "frame_number": 961,
+      "second": 32.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies overhead. There are several people walking along the sidewalk and crossing the street at a crosswalk. A few vehicles, including a taxi and a delivery van, are parked or moving on the road. The buildings in the background are modern skyscrapers with glass facades, suggesting an urban business district.\n\nA person wearing a red jacket is standing near a bus stop, looking towards the camera. Behind them, another individual is walking briskly down the sidewalk, carrying a backpack. A group of people are gathered at a street corner, possibly waiting for someone or something. The crosswalk signal shows a green \"WALK\" sign, indicating that pedestrians can cross.\n\nIn the background, there's a large billboard advertising an electronic device, and several smaller advertisements on lampposts and building walls. The sunlight casts shadows from tall buildings onto the street, creating a dynamic interplay of light and shadow. The",
+        "processing_time": 45.28
+      }
+    },
+    {
+      "frame_number": 991,
+      "second": 33.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few cars are parked along the curb, while a taxi is stopped at an intersection.\n\nIn the foreground, there's a group of four young adults standing near a caf\u00e9, two males and two females, with one male holding a coffee cup. Behind them, another person is walking briskly towards the camera, carrying a backpack. A large billboard advertising a local restaurant is prominently displayed on the building to the right.\n\nThe sky above is clear and blue, with some fluffy white clouds scattered across it. The sun is shining brightly, casting shadows from various objects in the scene. In the background, there are taller buildings with their windows reflecting sunlight, giving them a bright appearance. A few trees line the street, adding greenery to the",
+        "processing_time": 45.293
+      }
+    },
+    {
+      "frame_number": 1021,
+      "second": 34.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the road. There are several people walking along the sidewalk, some carrying bags or briefcases, suggesting they might be shoppers or office workers on their way home from work.\n\nIn the foreground, there is a group of four individuals standing near a caf\u00e9. One person is sitting at an outdoor table with a laptop open in front of them, while another is leaning against a nearby lamppost, looking into the camera. The third individual is walking past the seated person, and the fourth is standing beside the caf\u00e9 door.\n\nBehind this group, there are several vehicles parked on the street, including cars and motorcycles. A few people are crossing the street at a pedestrian crosswalk, which is located between two shops. In the background, I can see more buildings with their windows reflecting sunlight, giving the scene a bright and lively atmosphere.\n\nThe sky",
+        "processing_time": 45.305
+      }
+    },
+    {
+      "frame_number": 1051,
+      "second": 35.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a commercial district, as evidenced by numerous shops and storefronts lining both sides of the street. There are several people walking on the sidewalk, some carrying shopping bags or briefcases, indicating it is likely early afternoon.\n\nA few vehicles are parked along the curb, including a red sedan and a white van. In front of one of the shops, there's a small outdoor seating area with a couple of tables and chairs occupied by customers enjoying their meals or drinks in the pleasant weather.\n\nIn the background, several tall buildings can be seen, suggesting this is a central part of the city. The sun is shining brightly, casting long shadows from the objects on the street, particularly noticeable under the awnings of shops and along the edges of the sidewalk.\n\nA young woman wearing a red jacket and jeans is walking towards the camera, her face partially obscured by a large umbrella she's",
+        "processing_time": 45.311
+      }
+    },
+    {
+      "frame_number": 1081,
+      "second": 36.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are numerous people walking on the sidewalks and crossing the street, some carrying bags or briefcases, indicating they might be shoppers or commuters.\n\nA few vehicles are parked along the curb, including cars and motorcycles, suggesting this is a popular spot for local businesses. In the background, there's a large billboard advertising an electronics store with bright lights illuminating the area at night. The sky above shows a mix of twilight and artificial lighting from street lamps and nearby buildings.\n\nA group of four people are standing near a crosswalk, two adults and two children, engaged in conversation. One adult is holding a small child by the hand, while another adult stands slightly behind them. A young boy is looking at his phone, possibly checking messages or playing a game. The spatial relationship shows that the family unit is together but",
+        "processing_time": 45.31
+      }
+    },
+    {
+      "frame_number": 1111,
+      "second": 37.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars and motorcycles are parked along the curb, while others are moving slowly in traffic.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street. The sun is shining brightly, casting shadows from various objects such as lampposts and trees. There's a group of people standing near a bus stop, waiting for their bus to arrive. A few children are playing with a ball in front of a toy shop.\n\nThe spatial relationships show that the buildings are tall and modern-looking, with some having large windows and glass facades. The crosswalk is positioned between two shops, creating an intersection point where people and vehicles interact. The traffic lights at this intersection are green for the pedestrians, allowing them to cross",
+        "processing_time": 45.323
+      }
+    },
+    {
+      "frame_number": 1141,
+      "second": 38.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA few cars are parked on the street, and one is moving slowly in the opposite direction, creating a sense of movement within the scene. A couple of pedestrians are crossing the street at a crosswalk, with a traffic light showing green for them to proceed. The sky above is clear with some fluffy white clouds, suggesting a sunny day.\n\nNotable visual details include a large billboard advertising an electronic store on one side of the street and a small caf\u00e9 with its outdoor seating area visible on the other side. A few trees are present along the sidewalk, adding greenery to the urban setting. The spatial relationships show people walking in various directions, some stopping at storefronts or engaging in conversations, while others",
+        "processing_time": 45.355
+      }
+    },
+    {
+      "frame_number": 1171,
+      "second": 39.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars are parked along the curb, and one is moving slowly in the opposite direction.\n\nIn the foreground, there's a group of four people standing near a caf\u00e9 entrance, two men and two women, all engaged in conversation. One woman is holding an umbrella, likely to shield herself from the sun or potential rain. Behind them, another person is walking towards the crosswalk with a backpack on their back.\n\nThe sky above is clear and blue, with some fluffy white clouds scattered across it. The sunlight casts long shadows due to the angle of the sun, which is positioned high in the sky, indicating midday. There are several trees lining the street, providing shade for pedestrians and adding greenery to the urban environment.\n\nIn the",
+        "processing_time": 45.361
+      }
+    },
+    {
+      "frame_number": 1201,
+      "second": 40.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk controlled by traffic lights.\n\nA few cars and motorcycles are parked along the curb, while one motorcycle is in motion, driving slowly down the street. A large billboard advertising an electronics store is prominently displayed above the storefronts. The sky is clear with some fluffy white clouds, indicating a sunny day.\n\nIn the foreground, there's a group of four people standing near a caf\u00e9 window, looking out and chatting. Behind them, another person is walking towards the camera, carrying a shopping bag. A young boy is playing with a toy car on the sidewalk, while his mother watches him from a short distance away.\n\nThe spatial relationships show that the caf\u00e9 windows are at ground level, allowing people to look outside easily. The crosswalk is positioned between two",
+        "processing_time": 45.392
+      }
+    },
+    {
+      "frame_number": 1231,
+      "second": 41.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard is prominently displayed on one side of the street, featuring an advertisement for a local electronics store. Several cars are parked on the curb, with their drivers either inside or near them, suggesting this area is a popular spot for dining and shopping.\n\nIn the foreground, there is a person standing at the edge of the sidewalk, looking towards the camera. This individual appears to be in their late 20s or early 30s, wearing casual attire such as jeans and a hoodie. They are holding a smartphone and appear to be engaged in an animated conversation with another person who is not visible but can be inferred from the context.\n\nBehind this person, there is a group of three",
+        "processing_time": 45.403
+      }
+    },
+    {
+      "frame_number": 1261,
+      "second": 42.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking on the sidewalk, some carrying bags or briefcases, while others are standing at crosswalks waiting for the signal to cross.\n\nIn the foreground, there is a group of four people gathered around a street vendor selling snacks and drinks. One person is holding up a drink, likely pointing it towards another individual who appears to be smiling. The vendor himself is wearing a colorful apron and has several items displayed on his cart, including fruits, pastries, and small plastic cups.\n\nBehind the vendor, there are two large billboards advertising various products, one for electronics and the other for clothing. The sky above is clear with some fluffy clouds, indicating a sunny day. A few cars are parked along the curb, and a couple of pedestrians are walking towards them, possibly heading to their vehicles after",
+        "processing_time": 45.455
+      }
+    },
+    {
+      "frame_number": 1291,
+      "second": 43.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants on both sides of the street. There are people walking along the sidewalk and crossing the street at a pedestrian crosswalk. A few cars and a motorcycle are parked along the curb.\n\nIn the foreground, there is a group of four people standing near a caf\u00e9 window, two men and two women, all engaged in conversation. Behind them, another person is walking towards the camera with a backpack. The spatial relationships show that the caf\u00e9 occupies one corner of the frame, with its windows partially visible, allowing some sunlight to illuminate the area.\n\nNotable visual details include a large advertisement board on the building facing the street, displaying an image of a smartphone and promotional text in bright colors. There are also several trash cans placed strategically along the sidewalk for waste disposal. The sky is clear and blue, with a few clouds scattered overhead, indicating a sunny day.",
+        "processing_time": 45.424
+      }
+    },
+    {
+      "frame_number": 1321,
+      "second": 44.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be near an intersection with several lanes of traffic moving in different directions. There are cars, trucks, and motorcycles on the road, some stopped at a red light while others are driving through the intersection.\n\nOn the left side of the frame, there is a large commercial building with glass windows reflecting the sunlight. Across from it, there's a smaller shop with a sign that reads \"Coffee Shop.\" A few people are standing outside the shop, presumably waiting to enter or already enjoying their coffee on the sidewalk.\n\nIn the background, several tall buildings line both sides of the street, creating a dense urban environment. The sky is clear and blue, with some white clouds visible. There's a bright sun in the upper right corner of the frame casting light over the scene.\n\nA few pedestrians are walking along the sidewalks, some carrying bags or briefcases, and one person is holding an umbrella due to unexpected rain",
+        "processing_time": 45.425
+      }
+    },
+    {
+      "frame_number": 1351,
+      "second": 45.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies overhead. There are several people walking along the sidewalk and crossing the street at a crosswalk controlled by a traffic light that appears to be green for pedestrians.\n\nOn the left side of the frame, there is a group of four people standing near a bus stop, waiting for their bus. A large red bus can be seen approaching from the right, with its front end just entering the view. The bus has several advertisements on it, including a poster for a local restaurant and an advertisement for a fitness center.\n\nIn the middle of the frame, there is a young woman walking briskly down the sidewalk towards the crosswalk. She is wearing a black jacket and jeans, and she carries a small backpack on her back. A man in a blue shirt and dark pants walks behind her, looking at his smartphone.\n\nOn the right side of the frame, a few cars are parked along the curb, with their doors",
+        "processing_time": 45.532
+      }
+    },
+    {
+      "frame_number": 1381,
+      "second": 46.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and stalls on both sides of the road. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a busy shopping district.\n\nA few cars are parked on the side of the street, and one car is moving slowly in the opposite direction, its driver looking around with interest. A pedestrian crossing sign is visible ahead, suggesting there might be more people crossing the road soon.\n\nIn the background, several tall buildings line the street, some with large windows and others with advertisements displayed prominently on their facades. The sky above shows a clear blue with a few white clouds scattered across it, indicating a sunny day.\n\nNotable visual details include a colorful banner hanging from one of the shops, advertising an upcoming festival, and a group of people standing near a food stall, likely waiting to order or eat something. The spatial relationships",
+        "processing_time": 45.527
+      }
+    },
+    {
+      "frame_number": 1411,
+      "second": 47.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants on both sides of the street. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard advertising an electronic store is prominently displayed at one end of the frame, taking up about one-third of the background space. Directly in front of the billboard, a small group of four people are gathered around a food cart selling hot dogs and fries. One person is holding a hot dog and another is paying for their meal with cash.\n\nIn the foreground, there's a man wearing a dark jacket and jeans walking towards the camera from left to right. He appears to be in his late 20s or early 30s, and he has a backpack slung over one shoulder. Behind him, a woman is walking briskly on the opposite side of the street, carrying",
+        "processing_time": 45.532
+      }
+    },
+    {
+      "frame_number": 1441,
+      "second": 48.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and stalls on both sides of the road. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be shoppers or commuters.\n\nA few vehicles are parked on the roadside, including a red sedan and a yellow motorcycle. In front of these vehicles, there is a small food stall with a sign that reads \"Fresh Sushi\" in Japanese characters. The stall has several tables and chairs set up for customers to dine outside.\n\nIn the background, a tall building with large windows dominates the scene, likely an office or commercial building. A few people are walking on the street, some holding umbrellas, suggesting it might have rained recently or that it is currently raining slightly.\n\nThe sky above is partly cloudy, with patches of blue visible through the clouds. The sun casts a bright light from the upper right corner of the frame",
+        "processing_time": 45.563
+      }
+    },
+    {
+      "frame_number": 1471,
+      "second": 49.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the street. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars are parked along the curb, and one car is moving slowly in the opposite direction.\n\nA large billboard advertising an event is prominently displayed on one building's wall, featuring bright colors and text that reads \"Summer Festival.\" The sun is shining brightly, casting shadows from tall buildings onto the street below. A group of people, including a couple walking hand-in-hand and a few individuals sitting on benches, are visible in front of the billboard.\n\nIn the background, there are several high-rise buildings with their windows reflecting sunlight and creating a sense of depth. The sky is clear blue with some white clouds scattered throughout. A street vendor is setting up his stall near the crosswalk, preparing to sell items such as snacks or drinks to pass",
+        "processing_time": 45.578
+      }
+    },
+    {
+      "frame_number": 1501,
+      "second": 50.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a busy commercial district with tall buildings and numerous shops on both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be shoppers or commuters returning home after work.\n\nA few vehicles are parked on the curb, likely in front of restaurants or cafes. A red sedan is visible driving slowly down the street, its headlights illuminating part of the road surface and reflecting off nearby windows. Pedestrians cross the street at a crosswalk, with a traffic light displaying a green \"WALK\" sign.\n\nIn the background, there are several large billboards advertising various products and services, one featuring a smiling woman in a swimsuit. The sky is partially illuminated by streetlights and some overhead lights from nearby buildings, creating a mix of natural and artificial lighting conditions.\n\nA couple of people are standing near a bus stop, waiting",
+        "processing_time": 45.595
+      }
+    },
+    {
+      "frame_number": 1531,
+      "second": 51.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. There are several people walking on both sides of the street, some carrying bags and others using their smartphones. A few vehicles are parked along the curb, including a red sedan and a white SUV. In the foreground, there is a group of three individuals standing near a crosswalk sign; one person is holding an umbrella while another is looking at their phone.\n\nA large billboard advertising a local restaurant can be seen on the right side of the frame, with bright colors and bold text. The street itself has a mix of modern buildings with glass facades and older brick structures. A few trees are visible along the sidewalk, providing some shade to pedestrians. In the background, there is a taller building with multiple windows, suggesting it might be an office or commercial space.\n\nThe spatial relationships show that the people are positioned in various directions relative to each other and their surroundings. The crosswalk sign in the foreground",
+        "processing_time": 45.602
+      }
+    },
+    {
+      "frame_number": 1561,
+      "second": 52.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants along both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few vehicles, including cars and a motorcycle, are parked or moving slowly in the traffic.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, featuring bright colors and text. The sun is shining from the upper right corner of the frame, casting shadows to the left. There are several trees lining the sidewalk, providing some shade. In the background, a taller building with multiple windows can be seen.\n\nA person wearing a red jacket and black pants is walking on the sidewalk, carrying a shopping bag. They are about 10 meters away from the camera. Another individual in a blue shirt and jeans is crossing the street at the crosswalk, holding an umbrella to shield from the sun. A small",
+        "processing_time": 45.605
+      }
+    },
+    {
+      "frame_number": 1591,
+      "second": 53.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a busy shopping district.\n\nA few cars and motorcycles are parked on the side of the street, suggesting this is a popular location for parking during business hours. A large advertisement board with bright colors and text is prominently displayed at one end of the frame, drawing attention to a nearby restaurant.\n\nIn the background, there are tall buildings with windows reflecting the sunlight, giving the scene a vibrant look. The sky is clear and blue, with some white clouds scattered across it, indicating a pleasant weather condition.\n\nNotably, in the foreground, a group of four people are standing near a small park area within the street, surrounded by benches and greenery. One person is holding a camera, possibly taking photos or videos of the",
+        "processing_time": 45.59
+      }
+    },
+    {
+      "frame_number": 1621,
+      "second": 54.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with several shops and cafes lining both sides of the street. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few vehicles, including a taxi and a delivery van, are parked or moving along the road.\n\nNotable visual details include:\n- A person wearing a red jacket standing near a caf\u00e9 window, looking out.\n- Several pedestrians carrying shopping bags and briefcases walking towards the camera.\n- A street vendor selling newspapers and magazines with a sign that reads \"Today's News.\"\n- The sky is clear with some fluffy white clouds, indicating a sunny day.\n- There are several signs and advertisements on buildings, including one for a local bank and another promoting a coffee shop.\n- The ground is paved with gray bricks, and there are trees lining the street providing shade.\n\nThe spatial relationships show that the caf\u00e9 window is at an upper level",
+        "processing_time": 45.572
+      }
+    },
+    {
+      "frame_number": 1651,
+      "second": 55.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with numerous shops and cafes lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely a weekday.\n\nA few cars are parked on the street, and one car is moving slowly in the opposite direction, creating a sense of ongoing activity. A couple of bicycles are also present, adding to the mix of transportation methods used by the people in this scene.\n\nIn the background, there are tall buildings with large windows, suggesting that many businesses or residences occupy these structures. The sky above is clear and blue, with some fluffy white clouds visible, indicating a pleasant weather condition.\n\nNotable visual details include a person holding an umbrella walking briskly down the sidewalk, likely to avoid the occasional rain shower. Another individual is standing outside a cafe, looking through a menu, while another is crossing the street at",
+        "processing_time": 45.574
+      }
+    },
+    {
+      "frame_number": 1681,
+      "second": 56.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. There are several people walking on both sides of the sidewalk and crossing the street at a crosswalk. A few vehicles, including a taxi and a delivery van, are parked or moving along the street. The setting is urban with tall buildings lining the street, some partially obscured by billboards and trees.\n\nA person in a bright yellow jacket stands near the edge of the sidewalk, looking towards the camera. They appear to be holding a smartphone and taking a photo or video. Behind them, another individual wearing a red coat is walking briskly down the sidewalk, carrying a backpack. A few more people are visible, some standing at bus stops waiting for their ride.\n\nThe crosswalk is in use with several pedestrians crossing, including an elderly couple and a group of young adults. The street itself has a mix of vehicles and bicycles, suggesting it's a common thoroughfare. The sky above is clear but slightly overcast, with",
+        "processing_time": 45.575
+      }
+    },
+    {
+      "frame_number": 1711,
+      "second": 57.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking along the sidewalk, some carrying bags or briefcases, while others are standing at crosswalks waiting for the signal to cross.\n\nIn the foreground, there is a person wearing a red jacket and blue jeans, facing towards the right side of the frame. They appear to be looking down at their smartphone, possibly texting or browsing through social media. Behind this individual, another person in a black coat and dark pants is walking briskly towards the left, carrying a large tote bag.\n\nOn the opposite side of the street, there are several vehicles parked along the curb, including a red sedan and a white SUV. A few more cars are seen driving on the road, adding to the busy scene. In the background, tall buildings with glass facades can be seen, suggesting that this is likely an",
+        "processing_time": 45.578
+      }
+    },
+    {
+      "frame_number": 1741,
+      "second": 58.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, suggesting it's a typical weekday.\n\nA large billboard is prominently displayed on one side of the street, featuring an advertisement for a local restaurant chain. The sun is shining brightly, casting shadows from various objects and people. There are several cars parked on the curb and a few vehicles driving slowly down the street.\n\nIn the foreground, a young woman in a blue jacket is walking towards a coffee shop with an open door. She has a cup of coffee in her hand, indicating she might be about to enter. Behind her, a man in a black suit is standing near a bicycle parked against the curb, looking at his phone. A few other pedestrians are scattered around them.\n\nThe sky above is clear and blue, with some white clouds visible",
+        "processing_time": 45.594
+      }
+    },
+    {
+      "frame_number": 1771,
+      "second": 59.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it is likely early afternoon or evening.\n\nA few cars are parked on the curb, and a few pedestrians are crossing the street at a crosswalk. A large billboard advertising an electronics store can be seen on one side of the street, while another smaller sign for a coffee shop is visible on the opposite side. The sky above shows clear blue with some white clouds scattered throughout.\n\nA person in a red jacket is walking towards the right of the frame, carrying a backpack and holding a smartphone. Behind them, a woman in a black dress is walking briskly, her face partially obscured by sunglasses. To their left, a man in a gray suit is standing near a bicycle parked against a building, looking at his phone.\n\nThe spatial",
+        "processing_time": 45.636
+      }
+    },
+    {
+      "frame_number": 1801,
+      "second": 60.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the road. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nA few vehicles are parked on the curb, including a taxi and a delivery van. In the middle of the street, there is a small group of people gathered around what appears to be a food stand or kiosk, with one person holding an umbrella over their head while another is looking at a menu.\n\nThe sky above shows clear blue with some white clouds scattered across it, suggesting a sunny day. There are several trees and plants along the sidewalk, adding greenery to the scene. A few pedestrians are walking towards a crosswalk signal that currently displays \"WALK,\" indicating they can cross the street.\n\nIn the background, there is a tall building with large windows, likely an office or",
+        "processing_time": 45.652
+      }
+    },
+    {
+      "frame_number": 1831,
+      "second": 61.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes along both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars and a motorcycle are parked or moving slowly in the traffic lane.\n\nA man wearing a blue jacket and jeans is standing near a shop window, looking inside intently. Behind him, a woman with a red umbrella is walking briskly towards the camera, carrying a bag over her shoulder. To her left, another person is sitting on a bench, reading a newspaper. The sun is shining brightly from the upper right corner of the frame, casting shadows to the lower left.\n\nIn the background, there are tall buildings with large windows and some advertisements displayed on their facades. A few trees line the street, providing shade for pedestrians. The overall scene exudes a sense of activity and urban life.",
+        "processing_time": 45.574
+      }
+    },
+    {
+      "frame_number": 1861,
+      "second": 62.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and stalls on both sides of the road. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it is likely a busy shopping district.\n\nA few cars are parked on the side of the road, and there's a taxi pulling up to one of them, suggesting that this area might be near a bus stop or another transportation hub. A few pedestrians are crossing the street at a crosswalk, while others are walking along the sidewalk.\n\nIn the background, several tall buildings with glass facades can be seen, indicating an urban setting possibly in a city center. The sky is clear and blue, with some white clouds scattered across it, suggesting that it's a sunny day.\n\nNotable visual details include a colorful banner hanging above one of the shops advertising a sale, and a group of people gathered around a street vendor selling snacks or",
+        "processing_time": 45.576
+      }
+    },
+    {
+      "frame_number": 1891,
+      "second": 63.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a busy commercial area, as evidenced by numerous shops and advertisements lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nA few cars are parked on the side of the street, with one car in motion driving slowly down the road. A pedestrian crosswalk is visible ahead, and a few people are waiting to cross, holding up their smartphones or looking at maps. The spatial relationships show that the buildings are tall and modern-looking, with some featuring large windows and glass facades.\n\nNotable visual details include a bright yellow taxi parked on the sidewalk, its door open as if someone is about to get in or out. A small dog is walking beside one of the pedestrians, leading me to believe it might be a pet being walked by its owner. The sunlight casts",
+        "processing_time": 45.582
+      }
+    },
+    {
+      "frame_number": 1921,
+      "second": 64.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking on the sidewalk, some carrying bags or briefcases, suggesting they might be shoppers or commuters.\n\nA few vehicles are parked along the curb, including a taxi and a delivery van. In the middle of the frame, there is a pedestrian crossing with a crosswalk sign, indicating that pedestrians have the right of way. A person in a bright yellow jacket is standing on the crosswalk, waiting to cross the street.\n\nAbove the crosswalk, a large advertisement board displays an image of a smartphone and its features, likely promoting a new model. The sky is clear and blue with some fluffy white clouds scattered across it, indicating a sunny day.\n\nIn the background, there are tall buildings with their windows reflecting the sunlight, giving the scene a bright and lively atmosphere. A few trees line the street,",
+        "processing_time": 45.57
+      }
+    },
+    {
+      "frame_number": 1951,
+      "second": 65.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it is likely early afternoon or evening.\n\nA few cars are parked on the street, and one small delivery van is stopped at the curb, suggesting there might be a delivery in progress. The sky is overcast with light clouds, casting soft shadows across the scene. A large billboard advertising an electronic store is prominently displayed on one of the buildings, featuring a colorful image of a smartphone.\n\nSeveral people are engaged in various activities: one man is using his phone while walking; another woman is looking at a storefront window; and a group of young adults are gathered near a caf\u00e9 entrance, possibly waiting for someone or having a conversation. The spatial relationships show that the street is relatively narrow with buildings close to the sidewalk, creating a sense of",
+        "processing_time": 45.559
+      }
+    },
+    {
+      "frame_number": 1981,
+      "second": 66.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a busy commercial area with tall buildings lining both sides of the street. There are several people walking and standing on the sidewalks, some holding shopping bags or using their smartphones.\n\nA few cars and motorcycles are parked along the curb, while a few others are moving slowly in the traffic lane. A large advertisement billboard is prominently displayed at one end of the frame, featuring a colorful image of a beverage product with text below it.\n\nThe sky above is clear and blue, with some fluffy white clouds scattered across it. The sun is shining brightly, casting shadows on the buildings and people below. In the background, there are several large glass windows reflecting the sunlight and the bustling street scene.\n\nA few trees line the sidewalks, providing a bit of shade for pedestrians. A young woman in a red jacket is walking towards the camera with her head down, seemingly engrossed in reading a book on her smartphone.",
+        "processing_time": 45.548
+      }
+    },
+    {
+      "frame_number": 2011,
+      "second": 67.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard is prominently displayed on one side of the street, featuring an advertisement for a local electronics store. The sign is bright red with white text, creating a striking visual against the gray and brown buildings behind it.\n\nIn the foreground, there are two people standing near a crosswalk signal. A man in a dark jacket and jeans is looking at his phone, while a woman in a blue blouse and black pants is waiting for the walk signal to change. Behind them, a taxi is stopped at the curb, its doors open, suggesting someone might be getting out or entering.\n\nThe street itself is relatively clean with occasional trash cans placed along the sidewalk. A few parked cars are visible on the side",
+        "processing_time": 45.556
+      }
+    },
+    {
+      "frame_number": 2041,
+      "second": 68.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling urban street scene during the daytime. The setting appears to be a busy commercial area with several shops and restaurants lining both sides of the street. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it is likely a weekday.\n\nA few cars are parked on the side of the road, and a few more are moving slowly in the traffic lane. A large billboard advertising an electronics store is prominently displayed above one of the shops. The sky is clear with bright sunlight casting shadows from the tall buildings and street signs.\n\nIn the foreground, a group of four people are standing near a crosswalk, two men and two women, all wearing casual clothing appropriate for a typical day out in town. One woman is holding a small child's hand, while another man is looking down at his smartphone. The spatial relationships show that they are positioned slightly apart from each other but close enough to be part of the same group.\n\nNotable",
+        "processing_time": 45.559
+      }
+    },
+    {
+      "frame_number": 2071,
+      "second": 69.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants on both sides of the street. There are people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely the middle of the day when many are out for errands or lunch.\n\nA few cars are parked on the side of the street, and one is driving slowly down the road, with its headlights slightly illuminating the scene. There are several signs and advertisements visible on buildings, including a large sign advertising a local coffee shop and smaller banners promoting various services.\n\nIn the background, there's a tall building with multiple windows, suggesting it could be an office or residential complex. The sky is clear and blue, with some white clouds scattered across it. A few trees are present along the street, providing shade to pedestrians.\n\nA person wearing a red jacket is walking towards the camera, while another individual in a black coat is standing",
+        "processing_time": 45.569
+      }
+    },
+    {
+      "frame_number": 2101,
+      "second": 70.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be on their way home from work.\n\nA few cars are parked on the side of the road, likely in designated parking spots. In front of one of these cars, a person is standing with a small dog on a leash, looking towards the camera. The spatial relationships show that the person and the dog occupy the foreground, while the parked car and other pedestrians are slightly further back.\n\nIn the background, there's a large billboard advertising an electronic store, which adds to the urban setting. The sky has a mix of natural light from street lamps and artificial lighting from nearby buildings, creating a warm, golden glow that highlights the scene during twilight hours.\n\nNotable visual details include the reflections on wet pavement, adding",
+        "processing_time": 45.599
+      }
+    },
+    {
+      "frame_number": 2131,
+      "second": 71.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely late afternoon or early evening.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, featuring bright lights that illuminate part of the scene. Directly across from the billboard, a small caf\u00e9 with outdoor seating has a few patrons enjoying their drinks and meals in the fading daylight.\n\nIn the background, several tall buildings with illuminated windows suggest it's getting darker outside. A few cars are parked on the street, and one is seen driving slowly down the road, its headlights casting light onto the pavement.\n\nA person wearing a red jacket and holding an umbrella is walking towards the caf\u00e9 from the direction of the billboard. They appear to be in conversation with another individual who is not visible but can be inferred",
+        "processing_time": 45.601
+      }
+    },
+    {
+      "frame_number": 2161,
+      "second": 72.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. On one side, there's a caf\u00e9 with its outdoor seating area occupied by several people enjoying their drinks and meals under an umbrella. A few pedestrians are walking along the sidewalk, some carrying shopping bags or using their smartphones.\n\nIn the background, a tall building with large windows dominates the scene, casting shadows on the pavement due to the angle of the sun. Several cars are parked on the street, and one is moving slowly in the opposite direction, creating a sense of motion within the frame.\n\nA person wearing a red jacket is walking towards the camera, carrying a backpack and looking at their smartphone. They are positioned slightly to the right of the frame, with another pedestrian walking behind them, also using their phone but not as close to the camera. A sign for a local coffee shop is visible on",
+        "processing_time": 45.59
+      }
+    },
+    {
+      "frame_number": 2191,
+      "second": 73.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are numerous people walking along the sidewalks, some carrying shopping bags or briefcases, indicating they are likely on their way home after work.\n\nA few vehicles are parked on the street, including a taxi and a small sedan, suggesting this is a common parking spot for customers from nearby businesses. In front of one of the shops, there's a person holding an umbrella, possibly waiting for a friend or customer.\n\nThe sky above shows a mix of sunlight and clouds, with some buildings casting long shadows on the street due to the angle of the sun. A few pedestrians are seen crossing the street at a crosswalk, while others walk along the sidewalk. The overall atmosphere is lively and dynamic, capturing the energy of an urban environment during evening hours.\n\nNotable visual details include the reflections of lights from nearby buildings in",
+        "processing_time": 45.591
+      }
+    },
+    {
+      "frame_number": 2221,
+      "second": 74.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard advertising an electronic store is prominently displayed on one side of the street, featuring a colorful image of a smartphone. In front of this billboard, there is a small crowd of people gathered around what seems to be a promotional event or sale display. The spatial relationships show that the crowd is slightly closer to the camera than the shops and other pedestrians.\n\nA few cars are parked on the street, with one moving slowly in the opposite direction, creating a sense of ongoing activity. A person wearing a bright yellow jacket is walking towards the right side of the frame, carrying a backpack and looking at their smartphone, which adds a dynamic element to the scene.\n\nThe environment is well-lit, suggesting it",
+        "processing_time": 45.571
+      }
+    },
+    {
+      "frame_number": 2251,
+      "second": 75.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely late morning or early afternoon.\n\nA few cars are parked on the side of the street, and one small delivery van is stopped at an intersection, presumably waiting to make a drop-off. The sky is clear with bright sunlight casting shadows from tall buildings and trees in the background. A large billboard advertising a local event can be seen on one of the taller buildings.\n\nIn the foreground, two people are standing near a crosswalk, one holding a small child's hand while they wait for the traffic light to change. Behind them, another person is walking their dog, which has just stopped to sniff at the ground. A few pedestrians are crossing the street in both directions, creating a lively scene of urban activity.\n\nThe spatial",
+        "processing_time": 45.554
+      }
+    },
+    {
+      "frame_number": 2281,
+      "second": 76.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at a crosswalk. A few vehicles, including cars and a motorcycle, are parked or moving along the street.\n\nNotable visual details include:\n- A large billboard advertising an electronic store on one side of the street.\n- Several pedestrians wearing various clothing styles, some carrying bags or using their smartphones.\n- A group of people standing near a bus stop, waiting for public transportation.\n- A sign indicating that it is a pedestrian crossing with a countdown timer showing 10 seconds remaining before the light changes.\n\nThe spatial relationships show that the street is relatively narrow, and there are several trees and lampposts along the sidewalk. The sky above is clear with some clouds, suggesting a sunny day.",
+        "processing_time": 45.387
+      }
+    },
+    {
+      "frame_number": 2311,
+      "second": 77.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes along both sides of the street. There are people walking on the sidewalk and crossing the street at a crosswalk, some carrying bags or briefcases, indicating they might be shoppers or commuters.\n\nA few vehicles are parked on the curb, including a red sports car and a blue sedan, while a taxi is stopped at an intersection with its door open, suggesting someone has just exited. In the foreground, there's a person wearing a black jacket and jeans standing near the entrance of a coffee shop, holding a cup of coffee.\n\nThe sky above is clear with some fluffy white clouds, indicating a sunny day. The buildings in the background are modern and tall, with glass facades reflecting the sunlight. A few trees line the street, providing shade to pedestrians. In the distance, there's a large billboard advertising an event or product, catching the viewer\u2019s attention",
+        "processing_time": 45.473
+      }
+    },
+    {
+      "frame_number": 2341,
+      "second": 78.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a busy urban street scene during the daytime. There are several cars parked along both sides of the road, with their drivers inside them. In front of these cars, there's a pedestrian crossing with a few people waiting to cross the street. A group of four individuals is walking towards the crossing on the right side of the frame.\n\nIn the background, I can see a tall building with several windows and an advertisement board displaying a large image of a product. Directly in front of this building, there's another smaller building with a sign that reads \"Bank\". To the left of the frame, there is a green park area with some trees and benches.\n\nThe sky above is clear blue with a few white clouds scattered across it. The sun is shining brightly, casting shadows on the street and buildings. A small dog is walking beside one of the people in the group near the pedestrian crossing, adding a touch of liveliness to the scene.\n\nOverall, the frame",
+        "processing_time": 45.471
+      }
+    },
+    {
+      "frame_number": 2371,
+      "second": 79.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be on their way home from work.\n\nA few vehicles are parked on the side of the road, including a taxi and a delivery van. In the foreground, there is a person holding an umbrella while crossing the street, likely to avoid the rain that seems to be falling gently. The sky above has a soft gray color with some clouds, suggesting an overcast day.\n\nIn the background, several tall buildings are visible, their windows reflecting the dimming lights of the evening. A few neon signs are lit up, casting colorful reflections on the wet pavement. There is a sense of movement and activity in the scene, with people walking briskly and vehicles moving slowly due to traffic.\n\nNotable visual details include the",
+        "processing_time": 45.487
+      }
+    },
+    {
+      "frame_number": 2401,
+      "second": 80.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes along both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk controlled by traffic lights.\n\nA few objects and actions visible include:\n- A red sedan parked parallel to the curb, partially obstructing the view.\n- Several pedestrians walking in different directions, some carrying shopping bags or briefcases.\n- A cyclist riding down the middle of the road, wearing a helmet and a black jacket.\n- A group of people standing near a bus stop, waiting for their vehicle.\n\nThe spatial relationships show that the crosswalk is positioned between the parked car and the sidewalk. The buildings are multi-story with large windows and signs advertising various services and products. The sky above is clear with some clouds, indicating a sunny day.\n\nNotable visual details include:\n- A colorful advertisement banner hanging over one of the shop fronts.\n- A",
+        "processing_time": 45.53
+      }
+    },
+    {
+      "frame_number": 2431,
+      "second": 81.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a busy commercial area with tall buildings lining both sides of the street. There are several people walking along the sidewalk and crossing the street at a crosswalk controlled by a traffic light that is currently red.\n\nOn the left side of the frame, there's a large advertisement board featuring bright lights and colorful images, drawing attention to various products. In front of it, a group of four individuals are gathered, two men and two women, standing in conversation with each other. One woman is holding a smartphone, possibly taking photos or videos.\n\nOn the right side, a few people are walking towards the camera, including an elderly couple and a young man carrying a backpack. A small food cart is parked on the sidewalk, with a sign indicating it's selling hot dogs and fries. The vendor inside the cart is preparing food items and has a tray of hot dogs nearby.\n\nThe street itself is illuminated",
+        "processing_time": 45.523
+      }
+    },
+    {
+      "frame_number": 2461,
+      "second": 82.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be shoppers or commuters returning home after work.\n\nA few vehicles are parked on the street, including a red sedan and a blue SUV, suggesting this is a residential area with mixed commercial and residential use. In the background, there's a tall building with its windows still lit, hinting at businesses that have not yet closed for the day.\n\nNotably, in the foreground, two people are standing near a crosswalk sign, one holding an umbrella as it begins to rain lightly. A few pedestrians are hurrying past them, some using umbrellas and others walking without protection from the light drizzle. The street is well-lit by several street lamps casting warm, golden hues across the scene.\n\nThe spatial relationships",
+        "processing_time": 45.523
+      }
+    },
+    {
+      "frame_number": 2491,
+      "second": 83.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and cafes lining both sides of the road. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA few vehicles are parked on the street, including a red sports car and a blue sedan, suggesting this is a popular area for parking. The sky above is clear with a few scattered clouds, casting soft shadows on the ground. A tall building with large windows dominates one side of the frame, while smaller buildings and trees add to the urban landscape.\n\nIn the foreground, two people are standing near a crosswalk, looking at their smartphones. Behind them, a group of four individuals is walking towards the camera, carrying shopping bags from various stores. One person in the group is holding an umbrella, likely due to recent rain or drizzle.\n\nA street vendor can be seen setting up his stall with colorful",
+        "processing_time": 45.533
+      }
+    },
+    {
+      "frame_number": 2521,
+      "second": 84.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nOn the left side of the frame, there is a large sign advertising an electronics store, featuring bright colors and bold text. Directly across from this shop, another smaller store has its window display showcasing various clothing items with mannequins dressed in them. The windows are partially obscured by a light drizzle, creating a soft sheen on the glass.\n\nIn the middle of the frame, there is a busy intersection where cars and motorcycles are seen moving along the road. A few pedestrians are crossing the street at a crosswalk controlled by a traffic signal that currently displays a green light for them to proceed. The sky above is overcast with some patches of sunlight peeking through, casting",
+        "processing_time": 45.532
+      }
+    },
+    {
+      "frame_number": 2551,
+      "second": 85.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the evening rush hour. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are numerous people walking along the sidewalk, some carrying shopping bags or briefcases, indicating they might be on their way home from work.\n\nA few vehicles are parked on the side of the road, likely in front of cafes or small businesses. A large billboard advertising a local restaurant is prominently displayed above one of these shops, catching the viewer's attention with its bright colors and text.\n\nIn the background, there are tall buildings with illuminated windows, suggesting it\u2019s getting darker outside as evening progresses. The sky has a mix of natural twilight and artificial lighting from street lamps and nearby buildings, creating a warm, golden hue.\n\nA few people are crossing the street at a pedestrian crosswalk, while others are walking along the sidewalk. A young couple is engaged in conversation, with the man gesturing animatedly as they",
+        "processing_time": 45.539
+      }
+    },
+    {
+      "frame_number": 2581,
+      "second": 86.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and restaurants lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nA few vehicles are parked on the curb, including a taxi and a motorcycle, suggesting this is a popular spot for local residents and visitors alike. The sky is clear with bright sunlight casting shadows from tall buildings in the background. A large billboard advertising an electronics store stands prominently at one end of the frame, drawing attention to its vibrant colors.\n\nIn the foreground, two individuals are standing near a crosswalk signal; one is holding up their phone, possibly taking a photo or video, while the other seems to be gesturing towards something in the distance. A few pedestrians are crossing the street, following the green light, and several others are walking along the sidewalk.\n\nThe spatial relationships show that the",
+        "processing_time": 45.519
+      }
+    },
+    {
+      "frame_number": 2611,
+      "second": 87.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with numerous shops and cafes lining both sides of the street. There are several people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nA few cars are parked on the curb, while a few others are moving slowly in the traffic lane. A large billboard advertising an electronic store is prominently displayed above one of the shops. The sky is clear and blue with a few clouds scattered across, suggesting a sunny day.\n\nNotably, there's a group of four people standing near a crosswalk signal at the intersection. Two men and two women are conversing animatedly while waiting for the walk signal to change. A young boy in a red jacket is playing with a toy car on the sidewalk, drawing attention from passersby. In the background, a tall building with large windows dominates the scene, casting some shadows due to the",
+        "processing_time": 45.53
+      }
+    },
+    {
+      "frame_number": 2641,
+      "second": 88.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the street. A few people are walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon.\n\nA large billboard is prominently displayed on one side of the street, featuring an advertisement for a local restaurant chain. The billboard has bright, colorful graphics with text in bold letters. Directly across from the billboard, there is a small park area with benches and trees providing some shade.\n\nIn the background, several tall buildings can be seen, their windows reflecting sunlight and creating various patterns on the ground. A few cars are parked along the street, and one person is crossing the street at a crosswalk near the middle of the frame.\n\nThe sky above is clear and blue with a few clouds scattered throughout. The sun is shining from the upper right corner of the image, casting bright light over the scene and",
+        "processing_time": 45.531
+      }
+    },
+    {
+      "frame_number": 2671,
+      "second": 89.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. There are several people walking along the sidewalk and crossing the street at a pedestrian crosswalk. A few cars are parked on the side of the road, and one car is stopped in front of a red light, its headlights illuminating part of the pavement.\n\nA large billboard advertising an electronics store is prominently displayed on the building to the left of the frame. The setting sun casts a warm golden glow over the scene, creating soft shadows. A few trees line the street, providing some shade and greenery amidst the urban environment.\n\nIn the background, several tall buildings with glass facades can be seen, reflecting the sunlight and giving the impression of a modern cityscape. The spatial relationships show people walking towards or away from the camera, while cars are moving in the opposite direction on the road. Notable visual details include the reflections on the car windows and the vibrant colors of clothing worn by passers",
+        "processing_time": 45.558
+      }
+    },
+    {
+      "frame_number": 2701,
+      "second": 90.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk. A few vehicles, including a taxi and a delivery van, are parked along the curb.\n\nIn the foreground, a young woman in a blue jacket is standing near a caf\u00e9 window, looking out with an expression that suggests she might be waiting for someone or something. Behind her, a man in a black suit is walking briskly down the sidewalk towards a nearby shop entrance. A group of children are playing soccer on the street, kicking a ball back and forth between them.\n\nThe sky above is clear and blue, with some fluffy white clouds scattered across it. The sun is shining brightly, casting long shadows from the buildings and people onto the pavement. In the background, there's a tall building with large windows that reflect the sunlight, creating",
+        "processing_time": 45.605
+      }
+    },
+    {
+      "frame_number": 2731,
+      "second": 91.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and cafes lining both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars and a motorcycle are parked along the curb.\n\nA man in a blue jacket is standing near a shop window, looking inside intently. Behind him, a woman in a red dress is walking with an umbrella open to shield herself from the sun. She seems to be hurrying past a street vendor selling newspapers and snacks. The spatial relationship shows that the man is slightly closer to the camera than the woman.\n\nNotable visual details include the bright sunlight casting shadows on the pavement, the colorful advertisements displayed in shop windows, and the reflections of vehicles and people in a nearby puddle. The overall atmosphere suggests a lively urban environment with a mix of casual and business attire among the pedestrians.",
+        "processing_time": 45.515
+      }
+    },
+    {
+      "frame_number": 2761,
+      "second": 92.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies overhead. There are several people walking along the sidewalk and crossing the street at a pedestrian crosswalk. A few cars are parked on the side of the road, and one is stopped at a red light in the middle of the intersection.\n\nA large, modern building stands prominently to the left of the frame, with its glass facade reflecting the bright sunlight. To the right, there's a smaller shop with a sign that reads \"Coffee & Books.\" A few trees are visible on the sidewalk, providing some shade and greenery.\n\nIn the background, several more buildings can be seen, creating a cityscape typical of a busy urban area. The street is relatively clean, with no litter or debris present. A person in a bright yellow jacket is walking their dog, which is a small breed with a white fur coat. The dog is on a leash and has a red collar.\n\nThe spatial relationships show the pedestrian",
+        "processing_time": 45.681
+      }
+    },
+    {
+      "frame_number": 2791,
+      "second": 93.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The scene is filled with people walking along both sides of the road and crossing at crosswalks. There are several vehicles on the street: cars parked on the curb and a few moving vehicles driving in the lanes.\n\nA large billboard advertising an electronic store dominates one side of the frame, while smaller advertisements for local businesses line the other buildings' walls. The sky is clear with bright sunlight casting shadows from tall buildings and trees lining the street.\n\nIn the foreground, a group of four people are standing near a bus stop, waiting for their bus to arrive. Two men and two women are visible; one man is holding an umbrella, likely due to recent rain. Behind them, another woman is walking with a shopping bag in hand, heading towards the crosswalk.\n\nA few bicycles are parked at the side of the road, indicating that cycling might be a common mode of transportation here. The overall setting suggests a vibrant and active",
+        "processing_time": 45.697
+      }
+    },
+    {
+      "frame_number": 2821,
+      "second": 94.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are numerous people walking on the sidewalk, some carrying shopping bags or briefcases, indicating it's likely lunchtime or early evening.\n\nA few cars are parked along the curb, and one is in motion, driving slowly down the street. The sky is clear with a bright blue color, suggesting it\u2019s a sunny day. There are several trees lining the street, providing some shade to pedestrians. A large advertisement board for an electronics store is prominently displayed on one of the buildings.\n\nIn the foreground, two people are standing near a crosswalk, looking at their smartphones while waiting for the signal to cross the street. Behind them, a group of four individuals are walking towards a caf\u00e9, with one person carrying a takeout bag from the same establishment. A young couple is seated on a bench, engaged in conversation.\n\nThe",
+        "processing_time": 45.699
+      }
+    },
+    {
+      "frame_number": 2851,
+      "second": 95.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants along both sides of the road. There are numerous people walking on the sidewalks and crossing the street, some carrying shopping bags or briefcases.\n\nA few cars and motorcycles are parked haphazardly by the roadside, creating a cluttered scene. In the background, there is a tall building with large windows that reflects the bright sunlight, casting a glare on the pavement below. A few pedestrians are using their smartphones while walking, and one person is holding an umbrella to shield from the sun.\n\nThe sky above is clear and blue, with some white clouds scattered across it. The sun is positioned slightly off-center in the upper right corner of the frame, providing natural lighting that highlights the textures of the buildings and people. A few trees are visible on the sides of the street, adding a touch of greenery to the urban environment.\n\nIn the foreground, there",
+        "processing_time": 45.667
+      }
+    },
+    {
+      "frame_number": 2881,
+      "second": 96.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. The setting appears to be a commercial area with several shops and restaurants on both sides of the street. There are people walking along the sidewalk, some carrying shopping bags or briefcases, indicating it's likely early afternoon or evening.\n\nOn the left side of the frame, there is a large sign advertising a coffee shop, and in front of it, a person is sitting at an outdoor table with a laptop open, presumably working. A few people are walking past him, some carrying drinks from the coffee shop.\n\nIn the middle of the frame, there's a group of four people standing near a street corner, one of whom is holding up a smartphone to take a photo or video. They appear to be tourists based on their attire and backpacks.\n\nOn the right side, there are two cars parked along the curb, with a pedestrian crossing the street at a crosswalk. The crosswalk sign is",
+        "processing_time": 45.634
+      }
+    },
+    {
+      "frame_number": 2911,
+      "second": 97.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the street. There are people walking on the sidewalk and crossing the street at a pedestrian crosswalk controlled by traffic lights.\n\nA large billboard advertising an electronics store is prominently displayed on one side of the street, featuring a colorful image of a smartphone. A few parked cars can be seen along the curb, with their drivers either inside or standing near them.\n\nIn the foreground, a group of four people are gathered around a small table outside a caf\u00e9, engaged in conversation. One person is holding an open book and another has a coffee cup in hand. The spatial relationship between these individuals suggests they are friends or colleagues having a casual meeting.\n\nBehind this group, a tall building with large windows dominates the background, casting some shadows on the street due to its height and the angle of sunlight. A few trees line the sidewalk, providing shade and green",
+        "processing_time": 45.638
+      }
+    },
+    {
+      "frame_number": 2941,
+      "second": 98.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime with clear blue skies above. There are several people walking on both sides of the road and crossing at crosswalks. A few cars and a motorcycle are parked along the curb near a small caf\u00e9. The caf\u00e9 has large windows displaying various beverages and pastries.\n\nIn the foreground, two individuals are standing outside the caf\u00e9, one holding an umbrella while they wait for someone. Behind them, a group of four people is walking towards the camera, with their backs to it. A young woman in a red jacket is leading the way, followed by three men. The spatial relationship shows that the caf\u00e9 and parked vehicles occupy the lower part of the frame, while pedestrians fill the upper half.\n\nNotable visual details include the bright sunlight casting shadows on the pavement, the vibrant colors of clothing and signs, and the diverse architecture typical of a cityscape with modern buildings and older structures visible in the background.",
+        "processing_time": 45.572
+      }
+    },
+    {
+      "frame_number": 2971,
+      "second": 99.0,
+      "vision_model": {
+        "caption": "In this single video frame, I see a bustling city street during the daytime. The setting appears to be a commercial area with several shops and restaurants lining both sides of the road. There are people walking on the sidewalk and crossing the street at a crosswalk. A few cars and a motorcycle are parked along the curb.\n\nA group of four people is standing near a caf\u00e9, two men and two women, all facing towards the camera. They appear to be engaged in conversation or waiting for something. Behind them, there's a large advertisement board with bright colors and text, likely promoting local businesses or events.\n\nIn the background, several tall buildings can be seen, their windows reflecting sunlight. A few trees are present on the sidewalk, providing some shade. The sky is clear with a few clouds scattered across it, indicating a sunny day.\n\nThe spatial relationships show that the caf\u00e9 is centrally located in the frame, with people and parked vehicles surrounding it. The crosswalk is positioned just before the caf\u00e9 entrance,",
+        "processing_time": 45.56
+      }
+    }
+  ]
+}

@@ -24,12 +24,8 @@ def get_chunk_color(chunk_type: str, is_hovered: bool = False, is_selected: bool
     Returns (fill_color, outline_color, gradient_color) tuple.
     """
     if is_selected:
-        if chunk_type == "highlight":
-            return ("#FFD700", "#FFA500", "#FFE55C")  # Gold gradient
-        elif chunk_type == "fast_forward":
-            return ("#4A90E2", "#2E5C8A", "#6BA3E8")  # Blue gradient
-        else:
-            return ("#50C878", "#2E7D4E", "#6FD88F")  # Green gradient
+        # Selected chunks always show in green
+        return ("#4CAF50", "#2E7D32", "#66BB6A")  # Green gradient for selected chunks
     elif is_hovered:
         if chunk_type == "highlight":
             return ("#FFE55C", "#FFD700", "#FFF080")  # Lighter gold

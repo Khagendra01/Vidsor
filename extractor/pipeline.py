@@ -105,6 +105,16 @@ class SegmentTreePipeline:
             
             return output_path
         
+        except Exception as e:
+            import traceback
+            print("\n" + "=" * 60)
+            print("PIPELINE ERROR")
+            print("=" * 60)
+            print(f"\nError: {e}")
+            print("\nFull traceback:")
+            traceback.print_exc()
+            raise
+        
         finally:
             # Cleanup
             self.video_utils.release()
