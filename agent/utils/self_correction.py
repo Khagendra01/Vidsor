@@ -119,7 +119,11 @@ Return JSON:
         {
             "index": i,
             "duration": chunk.get("end_time", 0) - chunk.get("start_time", 0),
-            "original_range": f"{chunk.get('original_start_time', 0):.1f}s-{chunk.get('original_end_time', 0):.1f}s"
+            "original_range": f"{chunk.get('original_start_time', 0):.1f}s-{chunk.get('original_end_time', 0):.1f}s",
+            "description": chunk.get("description", ""),
+            "unified_description": chunk.get("unified_description", ""),
+            "audio_description": chunk.get("audio_description", ""),
+            "score": chunk.get("score", 0.0)
         }
         for i, chunk in enumerate(chunks_created[:10])  # Top 10 for validation
     ]
@@ -132,8 +136,12 @@ Chunks summary: {json.dumps(chunks_summary, indent=2)}
 
 Validate if these highlights match what the user asked for. Consider:
 1. Are there enough highlights?
-2. Do the highlights match the query intent?
+2. Do the highlights match the query intent (check descriptions)?
 3. Are the durations appropriate?
+4. Do the descriptions indicate these are actually highlight moments?
+
+Note: Each chunk includes description, unified_description, and audio_description fields that describe the content.
+Use these descriptions to assess if the highlights are relevant to the query.
 
 Return JSON only.
 """
