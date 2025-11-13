@@ -16,6 +16,7 @@ from agent.orchestrator_handlers import (
 from agent.nodes.planner import create_planner_agent
 from agent.utils.llm_utils import create_llm
 from agent.utils.transaction import TimelineTransaction
+from agent.utils.self_correction import self_correct_loop
 
 
 def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
@@ -191,47 +192,97 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
             def call_planner(planner_state):
                 return planner_agent(planner_state)
             
+            # Check if self-correction is enabled (default: True for search-based operations)
+            enable_self_correction = state.get("enable_self_correction", True)
+            operations_with_self_correction = ["FIND_HIGHLIGHTS", "REPLACE", "INSERT", "FIND_BROLL"]
+            use_self_correction = enable_self_correction and current_operation in operations_with_self_correction
+            
             # TRANSACTION SUPPORT: Wrap operation in transaction for rollback capability
             with TimelineTransaction(timeline_manager, verbose=verbose) as tx:
                 try:
                     # Track operation in transaction
                     tx.add_operation(operation_result)
                     
-                    if current_operation == "FIND_HIGHLIGHTS":
-                        operation_result_dict = handle_find_highlights(
-                            state, timeline_manager, call_planner, verbose=verbose
-                        )
-                    elif current_operation == "CUT":
-                        operation_result_dict = handle_cut(
-                            state, timeline_manager, operation_params, verbose=verbose
-                        )
-                    elif current_operation == "REPLACE":
-                        operation_result_dict = handle_replace(
-                            state, timeline_manager, operation_params, call_planner, verbose=verbose
-                        )
-                    elif current_operation == "INSERT":
-                        operation_result_dict = handle_insert(
-                            state, timeline_manager, operation_params, call_planner, verbose=verbose
-                        )
-                    elif current_operation == "FIND_BROLL":
-                        operation_result_dict = handle_find_broll(
-                            state, timeline_manager, operation_params, call_planner, verbose=verbose
-                        )
-                    elif current_operation == "TRIM":
-                        operation_result_dict = handle_trim(
-                            state, timeline_manager, operation_params, verbose=verbose
-                        )
-                    elif current_operation == "APPLY_EFFECT":
-                        operation_result_dict = handle_apply_effect(
-                            state, timeline_manager, operation_params, verbose=verbose
-                        )
-                    else:
-                        if verbose:
-                            print(f"[WARNING] Operation '{current_operation}' not yet implemented")
-                        operation_result_dict = {
-                            "success": False,
-                            "error": f"Operation '{current_operation}' not yet implemented"
-                        }
+                    # Execute operation with or without self-correction
+                    if use_self_correction:
+                        if log:
+                            log.info(f"[SELF-CORRECTION] Enabled for {current_operation}")
+                        elif verbose:
+                            print(f"[SELF-CORRECTION] Enabled for {current_operation}")
+                        
+                        # Create operation handler wrapper for self-correction
+                        def create_operation_handler(op_type):
+                            if op_type == "FIND_HIGHLIGHTS":
+                                def handler(s, tm, p, v=False):
+                                    return handle_find_highlights(s, tm, call_planner, verbose=v)
+                                return handler
+                            elif op_type == "REPLACE":
+                                def handler(s, tm, p, v=False):
+                                    return handle_replace(s, tm, p, call_planner, verbose=v)
+                                return handler
+                            elif op_type == "INSERT":
+                                def handler(s, tm, p, v=False):
+                                    return handle_insert(s, tm, p, call_planner, verbose=v)
+                                return handler
+                            elif op_type == "FIND_BROLL":
+                                def handler(s, tm, p, v=False):
+                                    return handle_find_broll(s, tm, p, call_planner, verbose=v)
+                                return handler
+                            return None
+                        
+                        handler = create_operation_handler(current_operation)
+                        if handler:
+                            operation_result_dict = self_correct_loop(
+                                state=state,
+                                timeline_manager=timeline_manager,
+                                operation=current_operation,
+                                params=operation_params,
+                                operation_handler=handler,
+                                max_iterations=3,
+                                confidence_threshold=0.7,
+                                verbose=verbose
+                            )
+                        else:
+                            # Fallback to normal execution
+                            use_self_correction = False
+                    
+                    # Normal execution (without self-correction or if self-correction not applicable)
+                    if not use_self_correction:
+                        if current_operation == "FIND_HIGHLIGHTS":
+                            operation_result_dict = handle_find_highlights(
+                                state, timeline_manager, call_planner, verbose=verbose
+                            )
+                        elif current_operation == "CUT":
+                            operation_result_dict = handle_cut(
+                                state, timeline_manager, operation_params, verbose=verbose
+                            )
+                        elif current_operation == "REPLACE":
+                            operation_result_dict = handle_replace(
+                                state, timeline_manager, operation_params, call_planner, verbose=verbose
+                            )
+                        elif current_operation == "INSERT":
+                            operation_result_dict = handle_insert(
+                                state, timeline_manager, operation_params, call_planner, verbose=verbose
+                            )
+                        elif current_operation == "FIND_BROLL":
+                            operation_result_dict = handle_find_broll(
+                                state, timeline_manager, operation_params, call_planner, verbose=verbose
+                            )
+                        elif current_operation == "TRIM":
+                            operation_result_dict = handle_trim(
+                                state, timeline_manager, operation_params, verbose=verbose
+                            )
+                        elif current_operation == "APPLY_EFFECT":
+                            operation_result_dict = handle_apply_effect(
+                                state, timeline_manager, operation_params, verbose=verbose
+                            )
+                        else:
+                            if verbose:
+                                print(f"[WARNING] Operation '{current_operation}' not yet implemented")
+                            operation_result_dict = {
+                                "success": False,
+                                "error": f"Operation '{current_operation}' not yet implemented"
+                            }
                     
                     # Commit transaction if operation was successful
                     if operation_result_dict and operation_result_dict.get("success"):

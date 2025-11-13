@@ -98,6 +98,8 @@ def run_orchestrator(
         "clarification_question": None,
         "output_clips": [],
         "segment_tree": segment_tree,
+        "model_name": model_name,  # For self-correction
+        "enable_self_correction": True,  # Enable self-correction by default
         "verbose": verbose,
         "logger": logger,
         "previous_time_ranges": preserved_state.get("previous_time_ranges") if preserved_state else None,

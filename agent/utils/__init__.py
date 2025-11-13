@@ -6,6 +6,12 @@ from agent.utils.segment_tree_utils import *
 from agent.utils.utils import *
 from agent.utils.weight_config import *
 from agent.utils.transaction import TimelineTransaction, execute_with_transaction
+from agent.utils.self_correction import (
+    self_correct_loop,
+    validate_operation_result,
+    suggest_refinement,
+    apply_refinement
+)
 
 __all__ = [
     # llm_utils exports
@@ -27,5 +33,10 @@ __all__ = [
     # transaction exports
     "TimelineTransaction",
     "execute_with_transaction",
+    # self_correction exports
+    "self_correct_loop",
+    "validate_operation_result",
+    "suggest_refinement",
+    "apply_refinement",
 ]
 

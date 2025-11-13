@@ -1,4 +1,5 @@
 @echo off
+
 if "%~1"=="" (
     echo Usage: commit.bat "your commit message"
     echo Example: commit.bat "Add new feature"
