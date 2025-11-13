@@ -9,12 +9,12 @@ from typing import Dict, List, Optional
 from PIL import Image
 
 from extractor.config import FPS, AUDIO_SEGMENT_DURATION, AUDIO_OVERLAP
-from extractor.models.blip_loader import BLIPLoader
+from extractor.models.bakllava_loader import BakLLaVALoader
 from extractor.models.whisper_loader import WhisperLoader
 from extractor.models.yolo_loader import YOLOLoader
 from extractor.processors.visual_processor import VisualProcessor
 from extractor.processors.audio_processor import AudioProcessor
-from extractor.processors.gpt4o_mini_processor import GPT4oMiniProcessor
+from extractor.processors.bakllava_processor import BakLLaVAProcessor
 from extractor.processors.tracking_processor import TrackingProcessor
 from extractor.utils.video_utils import VideoUtils
 
@@ -27,7 +27,7 @@ class SegmentTreeGenerator:
         video_path: str,
         tracking_json_path: str,
         config,
-        blip_loader: BLIPLoader,
+        bakllava_loader: BakLLaVALoader,
         whisper_loader: WhisperLoader,
         yolo_loader: YOLOLoader,
         video_utils: VideoUtils
@@ -39,7 +39,7 @@ class SegmentTreeGenerator:
             video_path: Path to video file
             tracking_json_path: Path to tracking JSON file
             config: ExtractorConfig instance
-            blip_loader: BLIP model loader
+            bakllava_loader: BakLLaVA model loader
             whisper_loader: Whisper model loader
             yolo_loader: YOLO model loader
             video_utils: Video utilities instance
@@ -47,17 +47,18 @@ class SegmentTreeGenerator:
         self.video_path = video_path
         self.tracking_json_path = tracking_json_path
         self.config = config
-        self.blip_loader = blip_loader
+        self.bakllava_loader = bakllava_loader
         self.whisper_loader = whisper_loader
         self.yolo_loader = yolo_loader
         self.video_utils = video_utils
         
         # Initialize processors
-        self.visual_processor = VisualProcessor(blip_loader)
+        self.visual_processor = VisualProcessor(bakllava_loader)
         self.audio_processor = AudioProcessor(whisper_loader, video_path)
-        self.llava_processor = GPT4oMiniProcessor(
-            api_key=config.openai_api_key,
-            use_images=config.use_images
+        self.bakllava_processor = BakLLaVAProcessor(
+            ollama_url=config.ollama_url,
+            ollama_model=config.ollama_model,
+            use_images=True  # BakLLaVA always uses images
         )
         self.tracking_processor = TrackingProcessor(config.yolo_stride)
     
@@ -77,8 +78,8 @@ class SegmentTreeGenerator:
         with open(self.tracking_json_path, 'r') as f:
             return json.load(f)
     
-    def _get_blip_frame_numbers(self, start_frame: int, end_frame: int) -> List[int]:
-        """Get frame numbers for BLIP processing based on blip_split config."""
+    def _get_bakllava_frame_numbers(self, start_frame: int, end_frame: int) -> List[int]:
+        """Get frame numbers for BakLLaVA processing based on blip_split config."""
         middle_frame = start_frame + (end_frame - start_frame) // 2
         
         if self.config.blip_split == 1:
@@ -90,7 +91,7 @@ class SegmentTreeGenerator:
         else:
             return [middle_frame]
     
-    def _process_second(self, second_idx: int, frames_data: List[Dict], max_frame: Optional[int] = None, blip_results_cache: Optional[Dict[int, Dict]] = None) -> Dict:
+    def _process_second(self, second_idx: int, frames_data: List[Dict], max_frame: Optional[int] = None, bakllava_results_cache: Optional[Dict[int, Dict]] = None) -> Dict:
         """Process one second of video."""
         start_frame = (second_idx * FPS) + 1
         if max_frame is not None:
@@ -103,26 +104,32 @@ class SegmentTreeGenerator:
         detection_groups = self.tracking_processor.group_detections(frames_data, start_frame, end_frame)
         detection_summary = self.tracking_processor.create_detection_summary(detection_groups)
         
-        # Get BLIP frame numbers
-        blip_frame_numbers = self._get_blip_frame_numbers(start_frame, end_frame)
+        # Get BakLLaVA frame numbers
+        bakllava_frame_numbers = self._get_bakllava_frame_numbers(start_frame, end_frame)
         
-        # Get BLIP results from cache (batch processed earlier)
-        blip_results = []
-        for frame_num in blip_frame_numbers:
-            if blip_results_cache and frame_num in blip_results_cache:
-                result = blip_results_cache[frame_num]
-                blip_results.append((frame_num, result))
+        # Get BakLLaVA results from cache (processed earlier in parallel)
+        bakllava_results = []
+        frame_images = []
+        for frame_num in bakllava_frame_numbers:
+            if bakllava_results_cache and frame_num in bakllava_results_cache:
+                result = bakllava_results_cache[frame_num]
+                bakllava_results.append((frame_num, result))
+                # Get image for unified processing
+                frame_image = self.video_utils.get_frame(frame_num)
+                if frame_image:
+                    frame_images.append(frame_image)
             else:
                 # Fallback: process individually if not in cache
                 frame_image = self.video_utils.get_frame(frame_num)
                 if frame_image:
                     result = self.visual_processor.process_frame(frame_num, frame_image)
-                    blip_results.append((frame_num, result))
+                    bakllava_results.append((frame_num, result))
+                    frame_images.append(frame_image)
         
-        # Sort and create blip_descriptions
-        blip_results.sort(key=lambda x: x[0])
-        blip_descriptions = []
-        for frame_num, result in blip_results:
+        # Sort and create bakllava_descriptions
+        bakllava_results.sort(key=lambda x: x[0])
+        bakllava_descriptions = []
+        for frame_num, result in bakllava_results:
             # Find group for this frame
             group_idx = -1
             for i, group in enumerate(detection_groups):
@@ -133,46 +140,26 @@ class SegmentTreeGenerator:
             if group_idx == -1:
                 group_idx = min(len(detection_groups) - 1, max(0, (frame_num - start_frame) // 5))
             
-            blip_descriptions.append({
+            bakllava_descriptions.append({
                 "group_index": group_idx,
                 "frame_number": frame_num,
                 "frame_range": detection_groups[group_idx]["frame_range"] if group_idx < len(detection_groups) else [end_frame, end_frame],
                 "description": result["description"],
-                "blip_metadata": result["blip_metadata"]
+                "bakllava_metadata": result["bakllava_metadata"]
             })
         
-        # Process LLaVA if enabled
-        if self.config.use_llava:
-            blip_texts = [desc["description"] for desc in blip_descriptions]
-            if not blip_texts:
-                blip_texts = ["No image descriptions available"]
-            
-            images_to_send = None
-            if self.config.use_images:
-                images_to_send = []
-                for desc in blip_descriptions:
-                    frame_num = desc.get("frame_number")
-                    if frame_num:
-                        frame_image = self.video_utils.get_frame(frame_num)
-                        if frame_image:
-                            images_to_send.append(frame_image)
-                if not images_to_send:
-                    images_to_send = None
-            
-            llava_result = self.llava_processor.process(blip_texts, detection_summary, images=images_to_send)
-            unified_description = llava_result["unified_description"]
-            llava_metadata = llava_result["llava_metadata"]
+        # Process with BakLLaVA to get unified description (replaces GPT-4o-mini)
+        if frame_images:
+            bakllava_result = self.bakllava_processor.process(frame_images, detection_summary)
+            unified_description = bakllava_result["unified_description"]
+            bakllava_metadata = bakllava_result["bakllava_metadata"]
         else:
-            blip_texts = [desc["description"] for desc in blip_descriptions]
-            if blip_texts:
-                unified_description = " | ".join(blip_texts)
-            else:
-                unified_description = detection_summary
-            llava_metadata = {
+            unified_description = detection_summary
+            bakllava_metadata = {
                 "model": "none",
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
                 "processing_time": 0,
-                "note": "LLaVA processing disabled, using BLIP descriptions only"
+                "note": "No frames available for processing"
             }
         
         return {
@@ -180,8 +167,8 @@ class SegmentTreeGenerator:
             "time_range": [round(second_idx, 3), round(second_idx + 0.999, 3)],
             "frame_range": [start_frame, end_frame],
             "unified_description": unified_description,
-            "llava_metadata": llava_metadata,
-            "blip_descriptions": blip_descriptions,
+            "bakllava_metadata": bakllava_metadata,
+            "bakllava_descriptions": bakllava_descriptions,
             "detection_groups": detection_groups
         }
     
@@ -200,8 +187,7 @@ class SegmentTreeGenerator:
         frames_data = tracking_data["frames"]
         video_path = tracking_data.get("video", self.video_path)
         
-        # Load BLIP model (needed for visual processing)
-        self.blip_loader.load()
+        # BakLLaVA is API-based, no model loading needed
         # Note: Whisper will be loaded lazily when needed for transcription
         
         # Calculate number of seconds
@@ -216,76 +202,63 @@ class SegmentTreeGenerator:
             max_frame = max_tracked_frame
             print(f"Processing {num_seconds} seconds (estimated from tracking data, max frame: {max_frame})...")
         
-        # STEP 1: Collect all frames that need BLIP processing
-        print(f"\nCollecting frames for batch BLIP processing...")
-        all_blip_frames = []  # List of (second_idx, frame_num) tuples
+        # STEP 1: Collect all frames that need BakLLaVA processing
+        print(f"\nCollecting frames for parallel BakLLaVA processing...")
+        all_bakllava_frames = []  # List of (second_idx, frame_num) tuples
         for second_idx in range(num_seconds):
             start_frame = (second_idx * FPS) + 1
             end_frame = min(start_frame + FPS - 1, max_frame) if max_frame else start_frame + FPS - 1
-            blip_frame_numbers = self._get_blip_frame_numbers(start_frame, end_frame)
-            for frame_num in blip_frame_numbers:
-                all_blip_frames.append((second_idx, frame_num))
+            bakllava_frame_numbers = self._get_bakllava_frame_numbers(start_frame, end_frame)
+            for frame_num in bakllava_frame_numbers:
+                all_bakllava_frames.append((second_idx, frame_num))
         
-        print(f"Extracting {len(all_blip_frames)} frames for batch processing...")
+        print(f"Extracting {len(all_bakllava_frames)} frames for parallel processing...")
         # Extract all frames
         frame_images = {}  # frame_num -> PIL Image
-        for second_idx, frame_num in all_blip_frames:
+        for second_idx, frame_num in all_bakllava_frames:
             if frame_num not in frame_images:
                 frame_image = self.video_utils.get_frame(frame_num)
                 if frame_image:
                     frame_images[frame_num] = frame_image
         
-        # STEP 2: Batch process all frames with BLIP
-        print(f"Batch processing {len(frame_images)} frames with BLIP (batch size: {self.config.blip_batch_size})...")
-        blip_results_cache = {}  # frame_num -> result dict
+        # STEP 2: Process all frames with BakLLaVA in parallel (16 workers)
+        print(f"Processing {len(frame_images)} frames with BakLLaVA in parallel (max_workers: {self.config.max_workers})...")
+        bakllava_results_cache = {}  # frame_num -> result dict
         
-        # Process in batches
-        frame_nums_list = list(frame_images.keys())
-        batch_size = self.config.blip_batch_size
-        
-        for i in range(0, len(frame_nums_list), batch_size):
-            batch_frame_nums = frame_nums_list[i:i + batch_size]
-            batch_images = [frame_images[fn] for fn in batch_frame_nums]
-            
-            # Process batch
+        def process_frame(frame_num, image):
+            """Process a single frame with BakLLaVA."""
             try:
-                batch_start = time.time()
-                captions = self.blip_loader.caption_batch(batch_images)
-                batch_time = time.time() - batch_start
-                
-                # Store results
-                for frame_num, caption in zip(batch_frame_nums, captions):
-                    blip_results_cache[frame_num] = {
-                        "description": caption,
-                        "blip_metadata": {
-                            "model": "blip",
-                            "processing_time": round(batch_time / len(batch_frame_nums), 3),
-                            "batch_size": len(batch_frame_nums)
-                        }
-                    }
-                
-                print(f"  Processed batch {i // batch_size + 1}/{(len(frame_nums_list) + batch_size - 1) // batch_size} ({len(batch_frame_nums)} frames in {batch_time:.2f}s)")
+                result = self.visual_processor.process_frame(frame_num, image)
+                return frame_num, result
             except Exception as e:
-                print(f"  Error processing batch {i // batch_size + 1}: {e}")
-                # Fallback: process individually
-                for frame_num, image in zip(batch_frame_nums, batch_images):
-                    try:
-                        result = self.visual_processor.process_frame(frame_num, image)
-                        blip_results_cache[frame_num] = result
-                    except Exception as e2:
-                        print(f"    Error processing frame {frame_num}: {e2}")
-                        blip_results_cache[frame_num] = {
-                            "description": f"Error: {str(e2)}",
-                            "blip_metadata": {"model": "blip", "processing_time": 0}
-                        }
+                print(f"    Error processing frame {frame_num}: {e}")
+                return frame_num, {
+                    "description": f"Error: {str(e)}",
+                    "bakllava_metadata": {"model": "bakllava", "processing_time": 0, "error": str(e)}
+                }
         
-        print(f"BLIP batch processing complete. Processed {len(blip_results_cache)} frames.\n")
+        # Process frames in parallel
+        with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
+            futures = {
+                executor.submit(process_frame, frame_num, image): frame_num
+                for frame_num, image in frame_images.items()
+            }
+            
+            completed = 0
+            for future in as_completed(futures):
+                frame_num, result = future.result()
+                bakllava_results_cache[frame_num] = result
+                completed += 1
+                if completed % 10 == 0:
+                    print(f"  Processed {completed}/{len(frame_images)} frames...")
         
-        # STEP 3: Process seconds in parallel (using cached BLIP results)
+        print(f"BakLLaVA parallel processing complete. Processed {len(bakllava_results_cache)} frames.\n")
+        
+        # STEP 3: Process seconds in parallel (using cached BakLLaVA results)
         seconds_data = [None] * num_seconds  # Pre-allocate array to maintain structure
         with ThreadPoolExecutor(max_workers=self.config.max_workers) as executor:
             futures = {
-                executor.submit(self._process_second, i, frames_data, max_frame, blip_results_cache): i
+                executor.submit(self._process_second, i, frames_data, max_frame, bakllava_results_cache): i
                 for i in range(num_seconds)
             }
             
@@ -303,13 +276,13 @@ class SegmentTreeGenerator:
                         "time_range": [round(second_idx, 3), round(second_idx + 0.999, 3)],
                         "frame_range": [second_idx * FPS + 1, min((second_idx + 1) * FPS, max_frame)],
                         "unified_description": f"Error processing second {second_idx}: {str(e)}",
-                        "llava_metadata": {
+                        "bakllava_metadata": {
                             "model": "error",
                             "timestamp": time.strftime("%Y-%m-%dT%H:%M:%S"),
                             "processing_time": 0,
                             "error": str(e)
                         },
-                        "blip_descriptions": [],
+                        "bakllava_descriptions": [],
                         "detection_groups": []
                     }
         
@@ -321,7 +294,7 @@ class SegmentTreeGenerator:
         
         # Generate transcriptions
         print("\nGenerating audio transcriptions with 1-second overlap...")
-        # Load Whisper model now (only when needed, after BLIP processing is done)
+        # Load Whisper model now (only when needed, after BakLLaVA processing is done)
         if video_duration:
             self.whisper_loader.load()
         

@@ -4,7 +4,7 @@ Main pipeline orchestrator for video segment tree extraction.
 
 import time
 from extractor.config import ExtractorConfig
-from extractor.models.blip_loader import BLIPLoader
+from extractor.models.bakllava_loader import BakLLaVALoader
 from extractor.models.whisper_loader import WhisperLoader
 from extractor.models.yolo_loader import YOLOLoader
 from extractor.utils.video_utils import VideoUtils
@@ -26,7 +26,10 @@ class SegmentTreePipeline:
         self.config = config
         
         # Initialize model loaders
-        self.blip_loader = BLIPLoader(config.blip_model)
+        self.bakllava_loader = BakLLaVALoader(
+            ollama_url=config.ollama_url,
+            ollama_model=config.ollama_model
+        )
         self.whisper_loader = WhisperLoader(config.whisper_model)
         self.yolo_loader = YOLOLoader(config.yolo_model)
         
@@ -38,7 +41,7 @@ class SegmentTreePipeline:
             config.video_path,
             config.tracking_json_path,
             config,
-            self.blip_loader,
+            self.bakllava_loader,
             self.whisper_loader,
             self.yolo_loader,
             self.video_utils
@@ -64,8 +67,7 @@ class SegmentTreePipeline:
         print(f"\nVideo: {self.config.video_path}")
         print(f"Output: {self.config.output_path}")
         print(f"Tracker: {self.config.tracker}")
-        print(f"LLaVA: {'ENABLED' if self.config.use_llava else 'DISABLED'}")
-        print(f"Images: {'ENABLED' if self.config.use_images else 'DISABLED'}")
+        print(f"BakLLaVA: ENABLED (via Ollama)")
         print(f"Max Workers: {self.config.max_workers}")
         print()
         

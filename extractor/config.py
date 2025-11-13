@@ -16,7 +16,10 @@ BLIP_MODEL = "Salesforce/blip2-opt-2.7b"
 WHISPER_MODEL = "base"  # Fast and accurate balance
 YOLO_MODEL = "old-test-utils/yolo11s.pt"  # YOLO model in old-test-utils folder
 
-# LLaVA/Ollama configuration
+# LLaVA configuration (direct transformers usage, no Ollama required)
+LLAVA_MODEL = "llava-hf/llava-1.5-7b-hf"  # Default LLaVA model for batch processing
+
+# LLaVA/Ollama configuration (legacy, for bakllava via Ollama)
 OLLAMA_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "bakllava"
 
@@ -25,7 +28,7 @@ AUDIO_SEGMENT_DURATION = 5  # Transcribe 5-second segments for better accuracy
 AUDIO_OVERLAP = 1  # 1 second overlap between segments
 
 # Parallel processing
-DEFAULT_MAX_WORKERS = 10  # 10 concurrent requests for GPT-4o-mini (safe for Tier 1, 500 RPM)
+DEFAULT_MAX_WORKERS = 16  # 16 concurrent requests for BakLLaVA via Ollama
 
 # Tracking configuration
 DEFAULT_TRACKER = "bytetrack"  # or "deepsort"
@@ -55,12 +58,7 @@ class ExtractorConfig:
     # Model settings
     tracker: str = DEFAULT_TRACKER
     yolo_stride: int = DEFAULT_YOLO_STRIDE
-    blip_split: int = DEFAULT_BLIP_SPLIT
-    blip_batch_size: int = DEFAULT_BLIP_BATCH_SIZE
-    
-    # Processing options
-    use_llava: bool = True
-    use_images: bool = False
+    blip_split: int = DEFAULT_BLIP_SPLIT  # Used for BakLLaVA frame selection
     
     # Parallel processing
     max_workers: int = DEFAULT_MAX_WORKERS
@@ -75,8 +73,8 @@ class ExtractorConfig:
     embedding_model: str = DEFAULT_EMBEDDING_MODEL
     
     # Model paths (optional overrides)
-    blip_model: Optional[str] = None
     whisper_model: Optional[str] = None
     yolo_model: Optional[str] = None
-    openai_api_key: Optional[str] = None
+    ollama_url: Optional[str] = None
+    ollama_model: Optional[str] = None
 

@@ -2,6 +2,7 @@
 BLIP model loader for image captioning.
 """
 
+import os
 import time
 import torch
 from transformers import (
@@ -12,18 +13,25 @@ from transformers import (
 from typing import Optional, List
 from extractor.config import BLIP_MODEL
 
+# Enable HuggingFace Rust-based fast downloader (hf_transfer) for faster model downloads
+os.environ.setdefault("HF_HUB_ENABLE_HF_TRANSFER", "1")
+
 
 class BLIPLoader:
     """Manages BLIP model loading and inference."""
     
-    def __init__(self, model_name: Optional[str] = None):
+    def __init__(self, model_name: Optional[str] = None, load_in_4bit: bool = False, load_in_8bit: bool = False):
         """
         Initialize BLIP loader.
         
         Args:
             model_name: Optional model name override
+            load_in_4bit: Load model in 4-bit quantization (more memory efficient)
+            load_in_8bit: Load model in 8-bit quantization
         """
         self.model_name = model_name or BLIP_MODEL
+        self.load_in_4bit = load_in_4bit
+        self.load_in_8bit = load_in_8bit
         self.processor = None
         self.model = None
         self._loaded = False
@@ -44,24 +52,35 @@ class BLIPLoader:
         else:
             self.processor = BlipProcessor.from_pretrained(self.model_name, use_fast=True)
         
-        # Configure 8-bit quantization (same as before)
-        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+        # Configure quantization
+        quantization_config = None
+        if self.load_in_4bit:
+            quantization_config = BitsAndBytesConfig(load_in_4bit=True)
+            print("Using 4-bit quantization")
+        elif self.load_in_8bit:
+            quantization_config = BitsAndBytesConfig(load_in_8bit=True)
+            print("Using 8-bit quantization")
+        else:
+            print("Using 16-bit (float16) precision without quantization")
+        
+        # Prepare model loading kwargs - default to float16 (16-bit)
+        model_kwargs = {
+            "dtype": torch.float16,  # 16-bit half precision
+            "device_map": "auto",
+            "use_safetensors": True
+        }
+        if quantization_config:
+            model_kwargs["quantization_config"] = quantization_config
         
         if is_blip2:
             self.model = Blip2ForConditionalGeneration.from_pretrained(
                 self.model_name,
-                dtype=torch.float16,
-                device_map="auto",
-                quantization_config=quantization_config,
-                use_safetensors=True
+                **model_kwargs
             )
         else:
             self.model = BlipForConditionalGeneration.from_pretrained(
                 self.model_name,
-                dtype=torch.float16,
-                device_map="auto",
-                quantization_config=quantization_config,
-                use_safetensors=True
+                **model_kwargs
             )
         
         elapsed = time.time() - start

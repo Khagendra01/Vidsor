@@ -22,17 +22,9 @@ def main():
     parser.add_argument("--yolo-stride", type=int, default=10,
                        help="Process every Nth frame with YOLO (default: 10)")
     
-    # LLaVA options
-    parser.add_argument("--no-llava", action="store_true", default=False,
-                       help="Disable LLaVA processing (default: enabled)")
-    parser.add_argument("--use-images", action="store_true", default=False,
-                       help="Send actual frame images to LLaVA (default: False)")
-    
-    # BLIP options
-    parser.add_argument("--blip-split", type=int, default=1, choices=[1, 2, 3],
-                       help="Number of frames per second for BLIP: 1=middle, 2=first+last, 3=first+middle+last (default: 1)")
-    parser.add_argument("--blip-batch-size", type=int, default=48,
-                       help="Batch size for BLIP processing (default: 48, adjust based on GPU memory)")
+    # BakLLaVA options
+    parser.add_argument("--bakllava-split", type=int, default=1, choices=[1, 2, 3],
+                       help="Number of frames per second for BakLLaVA: 1=middle, 2=first+last, 3=first+middle+last (default: 1)")
     
     # Hierarchical tree options
     parser.add_argument("--no-hierarchical", action="store_true", default=False,
@@ -49,11 +41,10 @@ def main():
                        help="Sentence transformer model for embeddings (default: BAAI/bge-large-en-v1.5)")
     
     # Parallel processing
-    parser.add_argument("--max-workers", type=int, default=3,
-                       help="Maximum number of parallel workers (default: 3)")
+    parser.add_argument("--max-workers", type=int, default=16,
+                       help="Maximum number of parallel workers (default: 16)")
     
     # Model overrides
-    parser.add_argument("--blip-model", help="Override BLIP model name")
     parser.add_argument("--whisper-model", help="Override Whisper model name")
     parser.add_argument("--yolo-model", help="Override YOLO model path")
     parser.add_argument("--ollama-url", help="Override Ollama URL")
@@ -68,17 +59,13 @@ def main():
         output_path=args.output,
         tracker=args.tracker,
         yolo_stride=args.yolo_stride,
-        blip_split=args.blip_split,
-        blip_batch_size=args.blip_batch_size,
-        use_llava=not args.no_llava,
-        use_images=args.use_images,
+        blip_split=args.bakllava_split,  # Reuse blip_split config for BakLLaVA frame selection
         max_workers=args.max_workers,
         generate_hierarchical=not args.no_hierarchical,
         leaf_duration=args.leaf_duration,
         branching_factor=args.branching_factor,
         generate_embeddings=not args.no_embeddings,
         embedding_model=args.embedding_model,
-        blip_model=args.blip_model,
         whisper_model=args.whisper_model,
         yolo_model=args.yolo_model,
         ollama_url=args.ollama_url,

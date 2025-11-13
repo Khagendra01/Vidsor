@@ -1,29 +1,29 @@
 """
-Visual processing module for BLIP image captioning.
+Visual processing module for BakLLaVA image captioning.
 """
 
 import time
 from typing import Dict, List
 from PIL import Image
-from extractor.models.blip_loader import BLIPLoader
-from extractor.config import BLIP_MODEL
+from extractor.models.bakllava_loader import BakLLaVALoader
+from extractor.config import OLLAMA_MODEL
 
 
 class VisualProcessor:
-    """Processes visual frames with BLIP."""
+    """Processes visual frames with BakLLaVA."""
     
-    def __init__(self, blip_loader: BLIPLoader):
+    def __init__(self, bakllava_loader: BakLLaVALoader):
         """
         Initialize visual processor.
         
         Args:
-            blip_loader: BLIP model loader instance
+            bakllava_loader: BakLLaVA model loader instance
         """
-        self.blip_loader = blip_loader
+        self.bakllava_loader = bakllava_loader
     
     def process_frame(self, frame_number: int, frame_image: Image.Image) -> Dict:
         """
-        Process single frame with BLIP.
+        Process single frame with BakLLaVA.
         
         Args:
             frame_number: Frame number
@@ -33,13 +33,13 @@ class VisualProcessor:
             Dictionary with description and metadata
         """
         start = time.time()
-        caption = self.blip_loader.caption(frame_image)
+        caption = self.bakllava_loader.caption(frame_image)
         processing_time = time.time() - start
         
         return {
             "description": caption,
-            "blip_metadata": {
-                "model": BLIP_MODEL,
+            "bakllava_metadata": {
+                "model": OLLAMA_MODEL,
                 "processing_time": round(processing_time, 2)
             }
         }
