@@ -156,6 +156,7 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
                 query_intent,
                 weights,
                 semantic_analysis,
+                state=state,  # Pass state for operation_type and video_duration
                 logger=logger,
                 verbose=verbose
             )

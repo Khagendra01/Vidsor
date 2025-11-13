@@ -406,10 +406,13 @@ def should_stop_early(
     max_iterations: int,
     previous_confidence: float = 0.0,
     confidence_threshold: float = 0.7,
-    enable_early_stopping: bool = True
+    enable_early_stopping: bool = True,
+    operation: str = None,
+    result: Dict[str, Any] = None,
+    video_duration: float = None
 ) -> Tuple[bool, str]:
     """
-    Determine if we should stop early based on quality metrics.
+    Determine if we should stop early based on quality metrics and duration adequacy.
     
     Args:
         validation: Validation result dictionary
@@ -418,6 +421,9 @@ def should_stop_early(
         previous_confidence: Confidence from previous iteration
         confidence_threshold: Minimum acceptable confidence
         enable_early_stopping: Whether early stopping is enabled
+        operation: Operation type (e.g., "FIND_HIGHLIGHTS")
+        result: Operation result dictionary (may contain chunks_created, time_ranges)
+        video_duration: Total video duration in seconds
         
     Returns:
         Tuple of (should_stop: bool, reason: str)
@@ -458,16 +464,41 @@ def should_stop_early(
             return True, f"High confidence ({confidence:.2f}) with no issues"
         return True, f"High confidence ({confidence:.2f}) with minor fixable issues"
     
-    # Tier 3: Acceptable result - stop if valid
+    # OPERATION-AWARE: For FIND_HIGHLIGHTS, check duration adequacy
+    duration_adequate = True
+    duration_check_reason = ""
+    if operation == "FIND_HIGHLIGHTS" and video_duration and result:
+        chunks_created = result.get("chunks_created", [])
+        if chunks_created:
+            total_duration = sum(
+                chunk.get("end_time", 0) - chunk.get("start_time", 0)
+                for chunk in chunks_created
+            )
+            target_duration = video_duration * 0.12  # 12% target
+            duration_ratio = total_duration / target_duration if target_duration > 0 else 0
+            
+            if duration_ratio < 0.7:  # Less than 70% of target
+                duration_adequate = False
+                duration_check_reason = f"Duration insufficient: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video) < 70% of target ({target_duration:.1f}s)"
+            else:
+                duration_check_reason = f"Duration adequate: {total_duration:.1f}s ({total_duration/video_duration*100:.1f}% of video) >= 70% of target"
+    
+    # Tier 3: Acceptable result - stop if valid AND duration adequate (for FIND_HIGHLIGHTS)
     if is_valid and confidence >= confidence_threshold:
-        return True, f"Acceptable result (confidence: {confidence:.2f} >= {confidence_threshold})"
+        if operation == "FIND_HIGHLIGHTS" and not duration_adequate:
+            # Don't stop early if duration is insufficient for highlights
+            return False, f"Confidence acceptable ({confidence:.2f}) but {duration_check_reason} - continuing"
+        return True, f"Acceptable result (confidence: {confidence:.2f} >= {confidence_threshold}" + (f", {duration_check_reason}" if duration_check_reason else "") + ")"
     
     # Tier 4: Good confidence even if not "valid" - stop if minor issues or no issues
     # This handles cases where confidence meets threshold but validation has minor issues
     if confidence >= confidence_threshold and has_minor_issues_only:
+        if operation == "FIND_HIGHLIGHTS" and not duration_adequate:
+            # Don't stop early if duration is insufficient for highlights
+            return False, f"Confidence good ({confidence:.2f}) but {duration_check_reason} - continuing"
         if len(issues) == 0:
-            return True, f"Good confidence ({confidence:.2f}) with no issues (meets threshold)"
-        return True, f"Good confidence ({confidence:.2f}) with minor issues (meets threshold, acceptable)"
+            return True, f"Good confidence ({confidence:.2f}) with no issues (meets threshold)" + (f", {duration_check_reason}" if duration_check_reason else "")
+        return True, f"Good confidence ({confidence:.2f}) with minor issues (meets threshold, acceptable)" + (f", {duration_check_reason}" if duration_check_reason else "")
     
     # Tier 5: Confidence plateau - no improvement between iterations
     if iteration >= 2 and abs(confidence - previous_confidence) < 0.05:
@@ -566,13 +597,26 @@ def self_correct_loop(
             
             # NEW: Check for early stopping before standard check
             if enable_early_stopping:
+                # Get video duration for duration adequacy check
+                video_path = state.get("video_path", "")
+                video_duration = None
+                if video_path:
+                    try:
+                        from extractor.utils.video_utils import get_video_duration
+                        video_duration = get_video_duration(video_path)
+                    except:
+                        pass
+                
                 should_stop, reason = should_stop_early(
                     validation=validation,
                     iteration=iteration,
                     max_iterations=max_iterations,
                     previous_confidence=previous_confidence,
                     confidence_threshold=confidence_threshold,
-                    enable_early_stopping=enable_early_stopping
+                    enable_early_stopping=enable_early_stopping,
+                    operation=operation,
+                    result=result,
+                    video_duration=video_duration
                 )
                 
                 if should_stop:

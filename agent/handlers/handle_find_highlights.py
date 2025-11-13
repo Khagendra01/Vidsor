@@ -49,9 +49,13 @@ def handle_find_highlights(
     previous_scored_seconds = state.get("previous_scored_seconds")
     previous_search_results = state.get("previous_search_results")
     
+    # Get video_path and video_duration before using them
+    video_path = state.get("video_path", "")
+    video_duration = get_video_duration(video_path) if video_path else 600.0
+    
     planner_state = {
         "user_query": state.get("user_query", "find highlights"),
-        "video_path": state.get("video_path", ""),
+        "video_path": video_path,
         "json_path": state.get("json_path", ""),
         "segment_tree": state.get("segment_tree"),
         "verbose": verbose,
@@ -64,6 +68,9 @@ def handle_find_highlights(
         "previous_query": previous_query,
         "previous_scored_seconds": previous_scored_seconds,
         "previous_search_results": previous_search_results,
+        # Pass operation type for operation-aware threshold adjustment
+        "operation_type": "FIND_HIGHLIGHTS",
+        "video_duration": video_duration,
     }
     
     # Call planner agent
@@ -96,8 +103,7 @@ def handle_find_highlights(
         # MERGE AGENT: Intelligently merge time ranges based on timeline state
         from agent.nodes.merge_agent import create_merge_agent
         
-        video_path = state.get("video_path", "")
-        video_duration = get_video_duration(video_path) if video_path else 600.0
+        # video_path and video_duration already defined above
         
         merge_state = {
             "time_ranges": time_ranges,

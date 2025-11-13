@@ -13,6 +13,7 @@ def score_and_filter(
     query_intent: dict,
     weights: dict,
     semantic_analysis: dict,
+    state: dict = None,
     logger=None,
     verbose: bool = False
 ) -> tuple[list, float]:
@@ -26,6 +27,7 @@ def score_and_filter(
         query_intent: Query intent dictionary
         weights: Weights dictionary
         semantic_analysis: Semantic analysis dictionary
+        state: Optional state dictionary (may contain operation_type, video_duration)
         logger: Optional logger instance
         verbose: Whether to print verbose output
         
@@ -75,6 +77,10 @@ def score_and_filter(
     elapsed = time.time() - start_time
     log.info(f"[STEP 3] Scoring completed in {elapsed:.2f}s")
     
+    # Get operation type and video duration from state (if available)
+    operation_type = state.get("operation_type") if state else None
+    video_duration_from_state = state.get("video_duration") if state else None
+    
     # STRATEGY 1: Adaptive threshold (percentile-based)
     # Calculate score distribution and use top percentile as threshold
     if scored_seconds:
@@ -82,8 +88,18 @@ def score_and_filter(
         all_scores.sort(reverse=True)
         
         # Use top 12% of video as target (conservative but adaptive)
-        video_duration = len(segment_tree.seconds) if segment_tree else 600
+        video_duration = video_duration_from_state if video_duration_from_state else (len(segment_tree.seconds) if segment_tree else 600)
         target_seconds = max(30, int(video_duration * 0.12))  # At least 30 seconds, or 12% of video
+        
+        # Determine quality floor based on operation type
+        if operation_type == "FIND_HIGHLIGHTS":
+            # For highlights, allow lower quality floor to ensure coverage
+            quality_floor = 0.20  # Lower floor for highlights
+            min_threshold_multiplier = 0.5  # Allow 50% below min threshold
+        else:
+            # For other operations (FIND_BROLL, etc.), maintain strict quality
+            quality_floor = 0.35  # Higher floor for precision
+            min_threshold_multiplier = 0.7  # Only allow 30% below min threshold
         
         if len(all_scores) >= target_seconds:
             # Use score at target_seconds position as threshold
@@ -92,19 +108,67 @@ def score_and_filter(
             # Not enough scores, use fixed threshold as fallback
             adaptive_threshold = weights["threshold"]
         
-        # Ensure threshold is not too low (minimum 0.35) or too high (maximum 0.65)
-        adaptive_threshold = max(0.35, min(0.65, adaptive_threshold))
+        # Ensure threshold respects quality floor and maximum
+        adaptive_threshold = max(quality_floor, min(0.65, adaptive_threshold))
         
-        # Also respect minimum threshold from weights (but allow going lower if distribution suggests)
+        # Also respect minimum threshold from weights (operation-aware)
         min_threshold = weights["threshold"]
-        adaptive_threshold = max(min_threshold * 0.7, adaptive_threshold)  # Allow 30% below min if needed
+        adaptive_threshold = max(min_threshold * min_threshold_multiplier, adaptive_threshold)
         
         log.info(f"\n[ADAPTIVE THRESHOLD] Score distribution analysis:")
         log.info(f"  Total seconds scored: {len(scored_seconds)}")
         log.info(f"  Target: top {target_seconds} seconds ({target_seconds/video_duration*100:.1f}% of video)")
         log.info(f"  Score range: {all_scores[-1]:.3f} - {all_scores[0]:.3f}")
         log.info(f"  Score at position {target_seconds}: {adaptive_threshold:.3f}")
+        log.info(f"  Operation type: {operation_type or 'UNKNOWN'}")
+        log.info(f"  Quality floor: {quality_floor:.2f} (operation-aware)")
         log.info(f"  Using adaptive threshold: {adaptive_threshold:.3f} (min from weights: {min_threshold:.3f})")
+        
+        # OPERATION-AWARE: For FIND_HIGHLIGHTS, check if results are sufficient
+        # If not, lower threshold incrementally to meet target
+        if operation_type == "FIND_HIGHLIGHTS":
+            filtered_seconds_initial = [s for s in scored_seconds if s["score"] >= adaptive_threshold]
+            initial_count = len(filtered_seconds_initial)
+            target_minimum = int(target_seconds * 0.7)  # 70% of target is acceptable minimum
+            
+            if initial_count < target_minimum and len(all_scores) > initial_count:
+                log.info(f"\n[THRESHOLD ADJUSTMENT] FIND_HIGHLIGHTS: Only {initial_count} seconds found (target: {target_minimum})")
+                log.info(f"  Lowering threshold incrementally to meet coverage target...")
+                
+                # Try progressively lower thresholds
+                threshold_steps = [
+                    adaptive_threshold * 0.9,  # 10% lower
+                    adaptive_threshold * 0.8,  # 20% lower
+                    adaptive_threshold * 0.7,  # 30% lower
+                    adaptive_threshold * 0.6,  # 40% lower
+                    max(quality_floor, adaptive_threshold * 0.5),  # 50% lower (but not below floor)
+                ]
+                
+                best_threshold = adaptive_threshold
+                best_count = initial_count
+                
+                for step_threshold in threshold_steps:
+                    if step_threshold < quality_floor:
+                        break
+                    
+                    filtered_test = [s for s in scored_seconds if s["score"] >= step_threshold]
+                    test_count = len(filtered_test)
+                    
+                    if test_count >= target_minimum:
+                        # Found threshold that meets target - use it
+                        adaptive_threshold = step_threshold
+                        log.info(f"  ✓ Adjusted threshold to {adaptive_threshold:.3f} → {test_count} seconds (meets target)")
+                        break
+                    elif test_count > best_count:
+                        # Better than current best, keep it
+                        best_threshold = step_threshold
+                        best_count = test_count
+                        log.info(f"  → Lowered threshold to {step_threshold:.3f} → {test_count} seconds (improved, continuing...)")
+                
+                # Use best threshold found (either target-met or best-improvement)
+                if adaptive_threshold != best_threshold:
+                    adaptive_threshold = best_threshold
+                    log.info(f"  → Using best threshold: {adaptive_threshold:.3f} → {best_count} seconds")
     else:
         adaptive_threshold = weights["threshold"]
         log.info(f"\n[FILTERING] No scores to analyze, using fixed threshold: {adaptive_threshold:.2f}")
