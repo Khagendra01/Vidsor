@@ -5,6 +5,7 @@ from agent.utils.logging_utils import *
 from agent.utils.segment_tree_utils import *
 from agent.utils.utils import *
 from agent.utils.weight_config import *
+from agent.utils.transaction import TimelineTransaction, execute_with_transaction
 
 __all__ = [
     # llm_utils exports
@@ -23,5 +24,8 @@ __all__ = [
     "merge_time_ranges",
     # weight_config exports
     "configure_search_weights",
+    # transaction exports
+    "TimelineTransaction",
+    "execute_with_transaction",
 ]
 

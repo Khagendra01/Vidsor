@@ -15,6 +15,7 @@ from agent.orchestrator_handlers import (
 )
 from agent.nodes.planner import create_planner_agent
 from agent.utils.llm_utils import create_llm
+from agent.utils.transaction import TimelineTransaction
 
 
 def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
@@ -190,65 +191,126 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
             def call_planner(planner_state):
                 return planner_agent(planner_state)
             
-            try:
-                if current_operation == "FIND_HIGHLIGHTS":
-                    operation_result_dict = handle_find_highlights(
-                        state, timeline_manager, call_planner, verbose=verbose
-                    )
-                elif current_operation == "CUT":
-                    operation_result_dict = handle_cut(
-                        state, timeline_manager, operation_params, verbose=verbose
-                    )
-                elif current_operation == "REPLACE":
-                    operation_result_dict = handle_replace(
-                        state, timeline_manager, operation_params, call_planner, verbose=verbose
-                    )
-                elif current_operation == "INSERT":
-                    operation_result_dict = handle_insert(
-                        state, timeline_manager, operation_params, call_planner, verbose=verbose
-                    )
-                elif current_operation == "FIND_BROLL":
-                    operation_result_dict = handle_find_broll(
-                        state, timeline_manager, operation_params, call_planner, verbose=verbose
-                    )
-                elif current_operation == "TRIM":
-                    operation_result_dict = handle_trim(
-                        state, timeline_manager, operation_params, verbose=verbose
-                    )
-                elif current_operation == "APPLY_EFFECT":
-                    operation_result_dict = handle_apply_effect(
-                        state, timeline_manager, operation_params, verbose=verbose
-                    )
-                else:
-                    if verbose:
-                        print(f"[WARNING] Operation '{current_operation}' not yet implemented")
+            # TRANSACTION SUPPORT: Wrap operation in transaction for rollback capability
+            with TimelineTransaction(timeline_manager, verbose=verbose) as tx:
+                try:
+                    # Track operation in transaction
+                    tx.add_operation(operation_result)
+                    
+                    if current_operation == "FIND_HIGHLIGHTS":
+                        operation_result_dict = handle_find_highlights(
+                            state, timeline_manager, call_planner, verbose=verbose
+                        )
+                    elif current_operation == "CUT":
+                        operation_result_dict = handle_cut(
+                            state, timeline_manager, operation_params, verbose=verbose
+                        )
+                    elif current_operation == "REPLACE":
+                        operation_result_dict = handle_replace(
+                            state, timeline_manager, operation_params, call_planner, verbose=verbose
+                        )
+                    elif current_operation == "INSERT":
+                        operation_result_dict = handle_insert(
+                            state, timeline_manager, operation_params, call_planner, verbose=verbose
+                        )
+                    elif current_operation == "FIND_BROLL":
+                        operation_result_dict = handle_find_broll(
+                            state, timeline_manager, operation_params, call_planner, verbose=verbose
+                        )
+                    elif current_operation == "TRIM":
+                        operation_result_dict = handle_trim(
+                            state, timeline_manager, operation_params, verbose=verbose
+                        )
+                    elif current_operation == "APPLY_EFFECT":
+                        operation_result_dict = handle_apply_effect(
+                            state, timeline_manager, operation_params, verbose=verbose
+                        )
+                    else:
+                        if verbose:
+                            print(f"[WARNING] Operation '{current_operation}' not yet implemented")
+                        operation_result_dict = {
+                            "success": False,
+                            "error": f"Operation '{current_operation}' not yet implemented"
+                        }
+                    
+                    # Commit transaction if operation was successful
+                    if operation_result_dict and operation_result_dict.get("success"):
+                        # Validate timeline before committing
+                        is_valid, errors = timeline_manager.validate_timeline()
+                        if is_valid:
+                            if tx.commit():
+                                if log:
+                                    log.info(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
+                                elif verbose:
+                                    print(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
+                                
+                                # Add transaction info to result
+                                operation_result_dict["transaction"] = {
+                                    "committed": True,
+                                    "operations": len(tx.get_operations())
+                                }
+                            else:
+                                # Commit failed, mark operation as failed
+                                if log:
+                                    log.error("[TRANSACTION] Failed to commit transaction")
+                                elif verbose:
+                                    print("[TRANSACTION] Failed to commit transaction")
+                                operation_result_dict["success"] = False
+                                operation_result_dict["error"] = "Failed to save timeline"
+                                operation_result_dict["transaction"] = {
+                                    "committed": False,
+                                    "rolled_back": True
+                                }
+                        else:
+                            # Validation failed, transaction will auto-rollback
+                            if log:
+                                log.error(f"[TRANSACTION] Timeline validation failed:")
+                                for error in errors:
+                                    log.error(f"  - {error}")
+                            elif verbose:
+                                print(f"[TRANSACTION] Timeline validation failed:")
+                                for error in errors:
+                                    print(f"  - {error}")
+                            operation_result_dict["success"] = False
+                            operation_result_dict["error"] = f"Validation failed: {', '.join(errors)}"
+                            operation_result_dict["transaction"] = {
+                                "committed": False,
+                                "rolled_back": True,
+                                "validation_errors": errors
+                            }
+                    else:
+                        # Operation failed, transaction will auto-rollback
+                        if log:
+                            log.warning("[TRANSACTION] Operation failed, rolling back")
+                        elif verbose:
+                            print("[TRANSACTION] Operation failed, rolling back")
+                        operation_result_dict["transaction"] = {
+                            "committed": False,
+                            "rolled_back": True,
+                            "reason": "Operation failed"
+                        }
+                
+                except Exception as e:
+                    # Exception occurred, manually rollback transaction
+                    tx.rollback()
+                    error_msg = f"[ERROR] Operation execution failed: {e}"
+                    if log:
+                        log.error(error_msg)
+                        import traceback
+                        log.error(traceback.format_exc())
+                    elif verbose:
+                        print(error_msg)
+                        import traceback
+                        traceback.print_exc()
                     operation_result_dict = {
                         "success": False,
-                        "error": f"Operation '{current_operation}' not yet implemented"
+                        "error": str(e),
+                        "transaction": {
+                            "committed": False,
+                            "rolled_back": True,
+                            "exception": type(e).__name__
+                        }
                     }
-                
-                # Save timeline if operation was successful
-                if operation_result_dict and operation_result_dict.get("success"):
-                    timeline_manager.save()
-                    if log:
-                        log.info(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
-                    elif verbose:
-                        print(f"\n[SAVED] Timeline updated and saved to {timeline_path}")
-                
-            except Exception as e:
-                error_msg = f"[ERROR] Operation execution failed: {e}"
-                if log:
-                    log.error(error_msg)
-                    import traceback
-                    log.error(traceback.format_exc())
-                elif verbose:
-                    print(error_msg)
-                    import traceback
-                    traceback.print_exc()
-                operation_result_dict = {
-                    "success": False,
-                    "error": str(e)
-                }
         
         return {
             **state,
