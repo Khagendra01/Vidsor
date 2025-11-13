@@ -1,8 +1,11 @@
 """Self-correction utilities for automatic operation refinement."""
 
 import json
-from typing import Dict, List, Optional, Any, Callable
-from agent.state import OrchestratorState
+from typing import Dict, List, Optional, Any, Callable, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agent.state import OrchestratorState
+
 from agent.timeline_manager import TimelineManager
 from agent.utils.llm_utils import invoke_llm_with_json, create_llm
 from agent.utils.logging_utils import get_log_helper
@@ -12,7 +15,7 @@ def validate_operation_result(
     result: Dict[str, Any],
     operation: str,
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Dict[str, Any]:
@@ -77,7 +80,7 @@ def validate_operation_result(
 def _validate_find_highlights_result(
     result: Dict[str, Any],
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Dict[str, Any]:
@@ -162,7 +165,7 @@ Return JSON only.
 def _validate_replace_result(
     result: Dict[str, Any],
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Dict[str, Any]:
@@ -211,7 +214,7 @@ def _validate_replace_result(
 def _validate_insert_result(
     result: Dict[str, Any],
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Dict[str, Any]:
@@ -244,7 +247,7 @@ def _validate_insert_result(
 def _validate_find_broll_result(
     result: Dict[str, Any],
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Dict[str, Any]:
@@ -280,7 +283,7 @@ def suggest_refinement(
     result: Dict[str, Any],
     operation: str,
     params: Dict[str, Any],
-    state: OrchestratorState,
+    state: "OrchestratorState",
     llm,
     verbose: bool = False
 ) -> Optional[Dict[str, Any]]:
@@ -390,7 +393,7 @@ def apply_refinement(
 
 
 def self_correct_loop(
-    state: OrchestratorState,
+    state: "OrchestratorState",
     timeline_manager: TimelineManager,
     operation: str,
     params: Dict[str, Any],

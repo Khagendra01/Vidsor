@@ -100,6 +100,7 @@ def run_orchestrator(
         "segment_tree": segment_tree,
         "model_name": model_name,  # For self-correction
         "enable_self_correction": True,  # Enable self-correction by default
+        "enable_multi_step_planning": True,  # Enable multi-step planning by default
         "verbose": verbose,
         "logger": logger,
         "previous_time_ranges": preserved_state.get("previous_time_ranges") if preserved_state else None,

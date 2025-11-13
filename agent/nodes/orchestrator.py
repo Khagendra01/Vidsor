@@ -17,6 +17,10 @@ from agent.nodes.planner import create_planner_agent
 from agent.utils.llm_utils import create_llm
 from agent.utils.transaction import TimelineTransaction
 from agent.utils.self_correction import self_correct_loop
+from agent.utils.multi_step_planner import (
+    create_multi_step_plan,
+    execute_multi_step_plan
+)
 
 
 def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
@@ -86,7 +90,169 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                 elif verbose:
                     print(error_msg)
         
-        # Step 2: Classify operation and extract parameters
+        # Step 1.5: Check if query needs multi-step planning
+        enable_multi_step = state.get("enable_multi_step_planning", True)
+        multi_step_plan = None
+        
+        if enable_multi_step and query:
+            # Check if query is complex enough for multi-step planning
+            context = {
+                "chunk_count": chunk_count,
+                "duration": duration
+            }
+            multi_step_plan = create_multi_step_plan(
+                query=query,
+                llm=llm,
+                context=context,
+                verbose=verbose
+            )
+            
+            is_multi_step = multi_step_plan.get("is_multi_step", False)
+            steps = multi_step_plan.get("steps", [])
+            
+            if is_multi_step and len(steps) > 1:
+                # Execute multi-step plan
+                if log:
+                    log.info(f"\n[MULTI-STEP PLANNING] Detected complex query, executing {len(steps)} steps")
+                elif verbose:
+                    print(f"\n[MULTI-STEP PLANNING] Detected complex query, executing {len(steps)} steps")
+                
+                # Execute steps sequentially (each step will go through normal orchestrator flow)
+                # We'll handle this by processing each step's query through the orchestrator
+                # Note: classify_operation and handlers are already imported at the top
+                
+                step_results = []
+                current_step_state = state.copy()
+                
+                for step in steps:
+                    step_num = step.get("step_number")
+                    step_query = step.get("query", "")
+                    step_operation = step.get("operation")
+                    step_params = step.get("parameters", {})
+                    
+                    if log:
+                        log.info(f"\n[STEP {step_num}] {step_operation}: {step_query}")
+                    elif verbose:
+                        print(f"\n[STEP {step_num}] {step_operation}: {step_query}")
+                    
+                    # Update state for this step
+                    step_state = current_step_state.copy()
+                    step_state["user_query"] = step_query
+                    
+                    # Classify this step's operation
+                    step_operation_result = classify_operation(
+                        query=step_query,
+                        chunk_count=timeline_manager.get_chunk_count() if timeline_manager else 0,
+                        duration=timeline_manager.calculate_timeline_duration() if timeline_manager else 0.0,
+                        llm=llm,
+                        verbose=verbose
+                    )
+                    
+                    # Use step's operation if classification matches, otherwise use classified operation
+                    classified_op = step_operation_result.get("operation")
+                    if classified_op != "UNKNOWN":
+                        step_operation = classified_op
+                        # Merge step params with classified params
+                        classified_params = step_operation_result.get("parameters", {})
+                        step_params = {**classified_params, **step_params}
+                    
+                    # Execute step using transaction and handlers (same as single-step execution)
+                    with TimelineTransaction(timeline_manager, verbose=verbose) as step_tx:
+                        try:
+                            step_tx.add_operation({"operation": step_operation, "parameters": step_params})
+                            
+                            # Execute step operation
+                            def call_planner(planner_state):
+                                return planner_agent(planner_state)
+                            
+                            if step_operation == "FIND_HIGHLIGHTS":
+                                step_result = handle_find_highlights(
+                                    step_state, timeline_manager, call_planner, verbose=verbose
+                                )
+                            elif step_operation == "CUT":
+                                step_result = handle_cut(
+                                    step_state, timeline_manager, step_params, verbose=verbose
+                                )
+                            elif step_operation == "REPLACE":
+                                step_result = handle_replace(
+                                    step_state, timeline_manager, step_params, call_planner, verbose=verbose
+                                )
+                            elif step_operation == "INSERT":
+                                step_result = handle_insert(
+                                    step_state, timeline_manager, step_params, call_planner, verbose=verbose
+                                )
+                            elif step_operation == "FIND_BROLL":
+                                step_result = handle_find_broll(
+                                    step_state, timeline_manager, step_params, call_planner, verbose=verbose
+                                )
+                            elif step_operation == "TRIM":
+                                step_result = handle_trim(
+                                    step_state, timeline_manager, step_params, verbose=verbose
+                                )
+                            elif step_operation == "APPLY_EFFECT":
+                                step_result = handle_apply_effect(
+                                    step_state, timeline_manager, step_params, verbose=verbose
+                                )
+                            else:
+                                step_result = {
+                                    "success": False,
+                                    "error": f"Operation '{step_operation}' not supported in multi-step"
+                                }
+                            
+                            # Commit if successful
+                            if step_result and step_result.get("success"):
+                                is_valid, errors = timeline_manager.validate_timeline()
+                                if is_valid:
+                                    step_tx.commit()
+                                else:
+                                    step_result["success"] = False
+                                    step_result["error"] = f"Validation failed: {', '.join(errors)}"
+                            
+                            step_results.append({
+                                "step": step_num,
+                                "operation": step_operation,
+                                "success": step_result.get("success", False),
+                                "result": step_result
+                            })
+                            
+                            # Update state for next step
+                            if step_result.get("success"):
+                                current_step_state["timeline_chunks"] = timeline_manager.chunks
+                        
+                        except Exception as e:
+                            step_tx.rollback()
+                            error_msg = f"Exception in step {step_num}: {e}"
+                            if log:
+                                log.error(f"  ✗ {error_msg}")
+                            elif verbose:
+                                print(f"  ✗ {error_msg}")
+                            step_results.append({
+                                "step": step_num,
+                                "operation": step_operation,
+                                "success": False,
+                                "error": error_msg,
+                                "result": None
+                            })
+                
+                multi_step_result = {
+                    "success": all(r.get("success") for r in step_results),
+                    "steps_total": len(steps),
+                    "steps_completed": len([r for r in step_results if r.get("success")]),
+                    "steps_failed": len([r for r in step_results if not r.get("success")]),
+                    "results": step_results
+                }
+                
+                # Return multi-step result
+                return {
+                    **state,
+                    "timeline_chunks": timeline_manager.chunks if timeline_manager else None,
+                    "current_operation": "MULTI_STEP",
+                    "operation_params": {"steps": steps},
+                    "operation_result": multi_step_result,
+                    "multi_step_plan": multi_step_plan
+                }
+        
+        # Step 2: Classify operation and extract parameters (single-step execution)
         operation_result = None
         if query:
             operation_result = classify_operation(
@@ -213,20 +379,20 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                         # Create operation handler wrapper for self-correction
                         def create_operation_handler(op_type):
                             if op_type == "FIND_HIGHLIGHTS":
-                                def handler(s, tm, p, v=False):
-                                    return handle_find_highlights(s, tm, call_planner, verbose=v)
+                                def handler(s, tm, p, verbose=False):
+                                    return handle_find_highlights(s, tm, call_planner, verbose=verbose)
                                 return handler
                             elif op_type == "REPLACE":
-                                def handler(s, tm, p, v=False):
-                                    return handle_replace(s, tm, p, call_planner, verbose=v)
+                                def handler(s, tm, p, verbose=False):
+                                    return handle_replace(s, tm, p, call_planner, verbose=verbose)
                                 return handler
                             elif op_type == "INSERT":
-                                def handler(s, tm, p, v=False):
-                                    return handle_insert(s, tm, p, call_planner, verbose=v)
+                                def handler(s, tm, p, verbose=False):
+                                    return handle_insert(s, tm, p, call_planner, verbose=verbose)
                                 return handler
                             elif op_type == "FIND_BROLL":
-                                def handler(s, tm, p, v=False):
-                                    return handle_find_broll(s, tm, p, call_planner, verbose=v)
+                                def handler(s, tm, p, verbose=False):
+                                    return handle_find_broll(s, tm, p, call_planner, verbose=verbose)
                                 return handler
                             return None
                         

@@ -12,6 +12,12 @@ from agent.utils.self_correction import (
     suggest_refinement,
     apply_refinement
 )
+from agent.utils.multi_step_planner import (
+    create_multi_step_plan,
+    execute_multi_step_plan,
+    resolve_dependencies,
+    update_state_for_next_step
+)
 
 __all__ = [
     # llm_utils exports
@@ -38,5 +44,10 @@ __all__ = [
     "validate_operation_result",
     "suggest_refinement",
     "apply_refinement",
+    # multi_step_planner exports
+    "create_multi_step_plan",
+    "execute_multi_step_plan",
+    "resolve_dependencies",
+    "update_state_for_next_step",
 ]
 
