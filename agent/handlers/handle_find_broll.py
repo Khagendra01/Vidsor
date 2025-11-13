@@ -127,6 +127,40 @@ def handle_find_broll(
                 "chunks_created": []
             }
         
+        # Validate and filter time ranges to only include those within requested range (with buffer)
+        # Buffer allows B-roll up to 60 seconds before or after the requested range
+        buffer_seconds = 60.0
+        valid_time_ranges = []
+        for tr in time_ranges:
+            if len(tr) < 2:
+                continue
+            tr_start, tr_end = tr[0], tr[1]
+            # Check if range overlaps with or is near the requested range
+            # Range is valid if it overlaps with [start_time - buffer, end_time + buffer]
+            range_start = start_time - buffer_seconds
+            range_end = end_time + buffer_seconds
+            # Check for overlap: range overlaps if tr_start < range_end and tr_end > range_start
+            if tr_start < range_end and tr_end > range_start:
+                valid_time_ranges.append(tr)
+        
+        if not valid_time_ranges:
+            if verbose:
+                print(f"  ✗ No B-roll found within requested range ({start_time:.1f}s - {end_time:.1f}s ± {buffer_seconds}s)")
+                print(f"  ✗ Planner returned {len(time_ranges)} ranges, but none were within valid time window")
+            return {
+                "success": False,
+                "error": f"No B-roll found within requested time range ({start_time:.1f}s - {end_time:.1f}s)",
+                "chunks_created": []
+            }
+        
+        if verbose and len(valid_time_ranges) < len(time_ranges):
+            filtered_count = len(time_ranges) - len(valid_time_ranges)
+            print(f"  ⚠ Filtered out {filtered_count} time range(s) outside requested range ({start_time:.1f}s - {end_time:.1f}s)")
+            print(f"  ✓ {len(valid_time_ranges)} valid time range(s) remaining")
+        
+        # Use filtered time ranges
+        time_ranges = valid_time_ranges
+        
         search_results = planner_result.get("search_results", [])
         
         # PHASE 3: Filter and select best B-roll clips
