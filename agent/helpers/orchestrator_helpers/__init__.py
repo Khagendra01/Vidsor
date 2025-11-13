@@ -6,6 +6,7 @@ from agent.helpers.orchestrator_helpers.create_clarification_response import cre
 from agent.helpers.orchestrator_helpers.match_search_result_to_time_range import match_search_result_to_time_range
 from agent.helpers.orchestrator_helpers.create_timeline_chunk import create_timeline_chunk
 from agent.helpers.orchestrator_helpers.create_chunks_from_time_ranges import create_chunks_from_time_ranges
+from agent.helpers.orchestrator_helpers.gather_clip_contexts import gather_clip_contexts
 
 __all__ = [
     "recalculate_timeline_times",
@@ -14,5 +15,6 @@ __all__ = [
     "match_search_result_to_time_range",
     "create_timeline_chunk",
     "create_chunks_from_time_ranges",
+    "gather_clip_contexts",
 ]
 

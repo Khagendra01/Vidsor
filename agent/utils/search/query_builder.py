@@ -1,6 +1,6 @@
 """Query message building utilities for search queries."""
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 
 
 def format_content_inspection(content_inspection: dict) -> Dict[str, Any]:
@@ -113,7 +113,8 @@ Sample descriptions from video:
 def build_search_query_message(
     query: str,
     content_inspection: Optional[dict] = None,
-    video_narrative: Optional[dict] = None
+    video_narrative: Optional[dict] = None,
+    clip_contexts: Optional[List[Dict[str, Any]]] = None
 ) -> str:
     """
     Build search query message using template pattern.
@@ -130,6 +131,12 @@ def build_search_query_message(
     # Base template
     template_parts = ["User query: {query}\n"]
     
+    def _truncate(text: str, limit: int = 180) -> str:
+        text = text.strip()
+        if len(text) <= limit:
+            return text
+        return text[: limit - 3].rstrip() + "..."
+
     if content_inspection:
         # Format content inspection data
         formatted_inspection = format_content_inspection(content_inspection)
@@ -189,6 +196,50 @@ Based on the sample descriptions above, generate semantic queries that match the
 - Example: If descriptions say "person holding fish, backpack visible", query should be "person holding fish, backpack visible" (NOT "amazing fishing moment")
 """)
     
+    if clip_contexts:
+        formatted_clips = []
+        for i, ctx in enumerate(clip_contexts[:5], 1):
+            duration = ctx.get("duration")
+            time_range = ctx.get("time_range", [])
+            duration_text = f"{duration:.1f}s" if isinstance(duration, (int, float)) else "N/A"
+            time_text = (
+                f"{time_range[0]:.1f}s - {time_range[1]:.1f}s"
+                if len(time_range) == 2
+                else "N/A"
+            )
+            timeline_desc = ctx.get("timeline_description") or ctx.get("unified_description") or ""
+            visual_desc = ctx.get("visual_descriptions") or []
+            audio_desc = ctx.get("audio_descriptions") or []
+            object_desc = ctx.get("top_objects") or []
+
+            clip_lines = [
+                f"{i}. Timeline index {ctx.get('timeline_index')} | Duration: {duration_text} | Source time: {time_text}",
+            ]
+            if timeline_desc:
+                clip_lines.append(f"   Timeline label: {_truncate(timeline_desc, 160)}")
+            if object_desc:
+                clip_lines.append(f"   Dominant objects: {', '.join(object_desc)}")
+            if visual_desc:
+                clip_lines.append(f"   Visual cues: {', '.join(_truncate(v, 140) for v in visual_desc)}")
+            if audio_desc:
+                clip_lines.append(f"   Audio cues: {', '.join(_truncate(a, 140) for a in audio_desc)}")
+            if ctx.get("narrative"):
+                clip_lines.append(f"   Narrative recap: {_truncate(ctx['narrative'], 200)}")
+
+            formatted_clips.append("\n".join(clip_lines))
+
+        template_parts.append(
+            """\nExisting timeline clip context (these clips will be replaced with shorter alternatives):\n"""
+            + "\n".join(formatted_clips)
+            + """
+\nReplacement requirements:
+- Find segments that capture the SAME core actions/objects/audio themes as the referenced clips
+- Prefer clips that are SHORTER than the originals while staying faithful to the described content
+- If multiple strong candidates exist, prioritize higher density of matching objects/actions
+- Avoid generic filler; maintain the narrative intent implied by the clip context
+"""
+        )
+
     template_parts.append("Generate search queries and keywords for ALL search types. Return JSON only.")
     
     # Combine and format template
@@ -214,8 +265,10 @@ Based on the sample descriptions above, generate semantic queries that match the
                 "key_objects": formatted_narrative["key_objects"]
             })
         
+        format_dict["clip_contexts"] = clip_contexts
         return full_template.format(**format_dict)
     else:
         # Simple case without inspection
-        return full_template.format(query=query)
+        format_dict = {"query": query, "clip_contexts": clip_contexts}
+        return full_template.format(**format_dict)
 

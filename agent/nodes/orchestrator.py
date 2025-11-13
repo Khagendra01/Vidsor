@@ -10,7 +10,8 @@ from agent.orchestrator_handlers import (
     handle_replace,
     handle_insert,
     handle_find_broll,
-    handle_trim
+    handle_trim,
+    handle_apply_effect
 )
 from agent.nodes.planner import create_planner_agent
 from agent.utils.llm_utils import create_llm
@@ -94,6 +95,45 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
             operation = operation_result.get("operation")
             params = operation_result.get("parameters", {})
             
+            # If LLM returned UNKNOWN but we have effect parameters, try to use APPLY_EFFECT
+            if operation == "UNKNOWN" and params.get("effect_type") and params.get("effect_object"):
+                # Try to extract timeline indices if missing
+                indices = params.get("timeline_indices", [])
+                if not indices:
+                    # Use heuristic to extract indices from the query
+                    # Clean query first (remove clip references) then extract indices
+                    from agent.orchestrator_operations import _clean_query, _extract_timeline_indices
+                    cleaned_query = _clean_query(query)
+                    indices = _extract_timeline_indices(cleaned_query, chunk_count)
+                    if indices:
+                        params["timeline_indices"] = indices
+                        operation_result["parameters"]["timeline_indices"] = indices
+                        if log:
+                            log.info(f"  [OVERRIDE] Extracted timeline indices from query: {indices}")
+                            if cleaned_query != query:
+                                log.info(f"  [OVERRIDE] Cleaned query: '{cleaned_query}' (from: '{query}')")
+                        elif verbose:
+                            print(f"  [OVERRIDE] Extracted timeline indices from query: {indices}")
+                            if cleaned_query != query:
+                                print(f"  [OVERRIDE] Cleaned query: '{cleaned_query}' (from: '{query}')")
+                
+                # Check if we have timeline indices (required for APPLY_EFFECT)
+                if indices:
+                    if log:
+                        log.info(f"  [OVERRIDE] LLM returned UNKNOWN but effect parameters detected, using APPLY_EFFECT")
+                        log.info(f"  [OVERRIDE] Timeline indices: {indices}")
+                    elif verbose:
+                        print(f"  [OVERRIDE] LLM returned UNKNOWN but effect parameters detected, using APPLY_EFFECT")
+                        print(f"  [OVERRIDE] Timeline indices: {indices}")
+                    operation = "APPLY_EFFECT"
+                    operation_result["operation"] = "APPLY_EFFECT"
+                    operation_result["confidence"] = 0.7  # Medium confidence for override
+                else:
+                    if log:
+                        log.warning(f"  [OVERRIDE] Effect parameters detected but no timeline indices found in query")
+                    elif verbose:
+                        print(f"  [OVERRIDE] Effect parameters detected but no timeline indices found in query")
+            
             if operation != "UNKNOWN" and operation != "FIND_HIGHLIGHTS":
                 is_valid, error = validate_operation_params(
                     operation=operation,
@@ -103,7 +143,9 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                 )
                 
                 if not is_valid:
-                    if verbose:
+                    if log:
+                        log.warning(f"[WARNING] Invalid parameters: {error}")
+                    elif verbose:
                         print(f"[WARNING] Invalid parameters: {error}")
                     operation_result["operation"] = "UNKNOWN"
                     operation_result["error"] = error
@@ -127,7 +169,18 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
         
         # Step 3: Execute operation
         operation_result_dict = None
-        if current_operation and current_operation != "UNKNOWN" and timeline_manager:
+        if current_operation == "UNKNOWN":
+            # Handle UNKNOWN operation - return error result
+            operation_result_dict = {
+                "success": False,
+                "error": operation_result.get("error") if operation_result else "Unknown operation",
+                "reasoning": operation_result.get("reasoning") if operation_result else "Could not classify operation"
+            }
+            if log:
+                log.warning(f"[WARNING] Unknown operation - cannot execute")
+            elif verbose:
+                print(f"[WARNING] Unknown operation - cannot execute")
+        elif current_operation and timeline_manager:
             # Create planner agent node for operations that need it
             planner_node = create_planner_agent(model_name)
             
@@ -158,6 +211,10 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
                     )
                 elif current_operation == "TRIM":
                     operation_result_dict = handle_trim(
+                        state, timeline_manager, operation_params, verbose=verbose
+                    )
+                elif current_operation == "APPLY_EFFECT":
+                    operation_result_dict = handle_apply_effect(
                         state, timeline_manager, operation_params, verbose=verbose
                     )
                 else:

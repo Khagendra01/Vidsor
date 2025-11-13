@@ -21,6 +21,7 @@ Operation Types:
 - FIND_BROLL: Find complementary B-roll for selected timeline segments (e.g., "find B-roll for timeline 0-2")
 - REORDER: Change clip sequence (e.g., "move timeline index 3 before index 1")
 - TRIM: Adjust clip boundaries (e.g., "trim timeline index 0 by 2 seconds")
+- APPLY_EFFECT: Apply visual effects to clips (e.g., "zoom in on the man then zoom out in timeline index 0", "make this clip start zoomed in on the plane")
 
 Best Practices:
 - Maintain narrative continuity between clips
@@ -44,7 +45,7 @@ IMPORTANT: Always analyze and rephrase the query to preserve ALL context, especi
 Classify the operation and extract parameters. Return JSON only:
 
 {{
-    "operation": "FIND_HIGHLIGHTS" | "CUT" | "REPLACE" | "INSERT" | "FIND_BROLL" | "REORDER" | "TRIM" | "UNKNOWN",
+    "operation": "FIND_HIGHLIGHTS" | "CUT" | "REPLACE" | "INSERT" | "FIND_BROLL" | "REORDER" | "TRIM" | "APPLY_EFFECT" | "UNKNOWN",
     "confidence": 0.0-1.0,
     "parameters": {{
         "timeline_indices": [0, 1, 2],  // For CUT, REPLACE, REORDER, TRIM, FIND_BROLL
@@ -59,7 +60,10 @@ Classify the operation and extract parameters. Return JSON only:
         "reorder_to_index": 1,  // For REORDER
         "trim_index": 0,  // For TRIM
         "trim_seconds": 2.0,  // For TRIM (positive = trim from end, negative = trim from start)
-        "trim_from": "start" | "end"  // For TRIM
+        "trim_from": "start" | "end",  // For TRIM
+        "effect_type": "zoom_in_to_out" | "zoom_in" | "zoom_out",  // For APPLY_EFFECT
+        "effect_object": "man" | "plane" | "person",  // For APPLY_EFFECT (object to zoom on)
+        "effect_duration": 1.0  // For APPLY_EFFECT (duration in seconds, default 1.0)
     }},
     "reasoning": "brief explanation of classification"
 }}
@@ -72,6 +76,7 @@ Guidelines:
 - "B-roll", "broll", "b roll" + timeline indices → FIND_BROLL
 - "move", "reorder" + indices → REORDER
 - "trim", "shorten", "cut" + timeline index + time → TRIM
+- "zoom", "effect", "apply" + timeline index + object → APPLY_EFFECT
 
 CRITICAL for search_query and temporal_constraint:
 - Extract the core search term in "search_query" (e.g., "helicopter clips", "cooking moments")

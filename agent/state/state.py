@@ -21,6 +21,7 @@ class AgentState(TypedDict):
     segment_tree: Optional[SegmentTreeQuery]
     verbose: bool  # Whether to print verbose output
     logger: Optional[Any]  # Logger instance (optional)
+    clip_contexts: Optional[List[Dict]]  # Context about referenced timeline clips
     # Memory/context fields for agentic behavior
     previous_time_ranges: Optional[List[Tuple[float, float]]]  # Previous search results
     previous_scored_seconds: Optional[List[Dict]]  # Previous scored seconds with scores

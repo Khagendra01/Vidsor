@@ -8,6 +8,7 @@ from agent.helpers.orchestrator_helpers import (
     create_clarification_response,
     create_chunks_from_time_ranges,
     recalculate_timeline_times,
+    gather_clip_contexts,
 )
 
 
@@ -65,6 +66,10 @@ def handle_replace(
     
     # Get chunks to be replaced (for reference)
     chunks_to_replace = timeline_manager.get_chunks(indices)
+
+    # Gather contextual information about the referenced clips
+    segment_tree = state.get("segment_tree")
+    clip_contexts = gather_clip_contexts(segment_tree, timeline_manager, indices)
     
     # Combine search query with temporal constraint if present
     # This ensures the planner searches with full context
@@ -91,6 +96,8 @@ def handle_replace(
         "time_ranges": None,
         "needs_clarification": False,
         "messages": state.get("messages", []),
+        # Provide clip context so planner can understand what is being replaced
+        "clip_contexts": clip_contexts,
         # Pass temporal constraint separately for potential filtering
         "temporal_constraint": temporal_constraint,
         "temporal_type": temporal_type,

@@ -6,6 +6,7 @@ from agent.handlers.handle_cut import handle_cut
 from agent.handlers.handle_replace import handle_replace
 from agent.handlers.handle_insert import handle_insert
 from agent.handlers.handle_find_broll import handle_find_broll
+from agent.handlers.handle_apply_effect import handle_apply_effect
 from agent.handlers.duration_constraints import (
     apply_duration_constraints,
     apply_duration_constraints_with_neighbors,
@@ -18,6 +19,7 @@ __all__ = [
     "handle_replace",
     "handle_insert",
     "handle_find_broll",
+    "handle_apply_effect",
     "apply_duration_constraints",
     "apply_duration_constraints_with_neighbors",
 ]

@@ -29,6 +29,7 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         segment_tree = state["segment_tree"]
         verbose = state.get("verbose", False)
         logger = state.get("logger")
+        clip_contexts = state.get("clip_contexts") or []
         
         # Use shared logging helper
         log_info = get_log_helper(logger, verbose)
@@ -82,7 +83,13 @@ def create_planner_agent(model_name: str = "gpt-4o-mini"):
         
         # STEP 1: Generate search queries and perform semantic analysis
         search_plan, semantic_analysis, query_intent = generate_search_queries(
-            query, content_inspection, video_narrative, llm, logger=logger, verbose=verbose
+            query,
+            content_inspection,
+            video_narrative,
+            llm,
+            clip_contexts=clip_contexts,
+            logger=logger,
+            verbose=verbose
         )
         
         # Store semantic_analysis and strategy in state for later use

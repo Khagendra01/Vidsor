@@ -2,7 +2,7 @@
 
 import re
 import time
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from concurrent.futures import ThreadPoolExecutor
 from langchain_core.messages import HumanMessage, SystemMessage
 from agent.utils.logging_utils import get_log_helper
@@ -24,6 +24,7 @@ def generate_search_queries(
     content_inspection: Optional[dict],
     video_narrative: Optional[dict],
     llm,
+    clip_contexts: Optional[List[Dict[str, Any]]] = None,
     logger=None,
     verbose: bool = False
 ) -> tuple[dict, dict, dict]:
@@ -56,7 +57,8 @@ def generate_search_queries(
         user_message_content = build_search_query_message(
             query=query,
             content_inspection=content_inspection,
-            video_narrative=video_narrative
+            video_narrative=video_narrative,
+            clip_contexts=clip_contexts
         )
         
         messages_step1 = [
@@ -118,6 +120,8 @@ def generate_search_queries(
     log.info(f"  Semantic queries: {search_plan.get('semantic_queries', [])}")
     log.info(f"  Hierarchical keywords: {search_plan.get('hierarchical_keywords', [])}")
     log.info(f"  Object classes: {search_plan.get('object_classes', [])}")
+    if clip_contexts:
+        log.info(f"  Clip contexts provided: {len(clip_contexts)}")
     log.info(f"  Activity: {search_plan.get('activity_name', 'N/A')}")
     log.info(f"  Is general highlight query: {search_plan.get('is_general_highlight_query', False)}")
     

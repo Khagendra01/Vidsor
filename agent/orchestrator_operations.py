@@ -7,6 +7,141 @@ from langchain_core.messages import SystemMessage, HumanMessage
 from agent.utils.llm_utils import parse_json_response, invoke_llm_with_json
 
 
+def _clean_query(query: str) -> str:
+    """
+    Clean user query by removing clip references like "clip5", "@clip5", etc.
+    Handles clip references anywhere in the text and in various formats.
+    
+    Clip references are UI metadata (like @clip1, clip5) that users might include
+    when referring to timeline chunks. These should be removed so the actual
+    command can be processed correctly.
+    
+    Examples:
+    - "clip5 Make timeline start zoomed" → "Make timeline start zoomed"
+    - "Make @clip4 start zoomed in" → "Make start zoomed in"
+    - "find clip moments" → "find clip moments" (NOT removed - "clip" not followed by digits)
+    - "clip number 3 make it shorter" → "make it shorter"
+    
+    Args:
+        query: Raw user query
+        
+    Returns:
+        Cleaned query string
+    """
+    # Patterns to match various clip reference formats:
+    # - @clip5, @clip 5, @clip-5 (with @ symbol)
+    # - clip5, clip 5, clip-5 (without @)
+    # - clip number 5, clip #5 (with "number" or "#")
+    # - the 5th clip, 5th clip (ordinal format)
+    # Works anywhere in text (start, middle, end)
+    
+    # Pattern 1: @clip followed by optional space/dash and digits (anywhere in text)
+    # Matches: @clip5, @clip 5, @clip-5, @CLIP5, etc.
+    # Word boundary ensures we don't match "@clipping" or similar
+    cleaned = re.sub(r'@clip\s*-?\s*\d+\b', '', query, flags=re.IGNORECASE)
+    
+    # Pattern 2: "clip" followed by optional space/dash and digits (standalone word)
+    # Matches: clip5, clip 5, clip-5, but NOT "clip moments" or "clip editing"
+    # Word boundaries (\b) ensure "clip" is a complete word, and \d+ ensures digits follow
+    # This safely distinguishes "clip5" (reference) from "clip moments" (command)
+    cleaned = re.sub(r'\bclip\s*-?\s*\d+\b', '', cleaned, flags=re.IGNORECASE)
+    
+    # Pattern 3: "clip number X", "clip #X" (explicit number format)
+    cleaned = re.sub(r'\bclip\s+number\s+\d+\b', '', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\bclip\s+#\s*\d+\b', '', cleaned, flags=re.IGNORECASE)
+    
+    # Pattern 4: "the Xth clip", "Xth clip" (ordinal format)
+    cleaned = re.sub(r'\bthe\s+\d+th\s+clip\b', '', cleaned, flags=re.IGNORECASE)
+    cleaned = re.sub(r'\b\d+th\s+clip\b', '', cleaned, flags=re.IGNORECASE)
+    
+    # Clean up multiple spaces that might result from removals
+    # Replace 2+ spaces with single space, trim edges
+    cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+    
+    # Return cleaned query, or original if cleaning resulted in empty string
+    return cleaned if cleaned else query
+
+
+def _extract_clip_references(query: str) -> List[Dict[str, Any]]:
+    """
+    Extract clip references (clip numbers) from the raw query text.
+
+    Returns:
+        List of dicts with keys:
+            - raw: original matched text
+            - label: normalized label (e.g., "clip3")
+            - clip_number: 1-based clip number as int
+            - index: 0-based timeline index (clip_number - 1)
+    """
+    references: List[Dict[str, Any]] = []
+    seen_indices: set[int] = set()
+
+    def add_reference(raw_text: str, clip_number: int):
+        index = clip_number - 1
+        if index < 0:
+            return
+        if index in seen_indices:
+            return
+        seen_indices.add(index)
+        references.append(
+            {
+                "raw": raw_text.strip(),
+                "label": f"clip{clip_number}",
+                "clip_number": clip_number,
+                "index": index,
+            }
+        )
+
+    range_pattern = re.compile(
+        r'\bclip\s*(?:number\s*)?(\d+)\s*(?:to|through|-)\s*(\d+)\b',
+        re.IGNORECASE,
+    )
+    for match in range_pattern.finditer(query):
+        start = int(match.group(1))
+        end = int(match.group(2))
+        if start <= end:
+            numbers = range(start, end + 1)
+        else:
+            numbers = range(start, end - 1, -1)
+        for num in numbers:
+            add_reference(match.group(0), num)
+
+    multi_pattern = re.compile(
+        r'\bclip\s*(?:number\s*)?((?:\d+\s*,\s*)+\d+)\b',
+        re.IGNORECASE,
+    )
+    for match in multi_pattern.finditer(query):
+        segment = match.group(1)
+        for num_text in re.findall(r'\d+', segment):
+            add_reference(match.group(0), int(num_text))
+
+    and_pattern = re.compile(
+        r'\bclip\s*(?:number\s*)?(\d+)\s+(?:and|&)\s+(\d+)\b',
+        re.IGNORECASE,
+    )
+    for match in and_pattern.finditer(query):
+        add_reference(match.group(0), int(match.group(1)))
+        add_reference(match.group(0), int(match.group(2)))
+
+    direct_pattern = re.compile(r'@?clip\s*-?\s*(\d+)\b', re.IGNORECASE)
+    for match in direct_pattern.finditer(query):
+        add_reference(match.group(0), int(match.group(1)))
+
+    hash_pattern = re.compile(r'\bclip\s*#\s*(\d+)\b', re.IGNORECASE)
+    for match in hash_pattern.finditer(query):
+        add_reference(match.group(0), int(match.group(1)))
+
+    number_pattern = re.compile(r'\bclip\s+number\s+(\d+)\b', re.IGNORECASE)
+    for match in number_pattern.finditer(query):
+        add_reference(match.group(0), int(match.group(1)))
+
+    ordinal_pattern = re.compile(r'\b(\d+)(?:st|nd|rd|th)\s+clip\b', re.IGNORECASE)
+    for match in ordinal_pattern.finditer(query):
+        add_reference(match.group(0), int(match.group(1)))
+
+    return references
+
+
 def classify_operation(query: str, chunk_count: int, duration: float, llm, verbose: bool = False) -> Dict[str, Any]:
     """
     Classify user query into an operation type and extract parameters.
@@ -23,18 +158,36 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
     """
     from agent.prompts.orchestrator_prompts import ORCHESTRATOR_SYSTEM_PROMPT, OPERATION_CLASSIFICATION_PROMPT
     
+    original_query = query
+    clip_references = _extract_clip_references(original_query)
+    clip_reference_indices = [ref["index"] for ref in clip_references]
+    
     if verbose:
         print("\n[CLASSIFICATION] Analyzing user query...")
-        print(f"  Query: {query}")
+        print(f"  Query: {original_query}")
         print(f"  Timeline context: {chunk_count} chunks, {duration:.2f}s")
+        if clip_references:
+            mapped = ", ".join(f"{ref['label']}→{ref['index']}" for ref in clip_references)
+            print(f"  Detected clip references: {mapped}")
     
     system_prompt = ORCHESTRATOR_SYSTEM_PROMPT + "\n\n" + OPERATION_CLASSIFICATION_PROMPT
     
     user_message = OPERATION_CLASSIFICATION_PROMPT.format(
-        query=query,
+        query=original_query,
         chunk_count=chunk_count,
         duration=duration
     )
+
+    if clip_references:
+        reference_lines = [
+            f"- {ref['label']} (raw: \"{ref['raw']}\") → timeline index {ref['index']}"
+            for ref in clip_references
+        ]
+        user_message += (
+            "\nDetected clip references (timeline indices are 0-based):\n"
+            + "\n".join(reference_lines)
+            + "\nPrefer these indices if they align with the user's intent."
+        )
     
     fallback_result = {
         "operation": "UNKNOWN",
@@ -43,6 +196,10 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
         "reasoning": "Fallback due to parsing error"
     }
     
+    clip_indices_valid = [
+        idx for idx in clip_reference_indices if 0 <= idx < chunk_count
+    ]
+
     try:
         result = invoke_llm_with_json(
             llm=llm,
@@ -50,6 +207,23 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
             user_message=user_message,
             fallback=fallback_result
         )
+
+        if clip_indices_valid:
+            parameters = result.setdefault("parameters", {})
+            existing_indices = parameters.get("timeline_indices") or []
+
+            combined_indices: List[int] = []
+            for idx in existing_indices:
+                if isinstance(idx, int) and 0 <= idx < chunk_count and idx not in combined_indices:
+                    combined_indices.append(idx)
+            for idx in clip_indices_valid:
+                if idx not in combined_indices:
+                    combined_indices.append(idx)
+
+            if combined_indices:
+                parameters["timeline_indices"] = combined_indices
+                if verbose:
+                    print(f"  Applied clip references → timeline_indices: {combined_indices}")
         
         if verbose:
             print(f"  Operation: {result.get('operation')}")
@@ -63,10 +237,20 @@ def classify_operation(query: str, chunk_count: int, duration: float, llm, verbo
             print(f"  [FALLBACK] Classification failed: {e}, using heuristic")
         
         # Fallback to heuristic classification
-        return _classify_operation_heuristic(query, chunk_count, verbose)
+        return _classify_operation_heuristic(
+            original_query,
+            chunk_count,
+            clip_indices=clip_indices_valid,
+            verbose=verbose
+        )
 
 
-def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = False) -> Dict[str, Any]:
+def _classify_operation_heuristic(
+    query: str,
+    chunk_count: int,
+    clip_indices: Optional[List[int]] = None,
+    verbose: bool = False
+) -> Dict[str, Any]:
     """
     Heuristic fallback for operation classification.
     
@@ -78,10 +262,17 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
     Returns:
         Dictionary with operation classification and parameters
     """
+    # Clean query by removing clip prefixes
+    query = _clean_query(query)
     query_lower = query.lower()
     
     # Extract timeline indices
     indices = _extract_timeline_indices(query, chunk_count)
+    clip_indices = clip_indices or []
+    for clip_idx in clip_indices:
+        if 0 <= clip_idx < chunk_count and clip_idx not in indices:
+            indices.append(clip_idx)
+    indices = sorted(indices)
     
     # Classify operation
     if any(kw in query_lower for kw in ["highlight", "best moment", "show me", "find"]):
@@ -99,6 +290,11 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
         operation = "REORDER"
     elif any(kw in query_lower for kw in ["trim", "shorten"]):
         operation = "TRIM"
+    elif any(kw in query_lower for kw in ["zoom", "effect", "apply"]):
+        if any(kw in query_lower for kw in ["zoom", "zoomed"]):
+            operation = "APPLY_EFFECT"
+        else:
+            operation = "UNKNOWN"
     else:
         operation = "UNKNOWN"
     
@@ -180,6 +376,41 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
             except:
                 pass
     
+    # Extract effect parameters
+    effect_type = None
+    effect_object = None
+    effect_duration = None
+    
+    if operation == "APPLY_EFFECT":
+        # Extract effect type (zoom in/out, etc.)
+        if "zoom" in query_lower:
+            if "zoom in" in query_lower or "zoomed in" in query_lower:
+                effect_type = "zoom_in"
+            elif "zoom out" in query_lower or "zoomed out" in query_lower:
+                effect_type = "zoom_out"
+            elif "zoom" in query_lower:
+                # Default to zoom in then out
+                effect_type = "zoom_in_to_out"
+        
+        # Extract object name (man, plane, person, etc.)
+        # Common object patterns
+        object_patterns = [
+            r'(?:on|to|the)\s+(man|woman|person|people|plane|airplane|car|truck|boat|dog|cat|bird)',
+            r'(?:zoom|effect).*?(?:on|to|the)\s+(\w+)',
+        ]
+        for pattern in object_patterns:
+            match = re.search(pattern, query_lower)
+            if match:
+                effect_object = match.group(1)
+                break
+        
+        # Extract duration (default 1.0 second)
+        duration_match = re.search(r'(\d+(?:\.\d+)?)\s*(?:second|sec|s)', query_lower)
+        if duration_match:
+            effect_duration = float(duration_match.group(1))
+        else:
+            effect_duration = 1.0  # Default
+    
     result = {
         "operation": operation,
         "confidence": 0.6,  # Lower confidence for heuristic
@@ -194,7 +425,10 @@ def _classify_operation_heuristic(query: str, chunk_count: int, verbose: bool = 
             "trim_seconds": trim_seconds,
             "trim_from": trim_from,
             "trim_target_length": trim_target_length,
-            "remove_range": remove_range
+            "remove_range": remove_range,
+            "effect_type": effect_type,
+            "effect_object": effect_object,
+            "effect_duration": effect_duration
         },
         "reasoning": "Heuristic classification (LLM classification failed)"
     }
@@ -219,6 +453,20 @@ def _extract_timeline_indices(query: str, chunk_count: int) -> List[int]:
     """
     query_lower = query.lower()
     indices = []
+    
+    # Pattern 0: "timeline start", "start", "beginning" - means index 0
+    # Check various ways to refer to the first/timeline start
+    start_phrases = [
+        "timeline start", "timeline beginning", 
+        "at start", "at beginning",
+        "make timeline start", "make start",
+        "the start", "the beginning",
+        "from start", "from beginning"
+    ]
+    if any(phrase in query_lower for phrase in start_phrases):
+        if chunk_count > 0:
+            indices.append(0)
+            return sorted(indices)
     
     # Pattern 1: "first two", "first 3", etc. (check this first to avoid conflicts)
     # Handle both numeric and word numbers
@@ -443,6 +691,22 @@ def validate_operation_params(operation: str, params: Dict, chunk_count: int, ve
         if not (has_delta or has_target or has_remove):
             # Legacy simple phrasing like "trim the first clip" without numbers is ambiguous
             return False, "TRIM requires trim_seconds, trim_target_length, or remove_range"
+    
+    elif operation == "APPLY_EFFECT":
+        indices = params.get("timeline_indices", [])
+        if not indices:
+            return False, "APPLY_EFFECT requires timeline indices"
+        for idx in indices:
+            if not isinstance(idx, int) or idx < 0 or idx >= chunk_count:
+                return False, f"Invalid timeline index: {idx} (timeline has {chunk_count} chunks)"
+        
+        effect_type = params.get("effect_type")
+        if not effect_type:
+            return False, "APPLY_EFFECT requires effect_type"
+        
+        effect_object = params.get("effect_object")
+        if not effect_object:
+            return False, "APPLY_EFFECT requires effect_object"
     
     return True, None
 

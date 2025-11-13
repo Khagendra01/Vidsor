@@ -12,6 +12,7 @@ from agent.handlers import (
     handle_replace,
     handle_insert,
     handle_find_broll,
+    handle_apply_effect,
     apply_duration_constraints as _apply_duration_constraints,
     apply_duration_constraints_with_neighbors as _apply_duration_constraints_with_neighbors,
 )
@@ -23,6 +24,7 @@ __all__ = [
     "handle_replace",
     "handle_insert",
     "handle_find_broll",
+    "handle_apply_effect",
     "_apply_duration_constraints",
     "_apply_duration_constraints_with_neighbors",
 ]
