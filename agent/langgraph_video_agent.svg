@@ -1,0 +1,286 @@
+<svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="orchestratorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="plannerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f5576c;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="timelineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="searchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#38f9d7;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Arrow marker -->
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#666" />
+    </marker>
+    
+    <!-- Glow filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Styling -->
+    <style>
+      .node { cursor: pointer; }
+      text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; }
+    </style>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#0f0f23"/>
+  
+  <!-- Title -->
+  <text x="600" y="35" font-size="24" font-weight="bold" fill="#fff" text-anchor="middle">
+    LangGraph Video Editing Agent
+  </text>
+  <text x="600" y="58" font-size="14" fill="#888" text-anchor="middle">
+    Natural Language Video Timeline Editor
+  </text>
+  
+  <!-- User Input -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" fill="freeze"/>
+    <rect x="480" y="90" width="240" height="60" rx="10" fill="#1a1a2e" stroke="#4facfe" stroke-width="2"/>
+    <text x="600" y="115" font-size="14" font-weight="600" fill="#fff" text-anchor="middle">👤 User Query</text>
+    <text x="600" y="135" font-size="11" fill="#aaa" text-anchor="middle">"Find highlights of fishing"</text>
+  </g>
+  
+  <!-- Flow arrow 1 -->
+  <path d="M 600 150 L 600 190" stroke="#4facfe" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5">
+    <animate attributeName="stroke-dashoffset" values="20;0" dur="1s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Orchestrator Agent (Main) -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="0.2s" fill="freeze"/>
+    <rect x="380" y="190" width="440" height="280" rx="15" fill="url(#orchestratorGrad)" opacity="0.15"/>
+    <rect x="380" y="190" width="440" height="50" rx="15" fill="url(#orchestratorGrad)"/>
+    <text x="600" y="220" font-size="16" font-weight="bold" fill="#fff" text-anchor="middle">🎯 ORCHESTRATOR AGENT</text>
+    
+    <!-- Orchestrator steps -->
+    <g transform="translate(400, 260)">
+      <!-- Classification -->
+      <rect x="0" y="0" width="180" height="70" rx="8" fill="#2a2a40" stroke="#667eea" stroke-width="2"/>
+      <text x="90" y="25" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">1. Classify Operation</text>
+      <text x="90" y="42" font-size="10" fill="#aaa" text-anchor="middle">→ FIND_HIGHLIGHTS</text>
+      <text x="90" y="57" font-size="10" fill="#aaa" text-anchor="middle">→ CUT, REPLACE, etc.</text>
+      
+      <!-- Arrow -->
+      <path d="M 185 35 L 215 35" stroke="#667eea" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5">
+        <animate attributeName="stroke-dashoffset" values="20;0" dur="1s" repeatCount="indefinite"/>
+      </path>
+      
+      <!-- Parameter Extraction -->
+      <rect x="220" y="0" width="180" height="70" rx="8" fill="#2a2a40" stroke="#667eea" stroke-width="2"/>
+      <text x="310" y="25" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">2. Extract Parameters</text>
+      <text x="310" y="42" font-size="10" fill="#aaa" text-anchor="middle">query: "fishing"</text>
+      <text x="310" y="57" font-size="10" fill="#aaa" text-anchor="middle">indices: [0, 4]</text>
+      
+      <!-- Execution box -->
+      <rect x="0" y="90" width="400" height="85" rx="8" fill="#2a2a40" stroke="#667eea" stroke-width="2"/>
+      <text x="200" y="110" font-size="12" font-weight="600" fill="#fff" text-anchor="middle">3. Execute Operation</text>
+      
+      <!-- Handler pills -->
+      <rect x="15" y="120" width="85" height="22" rx="11" fill="#667eea" opacity="0.3"/>
+      <text x="57" y="135" font-size="9" fill="#fff" text-anchor="middle">handle_cut</text>
+      
+      <rect x="110" y="120" width="95" height="22" rx="11" fill="#667eea" opacity="0.3"/>
+      <text x="157" y="135" font-size="9" fill="#fff" text-anchor="middle">handle_replace</text>
+      
+      <rect x="215" y="120" width="90" height="22" rx="11" fill="#667eea" opacity="0.3"/>
+      <text x="260" y="135" font-size="9" fill="#fff" text-anchor="middle">handle_insert</text>
+      
+      <rect x="315" y="120" width="70" height="22" rx="11" fill="#667eea" opacity="0.3"/>
+      <text x="350" y="135" font-size="9" fill="#fff" text-anchor="middle">handle_trim</text>
+      
+      <rect x="15" y="148" width="110" height="22" rx="11" fill="#f5576c" opacity="0.5">
+        <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="70" y="163" font-size="9" fill="#fff" text-anchor="middle">handle_highlights</text>
+      
+      <rect x="135" y="148" width="100" height="22" rx="11" fill="#667eea" opacity="0.3"/>
+      <text x="185" y="163" font-size="9" fill="#fff" text-anchor="middle">handle_apply_fx</text>
+    </g>
+  </g>
+  
+  <!-- Arrow to Planner -->
+  <path d="M 380 320 L 280 320 L 280 360 L 250 360" stroke="#f5576c" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5">
+    <animate attributeName="stroke-dashoffset" values="20;0" dur="1s" begin="0.4s" repeatCount="indefinite"/>
+  </path>
+  <text x="290" y="345" font-size="10" fill="#f5576c">needs search</text>
+  
+  <!-- Planner Agent -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="0.6s" fill="freeze"/>
+    <rect x="50" y="340" width="200" height="240" rx="12" fill="url(#plannerGrad)" opacity="0.15"/>
+    <rect x="50" y="340" width="200" height="45" rx="12" fill="url(#plannerGrad)"/>
+    <text x="150" y="368" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">🔍 PLANNER</text>
+    
+    <g transform="translate(60, 400)">
+      <!-- Step 1 -->
+      <rect x="0" y="0" width="180" height="35" rx="6" fill="#2a2a40" stroke="#f5576c" stroke-width="1.5"/>
+      <text x="90" y="22" font-size="11" fill="#fff" text-anchor="middle">1. Inspect Segment Tree</text>
+      
+      <!-- Step 2 -->
+      <rect x="0" y="45" width="180" height="35" rx="6" fill="#2a2a40" stroke="#f5576c" stroke-width="1.5"/>
+      <text x="90" y="67" font-size="11" fill="#fff" text-anchor="middle">2. Generate Queries</text>
+      
+      <!-- Step 3 -->
+      <rect x="0" y="90" width="180" height="35" rx="6" fill="#2a2a40" stroke="#f5576c" stroke-width="1.5"/>
+      <text x="90" y="112" font-size="11" fill="#fff" text-anchor="middle">3. Multi-modal Search</text>
+      
+      <!-- Step 4 -->
+      <rect x="0" y="135" width="180" height="35" rx="6" fill="#2a2a40" stroke="#f5576c" stroke-width="1.5"/>
+      <text x="90" y="157" font-size="11" fill="#fff" text-anchor="middle">4. Score &amp; Select Results</text>
+    </g>
+  </g>
+  
+  <!-- Search Types -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="0.8s" fill="freeze"/>
+    <rect x="50" y="610" width="200" height="140" rx="10" fill="#1a1a2e" stroke="#43e97b" stroke-width="2"/>
+    <text x="150" y="635" font-size="13" font-weight="600" fill="#43e97b" text-anchor="middle">Multi-modal Search</text>
+    
+    <text x="60" y="660" font-size="10" fill="#fff">• Semantic: Text descriptions</text>
+    <text x="60" y="680" font-size="10" fill="#fff">• Activity: Action patterns</text>
+    <text x="60" y="700" font-size="10" fill="#fff">• Hierarchical: Scene structure</text>
+    <text x="60" y="720" font-size="10" fill="#fff">• Object Detection: Entities</text>
+  </g>
+  
+  <!-- Arrow from Planner back to Orchestrator -->
+  <path d="M 250 450 L 360 450 L 360 400" stroke="#f5576c" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5">
+    <animate attributeName="stroke-dashoffset" values="20;0" dur="1s" begin="1s" repeatCount="indefinite"/>
+  </path>
+  <text x="275" y="465" font-size="10" fill="#f5576c">time ranges</text>
+  
+  <!-- Timeline Manager -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="1.2s" fill="freeze"/>
+    <rect x="880" y="190" width="270" height="280" rx="12" fill="#1a1a2e" stroke="#4facfe" stroke-width="2"/>
+    <rect x="880" y="190" width="270" height="45" rx="12" fill="url(#timelineGrad)"/>
+    <text x="1015" y="218" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">📹 TIMELINE MANAGER</text>
+    
+    <g transform="translate(895, 255)">
+      <text x="0" y="0" font-size="12" font-weight="600" fill="#4facfe">timeline.json</text>
+      
+      <!-- Timeline chunk visualization -->
+      <rect x="0" y="15" width="240" height="60" rx="5" fill="#2a2a40" stroke="#4facfe" stroke-width="1"/>
+      <text x="5" y="32" font-size="9" fill="#aaa">chunks: [</text>
+      
+      <!-- Chunk boxes -->
+      <rect x="10" y="40" width="45" height="25" rx="3" fill="#667eea" opacity="0.7"/>
+      <text x="32" y="56" font-size="8" fill="#fff" text-anchor="middle">clip1</text>
+      
+      <rect x="60" y="40" width="45" height="25" rx="3" fill="#667eea" opacity="0.7"/>
+      <text x="82" y="56" font-size="8" fill="#fff" text-anchor="middle">clip2</text>
+      
+      <rect x="110" y="40" width="45" height="25" rx="3" fill="#43e97b" opacity="0.9">
+        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="2s" repeatCount="indefinite"/>
+      </rect>
+      <text x="132" y="56" font-size="8" fill="#fff" text-anchor="middle">new</text>
+      
+      <rect x="160" y="40" width="45" height="25" rx="3" fill="#667eea" opacity="0.7"/>
+      <text x="182" y="56" font-size="8" fill="#fff" text-anchor="middle">clip3</text>
+      
+      <text x="5" y="72" font-size="9" fill="#aaa">]</text>
+      
+      <!-- Properties -->
+      <text x="0" y="95" font-size="10" fill="#fff">Each chunk tracks:</text>
+      <text x="10" y="112" font-size="9" fill="#aaa">• start_time / end_time</text>
+      <text x="10" y="127" font-size="9" fill="#aaa">• original_start / end</text>
+      <text x="10" y="142" font-size="9" fill="#aaa">• description</text>
+      <text x="10" y="157" font-size="9" fill="#aaa">• effects [ ]</text>
+      
+      <!-- Operations -->
+      <rect x="0" y="175" width="240" height="65" rx="5" fill="#2a2a40" stroke="#4facfe" stroke-width="1"/>
+      <text x="5" y="192" font-size="10" font-weight="600" fill="#4facfe">Operations:</text>
+      <text x="10" y="207" font-size="9" fill="#fff">• Load/Save timeline</text>
+      <text x="10" y="222" font-size="9" fill="#fff">• Add/Remove chunks</text>
+      <text x="10" y="237" font-size="9" fill="#fff">• Recalculate positions</text>
+    </g>
+  </g>
+  
+  <!-- Arrow from Orchestrator to Timeline -->
+  <path d="M 820 330 L 880 330" stroke="#4facfe" stroke-width="2" marker-end="url(#arrowhead)" stroke-dasharray="5,5">
+    <animate attributeName="stroke-dashoffset" values="20;0" dur="1s" begin="1.4s" repeatCount="indefinite"/>
+  </path>
+  <text x="825" y="320" font-size="10" fill="#4facfe">update</text>
+  
+  <!-- Output -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="1.6s" fill="freeze"/>
+    <rect x="880" y="500" width="270" height="80" rx="10" fill="#1a1a2e" stroke="#43e97b" stroke-width="2"/>
+    <text x="1015" y="530" font-size="14" font-weight="600" fill="#43e97b" text-anchor="middle">✅ Result</text>
+    <text x="1015" y="550" font-size="11" fill="#aaa" text-anchor="middle">Updated Timeline</text>
+    <text x="1015" y="568" font-size="11" fill="#aaa" text-anchor="middle">+ Confidence Scores</text>
+  </g>
+  
+  <!-- Context Memory -->
+  <g class="node" opacity="0">
+    <animate attributeName="opacity" values="0;1" dur="0.5s" begin="1.8s" fill="freeze"/>
+    <rect x="50" y="90" width="200" height="80" rx="10" fill="#1a1a2e" stroke="#f093fb" stroke-width="2" stroke-dasharray="5,5"/>
+    <text x="150" y="115" font-size="13" font-weight="600" fill="#f093fb" text-anchor="middle">💾 Context Memory</text>
+    <text x="150" y="135" font-size="10" fill="#aaa" text-anchor="middle">Previous queries</text>
+    <text x="150" y="152" font-size="10" fill="#aaa" text-anchor="middle">Search results cache</text>
+  </g>
+  
+  <!-- Data flow indicators -->
+  <circle cx="600" cy="170" r="4" fill="#4facfe">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4.4;4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="265" cy="340" r="4" fill="#f5576c">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4.4;4" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="850" cy="330" r="4" fill="#4facfe">
+    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="r" values="4;4.4;4" dur="2s" begin="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Legend -->
+  <g transform="translate(300, 620)">
+    <text x="0" y="0" font-size="12" font-weight="600" fill="#888">Operation Types:</text>
+    
+    <rect x="0" y="10" width="100" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="50" y="24" font-size="9" fill="#fff" text-anchor="middle">FIND_HIGHLIGHTS</text>
+    
+    <rect x="110" y="10" width="70" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="145" y="24" font-size="9" fill="#fff" text-anchor="middle">FIND_BROLL</text>
+    
+    <rect x="190" y="10" width="40" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="210" y="24" font-size="9" fill="#fff" text-anchor="middle">CUT</text>
+    
+    <rect x="240" y="10" width="55" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="267" y="24" font-size="9" fill="#fff" text-anchor="middle">REPLACE</text>
+    
+    <rect x="305" y="10" width="50" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="330" y="24" font-size="9" fill="#fff" text-anchor="middle">INSERT</text>
+    
+    <rect x="365" y="10" width="40" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="385" y="24" font-size="9" fill="#fff" text-anchor="middle">TRIM</text>
+    
+    <rect x="415" y="10" width="75" height="20" rx="4" fill="#667eea" opacity="0.3"/>
+    <text x="452" y="24" font-size="9" fill="#fff" text-anchor="middle">APPLY_EFFECT</text>
+  </g>
+  
+  <!-- State info -->
+  <g transform="translate(300, 680)">
+    <text x="0" y="0" font-size="12" font-weight="600" fill="#888">State Management:</text>
+    <text x="0" y="20" font-size="10" fill="#aaa">• AgentState: Base (queries, results, time ranges)</text>
+    <text x="0" y="38" font-size="10" fill="#aaa">• OrchestratorState: Extends with timeline fields</text>
+  </g>
+</svg>
