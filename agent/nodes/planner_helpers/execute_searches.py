@@ -1,5 +1,7 @@
 """Execute all search types and collect results."""
 
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from agent.utils.logging_utils import get_log_helper
 from agent.utils.processing.refinement import validate_activity_evidence
 from agent.utils.search.search_executor import (
@@ -38,94 +40,131 @@ def execute_searches(
     log = get_log_helper(logger, verbose)
     
     log.info("\n[STEP 2] Executing search with hierarchical tree + semantic search...")
+    log.info("[PARALLEL SEARCH] Running all search types in parallel for better performance...")
     
     all_search_results = []
     query_lower = query.lower()
+    search_start_time = time.time()
     
     # Check if this is a general highlight query
     is_general_highlight = search_plan.get("is_general_highlight_query", False)
     if "highlight" in query_lower and ("all" in query_lower or "find" in query_lower):
         is_general_highlight = True
     
-    # Execute all search types using search executor module
-    # 0. General highlight detection (using hierarchical tree)
-    if is_general_highlight:
-        hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
-        highlight_results = execute_hierarchical_highlight_search(
-            segment_tree,
-            action_keywords=hierarchical_keywords if hierarchical_keywords else None,
-            max_results=20,
-            logger=logger,
-            verbose=verbose
-        )
-        all_search_results.extend(highlight_results)
-    
-    # 1. Hierarchical tree keyword search (fast pre-filter)
+    # Prepare search parameters
     hierarchical_keywords = search_plan.get("hierarchical_keywords", [])
-    if hierarchical_keywords:
-        hierarchical_results = execute_hierarchical_search(
-            segment_tree,
-            keywords=hierarchical_keywords,
-            match_mode="any",
-            max_results=20,
-            logger=logger,
-            verbose=verbose
-        )
-        all_search_results.extend(hierarchical_results)
-    
-    # 2. Semantic search (replaces old visual/audio keyword search)
     semantic_queries = search_plan.get("semantic_queries", [query])
-    if semantic_queries:
-        semantic_results = execute_semantic_search(
-            segment_tree,
-            queries=semantic_queries,
-            threshold=0.4,
-            top_k=50,
-            search_transcriptions=True,
-            search_unified=True,
-            logger=logger,
-            verbose=verbose
-        )
-        all_search_results.extend(semantic_results)
-    
-    # 3. Object search (with negation handling)
     object_classes = search_plan.get("object_classes", [])
-    # Also check semantic analysis for object classes
     semantic_objects = semantic_analysis.get("target_entities", {}).get("objects", [])
     all_object_classes = list(set(object_classes + semantic_objects))
-    
-    # Check if this is a negative query
     is_negative = semantic_analysis.get("query_type") == "NEGATIVE" or semantic_analysis.get("special_handling", {}).get("negation", False)
-    
-    if all_object_classes:
-        object_results = execute_object_search(
-            segment_tree,
-            object_classes=all_object_classes,
-            is_negative=is_negative,
-            logger=logger,
-            verbose=verbose
-        )
-        all_search_results.extend(object_results)
-    
-    # 4. Activity search (pattern matching)
     activity_name = search_plan.get("activity_name", "")
     activity_keywords = search_plan.get("activity_keywords", [])
     evidence_keywords = search_plan.get("evidence_keywords", [])
-    if activity_name or activity_keywords:
-        activity_results = execute_activity_search(
-            segment_tree,
-            activity_name=activity_name,
-            activity_keywords=activity_keywords,
-            evidence_keywords=evidence_keywords,
-            query=query,
-            llm=llm,
-            validate_activity_evidence_fn=validate_activity_evidence,
-            logger=logger,
-            verbose=verbose
-        )
-        all_search_results.extend(activity_results)
     
-    log.info(f"\n[AGGREGATION] Collected results from all search types:")
+    # CRITICAL FIX: Execute searches in parallel using ThreadPoolExecutor
+    # This significantly improves performance by running independent searches concurrently
+    search_tasks = []
+    
+    # Task 0: General highlight detection (if needed)
+    if is_general_highlight:
+        search_tasks.append((
+            "highlight",
+            lambda: execute_hierarchical_highlight_search(
+                segment_tree,
+                action_keywords=hierarchical_keywords if hierarchical_keywords else None,
+                max_results=20,
+                logger=logger,
+                verbose=verbose
+            )
+        ))
+    
+    # Task 1: Hierarchical search
+    if hierarchical_keywords:
+        search_tasks.append((
+            "hierarchical",
+            lambda: execute_hierarchical_search(
+                segment_tree,
+                keywords=hierarchical_keywords,
+                match_mode="any",
+                max_results=20,
+                logger=logger,
+                verbose=verbose
+            )
+        ))
+    
+    # Task 2: Semantic search
+    if semantic_queries:
+        search_tasks.append((
+            "semantic",
+            lambda: execute_semantic_search(
+                segment_tree,
+                queries=semantic_queries,
+                threshold=0.4,
+                top_k=50,
+                search_transcriptions=True,
+                search_unified=True,
+                logger=logger,
+                verbose=verbose
+            )
+        ))
+    
+    # Task 3: Object search
+    if all_object_classes:
+        search_tasks.append((
+            "object",
+            lambda: execute_object_search(
+                segment_tree,
+                object_classes=all_object_classes,
+                is_negative=is_negative,
+                logger=logger,
+                verbose=verbose
+            )
+        ))
+    
+    # Task 4: Activity search
+    if activity_name or activity_keywords:
+        search_tasks.append((
+            "activity",
+            lambda: execute_activity_search(
+                segment_tree,
+                activity_name=activity_name,
+                activity_keywords=activity_keywords,
+                evidence_keywords=evidence_keywords,
+                query=query,
+                llm=llm,
+                validate_activity_evidence_fn=validate_activity_evidence,
+                logger=logger,
+                verbose=verbose
+            )
+        ))
+    
+    # Execute all searches in parallel
+    if search_tasks:
+        with ThreadPoolExecutor(max_workers=len(search_tasks)) as executor:
+            # Submit all tasks
+            future_to_task = {
+                executor.submit(task_func): task_name 
+                for task_name, task_func in search_tasks
+            }
+            
+            # Collect results as they complete
+            for future in as_completed(future_to_task):
+                task_name = future_to_task[future]
+                try:
+                    results = future.result()
+                    all_search_results.extend(results)
+                    if verbose:
+                        log.info(f"  ✓ {task_name} search completed: {len(results)} results")
+                except Exception as e:
+                    log.warning(f"  ✗ {task_name} search failed: {e}")
+                    if verbose:
+                        import traceback
+                        log.warning(traceback.format_exc())
+    
+    search_elapsed = time.time() - search_start_time
+    log.info(f"\n[PARALLEL SEARCH] All searches completed in {search_elapsed:.2f}s (parallel execution)")
+    log.info(f"[AGGREGATION] Collected results from all search types:")
     log.info(f"  Total results: {len(all_search_results)}")
     
     return all_search_results

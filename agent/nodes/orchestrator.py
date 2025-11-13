@@ -31,6 +31,10 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
     # Initialize LLM using shared utility
     llm = create_llm(model_name)
     
+    # CRITICAL FIX: Cache planner agent instance to avoid recreating on every call
+    # This significantly improves performance by reusing the LLM instance
+    planner_agent = create_planner_agent(model_name)
+    
     def orchestrator_node(state: OrchestratorState) -> OrchestratorState:
         """
         Orchestrator agent: Manages timeline editing operations.
@@ -181,12 +185,10 @@ def create_orchestrator_agent(model_name: str = "gpt-4o-mini"):
             elif verbose:
                 print(f"[WARNING] Unknown operation - cannot execute")
         elif current_operation and timeline_manager:
-            # Create planner agent node for operations that need it
-            planner_node = create_planner_agent(model_name)
-            
+            # Use cached planner agent instance (created once, reused)
             # Helper function to call planner
             def call_planner(planner_state):
-                return planner_node(planner_state)
+                return planner_agent(planner_state)
             
             try:
                 if current_operation == "FIND_HIGHLIGHTS":
