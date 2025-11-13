@@ -1,7 +1,7 @@
 """Self-correction utilities for automatic operation refinement."""
 
 import json
-from typing import Dict, List, Optional, Any, Callable, TYPE_CHECKING
+from typing import Dict, List, Optional, Any, Callable, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from agent.state import OrchestratorState
@@ -400,6 +400,92 @@ def apply_refinement(
     return updated_params
 
 
+def should_stop_early(
+    validation: Dict[str, Any],
+    iteration: int,
+    max_iterations: int,
+    previous_confidence: float = 0.0,
+    confidence_threshold: float = 0.7,
+    enable_early_stopping: bool = True
+) -> Tuple[bool, str]:
+    """
+    Determine if we should stop early based on quality metrics.
+    
+    Args:
+        validation: Validation result dictionary
+        iteration: Current iteration number
+        max_iterations: Maximum iterations allowed
+        previous_confidence: Confidence from previous iteration
+        confidence_threshold: Minimum acceptable confidence
+        enable_early_stopping: Whether early stopping is enabled
+        
+    Returns:
+        Tuple of (should_stop: bool, reason: str)
+    """
+    if not enable_early_stopping:
+        return False, "Early stopping disabled"
+    
+    confidence = validation.get("confidence", 0.0)
+    is_valid = validation.get("is_valid", False)
+    issues = validation.get("issues", [])
+    needs_refinement = validation.get("needs_refinement", True)
+    
+    # Tier 1: Perfect result - stop immediately
+    if is_valid and confidence >= 0.9:
+        return True, f"Perfect result (confidence: {confidence:.2f})"
+    
+    # Tier 2: High confidence with minor issues or no issues - stop early
+    # Minor issues: missing descriptions, lack diversity (fixable later)
+    # Critical issues: no results, wrong operation, invalid parameters
+    minor_issue_keywords = ["description", "context", "diversity", "summary", "timestamps"]
+    critical_issue_keywords = ["no results", "failed", "error", "invalid", "no highlights", "operation failed"]
+    
+    # Check if we have only minor issues (or no issues at all)
+    has_minor_issues = any(
+        any(keyword in issue.lower() for keyword in minor_issue_keywords)
+        for issue in issues
+    ) if issues else False
+    
+    has_critical_issues = any(
+        any(keyword in issue.lower() for keyword in critical_issue_keywords)
+        for issue in issues
+    ) if issues else False
+    
+    has_minor_issues_only = (has_minor_issues or len(issues) == 0) and not has_critical_issues
+    
+    if confidence >= 0.85 and has_minor_issues_only:
+        if len(issues) == 0:
+            return True, f"High confidence ({confidence:.2f}) with no issues"
+        return True, f"High confidence ({confidence:.2f}) with minor fixable issues"
+    
+    # Tier 3: Acceptable result - stop if valid
+    if is_valid and confidence >= confidence_threshold:
+        return True, f"Acceptable result (confidence: {confidence:.2f} >= {confidence_threshold})"
+    
+    # Tier 4: Good confidence even if not "valid" - stop if minor issues or no issues
+    # This handles cases where confidence meets threshold but validation has minor issues
+    if confidence >= confidence_threshold and has_minor_issues_only:
+        if len(issues) == 0:
+            return True, f"Good confidence ({confidence:.2f}) with no issues (meets threshold)"
+        return True, f"Good confidence ({confidence:.2f}) with minor issues (meets threshold, acceptable)"
+    
+    # Tier 5: Confidence plateau - no improvement between iterations
+    if iteration >= 2 and abs(confidence - previous_confidence) < 0.05:
+        if confidence >= confidence_threshold * 0.9:  # Close to threshold
+            return True, f"Confidence plateaued at {confidence:.2f}, unlikely to improve"
+    
+    # Tier 6: No refinement possible - stop early
+    if not needs_refinement:
+        return True, "No refinement needed or possible"
+    
+    # Tier 7: Very low confidence - unlikely to improve
+    if iteration >= 2 and confidence < 0.3:
+        return True, f"Very low confidence ({confidence:.2f}), unlikely to improve"
+    
+    # Continue iteration
+    return False, "Continue iteration"
+
+
 def self_correct_loop(
     state: "OrchestratorState",
     timeline_manager: TimelineManager,
@@ -437,8 +523,14 @@ def self_correct_loop(
     best_result = None
     best_confidence = 0.0
     best_iteration = 0
+    previous_confidence = 0.0
+    
+    # Get early stopping setting (default: True)
+    enable_early_stopping = state.get("enable_early_stopping", True)
     
     log.info(f"\n[SELF-CORRECTION] Starting self-correction loop (max {max_iterations} iterations)")
+    if enable_early_stopping:
+        log.info(f"  Early stopping: ENABLED")
     
     for iteration in range(1, max_iterations + 1):
         log.info(f"\n[SELF-CORRECTION] Iteration {iteration}/{max_iterations}")
@@ -472,7 +564,30 @@ def self_correct_loop(
                 if verbose:
                     print(f"  [BEST] New best result (confidence: {confidence:.2f})")
             
-            # Check if result is good enough
+            # NEW: Check for early stopping before standard check
+            if enable_early_stopping:
+                should_stop, reason = should_stop_early(
+                    validation=validation,
+                    iteration=iteration,
+                    max_iterations=max_iterations,
+                    previous_confidence=previous_confidence,
+                    confidence_threshold=confidence_threshold,
+                    enable_early_stopping=enable_early_stopping
+                )
+                
+                if should_stop:
+                    log.info(f"  ✓ Early stopping: {reason}")
+                    return {
+                        **result,
+                        "iterations": iteration,
+                        "self_corrected": iteration > 1,
+                        "final_confidence": confidence,
+                        "validation": validation,
+                        "early_stopped": True,
+                        "early_stop_reason": reason
+                    }
+            
+            # Check if result is good enough (original check, kept as fallback)
             if is_valid and confidence >= confidence_threshold:
                 log.info(f"  ✓ Result is acceptable (confidence: {confidence:.2f} >= {confidence_threshold})")
                 return {
@@ -482,6 +597,9 @@ def self_correct_loop(
                     "final_confidence": confidence,
                     "validation": validation
                 }
+            
+            # Store confidence for plateau detection
+            previous_confidence = confidence
             
             # If not last iteration, refine
             if iteration < max_iterations:

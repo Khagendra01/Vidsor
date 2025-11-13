@@ -15,6 +15,7 @@ from agent.utils.logging_utils import DualLogger, create_log_file
 from ..managers.chat_manager import ChatManager
 from ..managers.timeline_manager import TimelineManager
 from ..models import Chunk
+from ..utils.progress_logger import VerboseProgressLogger
 
 
 class AgentIntegration:
@@ -36,6 +37,10 @@ class AgentIntegration:
         self.agent_thread: Optional[threading.Thread] = None
         self.is_agent_running = False
         self.pending_clarification: Optional[Dict] = None
+        self.progress_message_start: Optional[str] = None  # Start position of progress message
+        self.progress_lines: List[str] = []  # Accumulated progress lines
+        self.progress_overlay: Optional[tk.Frame] = None  # Progress overlay frame
+        self.progress_text: Optional[tk.Text] = None  # Progress text widget
     
     def create_chat_ui(self, parent_frame):
         """Create chat interface UI components."""
@@ -189,6 +194,9 @@ class AgentIntegration:
                                           font=font_small)
         self.chat_status_label.grid(row=2, column=0, sticky=tk.W, pady=(10, 0))
         
+        # Create progress overlay (initially hidden)
+        self._create_progress_overlay(chat_history_frame, colors, font_small)
+        
         # Display existing chat history if any
         self.display_chat_history()
     
@@ -291,9 +299,20 @@ class AgentIntegration:
     def run_agent_thread_with_clarification(self, clarification_response: str, segment_tree_path: str,
                                             operation: str, preserved_state: Dict, original_query: str):
         """Run orchestrator with clarification response, using preserved state to continue."""
-        # Create logger for this clarification response
+        # Start progress message in UI
+        self._start_progress_message()
+        
+        # Create UI callback for progress updates
+        def ui_callback(message: str):
+            self._update_progress_message(message)
+        
+        # Create verbose progress logger for this clarification response
         log_file = create_log_file(f"{original_query}_clarification_{clarification_response}")
-        logger = DualLogger(log_file=log_file, verbose=True)
+        logger = VerboseProgressLogger(
+            log_file=log_file,
+            verbose=True,
+            ui_callback=ui_callback
+        )
         
         logger.info("=" * 80)
         logger.info("VIDSOR: Continuing with Clarification Response")
@@ -360,9 +379,9 @@ class AgentIntegration:
                     
                     self.vidsor.root.after(0, update_timeline_ui)
             
-            # Update UI
+            # Update UI - replace progress with final message
             if self.vidsor.root:
-                self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", response))
+                self._end_progress_message(response)
                 self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="#a0a0a0"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
             
@@ -372,7 +391,8 @@ class AgentIntegration:
             import traceback
             logger.error(traceback.format_exc())
             if self.vidsor.root:
-                self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", error_msg))
+                # End progress message with error
+                self._end_progress_message(f"❌ Error: {error_msg}")
                 self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="#f44336"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
@@ -381,9 +401,20 @@ class AgentIntegration:
     
     def run_agent_thread(self, query: str, segment_tree_path: str):
         """Run orchestrator agent in background thread."""
-        # Create logger for this query
+        # Start progress message in UI
+        self._start_progress_message()
+        
+        # Create UI callback for progress updates
+        def ui_callback(message: str):
+            self._update_progress_message(message)
+        
+        # Create verbose progress logger for this query
         log_file = create_log_file(query)
-        logger = DualLogger(log_file=log_file, verbose=True)
+        logger = VerboseProgressLogger(
+            log_file=log_file,
+            verbose=True,
+            ui_callback=ui_callback
+        )
         
         logger.info("=" * 80)
         logger.info("VIDSOR: Orchestrator Query Processing")
@@ -653,12 +684,13 @@ class AgentIntegration:
             else:
                 logger.info("Skipping timeline UI update (success=False or no timeline_chunks)")
             
-            # Update UI in main thread
+            # Update UI in main thread - replace progress with final message
             logger.info("\n" + "-" * 80)
             logger.info("UPDATING CHAT UI")
             logger.info("-" * 80)
             if self.vidsor.root:
-                self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", response))
+                # End progress message and show final result
+                self._end_progress_message(response)
                 self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Ready", foreground="#a0a0a0"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
                 logger.info("Chat UI update scheduled")
@@ -678,7 +710,8 @@ class AgentIntegration:
             print(f"[VIDSOR] {error_msg}")
             traceback.print_exc()
             if self.vidsor.root:
-                self.vidsor.root.after(0, lambda: self.add_chat_message("assistant", error_msg))
+                # End progress message with error
+                self._end_progress_message(f"❌ Error: {error_msg}")
                 self.vidsor.root.after(0, lambda: self.chat_status_label.config(text="Error occurred", foreground="#f44336"))
                 self.vidsor.root.after(0, lambda: self.chat_send_btn.config(state=tk.NORMAL))
         finally:
@@ -767,4 +800,131 @@ class AgentIntegration:
             has_video = self.vidsor.video_path is not None
             has_segment_tree = self.vidsor.segment_tree_path is not None and os.path.exists(self.vidsor.segment_tree_path)
             self.chat_send_btn.config(state=tk.NORMAL if (has_project and has_video and has_segment_tree) else tk.DISABLED)
+    
+    def _create_progress_overlay(self, parent_frame, colors, font_small):
+        """Create progress overlay frame."""
+        # Overlay frame with semi-transparent background
+        self.progress_overlay = tk.Frame(
+            parent_frame,
+            bg='#001a33',  # Dark blue background
+            highlightbackground='#00bcf2',  # Cyan border
+            highlightthickness=2,
+            relief='flat'
+        )
+        # Initially hidden, will be shown when processing
+        self.progress_overlay.place(relx=0.5, rely=0.5, anchor='center', relwidth=0.95, relheight=0.4)
+        self.progress_overlay.place_forget()  # Hide initially
+        
+        # Title label
+        title_label = tk.Label(
+            self.progress_overlay,
+            text="Processing...",
+            bg='#001a33',
+            fg='#00bcf2',  # Cyan text
+            font=("Segoe UI", 12, "bold")
+        )
+        title_label.pack(pady=(15, 10))
+        
+        # Progress text widget
+        progress_container = tk.Frame(self.progress_overlay, bg='#001a33')
+        progress_container.pack(fill=tk.BOTH, expand=True, padx=15, pady=(0, 15))
+        
+        progress_scroll = ttk.Scrollbar(progress_container)
+        progress_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.progress_text = tk.Text(
+            progress_container,
+            wrap=tk.WORD,
+            yscrollcommand=progress_scroll.set,
+            state=tk.DISABLED,
+            height=8,
+            bg='#002244',  # Slightly lighter blue
+            fg='#88d4ff',  # Light cyan text
+            selectbackground='#00bcf2',
+            selectforeground='#001a33',
+            insertbackground='#00bcf2',
+            relief='flat',
+            borderwidth=0,
+            highlightthickness=0,
+            padx=12,
+            pady=10,
+            font=("Consolas", 9)
+        )
+        self.progress_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        progress_scroll.config(command=self.progress_text.yview)
+        
+        self.progress_lines = []
+    
+    def _start_progress_message(self):
+        """Start a new progress message overlay."""
+        if not self.progress_overlay or not self.vidsor.root:
+            return
+        
+        def do_start():
+            self.progress_lines = []
+            if self.progress_overlay:
+                self.progress_overlay.place(relx=0.5, rely=0.5, anchor='center', relwidth=0.95, relheight=0.4)
+            if self.progress_text:
+                self.progress_text.config(state=tk.NORMAL)
+                self.progress_text.delete("1.0", tk.END)
+                self.progress_text.insert(tk.END, "⏳ Processing query...\n")
+                self.progress_lines.append("⏳ Processing query...\n")
+                self.progress_text.config(state=tk.DISABLED)
+                self.progress_text.see(tk.END)
+        
+        self.vidsor.root.after(0, do_start)
+    
+    def _update_progress_message(self, new_line: str):
+        """Update the progress message overlay with a new line."""
+        if not self.progress_text or not self.vidsor.root:
+            return
+        
+        def do_update():
+            try:
+                # Add new line to accumulated lines
+                self.progress_lines.append(new_line + "\n")
+                
+                # Keep only last 20 lines for cleaner display
+                if len(self.progress_lines) > 20:
+                    self.progress_lines = self.progress_lines[-20:]
+                
+                # Update progress text
+                self.progress_text.config(state=tk.NORMAL)
+                self.progress_text.delete("1.0", tk.END)
+                progress_content = "".join(self.progress_lines)
+                self.progress_text.insert(tk.END, progress_content)
+                self.progress_text.config(state=tk.DISABLED)
+                self.progress_text.see(tk.END)
+            except Exception as e:
+                pass
+        
+        self.vidsor.root.after(0, do_update)
+    
+    def _end_progress_message(self, final_message: str):
+        """Hide progress overlay and show final result in chat."""
+        if not self.vidsor.root:
+            return
+        
+        def do_end():
+            try:
+                # Hide progress overlay
+                if self.progress_overlay:
+                    self.progress_overlay.place_forget()
+                
+                # Reset progress tracking
+                self.progress_lines = []
+                self.progress_message_start = None
+                
+                # Add final message to chat normally
+                self.add_chat_message("assistant", final_message)
+            except Exception as e:
+                # Fallback: just add final message normally
+                try:
+                    if self.progress_overlay:
+                        self.progress_overlay.place_forget()
+                    self.add_chat_message("assistant", final_message)
+                except:
+                    pass
+        
+        self.vidsor.root.after(0, do_end)
 

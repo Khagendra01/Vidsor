@@ -1,6 +1,9 @@
 """Helper functions for handle_find_broll operation."""
 
-from agent.helpers.orchestrator_helpers.handle_find_broll.calculate_constraints import calculate_broll_constraints
+from agent.helpers.orchestrator_helpers.handle_find_broll.calculate_constraints import (
+    calculate_broll_constraints,
+    detect_multiple_broll_intent,
+)
 from agent.helpers.orchestrator_helpers.handle_find_broll.analyze_keywords import analyze_main_action_keywords
 from agent.helpers.orchestrator_helpers.handle_find_broll.build_query import build_broll_query
 from agent.helpers.orchestrator_helpers.handle_find_broll.filter_and_select import filter_and_select_broll_clips

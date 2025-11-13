@@ -16,6 +16,7 @@ from agent.helpers.orchestrator_helpers.handle_find_broll import (
     adjust_broll_durations,
     create_broll_chunks,
 )
+from agent.helpers.orchestrator_helpers.handle_find_broll.calculate_constraints import detect_multiple_broll_intent
 
 
 def handle_find_broll(
@@ -62,8 +63,16 @@ def handle_find_broll(
     # Get selected chunks and analyze main action
     selected_chunks = timeline_manager.get_chunks(indices)
     
+    # Detect if user explicitly wants multiple B-roll clips
+    user_query = state.get("user_query", "")
+    user_wants_multiple = detect_multiple_broll_intent(user_query)
+    
     # PHASE 1: Calculate main clip statistics and target constraints
-    constraints = calculate_broll_constraints(selected_chunks, verbose=verbose)
+    constraints = calculate_broll_constraints(
+        selected_chunks, 
+        user_wants_multiple=user_wants_multiple,
+        verbose=verbose
+    )
     main_clip_total_duration = constraints["main_clip_total_duration"]
     
     # Get time range from selected chunks
